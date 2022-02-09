@@ -341,6 +341,11 @@ class MountedView: CustomStringConvertible {
 
     /// Calls `body` to produce a new children graph node, then compares the new graph to
     /// the previous one and apply any changes.
+    ///
+    /// Will not do anything if the view does not have an existing children graph node.
+    ///
+    /// Do not use for mounting a view for the first time as there is nothing to compare the new
+    /// node to. Instead, set `children` to the result of the view `body` closure.
     func refreshBody() {
         // Only refresh body if there is a body in the first place, otherwise it's a leaf
         // node so there is nothing to do
