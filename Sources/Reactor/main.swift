@@ -201,7 +201,7 @@ struct ViewBuilder {
 struct GraphNode: CustomStringConvertible {
     var mountedViews = [MountedView]()
 
-    init<V: View>(element: V, recursive: Bool) { // TODO: remove `recursive` here and unify with `refreshBody`?
+    init<V: View>(element: V, recursive: Bool) {
         print("Making a new GraphNode for \(V.self)")
 
         // Prepare as many `MountedView` nodes as necessary, initialize
@@ -423,11 +423,9 @@ struct AnyView: StateLookup, Equatable {
     var view: TreeNodeMetadata
     let viewType: Any.Type
 
-    var body: (Any, Bool) -> GraphNode = { _, _ in fatalError() } // TODO: rename to bodyGraphNode
-
-    var tmpOnAppear: (Any) -> () = { _ in fatalError() }
-
-    var equals: (Any, AnyView) -> Bool = { _, _ in fatalError() }
+    var body: (_ view: Any, _ recursive: Bool) -> GraphNode = { _, _ in fatalError() }
+    var tmpOnAppear: (_ view: Any) -> () = { _ in fatalError() }
+    var equals: (_ view: Any, _ other: AnyView) -> Bool = { _, _ in fatalError() }
 
     let isLeaf: Bool
 
