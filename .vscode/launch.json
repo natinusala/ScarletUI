@@ -1,0 +1,30 @@
+{
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug Reactor",
+            "program": "${workspaceFolder:Reactor}/.build/debug/Reactor",
+            "args": [],
+            "cwd": "${workspaceFolder:Reactor}",
+            "preLaunchTask": "swift: Build Debug Reactor"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Release Reactor",
+            "program": "${workspaceFolder:Reactor}/.build/release/Reactor",
+            "args": [],
+            "cwd": "${workspaceFolder:Reactor}",
+            "preLaunchTask": "swift: Build Release Reactor"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Test Reactor",
+            "program": "${workspaceFolder:Reactor}/.build/debug/ReactorPackageTests.xctest",
+            "cwd": "${workspaceFolder:Reactor}",
+            "preLaunchTask": "swift: Build All"
+        }
+    ]
+}

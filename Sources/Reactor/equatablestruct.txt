@@ -1,0 +1,59 @@
+import Foundation
+
+class Truc {
+
+}
+
+let truc = Truc()
+
+struct MainView {
+    var text: String
+    var thing: Int
+
+    var agagougou = truc
+}
+
+protocol EquatableStruct {
+    static func equals(lhs: Self, rhs: Self) -> Bool
+}
+
+extension EquatableStruct {
+    static func memberEquals<T>(lhs: T, rhs: T) -> Bool {
+        var lhs = lhs
+        var rhs = rhs
+
+        let size = MemoryLayout<T>.stride
+        return memcmp(&lhs, &rhs, size) == 0
+    }
+
+    static func memberEquals<T>(lhs: T, rhs: T) -> Bool where T: Equatable {
+        return lhs == rhs
+    }
+
+    static func memberEquals<T>(lhs: T, rhs: T) -> Bool where T: EquatableStruct {
+        return T.equals(lhs: lhs, rhs: rhs)
+    }
+}
+
+func structEquals<T>(lhs: T, rhs: T) -> Bool where T: Equatable {
+    return lhs == rhs
+}
+
+func structEquals<T>(lhs: T, rhs: T) -> Bool where T: EquatableStruct {
+    return T.equals(lhs: lhs, rhs: rhs)
+}
+
+/// GENERATED
+extension MainView: EquatableStruct {
+    static func equals(lhs: MainView, rhs: MainView) -> Bool {
+        return
+            memberEquals(lhs: lhs.text, rhs: rhs.text) &&
+            memberEquals(lhs: lhs.thing, rhs: rhs.thing) &&
+            memberEquals(lhs: lhs.agagougou, rhs: rhs.agagougou)
+    }
+}
+
+let thing1 = MainView(text: "agagougou", thing: 1)
+let thing2 = MainView(text: "agagougou", thing: 1)
+
+print(structEquals(lhs: thing1, rhs: thing2))

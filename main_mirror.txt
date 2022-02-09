@@ -1,0 +1,433 @@
+import Foundation
+
+class StateLocation {
+    typealias Getter = () -> Any
+    typealias Setter = (Any) -> ()
+
+    let getter: Getter
+    let setter: Setter
+
+    init(setter: @escaping Setter, getter: @escaping Getter) {
+        self.getter = getter
+        self.setter = setter
+    }
+}
+
+protocol DynamicProperty {
+    mutating func update()
+}
+
+/// Type-erased protocol for state properties.
+protocol StateProtocol: DynamicProperty {
+    var location: StateLocation? { get set }
+
+    /// Creates a new storage node with the state property's
+    /// default value in it.
+    func createStorageNode() -> StateStorageNode
+}
+
+@propertyWrapper
+struct State<Value>: StateProtocol {
+    /// The current value.
+    var value: Value
+
+    /// The stored value location.
+    var location: StateLocation? {
+        didSet {
+            print("State property location updated")
+        }
+    }
+
+    init(wrappedValue: Value) {
+        self.value = wrappedValue
+    }
+
+    var wrappedValue: Value {
+        get {
+            return self.value
+        }
+
+        nonmutating set {
+            self.location?.setter(newValue)
+        }
+    }
+
+    mutating func update() {
+        if let location = self.location {
+            guard let value = location.getter() as? Value else {
+                fatalError("Cannot convert new state value from `Any` to `\(Value.self)`")
+            }
+
+            print("Update state value to \(value)")
+            self.value = value
+        }
+    }
+
+    func createStorageNode() -> StateStorageNode {
+        return StateStorageNode(value: self.value)
+    }
+}
+
+protocol View {
+    associatedtype Body: View
+
+    var body: Body { get }
+
+    /// Reduces this view to one or multiple type-erased views.
+    static func makeViews(view: Self) -> [AnyView]
+}
+
+extension View {
+    static func makeViews(view: Self) -> [AnyView] {
+        return [AnyView(view)]
+    }
+}
+
+@resultBuilder
+struct ViewBuilder {
+    static func buildBlock() -> NoneView {
+        return NoneView()
+    }
+
+    static func buildBlock<Content>(_ content: Content) -> Content where Content: View {
+        return content
+    }
+
+    static func buildIf<Content>(_ content: Content?) -> Content? where Content: View {
+        return content
+    }
+
+    static func buildBlock<C0, C1>(_ c0: C0, _ c1: C1) -> TupleView<(C0, C1)> where C0: View, C1: View {
+        return .init((c0, c1))
+    }
+}
+
+/// Calling `body` on the parent node will produce another GraphNode, which will then
+/// be compared to this one to detect any type change.
+struct GraphNode {
+    var mountedViews = [MountedView]()
+
+    init(element: AnyView) {
+        print("Making a new GraphNode for \(element.viewType)")
+        // Prepare as many `MountedView` nodes as necessary, initialize
+        // each one with the `makeViews` output
+        let views = element.makeViews()
+
+        for view in views {
+            var mountedView = MountedView(view: view)
+
+            // When creating a node for the first time, call `body` directly and
+            // create the next node, unless the view is a leaf
+            print("     Checking if \(view.viewType) is a leaf node")
+            if !view.isLeaf {
+                let body = view.body()
+                mountedView.children = GraphNode(element: body)
+            }
+
+            self.mountedViews.append(mountedView)
+        }
+    }
+
+    func printTree(indent: Int = 0) {
+        for view in self.mountedViews {
+            var res = String(repeating: " ", count: indent)
+            res += "- \(view.view.viewType)"
+            print(res)
+
+            view.children?.printTree(indent: indent + 4)
+        }
+    }
+}
+
+/// Stores one state property value.
+class StateStorageNode {
+    var value: Any
+
+    var location: StateLocation?
+
+    init(value: Any) {
+        self.value = value
+    }
+}
+
+/// Storage for state variables. When a state variable is modified,
+/// the setter is executed and changes the value here. Then, `update()` is called
+/// on the property before calling `body` on the view.
+class StateStorage {
+    /// State property index to storage node map.
+    var nodes = [Int: StateStorageNode]()
+}
+
+/// Result of a dynamic lookup for state properties.
+struct StateProperty {
+    /// Index of the state property inside the struct.
+    var index: Int
+
+    /// Type of the state property value.
+    var valueType: Any.Type
+
+    /// Pointer to the `location` property.
+    var locationPtr: UnsafeRawPointer
+}
+
+struct MountedView {
+    /// The type-erased view.
+    var view: AnyView
+
+    var stateStorage: StateStorage
+
+    /// The graph node containing this view's children.
+    var children: GraphNode?
+
+    /// Creates a new mounted view from given type-erased view.
+    init(view: AnyView) {
+        self.view = view
+
+        // Create a new state store since we are allocating
+        // a new view
+        self.stateStorage = StateStorage()
+
+        // Setup state for the new view
+        self.setupState()
+    }
+
+    /// Creates a new mounted view from an already mounted view,
+    /// making a type difference and reusing state storage if applicable.
+    init(from: MountedView, newView: AnyView) {
+        fatalError()
+    }
+
+    /// Sets up state values for the mounted view.
+    func setupState() {
+        print("     Setting up state of \(view.viewType)")
+
+        // Iterate over every state property to set location
+        let mirror = Mirror(reflecting: self.view.view)
+
+        for (index, (name, value)) in mirror.children.enumerated() {
+            // Check if the property is a state property
+            guard var state = value as? StateProtocol else {
+                continue
+            }
+
+            print("          Found state property \(name ?? "<<unknown>>") at index \(index)")
+
+            var storageNode: StateStorageNode
+
+            if let storedNode = self.stateStorage.nodes[index] {
+                storageNode = storedNode
+
+                // Give the state property its new location and call `update`
+                // to allow it to update its internal value
+                state.location = storageNode.location
+                state.update()
+            } else {
+                // Ask the state property to create a new storage node by copying
+                // the default value
+                storageNode = state.createStorageNode()
+
+                // Prepare the location object for the new node
+                let getter = {
+                    return storageNode.value
+                }
+
+                let setter = { (newValue: Any) in
+                    // Set the new value in the storage node
+                    storageNode.value = newValue
+
+                    // Call `update` to update the state property
+                    state.update()
+                }
+
+                storageNode.location = StateLocation(
+                    setter: setter,
+                    getter: getter
+                )
+
+                self.stateStorage.nodes[index] = storageNode
+
+                // Give the state property its new location - no need to call `update`
+                // since the property already contains the right value
+                state.location = storageNode.location
+            }
+        }
+    }
+}
+
+/// A type-erased view.
+struct AnyView {
+    let view: Any
+    let viewType: Any.Type
+
+    let body: () -> AnyView
+    let makeViews: () -> [AnyView]
+    let isLeaf: Bool
+
+    init<V: View>(_ view: V) {
+        self.view = view
+        self.viewType = V.self
+
+        self.body = {
+            return AnyView(view.body)
+        }
+
+        self.makeViews = {
+            V.makeViews(view: view)
+        }
+
+        self.isLeaf = V.Body.self == Never.self
+    }
+}
+
+// MARK: Built-in views
+
+struct TupleView<Content>: View {
+    let makeViewsClosure: () -> [AnyView]
+
+    static func makeViews(view: TupleView<Content>) -> [AnyView] {
+        return view.makeViewsClosure()
+    }
+}
+
+extension TupleView {
+    init<C0, C1>(_ content: (C0, C1)) where Content == (C0, C1), C0: View, C1: View {
+        self.makeViewsClosure = {
+            let v0 = C0.makeViews(view: content.0)
+            let v1 = C1.makeViews(view: content.1)
+
+            return v0 + v1
+        }
+    }
+}
+
+struct Column<Content>: View where Content: View {
+    let content: () -> Content
+
+    init(@ViewBuilder content: @escaping () -> Content) {
+        self.content = content
+    }
+
+    var body: some View {
+        return self.content()
+    }
+}
+
+struct Row<Content>: View where Content: View {
+    let content: () -> Content
+
+    init(@ViewBuilder content: @escaping () -> Content) {
+        self.content = content
+    }
+
+    var body: some View {
+        return self.content()
+    }
+}
+
+struct Image: View {
+    typealias Body = Never
+
+    var url: String
+}
+
+struct NoneView: View {
+    typealias Body = Never
+}
+
+extension Optional: View where Wrapped: View {
+    typealias Body = Never
+
+    static func makeViews(view: Optional<Wrapped>) -> [AnyView] {
+        switch view {
+            case let .some(view):
+                return Wrapped.makeViews(view: view)
+            case .none:
+                return NoneView.makeViews(view: NoneView())
+        }
+    }
+}
+
+struct Text: View {
+    typealias Body = Never
+
+    var text: String
+
+    init(_ text: String) {
+        self.text = text
+    }
+}
+
+// MARK: User views
+
+struct Heading1: View {
+    var text: String
+
+    init(_ text: String) {
+        self.text = text
+    }
+
+    var body: some View {
+        Text(text)
+    }
+}
+
+struct Header: View {
+    var image: String?
+
+    var body: some View {
+        Row {
+            if let image = image {
+                Image(url: image)
+            }
+
+            Heading1("Nuclear Reactor Demo")
+        }
+    }
+}
+
+struct MainView: View {
+    @State var hasContent = true
+
+    var body: some View {
+        Column {
+            Header()
+
+            if hasContent {
+                Text("Content view")
+            }
+        }
+    }
+}
+
+// MARK: Test
+
+let root = AnyView(MainView())
+
+// Make a graph node
+let rootNode = GraphNode(element: root)
+print("\n")
+rootNode.printTree()
+
+// let mainView = MainView.makeView(view: MainView())
+
+// print("\(mainView.viewType)") // MainView
+// print("     \(mainView.content().viewType)") // Column<Header>
+// print("         \(mainView.content().content().viewType)") // Header
+// print("             \(mainView.content().content().content().viewType)") // Row<TupleView<(Optional<Image>, Heading1)>>
+// print("                 \(mainView.content().content().content().content().viewType)") // TupleView<(Optional<Image>, Heading1)>
+
+// MARK: Never extensions and co.
+
+extension Never: View {
+    var body: Never {
+        fatalError()
+    }
+}
+
+/// View extension to provide a `body` property when `Body` is `Never`.
+/// Allows only specifying `typealias` for such views.
+extension View where Body == Never {
+    var body: Never {
+        fatalError()
+    }
+}
