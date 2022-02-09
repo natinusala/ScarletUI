@@ -390,12 +390,16 @@ class MountedView: CustomStringConvertible {
                     self.children?.mountedViews[index].refreshBody()
                 }
             } else {
-                // Otherwise, drop the old view entirely and insert the new one
-                fatalError("Views replacement not implemented yet")
+                print("         Type is different, replacing \(oldView.view.viewType) with \(newView.view.viewType)")
+
+                // Otherwise, drop the old view entirely and insert the new one, call body directly
+                // TODO: detach the implementation
+                newView.children = newView.view.body(newView.view.view, true)
+                self.children?.mountedViews[index] = newView
             }
         }
 
-        // TODO: remove any remaining old view (3 views -> 2 views)
+        // TODO: remove any remaining old view (3 views -> 2 views) (reuse code from type is different for dropping a view)
     }
 
     var description: String {
@@ -469,7 +473,7 @@ struct AnyView: StateLookup, Equatable {
 
 // MARK: Built-in views
 
-/// TODO: Rename to TupleView if we don't need to compare field-by-field in the end
+/// TODO: Rename to TupleView and use an actual tuple if we don't need to compare field-by-field in the end
 struct TupleView2<V0: View, V1: View>: View {
     let v0: V0
     let v1: V1
