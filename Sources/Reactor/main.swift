@@ -1,4 +1,14 @@
-protocol View {
+protocol TestMutator {
+    mutating func changeSomething()
+}
+
+extension TestMutator {
+    mutating func changeSomething() {
+
+    }
+}
+
+protocol View: TestMutator {
     associatedtype Body: View
 
     var body: Body { get }
@@ -50,16 +60,15 @@ enum ViewOperation {
             case let .update(updates):
                 return .update(updates.map { (view, position) in (view, position + amount) })
             case let .delete(range):
-                return .delete((range.lowerBound + amount) ..< (range.upperBound + amount))
+                return .delete((range.lowerBound + amount)..<(range.upperBound + amount))
         }
     }
 }
 
 /// A type-erased view, used internally to access a view's properties.
-/// Needs to be a class to prevent duplication between a body result's `body` property
-/// and its mounted views (they point to the same `AnyView`).
+/// TODO: needs to be a class to prevent duplications between `body` and `children` inside `BodyNode`.
 class AnyView: CustomStringConvertible {
-    var view: Any
+    var view: TestMutator
     var viewType: Any.Type
 
     var isLeaf: Bool
@@ -109,6 +118,7 @@ class MountedView {
 }
 
 /// The result of a body property call, aka. all children of a view.
+/// TODO: turn `AnyView` into a class then make another step before calling body that translates `TupleView`, `Optional` and `ConditionalView` into counterparts that use `AnyView` instead of `View`, to prevent duplicating views between `body` and `children` in BodyNode (use the same `AnyView` reference for both)
 struct BodyNode {
     var body: AnyView
 
@@ -121,7 +131,7 @@ struct BodyNode {
     private func makeViews(previous: BodyNode?) -> [ViewOperation] {
         if let previous = previous {
             if self.body.viewType != previous.body.viewType {
-                fatalError("`makeViews(previous:)` called with two bodies of a different type")
+                fatalError("`makeViews(previous:)` called with two bodies of a different type: `\(self.body.viewType)` and `\(previous.body.viewType)`")
             }
         }
 
@@ -130,7 +140,9 @@ struct BodyNode {
 
     /// Compare the node to the next one and updates the mounted views to apply the changes.
     mutating func update(next: BodyNode) {
-
+        // Call `makeViews` on the new node giving ourselves as the previous node
+        // to get the list of changes to apply
+        self.applyOperations(next.makeViews(previous: self))
     }
 
     /// Performs the initial mount: call `makeViews` on `self` without a previous node and apply changes.
@@ -150,7 +162,7 @@ struct BodyNode {
     }
 
     /// Mutates the body node to apply given operations.
-    mutating func applyOperations(_ operations: [ViewOperation]) {
+    private mutating func applyOperations(_ operations: [ViewOperation]) {
         for operation in operations {
             switch operation {
                 case let .insert(views, position):
@@ -178,10 +190,55 @@ struct BodyNode {
     }
 }
 
+extension Optional: View, TestMutator where Wrapped: View {
+    typealias Body = Never
+
+    static func makeViews(view: Self, previous: Self?) -> [ViewOperation] {
+        // If there is no previous node and we have a value, always insert (by giving no previous node)
+        guard let previous = previous else {
+            switch view {
+                case .none:
+                    return []
+                case let .some(view):
+                    return Wrapped.makeViews(view: view, previous: nil)
+            }
+        }
+
+        // Otherwise check every different possibility
+        switch (view, previous) {
+            // Both are `.none` -> nothing changed
+            case (.none, .none):
+                return []
+            // Both are `.some` -> call `makeViews` recursively to have an update operation
+            case let (.some(view), .some(previous)):
+                return Wrapped.makeViews(view: view, previous: previous)
+            // Some to none -> remove the view
+            case (.none, .some):
+                return [.delete(0..<1)]
+            // None to some -> call `makeViews` recursively without a previous node to have an insert operation
+            case let (.some(view), .none):
+                return Wrapped.makeViews(view: view, previous: nil)
+        }
+    }
+
+    static func viewsCount(view: Self) -> Int {
+        switch view {
+            case .none:
+                return 0
+            case let .some(view):
+                return Wrapped.viewsCount(view: view)
+        }
+    }
+}
+
 @resultBuilder
 struct ViewBuilder {
     static func buildBlock() -> View? {
         return nil
+    }
+
+    static func buildIf<Content: View>(_ content: Content?) -> Content? {
+        return content
     }
 
     static func buildBlock<Content: View>(_ content: Content) -> Content {
@@ -262,11 +319,21 @@ struct Text: View {
 }
 
 struct MainView: View {
+    var agagougou = true
+
     var body: some View {
         Column {
             Text("Some text 1")
-            Text("Some text 2")
+
+            if agagougou {
+                Text("Some text 2")
+            }
         }
+    }
+
+    mutating func changeSomething() {
+        print("-> Changing something!")
+        self.agagougou = true
     }
 }
 
@@ -276,13 +343,26 @@ var rootNode = BodyNode(of: MainView())
 // Make initial mount (recursive)
 rootNode.initialMount()
 
-// First body node: Column
-assert(type(of: rootNode.body) == Column<TupleView2<Text, Text>>.self)
-assert(rootNode.mountedViews[0].view.viewType == Column<TupleView2<Text, Text>>.self)
+// First body node: MainView containing 1 MainView
+assert(rootNode.body.viewType == MainView.self)
+assert(rootNode.mountedViews[0].view.viewType == MainView.self)
 
-// Second body node: two texts
-assert(type(of: rootNode.mountedViews[0].children!) == TupleView2<Text, Text>.self)
-assert(rootNode.mountedViews[0].children?.mountedViews[0].view.viewType == Text.self)
-assert(rootNode.mountedViews[0].children?.mountedViews[1].view.viewType == Text.self)
+// Second body node: Column containing 1 Column
+assert(rootNode.mountedViews[0].children!.body.viewType == Column<TupleView2<Text, Optional<Text>>>.self)
+assert(rootNode.mountedViews[0].children!.mountedViews[0].view.viewType == Column<TupleView2<Text, Optional<Text>>>.self)
+
+// Third body node: TupleView containing 2 texts (one optional)
+assert(rootNode.mountedViews[0].children!.mountedViews[0].children!.body.viewType == TupleView2<Text, Optional<Text>>.self)
+assert(rootNode.mountedViews[0].children!.mountedViews[0].children!.mountedViews[0].view.viewType == Text.self)
+assert(rootNode.mountedViews[0].children!.mountedViews[0].children!.mountedViews[1].view.viewType == Text.self)
 
 rootNode.printTree()
+
+// Change something!
+rootNode.mountedViews[0].view.view.changeSomething()
+
+// Get a new BodyNode for the changed view
+let newNode = rootNode.mountedViews[0].view.body
+
+// Update the current node accordingly
+rootNode.update(next: newNode)
