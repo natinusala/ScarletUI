@@ -87,7 +87,11 @@ class AnyView: CustomStringConvertible {
         }
 
         self.makeViewsClosure = { view, previous in
-            return V.makeViews(view: (view as! V), previous: (previous?.body as? V))
+            if let previous = previous {
+                return V.makeViews(view: (view as! V), previous: (previous.body.view as! V))
+            }
+
+            return V.makeViews(view: (view as! V), previous: nil)
         }
     }
 
@@ -167,8 +171,10 @@ struct BodyNode {
             switch operation {
                 case let .insert(views, position):
                     self.insert(views: views, at: position)
-                default:
-                    fatalError("Unimplemented")
+                case .update:
+                    fatalError("Views updates unimplemented")
+                case .delete:
+                    fatalError("Views deletion unimplemented")
             }
         }
     }
@@ -257,7 +263,7 @@ struct TupleView2<C0, C1>: View where C0: View, C1: View {
     let c1: C1
 
     static func makeViews(view: Self, previous: Self?) -> [ViewOperation] {
-        print("Calling makeViews on \(Self.self)")
+        print("Calling TupleView2 makeViews on \(Self.self)")
 
         let c0Operations = C0.makeViews(view: view.c0, previous: previous?.c0)
         let c1Operations = C1.makeViews(view: view.c1, previous: previous?.c1)
@@ -281,7 +287,7 @@ extension View {
     /// Default implementation of `makeViews`: insert or update the view.
     /// Removal is handled by its parent view (`Optional` or `ConditionalView`).
     static func makeViews(view: Self, previous: Self?) -> [ViewOperation] {
-        print("Calling makeViews on \(Self.self)")
+        print("Calling View makeViews on \(Self.self) - previous: \(previous == nil ? "no" : "yes")")
 
         if previous == nil {
             return [.insert([AnyView(view: view)], 0)]
@@ -333,7 +339,7 @@ struct MainView: View {
 
     mutating func changeSomething() {
         print("-> Changing something!")
-        self.agagougou = true
+        self.agagougou.toggle()
     }
 }
 
@@ -358,11 +364,11 @@ assert(rootNode.mountedViews[0].children!.mountedViews[0].children!.mountedViews
 
 rootNode.printTree()
 
-// Change something!
+// Change something in MainView!
 rootNode.mountedViews[0].view.view.changeSomething()
 
 // Get a new BodyNode for the changed view
 let newNode = rootNode.mountedViews[0].view.body
 
 // Update the current node accordingly
-rootNode.update(next: newNode)
+rootNode.mountedViews[0].children!.update(next: newNode)
