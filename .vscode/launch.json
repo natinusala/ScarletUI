@@ -1,0 +1,12 @@
+{
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Test ScarletUI",
+            "program": "${workspaceFolder:ScarletUI}/.build/debug/ScarletUIPackageTests.xctest",
+            "cwd": "${workspaceFolder:ScarletUI}",
+            "preLaunchTask": "swift: Build All"
+        }
+    ]
+}

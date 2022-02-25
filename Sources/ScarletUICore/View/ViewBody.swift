@@ -1,0 +1,68 @@
+@resultBuilder
+struct ViewBuilder {
+    static func buildBlock() -> View? {
+        return nil
+    }
+
+    static func buildIf<Content: View>(_ content: Content?) -> Content? {
+        return content
+    }
+
+    static func buildBlock<Content: View>(_ content: Content) -> Content {
+        return content
+    }
+}
+
+extension Optional: View, EquatableStruct, TreeNodeMetadata where Wrapped: View {
+    typealias Body = Never
+
+    static func makeViews(view: Self, previous: Self?) -> ViewOperations {
+        debug("Calling Optional makeViews on \(Self.self) - previous? \(previous == nil ? "no" : "yes")")
+
+        // If there is no previous node and we have a value, always insert (by giving no previous node)
+        guard let previous = previous else {
+            switch view {
+                case .none:
+                    return ViewOperations()
+                case let .some(view):
+                    return Wrapped.makeViews(view: view, previous: nil)
+            }
+        }
+
+        // Otherwise check every different possibility
+        switch (view, previous) {
+            // Both are `.none` -> nothing has changed
+            case (.none, .none):
+                return ViewOperations()
+            // Both are `.some` -> call `makeViews` recursively to have an update operation
+            case let (.some(view), .some(previous)):
+                return Wrapped.makeViews(view: view, previous: previous)
+            // Some to none -> remove the view
+            case (.none, .some):
+                return ViewOperations(removals: [ViewRemoval(position: 0)])
+            // None to some -> call `makeViews` recursively without a previous node to have an insert operation
+            case let (.some(view), .none):
+                return Wrapped.makeViews(view: view, previous: nil)
+        }
+    }
+
+    static func viewsCount(view: Self) -> Int {
+        switch view {
+            case .none:
+                return 0
+            case let .some(view):
+                return Wrapped.viewsCount(view: view)
+        }
+    }
+
+    static func equals(lhs: Self, rhs: Self) -> Bool {
+        switch (lhs, rhs) {
+            case (.none, .some), (.some, .none):
+                return false
+            case (.none, .none):
+                return true
+            case let (.some(lhs), .some(rhs)):
+                return Wrapped.equals(lhs: lhs, rhs: rhs)
+        }
+    }
+}
