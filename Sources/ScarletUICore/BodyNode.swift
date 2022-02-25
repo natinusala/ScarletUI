@@ -85,6 +85,7 @@ struct BodyNode {
         self.mountedViews = self.mountedViews.filter { !$0.toBeRemoved }
     }
 
+    /// Updates the view at the given position with its new version.
     mutating func updateView(at position: ViewPosition, with newView: AnyView) {
         let mountedView = self.mountedViews[position]
 
@@ -101,6 +102,7 @@ struct BodyNode {
         mountedView.view = newView
     }
 
+    /// Inserts the given view at the given position.
     mutating func insertView(view: AnyView, at position: ViewPosition) {
         debug("Inserting \(view.description) at position \(position)")
 
