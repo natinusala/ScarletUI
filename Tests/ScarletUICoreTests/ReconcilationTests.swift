@@ -29,10 +29,10 @@ import Nimble
 /// Add every test case here
 let cases: [ReconcilationTestCase.Type] = [
     NoInputTestCase.self,
-    OptionalInsertionTestCase.self,
-    OptionalDeletionTestCase.self,
     UpdateTestCase.self,
     OptionalUpdateTestCase.self,
+    OptionalInsertionTestCase.self,
+    OptionalDeletionTestCase.self,
 ]
 
 /// Checks that the views are updated.
