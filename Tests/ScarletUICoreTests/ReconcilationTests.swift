@@ -30,10 +30,219 @@ import Nimble
 let cases: [ReconcilationTestCase.Type] = [
     NoInputTestCase.self,
     UpdateTestCase.self,
+    TupleViewOffsetsTestCase.self,
     OptionalUpdateTestCase.self,
     OptionalInsertionTestCase.self,
     OptionalDeletionTestCase.self,
 ]
+
+/// Tests insertions, deletions and updates on large tuple views to test
+/// the offset mechanism.
+struct TupleViewOffsetsTestCase: ReconcilationTestCase {
+    struct TestView: View, Equatable {
+        var detailed: Bool
+
+        var body: some View {
+            Column {
+                // Header
+                Row {
+                    Image(source: "mainLogo.png")
+                    Text("App Title")
+
+                    Divider()
+
+                    Text("Logged in as: FooBarBaz")
+
+                    if detailed {
+                        Divider()
+
+                        Text("Unread messages: 7")
+                        Text("Update available!")
+                    }
+
+                    Divider()
+
+                    Text("X: Close")
+                }
+
+                Divider()
+
+                // Body
+                Row {
+                    Column {
+                        Text("Unread (7)")
+                        Text("Sent")
+
+                        if !detailed {
+                            Divider()
+
+                            Text("Enable detailed mode to see spam")
+                        }
+
+                        Divider()
+
+                        Text("Settings")
+                    }
+                }
+
+                Divider()
+
+                // Footer
+                Row {
+                    Text("Keyboard / Mouse")
+                    Text("A: OK")
+                    Text("B: Back")
+                }
+
+                // Debug bar
+                if detailed {
+                    Row {
+                        Text("Debug bar")
+                        Text("Memory: 74mB")
+                        Text("CPU Usage: 2%")
+                        Text("GPU Usage: 1%")
+                    }
+                }
+            }
+        }
+    }
+
+    static var initialView: TestView {
+        TestView(detailed: false)
+    }
+
+    static var expectedInitialTree: some View {
+        Column {
+            // Header
+            Row {
+                Image(source: "mainLogo.png")
+                Text("App Title")
+
+                Divider()
+
+                Text("Logged in as: FooBarBaz")
+
+                if false {
+                    Divider()
+
+                    Text("Unread messages: 7")
+                    Text("Update available!")
+                }
+
+                Divider()
+
+                Text("X: Close")
+            }
+
+            Divider()
+
+            // Body
+            Row {
+                Column {
+                    Text("Unread (7)")
+                    Text("Sent")
+
+                    if true {
+                        Divider()
+
+                        Text("Enable detailed mode to see spam")
+                    }
+
+                    Divider()
+
+                    Text("Settings")
+                }
+            }
+
+            Divider()
+
+            // Footer
+            Row {
+                Text("Keyboard / Mouse")
+                Text("A: OK")
+                Text("B: Back")
+            }
+
+            // Debug bar
+            if false {
+                Row {
+                    Text("Debug bar")
+                    Text("Memory: 74mB")
+                    Text("CPU Usage: 2%")
+                    Text("GPU Usage: 1%")
+                }
+            }
+        }
+    }
+
+    static var updatedView: TestView {
+        TestView(detailed: true)
+    }
+
+    static var expectedUpdatedTree: some View {
+        Column {
+            // Header
+            Row {
+                Image(source: "mainLogo.png")
+                Text("App Title")
+
+                Divider()
+
+                Text("Logged in as: FooBarBaz")
+
+                if true {
+                    Divider()
+
+                    Text("Unread messages: 7")
+                    Text("Update available!")
+                }
+
+                Divider()
+
+                Text("X: Close")
+            }
+
+            Divider()
+
+            // Body
+            Row {
+                Column {
+                    Text("Unread (7)")
+                    Text("Sent")
+
+                    if false {
+                        Divider()
+
+                        Text("Enable detailed mode to see spam")
+                    }
+
+                    Divider()
+
+                    Text("Settings")
+                }
+            }
+
+            Divider()
+
+            // Footer
+            Row {
+                Text("Keyboard / Mouse")
+                Text("A: OK")
+                Text("B: Back")
+            }
+
+            // Debug bar
+            if true {
+                Row {
+                    Text("Debug bar")
+                    Text("Memory: 74mB")
+                    Text("CPU Usage: 2%")
+                    Text("GPU Usage: 1%")
+                }
+            }
+        }
+    }
+}
 
 /// Checks that the views are updated.
 struct UpdateTestCase: ReconcilationTestCase {
@@ -407,11 +616,16 @@ extension BodyNode {
         self.body.expectToBe(other.body, propertyName: "`BodyNode` body")
 
         // Check that every mounted view is equal
-        expect(self.mountedViews.count).to(equal(other.mountedViews.count), description: "mounted views count is different")
+        let description = "mounted views count of \(self.body.viewType) is different (\(self.listMountedViews()) VS. \(other.listMountedViews()))"
+        expect(self.mountedViews.count).to(equal(other.mountedViews.count), description: description)
 
         for (lhs, rhs) in zip(self.mountedViews, other.mountedViews) {
             lhs.expectToBe(rhs)
         }
+    }
+
+    func listMountedViews() -> String {
+        return "[\(self.mountedViews.map {$0.description}.joined(separator: ", "))]"
     }
 }
 
@@ -420,7 +634,7 @@ extension AnyView {
     func expectToBe(_ other: AnyView, propertyName: String) {
         // First compare view type
         if self.viewType != other.viewType {
-            XCTFail("view has a different type: got \(self.viewType), got \(other.viewType)")
+            XCTFail("when comparing \(propertyName), view has a different type: got \(self.viewType) and \(other.viewType)")
         } else {
             // Then compare field by field
             if !self.equalsClosure(self.view, other) {
@@ -502,4 +716,8 @@ struct Row<Content>: View, EquatableStruct where Content: View {
     static func equals(lhs: Self, rhs: Self) -> Bool {
         return Content.equals(lhs: lhs.content, rhs: rhs.content)
     }
+}
+
+struct Divider: View, Equatable {
+    typealias Body = Never
 }

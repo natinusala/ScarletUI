@@ -156,7 +156,7 @@ class AnyView: CustomStringConvertible {
 /// A mounted view.
 /// Must be a class for the state setter / body refresh process: the mounted view needs to escape
 /// in the setter closure to be able to update itself (replace any changed child).
-class MountedView {
+class MountedView: CustomStringConvertible {
     var view: AnyView {
         didSet {
             // If the view changes, call body again and compare the new body node
@@ -178,6 +178,10 @@ class MountedView {
 
     init(view: AnyView) {
         self.view = view
+    }
+
+    var description: String {
+        return String(describing: self.view.viewType)
     }
 }
 

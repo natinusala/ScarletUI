@@ -63,8 +63,10 @@ extension Optional: View, EquatableStruct, TreeNodeMetadata where Wrapped: View 
             case let (.some(view), .some(previous)):
                 return Wrapped.makeViews(view: view, previous: previous)
             // Some to none -> remove the view
-            case (.none, .some):
-                return ViewOperations(removals: [ViewRemoval(position: 0)])
+            case let (.none, .some(view)):
+                // Remove every view from 0 to wrapped views count
+                let toRemoveCount = Wrapped.viewsCount(view: view)
+                return ViewOperations(removals: Array(0..<toRemoveCount).map { ViewRemoval(position: $0) })
             // None to some -> call `makeViews` recursively without a previous node to have an insert operation
             case let (.some(view), .none):
                 return Wrapped.makeViews(view: view, previous: nil)
