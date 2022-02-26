@@ -33,10 +33,202 @@ let cases: [ReconcilationTestCase.Type] = [
     OffsetsTestCase.self,
     OptionalUpdateTestCase.self,
     OptionalInsertionTestCase.self,
-    OptionalDeletionTestCase.self,
+    OptionalRemovalTestCase.self,
+    NestedOptionalInsertionTestCase.self,
+    NestedOptionalRemovalTestCase.self,
+    NestedOptionalUpdateTestCase.self,
 ]
 
-/// Tests insertions, deletions and updates on large tuple views to test
+/// Tests nesting optionals: insert views in the middle of a
+/// tuple view, itself inside an optional.
+struct NestedOptionalInsertionTestCase: ReconcilationTestCase {
+    struct TestView: View, Equatable {
+        var fillColumn = true
+        var full: Bool
+
+        var body: some View {
+            Column {
+                if fillColumn {
+                    Text("Text 1")
+                    Text("Text 2")
+
+                    if full {
+                        Text("Text 3")
+                        Text("Text 4")
+                    }
+
+                    Text("Last text")
+                }
+            }
+        }
+    }
+
+    static var initialView: TestView {
+        TestView(full: false)
+    }
+
+    static var expectedInitialTree: some View {
+        Column {
+            if true {
+                Text("Text 1")
+                Text("Text 2")
+
+                if false {
+                    Text("Text 3")
+                    Text("Text 4")
+                }
+
+                Text("Last text")
+            }
+        }
+    }
+
+    static var updatedView: TestView {
+        TestView(full: true)
+    }
+
+    static var expectedUpdatedTree: some View {
+        Column {
+            if true {
+                Text("Text 1")
+                Text("Text 2")
+
+                if true {
+                    Text("Text 3")
+                    Text("Text 4")
+                }
+
+                Text("Last text")
+            }
+        }
+    }
+}
+
+/// Tests nesting optionals: insert views in the middle of a
+/// tuple view, itself inside an optional.
+struct NestedOptionalUpdateTestCase: ReconcilationTestCase {
+    struct TestView: View, Equatable {
+        var fillColumn = true
+        var full: Bool
+
+        var body: some View {
+            Column {
+                if fillColumn {
+                    Text("Text 1")
+                    Text("Text 2")
+
+                    Text(full ? "Full Text 3" : "Text 3")
+                    Text(full ? "Full Text 4" : "Text 4")
+
+                    Text("Last text")
+                }
+            }
+        }
+    }
+
+    static var initialView: TestView {
+        TestView(full: false)
+    }
+
+    static var expectedInitialTree: some View {
+        Column {
+            if true {
+                Text("Text 1")
+                Text("Text 2")
+
+                Text("Text 3")
+                Text("Text 4")
+
+                Text("Last text")
+            }
+        }
+    }
+
+    static var updatedView: TestView {
+        TestView(full: true)
+    }
+
+    static var expectedUpdatedTree: some View {
+        Column {
+            if true {
+                Text("Text 1")
+                Text("Text 2")
+
+                Text("Full Text 3")
+                Text("Full Text 4")
+
+                Text("Last text")
+            }
+        }
+    }
+}
+
+/// Tests nesting optionals: removed views in the middle of a
+/// tuple view, itself inside an optional.
+struct NestedOptionalRemovalTestCase: ReconcilationTestCase {
+    struct TestView: View, Equatable {
+        var fillColumn = true
+        var full: Bool
+
+        var body: some View {
+            Column {
+                if fillColumn {
+                    Text("Text 1")
+                    Text("Text 2")
+
+                    if full {
+                        Text("Text 3")
+                        Text("Text 4")
+                    }
+
+                    Text("Last text")
+                }
+            }
+        }
+    }
+
+    static var initialView: TestView {
+        TestView(full: true)
+    }
+
+    static var expectedInitialTree: some View {
+        Column {
+            if true {
+                Text("Text 1")
+                Text("Text 2")
+
+                if true {
+                    Text("Text 3")
+                    Text("Text 4")
+                }
+
+                Text("Last text")
+            }
+        }
+    }
+
+    static var updatedView: TestView {
+        TestView(full: false)
+    }
+
+    static var expectedUpdatedTree: some View {
+        Column {
+            if true {
+                Text("Text 1")
+                Text("Text 2")
+
+                if false {
+                    Text("Text 3")
+                    Text("Text 4")
+                }
+
+                Text("Last text")
+            }
+        }
+    }
+}
+
+/// Tests insertions, removals and updates on large tuple views to test
 /// the offset mechanism on tuple views, optionals and conditionals.
 /// TODO: add if / elses somewhere to test conditionals once they are implemented
 struct OffsetsTestCase: ReconcilationTestCase {
@@ -461,7 +653,7 @@ struct OptionalInsertionTestCase: ReconcilationTestCase {
 }
 
 /// Test case for a view that has an optional part in its body that gets inserted.
-struct OptionalDeletionTestCase: ReconcilationTestCase {
+struct OptionalRemovalTestCase: ReconcilationTestCase {
     struct TestView: View, Equatable {
         var hasImageRow: Bool
 
