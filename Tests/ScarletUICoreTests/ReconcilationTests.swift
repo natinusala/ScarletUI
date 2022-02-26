@@ -30,15 +30,16 @@ import Nimble
 let cases: [ReconcilationTestCase.Type] = [
     NoInputTestCase.self,
     UpdateTestCase.self,
-    TupleViewOffsetsTestCase.self,
+    OffsetsTestCase.self,
     OptionalUpdateTestCase.self,
     OptionalInsertionTestCase.self,
     OptionalDeletionTestCase.self,
 ]
 
 /// Tests insertions, deletions and updates on large tuple views to test
-/// the offset mechanism.
-struct TupleViewOffsetsTestCase: ReconcilationTestCase {
+/// the offset mechanism on tuple views, optionals and conditionals.
+/// TODO: add if / elses somewhere to test conditionals once they are implemented
+struct OffsetsTestCase: ReconcilationTestCase {
     struct TestView: View, Equatable {
         var detailed: Bool
 
@@ -47,7 +48,7 @@ struct TupleViewOffsetsTestCase: ReconcilationTestCase {
                 // Header
                 Row {
                     Image(source: "mainLogo.png")
-                    Text("App Title")
+                    Text(detailed ? "App Title (debug)" : "App Title")
 
                     Divider()
 
@@ -89,9 +90,9 @@ struct TupleViewOffsetsTestCase: ReconcilationTestCase {
 
                 // Footer
                 Row {
-                    Text("Keyboard / Mouse")
-                    Text("A: OK")
-                    Text("B: Back")
+                    Text(detailed ? "Controller 1: Keyboard / Mouse" : "Keyboard / Mouse")
+                    Text(detailed ?  "P1 A: OK" : "A: OK")
+                    Text(detailed ?  "P1 B: Back" : "B: Back")
                 }
 
                 // Debug bar
@@ -184,7 +185,7 @@ struct TupleViewOffsetsTestCase: ReconcilationTestCase {
             // Header
             Row {
                 Image(source: "mainLogo.png")
-                Text("App Title")
+                Text("App Title (debug)")
 
                 Divider()
 
@@ -226,9 +227,9 @@ struct TupleViewOffsetsTestCase: ReconcilationTestCase {
 
             // Footer
             Row {
-                Text("Keyboard / Mouse")
-                Text("A: OK")
-                Text("B: Back")
+                Text("Controller 1: Keyboard / Mouse")
+                Text("P1 A: OK")
+                Text("P1 B: Back")
             }
 
             // Debug bar
