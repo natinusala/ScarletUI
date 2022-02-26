@@ -32,6 +32,7 @@ let cases: [ReconcilationTestCase.Type] = [
     OptionalInsertionTestCase.self,
     OptionalDeletionTestCase.self,
     UpdateTestCase.self,
+    OptionalUpdateTestCase.self,
 ]
 
 /// Checks that the views are updated.
@@ -118,6 +119,67 @@ struct NoInputTestCase: ReconcilationTestCase {
         Column {
             Row {
                 Image(source: "http://website.com/picture.png")
+            }
+            Row {
+                Text("Text 1")
+                Text("Text 2")
+                Text("Text 3")
+            }
+        }
+    }
+}
+
+/// Test case for a view that has an optional part in its body that gets updated.
+struct OptionalUpdateTestCase: ReconcilationTestCase {
+    struct TestView: View, Equatable {
+        var hasImageRow: Bool
+        var imageUrl: String
+
+        var body: some View {
+            Column {
+                if hasImageRow {
+                    Row {
+                        Image(source: imageUrl)
+                    }
+                }
+                Row {
+                    Text("Text 1")
+                    Text("Text 2")
+                    Text("Text 3")
+                }
+            }
+        }
+    }
+
+    static var initialView: TestView {
+        TestView(hasImageRow: true, imageUrl: "http://website.com/picture.png")
+    }
+
+    static var expectedInitialTree: some View {
+        Column {
+            if true {
+                Row {
+                    Image(source: "http://website.com/picture.png")
+                }
+            }
+            Row {
+                Text("Text 1")
+                Text("Text 2")
+                Text("Text 3")
+            }
+        }
+    }
+
+    static var updatedView: TestView {
+        TestView(hasImageRow: true, imageUrl: "http://anotherwebsite.net/picture2.png")
+    }
+
+    static var expectedUpdatedTree: some View {
+        Column {
+            if true {
+                Row {
+                    Image(source: "http://anotherwebsite.net/picture2.png")
+                }
             }
             Row {
                 Text("Text 1")
