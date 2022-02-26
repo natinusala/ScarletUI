@@ -160,9 +160,13 @@ class MountedView {
     var view: AnyView {
         didSet {
             // If the view changes, call body again and compare the new body node
-            // with the previous one
-            let newBody = self.view.body
-            self.children?.update(next: newBody)
+            // with the previous one (unless the view is a leaf node)
+            if view.isLeaf {
+                self.children = nil
+            } else {
+                let newBody = self.view.body
+                self.children?.update(next: newBody)
+            }
         }
     }
 

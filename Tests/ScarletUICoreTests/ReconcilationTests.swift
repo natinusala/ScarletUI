@@ -24,17 +24,60 @@ import Nimble
 
 // TODO: use a mock on the implementation to see if `update()`, `insert()` and `remove()` are called (remember to test that unnecessary updates are not performed if the view is equal)
 
-// TODO: check update (use a if inside Image(...) to change the URL)
+// TODO: check every case (insert, remove, update) for optional, tupleview, conditional... as well as more complicated cases to check offsets
 
 /// Add every test case here
 let cases: [ReconcilationTestCase.Type] = [
-    NoInputTest.self,
-    OptionalInsertionTest.self,
-    OptionalDeletionTest.self,
+    NoInputTestCase.self,
+    OptionalInsertionTestCase.self,
+    OptionalDeletionTestCase.self,
+    UpdateTestCase.self,
 ]
 
+/// Checks that the views are updated.
+struct UpdateTestCase: ReconcilationTestCase {
+    struct TestView: View, Equatable {
+        var urlPrefix: String
+
+        var body: some View {
+            Column {
+                Image(source: urlPrefix + "1")
+                Image(source: urlPrefix + "2")
+                Image(source: urlPrefix + "3")
+                Image(source: "static")
+            }
+        }
+    }
+
+    static var initialView: TestView {
+        TestView(urlPrefix: "url")
+    }
+
+    static var expectedInitialTree: some View {
+        Column {
+            Image(source: "url1")
+            Image(source: "url2")
+            Image(source: "url3")
+            Image(source: "static")
+        }
+    }
+
+    static var updatedView: TestView {
+        TestView(urlPrefix: "file")
+    }
+
+    static var expectedUpdatedTree: some View {
+        Column {
+            Image(source: "file1")
+            Image(source: "file2")
+            Image(source: "file3")
+            Image(source: "static")
+        }
+    }
+}
+
 /// Test case for a view that has no input and therefore cannot change.
-struct NoInputTest: ReconcilationTestCase {
+struct NoInputTestCase: ReconcilationTestCase {
     struct TestView: View, Equatable {
         var body: some View {
             Column {
@@ -86,7 +129,7 @@ struct NoInputTest: ReconcilationTestCase {
 }
 
 /// Test case for a view that has an optional part in its body that gets inserted.
-struct OptionalInsertionTest: ReconcilationTestCase {
+struct OptionalInsertionTestCase: ReconcilationTestCase {
     struct TestView: View, Equatable {
         var hasImageRow: Bool
 
@@ -146,7 +189,7 @@ struct OptionalInsertionTest: ReconcilationTestCase {
 }
 
 /// Test case for a view that has an optional part in its body that gets inserted.
-struct OptionalDeletionTest: ReconcilationTestCase {
+struct OptionalDeletionTestCase: ReconcilationTestCase {
     struct TestView: View, Equatable {
         var hasImageRow: Bool
 

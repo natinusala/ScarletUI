@@ -15,6 +15,7 @@
 */
 
 import Quick
+import Backtrace
 
 // Add every test target here
 @testable import ScarletUICoreTests
@@ -28,6 +29,7 @@ let specs: [QuickSpec.Type] = [
 @main
 struct Main {
     public static func main() {
+        Backtrace.install()
         QCKMain(specs)
     }
 }
