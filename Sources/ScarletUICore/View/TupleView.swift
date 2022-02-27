@@ -40,7 +40,7 @@ struct TupleView2<C0, C1>: View where C0: View, C1: View {
     }
 
     static func viewsCount(view: Self) -> Int {
-        return 2
+        return C0.viewsCount(view: view.c0) + C1.viewsCount(view: view.c1)
     }
 
     static func equals(lhs: Self, rhs: Self) -> Bool {
@@ -89,7 +89,7 @@ struct TupleView3<C0, C1, C2>: View where C0: View, C1: View, C2: View {
     }
 
     static func viewsCount(view: Self) -> Int {
-        return 3
+        return C0.viewsCount(view: view.c0) + C1.viewsCount(view: view.c1) + C2.viewsCount(view: view.c2)
     }
 
     static func equals(lhs: Self, rhs: Self) -> Bool {
@@ -146,7 +146,7 @@ struct TupleView4<C0, C1, C2, C3>: View where C0: View, C1: View, C2: View, C3: 
     }
 
     static func viewsCount(view: Self) -> Int {
-        return 4
+        return C0.viewsCount(view: view.c0) + C1.viewsCount(view: view.c1) + C2.viewsCount(view: view.c2) + C3.viewsCount(view: view.c3)
     }
 
     static func equals(lhs: Self, rhs: Self) -> Bool {
@@ -211,7 +211,7 @@ struct TupleView5<C0, C1, C2, C3, C4>: View where C0: View, C1: View, C2: View, 
     }
 
     static func viewsCount(view: Self) -> Int {
-        return 5
+        return C0.viewsCount(view: view.c0) + C1.viewsCount(view: view.c1) + C2.viewsCount(view: view.c2) + C3.viewsCount(view: view.c3) + C4.viewsCount(view: view.c4)
     }
 
     static func equals(lhs: Self, rhs: Self) -> Bool {
@@ -284,7 +284,7 @@ struct TupleView6<C0, C1, C2, C3, C4, C5>: View where C0: View, C1: View, C2: Vi
     }
 
     static func viewsCount(view: Self) -> Int {
-        return 6
+        return C0.viewsCount(view: view.c0) + C1.viewsCount(view: view.c1) + C2.viewsCount(view: view.c2) + C3.viewsCount(view: view.c3) + C4.viewsCount(view: view.c4) + C5.viewsCount(view: view.c5)
     }
 
     static func equals(lhs: Self, rhs: Self) -> Bool {
@@ -365,7 +365,7 @@ struct TupleView7<C0, C1, C2, C3, C4, C5, C6>: View where C0: View, C1: View, C2
     }
 
     static func viewsCount(view: Self) -> Int {
-        return 7
+        return C0.viewsCount(view: view.c0) + C1.viewsCount(view: view.c1) + C2.viewsCount(view: view.c2) + C3.viewsCount(view: view.c3) + C4.viewsCount(view: view.c4) + C5.viewsCount(view: view.c5) + C6.viewsCount(view: view.c6)
     }
 
     static func equals(lhs: Self, rhs: Self) -> Bool {
@@ -454,7 +454,7 @@ struct TupleView8<C0, C1, C2, C3, C4, C5, C6, C7>: View where C0: View, C1: View
     }
 
     static func viewsCount(view: Self) -> Int {
-        return 8
+        return C0.viewsCount(view: view.c0) + C1.viewsCount(view: view.c1) + C2.viewsCount(view: view.c2) + C3.viewsCount(view: view.c3) + C4.viewsCount(view: view.c4) + C5.viewsCount(view: view.c5) + C6.viewsCount(view: view.c6) + C7.viewsCount(view: view.c7)
     }
 
     static func equals(lhs: Self, rhs: Self) -> Bool {
@@ -551,7 +551,7 @@ struct TupleView9<C0, C1, C2, C3, C4, C5, C6, C7, C8>: View where C0: View, C1: 
     }
 
     static func viewsCount(view: Self) -> Int {
-        return 9
+        return C0.viewsCount(view: view.c0) + C1.viewsCount(view: view.c1) + C2.viewsCount(view: view.c2) + C3.viewsCount(view: view.c3) + C4.viewsCount(view: view.c4) + C5.viewsCount(view: view.c5) + C6.viewsCount(view: view.c6) + C7.viewsCount(view: view.c7) + C8.viewsCount(view: view.c8)
     }
 
     static func equals(lhs: Self, rhs: Self) -> Bool {
@@ -656,7 +656,7 @@ struct TupleView10<C0, C1, C2, C3, C4, C5, C6, C7, C8, C9>: View where C0: View,
     }
 
     static func viewsCount(view: Self) -> Int {
-        return 10
+        return C0.viewsCount(view: view.c0) + C1.viewsCount(view: view.c1) + C2.viewsCount(view: view.c2) + C3.viewsCount(view: view.c3) + C4.viewsCount(view: view.c4) + C5.viewsCount(view: view.c5) + C6.viewsCount(view: view.c6) + C7.viewsCount(view: view.c7) + C8.viewsCount(view: view.c8) + C9.viewsCount(view: view.c9)
     }
 
     static func equals(lhs: Self, rhs: Self) -> Bool {

@@ -23,7 +23,7 @@ import Backtrace
 // Add every spec file here
 let specs: [QuickSpec.Type] = [
     // ScarletUICoreTests
-    ReconcilationSpecs.self,
+    BodyNodeSpecs.self,
 ]
 
 @main

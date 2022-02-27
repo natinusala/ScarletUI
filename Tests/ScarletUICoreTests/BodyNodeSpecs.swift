@@ -26,11 +26,15 @@ import Nimble
 
 // TODO: check every case (insert, remove, update) for optional, tupleview, conditional... as well as more complicated cases to check offsets
 
+// TODO: Try to cover every case as best as possible then make a Python fuzzy tester that makes countless random test cases (in its own folder, one file per case, gitignored) -> every failing test has to be included here in its own test case for fixing
+
 /// Add every test case here
-let cases: [ReconcilationTestCase.Type] = [
+let cases: [BodyNodeTestCase.Type] = [
+    // Generic cases
     NoInputTestCase.self,
     UpdateTestCase.self,
     OffsetsTestCase.self,
+    // Optional cases
     OptionalUpdateTestCase.self,
     OptionalInsertionTestCase.self,
     OptionalRemovalTestCase.self,
@@ -38,11 +42,163 @@ let cases: [ReconcilationTestCase.Type] = [
     NestedOptionalInsertionTestCase.self,
     NestedOptionalRemovalTestCase.self,
     NestedOptionalUpdateTestCase.self,
+    // Conditional cases
+    UnbalancedConditional.self,
+    ConditionalRemoveOptional.self,
 ]
+
+/// Tests a conditional with an optional in the conditional cases that gets removed.
+struct ConditionalRemoveOptional: BodyNodeTestCase {
+    struct TestView: View, Equatable {
+        var flip: Bool
+        let constant = false
+
+        var body: some View {
+            Column {
+                if flip {
+                    Text("Text 1")
+
+                    if constant {
+                        Text("Text 1.2")
+                        Text("Text 1.3")
+                        Text("Text 1.4")
+                    }
+
+                    Text("Text 2")
+                } else {
+                    Row {
+                        Image(source: "user-icon")
+                        Text("Log in")
+                    }
+                }
+            }
+        }
+    }
+
+    static var initialView: TestView {
+        TestView(flip: true)
+    }
+
+    static var expectedInitialTree: some View {
+        Column {
+            if true {
+                Text("Text 1")
+
+                if false {
+                    Text("Text 1.2")
+                    Text("Text 1.3")
+                    Text("Text 1.4")
+                }
+
+                Text("Text 2")
+            } else {
+                Row {
+                    Image(source: "user-icon")
+                    Text("Log in")
+                }
+            }
+        }
+    }
+
+    static var updatedView: TestView {
+        TestView(flip: false)
+    }
+
+    static  var expectedUpdatedTree: some View {
+        Column {
+            if false {
+                Text("Text 1")
+
+                if false {
+                    Text("Text 1.2")
+                    Text("Text 1.3")
+                    Text("Text 1.4")
+                }
+
+                Text("Text 2")
+            } else {
+                Row {
+                    Image(source: "user-icon")
+                    Text("Log in")
+                }
+            }
+        }
+    }
+}
+
+/// Tests an "unbalanced" conditional where there are more views on one side
+/// than there are on the other, with entirely different types.
+struct UnbalancedConditional: BodyNodeTestCase {
+    struct TestView: View, Equatable {
+        var flip: Bool
+
+        var body: some View {
+            Row {
+                if flip {
+                    Text("Text 1")
+                    Text("Text 2")
+                    Text("Text 3")
+                } else {
+                    Image(source: "pic1.webp")
+                    Image(source: "pic2.webp")
+
+                    Column {
+                        Text("Text 2.1")
+                        Text("Text 2.2")
+                    }
+                }
+            }
+        }
+    }
+
+    static var initialView: TestView {
+        TestView(flip: false)
+    }
+
+    static var expectedInitialTree: some View {
+        Row {
+            if false {
+                Text("Text 1")
+                Text("Text 2")
+                Text("Text 3")
+            } else {
+                Image(source: "pic1.webp")
+                Image(source: "pic2.webp")
+
+                Column {
+                    Text("Text 2.1")
+                    Text("Text 2.2")
+                }
+            }
+        }
+    }
+
+    static var updatedView: TestView {
+        TestView(flip: true)
+    }
+
+    static var expectedUpdatedTree: some View {
+        Row {
+            if true {
+                Text("Text 1")
+                Text("Text 2")
+                Text("Text 3")
+            } else {
+                Image(source: "pic1.webp")
+                Image(source: "pic2.webp")
+
+                Column {
+                    Text("Text 2.1")
+                    Text("Text 2.2")
+                }
+            }
+        }
+    }
+}
 
 /// Tests nesting optionals: insert views in the middle of a
 /// tuple view, itself inside an optional.
-struct NestedOptionalInsertionTestCase: ReconcilationTestCase {
+struct NestedOptionalInsertionTestCase: BodyNodeTestCase {
     struct TestView: View, Equatable {
         var fillColumn = true
         var full: Bool
@@ -107,7 +263,7 @@ struct NestedOptionalInsertionTestCase: ReconcilationTestCase {
 
 /// Tests nesting optionals: insert views in the middle of a
 /// tuple view, itself inside an optional.
-struct NestedOptionalUpdateTestCase: ReconcilationTestCase {
+struct NestedOptionalUpdateTestCase: BodyNodeTestCase {
     struct TestView: View, Equatable {
         var fillColumn = true
         var full: Bool
@@ -166,7 +322,7 @@ struct NestedOptionalUpdateTestCase: ReconcilationTestCase {
 
 /// Tests nesting optionals: removed views in the middle of a
 /// tuple view, itself inside an optional.
-struct NestedOptionalRemovalTestCase: ReconcilationTestCase {
+struct NestedOptionalRemovalTestCase: BodyNodeTestCase {
     struct TestView: View, Equatable {
         var fillColumn = true
         var full: Bool
@@ -232,7 +388,7 @@ struct NestedOptionalRemovalTestCase: ReconcilationTestCase {
 /// Tests insertions, removals and updates on large tuple views to test
 /// the offset mechanism on tuple views, optionals and conditionals.
 /// TODO: add if / elses somewhere to test conditionals once they are implemented
-struct OffsetsTestCase: ReconcilationTestCase {
+struct OffsetsTestCase: BodyNodeTestCase {
     struct TestView: View, Equatable {
         var detailed: Bool
 
@@ -439,7 +595,7 @@ struct OffsetsTestCase: ReconcilationTestCase {
 }
 
 /// Checks that the views are updated.
-struct UpdateTestCase: ReconcilationTestCase {
+struct UpdateTestCase: BodyNodeTestCase {
     struct TestView: View, Equatable {
         var urlPrefix: String
 
@@ -481,7 +637,7 @@ struct UpdateTestCase: ReconcilationTestCase {
 }
 
 /// Test case for a view that has no input and therefore cannot change.
-struct NoInputTestCase: ReconcilationTestCase {
+struct NoInputTestCase: BodyNodeTestCase {
     struct TestView: View, Equatable {
         var body: some View {
             Column {
@@ -533,7 +689,7 @@ struct NoInputTestCase: ReconcilationTestCase {
 }
 
 /// Test case for a view that has an optional part in its body that gets updated.
-struct OptionalUpdateTestCase: ReconcilationTestCase {
+struct OptionalUpdateTestCase: BodyNodeTestCase {
     struct TestView: View, Equatable {
         var hasImageRow: Bool
         var imageUrl: String
@@ -594,7 +750,7 @@ struct OptionalUpdateTestCase: ReconcilationTestCase {
 }
 
 /// Test case for a view that has an optional part in its body that does not get updated.
-struct OptionalUnchangedTest: ReconcilationTestCase {
+struct OptionalUnchangedTest: BodyNodeTestCase {
     struct TestView: View, Equatable {
         var hasImageRow: Bool
 
@@ -651,7 +807,7 @@ struct OptionalUnchangedTest: ReconcilationTestCase {
 }
 
 /// Test case for a view that has an optional part in its body that gets inserted.
-struct OptionalInsertionTestCase: ReconcilationTestCase {
+struct OptionalInsertionTestCase: BodyNodeTestCase {
     struct TestView: View, Equatable {
         var hasImageRow: Bool
 
@@ -711,7 +867,7 @@ struct OptionalInsertionTestCase: ReconcilationTestCase {
 }
 
 /// Test case for a view that has an optional part in its body that gets inserted.
-struct OptionalRemovalTestCase: ReconcilationTestCase {
+struct OptionalRemovalTestCase: BodyNodeTestCase {
     struct TestView: View, Equatable {
         var hasImageRow: Bool
 
@@ -773,10 +929,10 @@ struct OptionalRemovalTestCase: ReconcilationTestCase {
 /// Tests for the "reconcilation" process, aka. evaluating a view's body and applying changes when its inputs change.
 /// Each test takes an initial view, constructs the initial tree and controls it. Then the
 /// view input is changed, the body is re-evaluated and the resulting tree is controlled.
-class ReconcilationSpecs: QuickSpec {
+class BodyNodeSpecs: QuickSpec {
     override func spec() {
         for testCase in cases {
-            describe("\(testCase)") {
+            describe("body node for \(testCase)") {
                 it("creates the initial view tree") {
                     var node = testCase.initialViewBodyNode
                     node.initialMount()
@@ -808,7 +964,7 @@ class ReconcilationSpecs: QuickSpec {
     }
 }
 
-protocol ReconcilationTestCase {
+protocol BodyNodeTestCase {
     /// The type of the view tested in this test case.
     associatedtype TestedView: View
 
@@ -831,7 +987,7 @@ protocol ReconcilationTestCase {
     static var expectedUpdatedTree: UpdatedTree { get }
 }
 
-extension ReconcilationTestCase {
+extension BodyNodeTestCase {
     /// Creates the body node for the initial view's body for this test case
     /// (not the initial view itself, but its body).
     static var initialViewBodyNode: BodyNode {

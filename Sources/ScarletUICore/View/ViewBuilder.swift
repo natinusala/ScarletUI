@@ -32,4 +32,14 @@ struct ViewBuilder {
     static func buildBlock<Content: View>(_ content: Content) -> Content {
         return content
     }
+
+    /// Builds a block for a conditional view with first content.
+    static func buildEither<FirstContent, SecondContent>(first: FirstContent) -> ConditionalView<FirstContent, SecondContent> {
+        return .init(storage: .first(first))
+    }
+
+    /// Builds a block for a conditional view.
+    static func buildEither<FirstContent, SecondContent>(second: SecondContent) -> ConditionalView<FirstContent, SecondContent> {
+        return .init(storage: .second(second))
+    }
 }

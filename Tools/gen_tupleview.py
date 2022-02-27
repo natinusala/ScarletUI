@@ -46,7 +46,7 @@ def gen_viewcount(i: int) -> list:
     """Generate `viewCount` method for the given tuple view index."""
     return [
         "    static func viewsCount(view: Self) -> Int {",
-        f"        return {i}",
+        f"        return {' + '.join([f'C{ci}.viewsCount(view: view.c{ci})' for ci in range(0, i)])}",
         "    }"
     ]
 
