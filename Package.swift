@@ -1,6 +1,6 @@
 // swift-tools-version: 5.6
 
-/**
+/*
    Copyright 2022 natinusala
 
    Licensed under the Apache License, Version 2.0 (the "License");

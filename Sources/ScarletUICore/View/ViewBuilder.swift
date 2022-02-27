@@ -14,22 +14,22 @@
    limitations under the License.
 */
 
-import Quick
-import Backtrace
+/// Result builder for a view's body.
+@resultBuilder
+struct ViewBuilder {
+    /// Builds a block for an empty view. Returns an optional view with `nil` as value.
+    static func buildBlock() -> View? {
+        return nil
+    }
 
-// Add every test target here
-@testable import ScarletUICoreTests
+    /// Builds a block for an optional view. Can return the optional view directly thanks
+    /// to the `Optional` extension.
+    static func buildIf<Content: View>(_ content: Content?) -> Content? {
+        return content
+    }
 
-// Add every spec file here
-let specs: [QuickSpec.Type] = [
-    // ScarletUICoreTests
-    ReconcilationSpecs.self,
-]
-
-@main
-struct Main {
-    public static func main() {
-        Backtrace.install()
-        QCKMain(specs)
+    /// Builds a block for a single view.
+    static func buildBlock<Content: View>(_ content: Content) -> Content {
+        return content
     }
 }

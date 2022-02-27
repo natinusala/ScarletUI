@@ -1,4 +1,4 @@
-/**
+/*
    Copyright 2022 natinusala
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,29 +13,6 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-
-// This file contains every struct to describe a view's body (except for TupleView that's generated in a separate file),
-// as well as the result builder to glue everything together.
-
-/// Result builder for a view's body.
-@resultBuilder
-struct ViewBuilder {
-    /// Builds a block for an empty view. Returns an optional view with `nil` as value.
-    static func buildBlock() -> View? {
-        return nil
-    }
-
-    /// Builds a block for an optional view. Can return the optional view directly thanks
-    /// to the `Optional` extension.
-    static func buildIf<Content: View>(_ content: Content?) -> Content? {
-        return content
-    }
-
-    /// Builds a block for a single view.
-    static func buildBlock<Content: View>(_ content: Content) -> Content {
-        return content
-    }
-}
 
 /// `Optional` extension to add `View` conformance.
 extension Optional: View, EquatableStruct, TreeNodeMetadata where Wrapped: View {
@@ -93,3 +70,4 @@ extension Optional: View, EquatableStruct, TreeNodeMetadata where Wrapped: View 
         }
     }
 }
+
