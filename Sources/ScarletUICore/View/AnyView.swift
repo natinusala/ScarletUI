@@ -16,6 +16,7 @@
 
 /// A type-erased view, used internally to access a view's properties.
 /// TODO: needs to be a class to prevent duplications between `body` and `children` inside `BodyNode`.
+/// TODO: rename to remove ambiguity with actual "AnyView" struct?
 class AnyView: CustomStringConvertible {
     var view: TreeNodeMetadata
     var viewType: Any.Type

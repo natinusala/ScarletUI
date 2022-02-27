@@ -17,9 +17,9 @@
 /// Result builder for a view's body.
 @resultBuilder
 struct ViewBuilder {
-    /// Builds a block for an empty view. Returns an optional view with `nil` as value.
-    static func buildBlock() -> View? {
-        return nil
+    /// Builds a block for an empty view. Returns an empty view.
+    static func buildBlock() -> EmptyView {
+        return EmptyView()
     }
 
     /// Builds a block for an optional view. Can return the optional view directly thanks

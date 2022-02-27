@@ -34,6 +34,7 @@ let cases: [ReconcilationTestCase.Type] = [
     OptionalUpdateTestCase.self,
     OptionalInsertionTestCase.self,
     OptionalRemovalTestCase.self,
+    OptionalUnchangedTest.self,
     NestedOptionalInsertionTestCase.self,
     NestedOptionalRemovalTestCase.self,
     NestedOptionalUpdateTestCase.self,
@@ -588,6 +589,63 @@ struct OptionalUpdateTestCase: ReconcilationTestCase {
                 Text("Text 2")
                 Text("Text 3")
             }
+        }
+    }
+}
+
+/// Test case for a view that has an optional part in its body that does not get updated.
+struct OptionalUnchangedTest: ReconcilationTestCase {
+    struct TestView: View, Equatable {
+        var hasImageRow: Bool
+
+        var body: some View {
+            Column {
+                if hasImageRow {
+                    Row {
+                        Image(source: "http://perdu.com/picture7-887.jpg")
+                    }
+                }
+                if !hasImageRow {
+                    Text("Image unavailable")
+                }
+                Column {}
+            }
+        }
+    }
+
+    static var initialView: TestView {
+        TestView(hasImageRow: true)
+    }
+
+    static var expectedInitialTree: some View {
+        Column {
+            if true {
+                Row {
+                    Image(source: "http://perdu.com/picture7-887.jpg")
+                }
+            }
+            if false {
+                Text("Image unavailable")
+            }
+            Column {}
+        }
+    }
+
+    static var updatedView: TestView {
+        TestView(hasImageRow: true)
+    }
+
+    static var expectedUpdatedTree: some View {
+        Column {
+            if true {
+                Row {
+                    Image(source: "http://perdu.com/picture7-887.jpg")
+                }
+            }
+            if false {
+                Text("Image unavailable")
+            }
+            Column {}
         }
     }
 }
