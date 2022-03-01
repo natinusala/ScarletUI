@@ -48,7 +48,117 @@ let cases: [BodyNodeTestCase.Type] = [
     UnbalancedConditional.self,
     ConditionalRemoveOptional.self,
     ConditionalAddOptional.self,
+    EmptyFirstAddSecondConditional.self,
+    EmptyFirstRemoveSecondConditional.self,
 ]
+
+/// Tests a conditional view with an empty `if` clause (remove `else` views).
+struct EmptyFirstRemoveSecondConditional: BodyNodeTestCase {
+    struct TestView: View, Equatable {
+        var flip: Bool
+
+        var body: some View {
+            Column {
+                if flip {} else {
+                    Text("Text 1")
+                    Text("Text 2")
+
+                    Row {
+                        Image(source: "@banner-wide")
+                    }
+                }
+            }
+        }
+    }
+
+    static var initialView: TestView {
+        TestView(flip: false)
+    }
+
+    static var expectedInitialTree: some View {
+        Column {
+            if false {} else {
+                Text("Text 1")
+                Text("Text 2")
+
+                Row {
+                    Image(source: "@banner-wide")
+                }
+            }
+        }
+    }
+
+    static var updatedView: TestView {
+        TestView(flip: true)
+    }
+
+    static var expectedUpdatedTree: some View {
+        Column {
+            if true {} else {
+                Text("Text 1")
+                Text("Text 2")
+
+                Row {
+                    Image(source: "@banner-wide")
+                }
+            }
+        }
+    }
+}
+
+/// Tests a conditional view with an empty `if` clause (add `else` views).
+struct EmptyFirstAddSecondConditional: BodyNodeTestCase {
+    struct TestView: View, Equatable {
+        var flip: Bool
+
+        var body: some View {
+            Column {
+                if flip {} else {
+                    Text("Text 1")
+                    Text("Text 2")
+
+                    Row {
+                        Image(source: "@banner-wide")
+                    }
+                }
+            }
+        }
+    }
+
+    static var initialView: TestView {
+        TestView(flip: true)
+    }
+
+    static var expectedInitialTree: some View {
+        Column {
+            if true {} else {
+                Text("Text 1")
+                Text("Text 2")
+
+                Row {
+                    Image(source: "@banner-wide")
+                }
+            }
+        }
+    }
+
+    static var updatedView: TestView {
+        TestView(flip: true)
+    }
+
+    static var expectedUpdatedTree: some View {
+        Column {
+            if true {} else {
+                Text("Text 1")
+                Text("Text 2")
+
+                Row {
+                    Image(source: "@banner-wide")
+                }
+            }
+        }
+    }
+}
 
 /// Tests a conditional with an optional in the conditional cases that gets removed.
 struct ConditionalRemoveOptional: BodyNodeTestCase {
