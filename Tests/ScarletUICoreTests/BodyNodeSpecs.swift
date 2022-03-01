@@ -28,6 +28,8 @@ import Nimble
 
 // TODO: Try to cover every case as best as possible then make a Python fuzzy tester that makes countless random test cases (in its own folder, one file per case, gitignored) -> every failing test has to be included here in its own test case for fixing
 
+// TODO: tests with another internal view (no need for more than 3)
+
 /// Add every test case here
 let cases: [BodyNodeTestCase.Type] = [
     // Generic cases
@@ -45,6 +47,7 @@ let cases: [BodyNodeTestCase.Type] = [
     // Conditional cases
     UnbalancedConditional.self,
     ConditionalRemoveOptional.self,
+    ConditionalAddOptional.self,
 ]
 
 /// Tests a conditional with an optional in the conditional cases that gets removed.
@@ -107,6 +110,85 @@ struct ConditionalRemoveOptional: BodyNodeTestCase {
     static  var expectedUpdatedTree: some View {
         Column {
             if false {
+                Text("Text 1")
+
+                if false {
+                    Text("Text 1.2")
+                    Text("Text 1.3")
+                    Text("Text 1.4")
+                }
+
+                Text("Text 2")
+            } else {
+                Row {
+                    Image(source: "user-icon")
+                    Text("Log in")
+                }
+            }
+        }
+    }
+}
+
+/// Tests a conditional with an optional in the conditional cases that gets added.
+struct ConditionalAddOptional: BodyNodeTestCase {
+    struct TestView: View, Equatable {
+        var flip: Bool
+        let constant = false
+
+        var body: some View {
+            Column {
+                if flip {
+                    Text("Text 1")
+
+                    if constant {
+                        Text("Text 1.2")
+                        Text("Text 1.3")
+                        Text("Text 1.4")
+                    }
+
+                    Text("Text 2")
+                } else {
+                    Row {
+                        Image(source: "user-icon")
+                        Text("Log in")
+                    }
+                }
+            }
+        }
+    }
+
+    static var initialView: TestView {
+        TestView(flip: false)
+    }
+
+    static var expectedInitialTree: some View {
+        Column {
+            if false {
+                Text("Text 1")
+
+                if false {
+                    Text("Text 1.2")
+                    Text("Text 1.3")
+                    Text("Text 1.4")
+                }
+
+                Text("Text 2")
+            } else {
+                Row {
+                    Image(source: "user-icon")
+                    Text("Log in")
+                }
+            }
+        }
+    }
+
+    static var updatedView: TestView {
+        TestView(flip: true)
+    }
+
+    static  var expectedUpdatedTree: some View {
+        Column {
+            if true {
                 Text("Text 1")
 
                 if false {
