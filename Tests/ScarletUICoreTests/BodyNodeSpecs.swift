@@ -40,23 +40,23 @@ let cases: [BodyNodeTestCase.Type] = [
     OptionalUpdateTestCase.self,
     OptionalInsertionTestCase.self,
     OptionalRemovalTestCase.self,
-    OptionalUnchangedTest.self,
+    OptionalUnchangedTestCase.self,
     NestedOptionalInsertionTestCase.self,
     NestedOptionalRemovalTestCase.self,
     NestedOptionalUpdateTestCase.self,
     // Conditional casesw
-    UnbalancedConditional.self,
-    BalancedConditional.self,
-    ConditionalRemoveOptional.self,
-    ConditionalAddOptional.self,
-    EmptyFirstAddSecondConditional.self,
-    EmptyFirstRemoveSecondConditional.self,
-    EmptySecondAddFirstConditional.self,
-    EmptySecondRemoveFirstConditional.self,
+    UnbalancedConditionalTestCase.self,
+    BalancedConditionalTestCase.self,
+    ConditionalRemoveOptionalTestCase.self,
+    ConditionalAddOptionalTestCase.self,
+    EmptyFirstAddSecondConditionalTestCase.self,
+    EmptyFirstRemoveSecondConditionalTestCase.self,
+    EmptySecondAddFirstConditionalTestCase.self,
+    EmptySecondRemoveFirstConditionalTestCase.self,
 ]
 
 /// Tests that all views are removed and added in a "balanced" conditional.
-struct BalancedConditional: BodyNodeTestCase {
+struct BalancedConditionalTestCase: BodyNodeTestCase {
     struct TestView: View, Equatable {
         var flip: Bool
 
@@ -149,7 +149,7 @@ struct BalancedConditional: BodyNodeTestCase {
 }
 
 /// Tests a conditional view with an empty `else` clause (remove `if` views).
-struct EmptySecondRemoveFirstConditional: BodyNodeTestCase {
+struct EmptySecondRemoveFirstConditionalTestCase: BodyNodeTestCase {
     struct TestView: View, Equatable {
         var flip: Bool
 
@@ -203,7 +203,7 @@ struct EmptySecondRemoveFirstConditional: BodyNodeTestCase {
 }
 
 /// Tests a conditional view with an empty `else` clause (add `if` views).
-struct EmptySecondAddFirstConditional: BodyNodeTestCase {
+struct EmptySecondAddFirstConditionalTestCase: BodyNodeTestCase {
     struct TestView: View, Equatable {
         var flip: Bool
 
@@ -257,7 +257,7 @@ struct EmptySecondAddFirstConditional: BodyNodeTestCase {
 }
 
 /// Tests a conditional view with an empty `if` clause (remove `else` views).
-struct EmptyFirstRemoveSecondConditional: BodyNodeTestCase {
+struct EmptyFirstRemoveSecondConditionalTestCase: BodyNodeTestCase {
     struct TestView: View, Equatable {
         var flip: Bool
 
@@ -311,7 +311,7 @@ struct EmptyFirstRemoveSecondConditional: BodyNodeTestCase {
 }
 
 /// Tests a conditional view with an empty `if` clause (add `else` views).
-struct EmptyFirstAddSecondConditional: BodyNodeTestCase {
+struct EmptyFirstAddSecondConditionalTestCase: BodyNodeTestCase {
     struct TestView: View, Equatable {
         var flip: Bool
 
@@ -365,7 +365,7 @@ struct EmptyFirstAddSecondConditional: BodyNodeTestCase {
 }
 
 /// Tests a conditional with an optional in the conditional cases that gets removed.
-struct ConditionalRemoveOptional: BodyNodeTestCase {
+struct ConditionalRemoveOptionalTestCase: BodyNodeTestCase {
     struct TestView: View, Equatable {
         var flip: Bool
         let constant = false
@@ -444,7 +444,7 @@ struct ConditionalRemoveOptional: BodyNodeTestCase {
 }
 
 /// Tests a conditional with an optional in the conditional cases that gets added.
-struct ConditionalAddOptional: BodyNodeTestCase {
+struct ConditionalAddOptionalTestCase: BodyNodeTestCase {
     struct TestView: View, Equatable {
         var flip: Bool
         let constant = false
@@ -524,7 +524,7 @@ struct ConditionalAddOptional: BodyNodeTestCase {
 
 /// Tests an "unbalanced" conditional where there are more views on one side
 /// than there are on the other, with entirely different types.
-struct UnbalancedConditional: BodyNodeTestCase {
+struct UnbalancedConditionalTestCase: BodyNodeTestCase {
     struct TestView: View, Equatable {
         var flip: Bool
 
@@ -1146,7 +1146,7 @@ struct OptionalUpdateTestCase: BodyNodeTestCase {
 }
 
 /// Test case for a view that has an optional part in its body that does not get updated.
-struct OptionalUnchangedTest: BodyNodeTestCase {
+struct OptionalUnchangedTestCase: BodyNodeTestCase {
     struct TestView: View, Equatable {
         var hasImageRow: Bool
 
