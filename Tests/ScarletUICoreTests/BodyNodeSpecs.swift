@@ -22,13 +22,13 @@ import Nimble
 
 @testable import ScarletUICore
 
-// TODO: use a mock on the implementation to see if `update()`, `insert()` and `remove()` are called (remember to test that unnecessary updates are not performed if the view is equal)
+// TODO: Use a mock on the implementation to see if `update()`, `insert()` and `remove()` are called (remember to test that unnecessary updates are not performed if the view is equal)
 
-// TODO: check every case (insert, remove, update) for optional, tupleview, conditional... as well as more complicated cases to check offsets
+// TODO: Check every case (insert, remove, update) for optional, tupleview, conditional... as well as more complicated cases to check offsets
 
 // TODO: Try to cover every case as best as possible then make a Python fuzzy tester that makes countless random test cases (in its own folder, one file per case, gitignored) -> every failing test has to be included here in its own test case for fixing
 
-// TODO: tests with another internal view (no need for more than 3)
+// TODO: Tests with another internal view (no need for more than 3), tests with nested conditionals (else ifs)
 
 /// Add every test case here
 let cases: [BodyNodeTestCase.Type] = [
@@ -44,13 +44,217 @@ let cases: [BodyNodeTestCase.Type] = [
     NestedOptionalInsertionTestCase.self,
     NestedOptionalRemovalTestCase.self,
     NestedOptionalUpdateTestCase.self,
-    // Conditional cases
+    // Conditional casesw
     UnbalancedConditional.self,
+    BalancedConditional.self,
     ConditionalRemoveOptional.self,
     ConditionalAddOptional.self,
     EmptyFirstAddSecondConditional.self,
     EmptyFirstRemoveSecondConditional.self,
+    EmptySecondAddFirstConditional.self,
+    EmptySecondRemoveFirstConditional.self,
 ]
+
+/// Tests that all views are removed and added in a "balanced" conditional.
+struct BalancedConditional: BodyNodeTestCase {
+    struct TestView: View, Equatable {
+        var flip: Bool
+
+        var body: some View {
+            Row {
+                if flip {
+                    Text("Text 1")
+                    Text("Text 2")
+
+                    Image(source: "icon")
+
+                    Column {
+                        Text("Subtext 1")
+                        Text("Subtext 2")
+                    }
+                } else {
+                    Text("Label 1")
+                    Text("Label 2")
+
+                    Image(source: "logo")
+
+                    Column {
+                        Text("Subtitle 1")
+                        Text("Subtitle 2")
+                    }
+                }
+            }
+        }
+    }
+
+    static var initialView: TestView {
+        TestView(flip: true)
+    }
+
+    static var expectedInitialTree: some View {
+        Row {
+            if true {
+                Text("Text 1")
+                Text("Text 2")
+
+                Image(source: "icon")
+
+                Column {
+                    Text("Subtext 1")
+                    Text("Subtext 2")
+                }
+            } else {
+                Text("Label 1")
+                Text("Label 2")
+
+                Image(source: "logo")
+
+                Column {
+                    Text("Subtitle 1")
+                    Text("Subtitle 2")
+                }
+            }
+        }
+    }
+
+    static var updatedView: TestView {
+        TestView(flip: false)
+    }
+
+    static var expectedUpdatedTree: some View {
+        Row {
+            if false {
+                Text("Text 1")
+                Text("Text 2")
+
+                Image(source: "icon")
+
+                Column {
+                    Text("Subtext 1")
+                    Text("Subtext 2")
+                }
+            } else {
+                Text("Label 1")
+                Text("Label 2")
+
+                Image(source: "logo")
+
+                Column {
+                    Text("Subtitle 1")
+                    Text("Subtitle 2")
+                }
+            }
+        }
+    }
+}
+
+/// Tests a conditional view with an empty `else` clause (remove `if` views).
+struct EmptySecondRemoveFirstConditional: BodyNodeTestCase {
+    struct TestView: View, Equatable {
+        var flip: Bool
+
+        var body: some View {
+            Column {
+                if flip {
+                    Text("Text 1")
+                    Text("Text 2")
+
+                    Row {
+                        Image(source: "@banner-wide")
+                    }
+                } else {}
+            }
+        }
+    }
+
+    static var initialView: TestView {
+        TestView(flip: true)
+    }
+
+    static var expectedInitialTree: some View {
+        Column {
+            if true {
+                Text("Text 1")
+                Text("Text 2")
+
+                Row {
+                    Image(source: "@banner-wide")
+                }
+            } else {}
+        }
+    }
+
+    static var updatedView: TestView {
+        TestView(flip: false)
+    }
+
+    static var expectedUpdatedTree: some View {
+        Column {
+            if false {
+                Text("Text 1")
+                Text("Text 2")
+
+                Row {
+                    Image(source: "@banner-wide")
+                }
+            } else {}
+        }
+    }
+}
+
+/// Tests a conditional view with an empty `else` clause (add `if` views).
+struct EmptySecondAddFirstConditional: BodyNodeTestCase {
+    struct TestView: View, Equatable {
+        var flip: Bool
+
+        var body: some View {
+            Column {
+                if flip {
+                    Text("Text 1")
+                    Text("Text 2")
+
+                    Row {
+                        Image(source: "@banner-wide")
+                    }
+                } else {}
+            }
+        }
+    }
+
+    static var initialView: TestView {
+        TestView(flip: false)
+    }
+
+    static var expectedInitialTree: some View {
+        Column {
+            if false {
+                Text("Text 1")
+                Text("Text 2")
+
+                Row {
+                    Image(source: "@banner-wide")
+                }
+            } else {}
+        }
+    }
+
+    static var updatedView: TestView {
+        TestView(flip: true)
+    }
+
+    static var expectedUpdatedTree: some View {
+        Column {
+            if true {
+                Text("Text 1")
+                Text("Text 2")
+
+                Row {
+                    Image(source: "@banner-wide")
+                }
+            } else {}
+        }
+    }
+}
 
 /// Tests a conditional view with an empty `if` clause (remove `else` views).
 struct EmptyFirstRemoveSecondConditional: BodyNodeTestCase {
