@@ -24,11 +24,7 @@ import Nimble
 
 // TODO: Use a mock on the implementation to see if `update()`, `insert()` and `remove()` are called (remember to test that unnecessary updates are not performed if the view is equal)
 
-// TODO: Check every case (insert, remove, update) for optional, tupleview, conditional... as well as more complicated cases to check offsets
-
-// TODO: Try to cover every case as best as possible then make a Python fuzzy tester that makes countless random test cases (in its own folder, one file per case, gitignored) -> every failing test has to be included here in its own test case for fixing
-
-// TODO: Tests with another internal view (no need for more than 3), tests with nested conditionals (else ifs)
+// TODO: Make a Python fuzzy tester that makes countless random test cases (in its own folder, one file per case, gitignored) -> every failing test has to be included here in its own test case for fixing
 
 /// Add every test case here
 let cases: [BodyNodeTestCase.Type] = [
@@ -36,6 +32,7 @@ let cases: [BodyNodeTestCase.Type] = [
     NoInputTestCase.self,
     UpdateTestCase.self,
     OffsetsTestCase.self,
+    NestedViewTestCase.self,
     // Optional cases
     OptionalUpdateTestCase.self,
     OptionalInsertionTestCase.self,
@@ -55,6 +52,62 @@ let cases: [BodyNodeTestCase.Type] = [
     EmptySecondRemoveFirstConditionalTestCase.self,
     NestedConditionalsTestCase.self,
 ]
+
+/// Test with multiple internal views.
+struct NestedViewTestCase: BodyNodeTestCase {
+    struct TestView: View, Equatable {
+        var counter: Int
+
+        var body: some View {
+            Row {
+                if counter == 0 {
+                    Text("You are dead!")
+                } else {
+                    Text("Status:")
+                    LivesCounter(counter: counter)
+                }
+            }
+        }
+    }
+
+    struct LivesCounter: View, Equatable {
+        var counter: Int
+
+        var body: some View {
+            Text("\(counter) lives left")
+        }
+    }
+
+    static var initialView: TestView {
+        TestView(counter: 3)
+    }
+
+    static var expectedInitialTree: some View {
+        Row {
+            if false {
+                Text("You are dead!")
+            } else {
+                Text("Status:")
+                LivesCounter(counter: 3)
+            }
+        }
+    }
+
+    static var updatedView: TestView {
+        TestView(counter: 2)
+    }
+
+    static var expectedUpdatedTree: some View {
+        Row {
+            if false {
+                Text("You are dead!")
+            } else {
+                Text("Status:")
+                LivesCounter(counter: 2)
+            }
+        }
+    }
+}
 
 /// Tests nested conditionals (else-ifs).
 struct NestedConditionalsTestCase: BodyNodeTestCase {
