@@ -30,6 +30,12 @@ let specs: [QuickSpec.Type] = [
 struct Main {
     public static func main() {
         Backtrace.install()
+
+        var specs = specs
+        #if ENABLE_FUZZER
+            specs.append(BodyNodeFuzzerTests.self)
+        #endif
+
         QCKMain(specs)
     }
 }

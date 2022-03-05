@@ -27,7 +27,7 @@ import Nimble
 // TODO: Make a Python fuzzy tester that makes countless random test cases (in its own folder, one file per case, gitignored) -> every failing test has to be included here in its own test case for fixing
 
 /// Add every test case here
-let cases: [BodyNodeTestCase.Type] = [
+fileprivate let cases: [BodyNodeTestCase.Type] = [
     // Generic cases
     NoInputTestCase.self,
     UpdateTestCase.self,
