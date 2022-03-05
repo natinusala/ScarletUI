@@ -14,34 +14,34 @@
    limitations under the License.
 */
 
-/// A mounted view, aka. the actual view that's running in the app.
-/// Must be a class for the state setter / body refresh process: the mounted view needs to escape
+/// A mounted app, scene or view, aka. the actual thing that's running in the app.
+/// Must be a class for the state setter / body refresh process: the mounted element needs to escape
 /// in the setter closure to be able to update itself (replace any changed child).
-class MountedView: CustomStringConvertible {
-    var view: AnyElement {
+class MountedElement: CustomStringConvertible {
+    var element: AnyElement {
         didSet {
-            // If the view changes, call body again and compare the new body node
-            // with the previous one (unless the view is a leaf node)
-            if view.isLeaf {
+            // If the element changes, call body again and compare the new body node
+            // with the previous one (unless the element is a leaf node)
+            if self.element.isLeaf {
                 self.children = nil
             } else {
-                let newBody = self.view.body
+                let newBody = self.element.body
                 self.children?.update(next: newBody)
             }
         }
     }
 
-    /// The body node corresponding to this's view body.
+    /// The body node corresponding to this element's body.
     var children: BodyNode?
 
-    /// Set to `true` to have this view be removed when possible.
+    /// Set to `true` to have this element be removed when possible.
     var toBeRemoved = false
 
-    init(view: AnyElement) {
-        self.view = view
+    init(element: AnyElement) {
+        self.element = element
     }
 
     var description: String {
-        return String(describing: self.view.elementType)
+        return String(describing: self.element.elementType)
     }
 }

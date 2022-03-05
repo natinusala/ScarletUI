@@ -1353,7 +1353,7 @@ class BodyNodeSpecs: QuickSpec {
                     expectedNode.initialMount()
 
                     // Assert that the 1st mounted view (our initial view) is now updated
-                    node.mountedViews[0].children!.expectToBe(expectedNode)
+                    node.mountedElements[0].children!.expectToBe(expectedNode)
                 }
             }
         }
@@ -1420,15 +1420,15 @@ extension BodyNode {
 
         // Check that every mounted view is equal
         let description = "mounted views count of \(self.body.elementType) is different (\(self.listMountedViews()) VS. \(other.listMountedViews()))"
-        expect(self.mountedViews.count).to(equal(other.mountedViews.count), description: description)
+        expect(self.mountedElements.count).to(equal(other.mountedElements.count), description: description)
 
-        for (lhs, rhs) in zip(self.mountedViews, other.mountedViews) {
+        for (lhs, rhs) in zip(self.mountedElements, other.mountedElements) {
             lhs.expectToBe(rhs)
         }
     }
 
     func listMountedViews() -> String {
-        return "[\(self.mountedViews.map {$0.description}.joined(separator: ", "))]"
+        return "[\(self.mountedElements.map {$0.description}.joined(separator: ", "))]"
     }
 }
 
@@ -1447,11 +1447,11 @@ extension AnyElement {
     }
 }
 
-extension MountedView {
-    /// Runs assertions to check that this mounted view is equal to the given one.
-    func expectToBe(_ other: MountedView) {
-        // Check that the view is equal
-        self.view.expectToBe(other.view, propertyName: "`MountedView` view")
+extension MountedElement{
+    /// Runs assertions to check that this mounted element is equal to the given one.
+    func expectToBe(_ other: MountedElement) {
+        // Check that the element is equal
+        self.element.expectToBe(other.element, propertyName: "`MountedElement` view")
 
         // Check that the body node is equal
         self.children.expectToBe(other.children)

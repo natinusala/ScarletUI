@@ -19,7 +19,7 @@
 struct BodyNode {
     var body: AnyElement
 
-    var mountedViews = [MountedView]()
+    var mountedElements = [MountedElement]()
 
     init<V: View>(of body: V) {
         self.body = AnyElement(view: body)
@@ -35,7 +35,7 @@ struct BodyNode {
         return self.body.make(previous: previous)
     }
 
-    /// Compare the node to the next one and updates the mounted views to apply the changes.
+    /// Compare the node to the next one and updates the mounted elements to apply the changes.
     mutating func update(next: BodyNode) {
         // Call `makeViews` on the new node giving ourselves as the previous node
         // to get the list of changes to apply
@@ -51,15 +51,15 @@ struct BodyNode {
 
         self.applyOperations(self.makeViews(previous: nil))
 
-        debug("Got \(self.mountedViews.count) mounted views after applying operations of initial mount")
+        debug("Got \(self.mountedElements.count) mounted elements after applying operations of initial mount")
     }
 
     /// Mutates the body node to apply given operations.
     private mutating func applyOperations(_ operations: ElementOperations) {
-        // Avoid mutating the list to preserve the original views positions,
+        // Avoid mutating the list to preserve the original elements positions,
         // otherwise we won't be able to apply all operations:
         //  - Process updates
-        //  - Mark all views that need to be removed
+        //  - Mark all elements that need to be removed
         //  - Process insertions, this will mutate the list but it doesn't matter anymore
         //  - Filter the list to remove those marked previously
 
@@ -71,51 +71,51 @@ struct BodyNode {
 
         // Mark removals
         for removal in operations.removals {
-            debug("  -> Removing \(self.mountedViews[removal.position].view.elementType)")
-            self.mountedViews[removal.position].toBeRemoved = true
+            debug("  -> Removing \(self.mountedElements[removal.position].element.elementType)")
+            self.mountedElements[removal.position].toBeRemoved = true
         }
 
         // Process insertions
         for insertion in operations.insertions {
             debug("  -> Inserting \(insertion.newView.elementType)")
-            self.insertView(view: insertion.newView, at: insertion.position)
+            self.insertElement(element: insertion.newView, at: insertion.position)
         }
 
-        // Sweep the list for removed views
-        self.mountedViews = self.mountedViews.filter { !$0.toBeRemoved }
+        // Sweep the list for removed elements
+        self.mountedElements = self.mountedElements.filter { !$0.toBeRemoved }
     }
 
-    /// Updates the view at the given position with its new version.
-    mutating func updateElement(at position: ElementPosition, with newView: AnyElement) {
-        let mountedView = self.mountedViews[position]
+    /// Updates the element at the given position with its new version.
+    mutating func updateElement(at position: ElementPosition, with newElement: AnyElement) {
+        let mountedView = self.mountedElements[position]
 
-        // Compare the two views to detect any change
-        debug("Comparing \(mountedView.view.elementType) with \(newView.elementType)")
-        guard !mountedView.view.equals(other: newView) else {
+        // Compare the two elements to detect any change
+        debug("Comparing \(mountedView.element.elementType) with \(newElement.elementType)")
+        guard !mountedView.element.equals(other: newElement) else {
             debug("They are equal")
             return
         }
 
         debug("They are different")
 
-        // If they changed, give the new mounted view its new view
-        mountedView.view = newView
+        // If they changed, give the new mounted element its new element
+        mountedView.element = newElement
     }
 
-    /// Inserts the given view at the given position.
-    mutating func insertView(view: AnyElement, at position: ElementPosition) {
-        debug("Inserting \(view.description) at position \(position)")
+    /// Inserts the given element at the given position.
+    mutating func insertElement(element: AnyElement, at position: ElementPosition) {
+        debug("Inserting \(element.description) at position \(position)")
 
-        let mountedView = MountedView(view: view)
+        let mountedView = MountedElement(element: element)
 
         // Perform initial mount
-        if !mountedView.view.isLeaf {
-            mountedView.children = mountedView.view.body
+        if !mountedView.element.isLeaf {
+            mountedView.children = mountedView.element.body
             mountedView.children?.initialMount()
         }
 
-        // Insert the view
-        self.mountedViews.insert(mountedView, at: position)
+        // Insert the element
+        self.mountedElements.insert(mountedView, at: position)
     }
 
     func printTree(indent: Int = 0) {
@@ -123,8 +123,8 @@ struct BodyNode {
         debug("\(str)BodyNode<\(self.body.elementType)>")
         str += "- "
 
-        for mountedView in self.mountedViews {
-            debug("\(str)\(mountedView.view.elementType)")
+        for mountedView in self.mountedElements {
+            debug("\(str)\(mountedView.element.elementType)")
             mountedView.children?.printTree(indent: indent + 4)
         }
     }
