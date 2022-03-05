@@ -49,7 +49,7 @@ struct ViewRemoval {
 
 /// Operations to perform on a view's expanded list to migrate it from
 /// its current version to the new one.
-struct ViewOperations {
+public struct ViewOperations {
     var insertions: [ViewInsertion]
     var updates: [ViewUpdate]
     var removals: [ViewRemoval]

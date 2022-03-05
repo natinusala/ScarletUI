@@ -14,7 +14,13 @@
    limitations under the License.
 */
 
-/// An view with no body.
-public struct EmptyView: View, Equatable {
-    public typealias Body = Never
+import ScarletUI
+
+@main
+struct ScarletUIDemo: App {
+    var body: some Scene {
+        Window(title: "ScarletUI Demo") {
+            Column {}
+        }
+    }
 }

@@ -14,7 +14,6 @@
    limitations under the License.
 */
 
-/// An view with no body.
-public struct EmptyView: View, Equatable {
-    public typealias Body = Never
+extension App {
+    public static func main() {}
 }

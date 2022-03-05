@@ -14,7 +14,11 @@
    limitations under the License.
 */
 
-/// An view with no body.
-public struct EmptyView: View, Equatable {
-    public typealias Body = Never
+/// A scene is the container for the app views, typically a desktop window.
+public protocol Scene {
+    /// The type of this scene's body.
+    associatedtype Body: View
+
+    /// This scene's body.
+    var body: Body { get }
 }

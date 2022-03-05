@@ -15,18 +15,18 @@
 */
 
 /// A conditional view that is either the "first one" or the "second one".
-struct ConditionalView<FirstContent, SecondContent>: View where FirstContent: View, SecondContent: View {
+public struct ConditionalView<FirstContent, SecondContent>: View where FirstContent: View, SecondContent: View {
     /// Storage for the actual view.
-    enum Storage {
+    public enum Storage {
         case first(FirstContent)
         case second(SecondContent)
     }
 
-    typealias Body = Never
+    public typealias Body = Never
 
     let storage: Storage
 
-    static func makeViews(view: Self, previous: Self?) -> ViewOperations {
+    public static func makeViews(view: Self, previous: Self?) -> ViewOperations {
         // If there is no previous node, always insert (by giving no previous node)
         guard let previous = previous else {
             switch view.storage {
@@ -69,7 +69,7 @@ struct ConditionalView<FirstContent, SecondContent>: View where FirstContent: Vi
         }
     }
 
-    static func viewsCount(view: Self) -> Int {
+    public static func viewsCount(view: Self) -> Int {
         switch view.storage {
             case let .first(view):
                 return FirstContent.viewsCount(view: view)

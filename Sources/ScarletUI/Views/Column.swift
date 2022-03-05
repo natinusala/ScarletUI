@@ -14,7 +14,19 @@
    limitations under the License.
 */
 
-/// An view with no body.
-public struct EmptyView: View, Equatable {
-    public typealias Body = Never
+/// A column containing one or multiple views.
+public struct Column<Content>: View, EquatableStruct where Content: View {
+    var content: Content
+
+    public init(@ViewBuilder content: () -> Content) {
+        self.content = content()
+    }
+
+    public var body: some View {
+        self.content
+    }
+
+    public static func equals(lhs: Self, rhs: Self) -> Bool {
+        return Content.equals(lhs: lhs.content, rhs: rhs.content)
+    }
 }

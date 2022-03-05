@@ -14,7 +14,17 @@
    limitations under the License.
 */
 
-/// An view with no body.
-public struct EmptyView: View, Equatable {
-    public typealias Body = Never
+/// A desktop window.
+public struct Window<Content>: Scene where Content: View {
+    let title: String
+    let content: Content
+
+    public init(title: String, @ViewBuilder content: () -> Content) {
+        self.title = title
+        self.content = content()
+    }
+
+    public var body: some View {
+        self.content
+    }
 }

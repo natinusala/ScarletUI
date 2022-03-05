@@ -14,7 +14,13 @@
    limitations under the License.
 */
 
-/// An view with no body.
-public struct EmptyView: View, Equatable {
-    public typealias Body = Never
+/// A ScarletUI application.
+/// An app is made of one scene, and a scene is made of one or multiple
+/// views.
+public protocol App {
+    /// The type of this app's body.
+    associatedtype Body: Scene
+
+    /// This app's body.
+    var body: Body { get }
 }

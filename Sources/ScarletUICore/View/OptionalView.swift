@@ -16,9 +16,9 @@
 
 /// `Optional` extension to add `View` conformance.
 extension Optional: View, EquatableStruct, TreeNodeMetadata where Wrapped: View {
-    typealias Body = Never
+    public typealias Body = Never
 
-    static func makeViews(view: Self, previous: Self?) -> ViewOperations {
+    public static func makeViews(view: Self, previous: Self?) -> ViewOperations {
         debug("Calling Optional makeViews on \(Self.self) - previous? \(previous == nil ? "no" : "yes")")
 
         // If there is no previous node and we have a value, always insert (by giving no previous node)
@@ -50,7 +50,7 @@ extension Optional: View, EquatableStruct, TreeNodeMetadata where Wrapped: View 
         }
     }
 
-    static func viewsCount(view: Self) -> Int {
+    public static func viewsCount(view: Self) -> Int {
         switch view {
             case .none:
                 return 0
@@ -59,7 +59,7 @@ extension Optional: View, EquatableStruct, TreeNodeMetadata where Wrapped: View 
         }
     }
 
-    static func equals(lhs: Self, rhs: Self) -> Bool {
+    public static func equals(lhs: Self, rhs: Self) -> Bool {
         switch (lhs, rhs) {
             case (.none, .some), (.some, .none):
                 return false

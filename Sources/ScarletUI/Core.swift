@@ -14,7 +14,4 @@
    limitations under the License.
 */
 
-/// An view with no body.
-public struct EmptyView: View, Equatable {
-    public typealias Body = Never
-}
+@_exported import ScarletUICore

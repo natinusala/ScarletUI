@@ -16,7 +16,7 @@
 
 /// A view is the building block of an on-screen element. A scene is made
 /// of a views tree.
-protocol View: TreeNodeMetadata {
+public  protocol View: TreeNodeMetadata {
     /// The type of this view's body.
     associatedtype Body: View
 
@@ -41,7 +41,7 @@ protocol View: TreeNodeMetadata {
 extension View {
     /// Default implementation of `makeViews`: insert or update the view.
     /// Removal is handled by its parent view (`Optional` or `ConditionalView`).
-    static func makeViews(view: Self, previous: Self?) -> ViewOperations {
+    public static func makeViews(view: Self, previous: Self?) -> ViewOperations {
         debug("Calling View makeViews on \(Self.self) - previous: \(previous == nil ? "no" : "yes")")
 
         if previous == nil {
@@ -52,19 +52,19 @@ extension View {
     }
 
     /// Default implementation of `viewsCount`: one view, itself.
-    static func viewsCount(view: Self) -> Int {
+    public static func viewsCount(view: Self) -> Int {
         return 1
     }
 }
 
 extension Never: View {
-    var body: Never {
+    public var body: Never {
         fatalError()
     }
 }
 
 extension View where Body == Never {
-    var body: Never {
+    public var body: Never {
         fatalError()
     }
 }

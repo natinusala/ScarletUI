@@ -22,9 +22,13 @@ let package = Package(
     name: "ScarletUI",
     products: [
         .library(
-            name: "ScarletUICore",
-            targets: ["ScarletUICore"]
+            name: "ScarletUI",
+            targets: ["ScarletUI"]
         ),
+        .executable(
+            name: "ScarletUIDemo",
+            targets: ["ScarletUIDemo"]
+        )
     ],
     dependencies: [
         .package(url: "https://github.com/Quick/Quick.git", .upToNextMajor(from: "4.0.0")),
@@ -35,6 +39,14 @@ let package = Package(
         .target(
             name: "ScarletUICore",
             dependencies: []
+        ),
+        .target(
+            name: "ScarletUI",
+            dependencies: ["ScarletUICore"]
+        ),
+        .executableTarget(
+            name: "ScarletUIDemo",
+            dependencies: ["ScarletUI"]
         ),
         .testTarget(
             name: "ScarletUICoreTests",
