@@ -14,6 +14,15 @@
    limitations under the License.
 */
 
-extension App {
-    public static func main() {}
+/// The app implementation, aka the real app that's actually running.
+public class ScarletUIAppImplementation: AppImplementation {}
+
+public extension App {
+    static func main() {}
+}
+
+public extension App {
+    static func makeImplementation(app: Self) -> AppImplementation {
+        return ScarletUIAppImplementation()
+    }
 }

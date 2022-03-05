@@ -23,4 +23,12 @@ public protocol App {
 
     /// This app's body.
     var body: Body { get }
+
+    /// Creates an implementation of the given app.
+    static func makeImplementation(app: Self) -> AppImplementation
+}
+
+/// The implementation of an app.
+public protocol AppImplementation {
+
 }

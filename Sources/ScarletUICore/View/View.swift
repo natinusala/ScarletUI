@@ -16,7 +16,7 @@
 
 /// A view is the building block of an on-screen element. A scene is made
 /// of a views tree.
-public  protocol View: TreeNodeMetadata {
+public protocol View: TreeNodeMetadata {
     /// The type of this view's body.
     associatedtype Body: View
 
@@ -32,27 +32,27 @@ public  protocol View: TreeNodeMetadata {
     ///
     /// Order is not important. Positions should match the initial expanded list, without
     /// considering previous operations that might mutate the list and shuffle positions.
-    static func makeViews(view: Self, previous: Self?) -> ViewOperations
+    static func makeViews(view: Self, previous: Self?) -> ElementOperations
 
     /// Returns the number of expanded views that make that view.
     static func viewsCount(view: Self) -> Int
 }
 
-extension View {
+public extension View {
     /// Default implementation of `makeViews`: insert or update the view.
     /// Removal is handled by its parent view (`Optional` or `ConditionalView`).
-    public static func makeViews(view: Self, previous: Self?) -> ViewOperations {
+    static func makeViews(view: Self, previous: Self?) -> ElementOperations {
         debug("Calling View makeViews on \(Self.self) - previous: \(previous == nil ? "no" : "yes")")
 
         if previous == nil {
-            return ViewOperations(insertions: [ViewInsertion(newView: AnyView(view: view), position: 0)])
+            return ElementOperations(insertions: [ElementInsertion(newView: AnyElement(view: view), position: 0)])
         }
 
-        return ViewOperations(updates: [ViewUpdate(updatedView: AnyView(view: view), position: 0)])
+        return ElementOperations(updates: [ElementUpdate(updatedView: AnyElement(view: view), position: 0)])
     }
 
     /// Default implementation of `viewsCount`: one view, itself.
-    public static func viewsCount(view: Self) -> Int {
+    static func viewsCount(view: Self) -> Int {
         return 1
     }
 }
@@ -63,8 +63,8 @@ extension Never: View {
     }
 }
 
-extension View where Body == Never {
-    public var body: Never {
+public extension View where Body == Never {
+    var body: Never {
         fatalError()
     }
 }

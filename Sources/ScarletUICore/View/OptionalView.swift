@@ -18,14 +18,14 @@
 extension Optional: View, EquatableStruct, TreeNodeMetadata where Wrapped: View {
     public typealias Body = Never
 
-    public static func makeViews(view: Self, previous: Self?) -> ViewOperations {
+    public static func makeViews(view: Self, previous: Self?) -> ElementOperations {
         debug("Calling Optional makeViews on \(Self.self) - previous? \(previous == nil ? "no" : "yes")")
 
         // If there is no previous node and we have a value, always insert (by giving no previous node)
         guard let previous = previous else {
             switch view {
                 case .none:
-                    return ViewOperations()
+                    return ElementOperations()
                 case let .some(view):
                     return Wrapped.makeViews(view: view, previous: nil)
             }
@@ -35,7 +35,7 @@ extension Optional: View, EquatableStruct, TreeNodeMetadata where Wrapped: View 
         switch (view, previous) {
             // Both are `.none` -> nothing has changed
             case (.none, .none):
-                return ViewOperations()
+                return ElementOperations()
             // Both are `.some` -> call `makeViews` recursively to have an update operation
             case let (.some(view), .some(previous)):
                 return Wrapped.makeViews(view: view, previous: previous)
@@ -43,7 +43,7 @@ extension Optional: View, EquatableStruct, TreeNodeMetadata where Wrapped: View 
             case let (.none, .some(view)):
                 // Remove every view from 0 to wrapped views count
                 let toRemoveCount = Wrapped.viewsCount(view: view)
-                return ViewOperations(removals: Array(0..<toRemoveCount).map { ViewRemoval(position: $0) })
+                return ElementOperations(removals: Array(0..<toRemoveCount).map { ElementRemoval(position: $0) })
             // None to some -> call `makeViews` recursively without a previous node to have an insert operation
             case let (.some(view), .none):
                 return Wrapped.makeViews(view: view, previous: nil)

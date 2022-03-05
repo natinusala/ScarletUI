@@ -23,7 +23,7 @@ public struct TupleView2<C0, C1>: View where C0: View, C1: View {
     let c0: C0
     let c1: C1
 
-    public  static func makeViews(view: Self, previous: Self?) -> ViewOperations {
+    public  static func makeViews(view: Self, previous: Self?) -> ElementOperations {
         let c0Operations = C0.makeViews(view: view.c0, previous: previous?.c0)
         let c1Operations = C1.makeViews(view: view.c1, previous: previous?.c1)
 
@@ -68,7 +68,7 @@ public struct TupleView3<C0, C1, C2>: View where C0: View, C1: View, C2: View {
     let c1: C1
     let c2: C2
 
-    public  static func makeViews(view: Self, previous: Self?) -> ViewOperations {
+    public  static func makeViews(view: Self, previous: Self?) -> ElementOperations {
         let c0Operations = C0.makeViews(view: view.c0, previous: previous?.c0)
         let c1Operations = C1.makeViews(view: view.c1, previous: previous?.c1)
         let c2Operations = C2.makeViews(view: view.c2, previous: previous?.c2)
@@ -121,7 +121,7 @@ public struct TupleView4<C0, C1, C2, C3>: View where C0: View, C1: View, C2: Vie
     let c2: C2
     let c3: C3
 
-    public  static func makeViews(view: Self, previous: Self?) -> ViewOperations {
+    public  static func makeViews(view: Self, previous: Self?) -> ElementOperations {
         let c0Operations = C0.makeViews(view: view.c0, previous: previous?.c0)
         let c1Operations = C1.makeViews(view: view.c1, previous: previous?.c1)
         let c2Operations = C2.makeViews(view: view.c2, previous: previous?.c2)
@@ -182,7 +182,7 @@ public struct TupleView5<C0, C1, C2, C3, C4>: View where C0: View, C1: View, C2:
     let c3: C3
     let c4: C4
 
-    public  static func makeViews(view: Self, previous: Self?) -> ViewOperations {
+    public  static func makeViews(view: Self, previous: Self?) -> ElementOperations {
         let c0Operations = C0.makeViews(view: view.c0, previous: previous?.c0)
         let c1Operations = C1.makeViews(view: view.c1, previous: previous?.c1)
         let c2Operations = C2.makeViews(view: view.c2, previous: previous?.c2)
@@ -251,7 +251,7 @@ public struct TupleView6<C0, C1, C2, C3, C4, C5>: View where C0: View, C1: View,
     let c4: C4
     let c5: C5
 
-    public  static func makeViews(view: Self, previous: Self?) -> ViewOperations {
+    public  static func makeViews(view: Self, previous: Self?) -> ElementOperations {
         let c0Operations = C0.makeViews(view: view.c0, previous: previous?.c0)
         let c1Operations = C1.makeViews(view: view.c1, previous: previous?.c1)
         let c2Operations = C2.makeViews(view: view.c2, previous: previous?.c2)
@@ -328,7 +328,7 @@ public struct TupleView7<C0, C1, C2, C3, C4, C5, C6>: View where C0: View, C1: V
     let c5: C5
     let c6: C6
 
-    public  static func makeViews(view: Self, previous: Self?) -> ViewOperations {
+    public  static func makeViews(view: Self, previous: Self?) -> ElementOperations {
         let c0Operations = C0.makeViews(view: view.c0, previous: previous?.c0)
         let c1Operations = C1.makeViews(view: view.c1, previous: previous?.c1)
         let c2Operations = C2.makeViews(view: view.c2, previous: previous?.c2)
@@ -413,7 +413,7 @@ public struct TupleView8<C0, C1, C2, C3, C4, C5, C6, C7>: View where C0: View, C
     let c6: C6
     let c7: C7
 
-    public  static func makeViews(view: Self, previous: Self?) -> ViewOperations {
+    public  static func makeViews(view: Self, previous: Self?) -> ElementOperations {
         let c0Operations = C0.makeViews(view: view.c0, previous: previous?.c0)
         let c1Operations = C1.makeViews(view: view.c1, previous: previous?.c1)
         let c2Operations = C2.makeViews(view: view.c2, previous: previous?.c2)
@@ -506,7 +506,7 @@ public struct TupleView9<C0, C1, C2, C3, C4, C5, C6, C7, C8>: View where C0: Vie
     let c7: C7
     let c8: C8
 
-    public  static func makeViews(view: Self, previous: Self?) -> ViewOperations {
+    public  static func makeViews(view: Self, previous: Self?) -> ElementOperations {
         let c0Operations = C0.makeViews(view: view.c0, previous: previous?.c0)
         let c1Operations = C1.makeViews(view: view.c1, previous: previous?.c1)
         let c2Operations = C2.makeViews(view: view.c2, previous: previous?.c2)
@@ -607,7 +607,7 @@ public struct TupleView10<C0, C1, C2, C3, C4, C5, C6, C7, C8, C9>: View where C0
     let c8: C8
     let c9: C9
 
-    public  static func makeViews(view: Self, previous: Self?) -> ViewOperations {
+    public  static func makeViews(view: Self, previous: Self?) -> ElementOperations {
         let c0Operations = C0.makeViews(view: view.c0, previous: previous?.c0)
         let c1Operations = C1.makeViews(view: view.c1, previous: previous?.c1)
         let c2Operations = C2.makeViews(view: view.c2, previous: previous?.c2)

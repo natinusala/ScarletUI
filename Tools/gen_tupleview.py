@@ -103,7 +103,7 @@ def gen_makeviews(i: int) -> list:
         return [result]
 
     return [
-        "    public  static func makeViews(view: Self, previous: Self?) -> ViewOperations {",
+        "    public  static func makeViews(view: Self, previous: Self?) -> ElementOperations {",
         *gen_operations(),
         "",
         *gen_offsets(),

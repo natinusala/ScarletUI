@@ -1419,7 +1419,7 @@ extension BodyNode {
         self.body.expectToBe(other.body, propertyName: "`BodyNode` body")
 
         // Check that every mounted view is equal
-        let description = "mounted views count of \(self.body.viewType) is different (\(self.listMountedViews()) VS. \(other.listMountedViews()))"
+        let description = "mounted views count of \(self.body.elementType) is different (\(self.listMountedViews()) VS. \(other.listMountedViews()))"
         expect(self.mountedViews.count).to(equal(other.mountedViews.count), description: description)
 
         for (lhs, rhs) in zip(self.mountedViews, other.mountedViews) {
@@ -1432,16 +1432,16 @@ extension BodyNode {
     }
 }
 
-extension AnyView {
+extension AnyElement {
     /// Runs assertions to check that this view is equal to the given one.
-    func expectToBe(_ other: AnyView, propertyName: String) {
+    func expectToBe(_ other: AnyElement, propertyName: String) {
         // First compare view type
-        if self.viewType != other.viewType {
-            XCTFail("when comparing \(propertyName), view has a different type: got \(self.viewType) and \(other.viewType)")
+        if self.elementType != other.elementType {
+            XCTFail("when comparing \(propertyName), view has a different type: got \(self.elementType) and \(other.elementType)")
         } else {
             // Then compare field by field
-            if !self.equalsClosure(self.view, other) {
-                XCTFail("when comparing \(propertyName), \(self.viewType) is different")
+            if !self.equalsClosure(self.element, other) {
+                XCTFail("when comparing \(propertyName), \(self.elementType) is different")
             }
         }
     }

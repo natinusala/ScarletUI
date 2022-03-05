@@ -14,22 +14,21 @@
    limitations under the License.
 */
 
-/// A type-erased view, used internally to access a view's properties.
+/// A type-erased app, scene or view, used internally to access its properties.
 /// TODO: needs to be a class to prevent duplications between `body` and `children` inside `BodyNode`.
-/// TODO: rename to remove ambiguity with actual "AnyView" struct?
-class AnyView: CustomStringConvertible {
-    var view: TreeNodeMetadata
-    var viewType: Any.Type
+class AnyElement: CustomStringConvertible {
+    var element: TreeNodeMetadata
+    var elementType: Any.Type
 
     var isLeaf: Bool
 
     internal var bodyClosure: (Any) -> BodyNode
-    internal var makeViewsClosure: (Any, BodyNode?) -> ViewOperations
-    internal var equalsClosure: (Any, AnyView) -> Bool
+    internal var makeClosure: (Any, BodyNode?) -> ElementOperations
+    internal var equalsClosure: (Any, AnyElement) -> Bool
 
     init<V: View>(view: V) {
-        self.view = view
-        self.viewType = V.self
+        self.element = view
+        self.elementType = V.self
 
         self.isLeaf = V.Body.self == Never.self
 
@@ -37,38 +36,38 @@ class AnyView: CustomStringConvertible {
             return BodyNode(of: (view as! V).body)
         }
 
-        self.makeViewsClosure = { view, previous in
+        self.makeClosure = { view, previous in
             if let previous = previous {
-                return V.makeViews(view: (view as! V), previous: (previous.body.view as! V))
+                return V.makeViews(view: (view as! V), previous: (previous.body.element as! V))
             }
 
             return V.makeViews(view: (view as! V), previous: nil)
         }
 
         self.equalsClosure = { view, newView in
-            return V.equals(lhs: (view as! V), rhs: (newView.view as! V))
+            return V.equals(lhs: (view as! V), rhs: (newView.element as! V))
         }
     }
 
     var body: BodyNode {
-        return self.bodyClosure(self.view)
+        return self.bodyClosure(self.element)
     }
 
-    func equals(other: AnyView) -> Bool {
+    func equals(other: AnyElement) -> Bool {
         // First compare view type
-        guard self.viewType == other.viewType else {
+        guard self.elementType == other.elementType else {
             return false
         }
 
         // Then compare field by field
-        return self.equalsClosure(self.view, other)
+        return self.equalsClosure(self.element, other)
     }
 
-    func makeViews(previous: BodyNode?) -> ViewOperations {
-        return self.makeViewsClosure(self.view, previous)
+    func make(previous: BodyNode?) -> ElementOperations {
+        return self.makeClosure(self.element, previous)
     }
 
     var description: String {
-        return "AnyView<\(self.viewType)>"
+        return "AnyElement<\(self.elementType)>"
     }
 }

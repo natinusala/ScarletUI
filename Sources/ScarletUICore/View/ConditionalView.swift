@@ -26,7 +26,7 @@ public struct ConditionalView<FirstContent, SecondContent>: View where FirstCont
 
     let storage: Storage
 
-    public static func makeViews(view: Self, previous: Self?) -> ViewOperations {
+    public static func makeViews(view: Self, previous: Self?) -> ElementOperations {
         // If there is no previous node, always insert (by giving no previous node)
         guard let previous = previous else {
             switch view.storage {
@@ -51,12 +51,12 @@ public struct ConditionalView<FirstContent, SecondContent>: View where FirstCont
     }
 
     /// Returns a view operations that's a replacement of every view with the given new view.
-    private static func replace(count: Int, newView: Storage) -> ViewOperations {
-        var operations = ViewOperations()
+    private static func replace(count: Int, newView: Storage) -> ElementOperations {
+        var operations = ElementOperations()
 
         // Remove every view
         for i in 0..<count {
-            operations.removals.append(ViewRemoval(position: i))
+            operations.removals.append(ElementRemoval(position: i))
         }
 
         // Make an insertion operation by calling `makeViews` on the new view without

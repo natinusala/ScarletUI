@@ -18,7 +18,7 @@
 /// Must be a class for the state setter / body refresh process: the mounted view needs to escape
 /// in the setter closure to be able to update itself (replace any changed child).
 class MountedView: CustomStringConvertible {
-    var view: AnyView {
+    var view: AnyElement {
         didSet {
             // If the view changes, call body again and compare the new body node
             // with the previous one (unless the view is a leaf node)
@@ -37,11 +37,11 @@ class MountedView: CustomStringConvertible {
     /// Set to `true` to have this view be removed when possible.
     var toBeRemoved = false
 
-    init(view: AnyView) {
+    init(view: AnyElement) {
         self.view = view
     }
 
     var description: String {
-        return String(describing: self.view.viewType)
+        return String(describing: self.view.elementType)
     }
 }
