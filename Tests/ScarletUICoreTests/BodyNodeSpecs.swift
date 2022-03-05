@@ -53,7 +53,89 @@ let cases: [BodyNodeTestCase.Type] = [
     EmptyFirstRemoveSecondConditionalTestCase.self,
     EmptySecondAddFirstConditionalTestCase.self,
     EmptySecondRemoveFirstConditionalTestCase.self,
+    NestedConditionalsTestCase.self,
 ]
+
+/// Tests nested conditionals (else-ifs).
+struct NestedConditionalsTestCase: BodyNodeTestCase {
+    struct TestView: View, Equatable {
+        var value: Int
+
+        var body: some View {
+            Row {
+                if value > 20 {
+                    Text("Value is > 20")
+
+                    if value > 30 {
+                        Text("Value is > 30")
+                    } else if value > 25 {
+                        Text("Value is > 25")
+                    }
+                } else if value > 10 {
+                    Text("Value is > 10")
+
+                    if value > 15 {
+                        Text("Value is > 15")
+                    }
+                } else {
+                    Text("Value is unknown")
+                }
+            }
+        }
+    }
+
+    static var initialView: TestView {
+        TestView(value: 16)
+    }
+
+    static var expectedInitialTree: some View {
+        Row {
+            if false {
+                Text("Value is > 20")
+
+                if false {
+                    Text("Value is > 30")
+                } else if false {
+                    Text("Value is > 25")
+                }
+            } else if true {
+                Text("Value is > 10")
+
+                if true {
+                    Text("Value is > 15")
+                }
+            } else {
+                Text("Value is unknown")
+            }
+        }
+    }
+
+    static var updatedView: TestView {
+        TestView(value: 35)
+    }
+
+    static var expectedUpdatedTree: some View {
+        Row {
+            if true {
+                Text("Value is > 20")
+
+                if true {
+                    Text("Value is > 30")
+                } else if false {
+                    Text("Value is > 25")
+                }
+            } else if false {
+                Text("Value is > 10")
+
+                if false {
+                    Text("Value is > 15")
+                }
+            } else {
+                Text("Value is unknown")
+            }
+        }
+    }
+}
 
 /// Tests that all views are removed and added in a "balanced" conditional.
 struct BalancedConditionalTestCase: BodyNodeTestCase {
