@@ -17,7 +17,7 @@
 from pathlib import Path
 from dataclasses import dataclass
 from itertools import chain
-from typing import List
+from typing import List, Optional
 from random import choice, randint, choices
 
 # Use `swift test -Xswiftc -D -Xswiftc ENABLE_FUZZER` to run the fuzzer after running this Python script
@@ -86,9 +86,7 @@ class BodyNode:
             kinds += [(Empty, 1)]
 
         kind = choices(
-            [kind[0] for kind in kinds],
-            weights=[kind[1] for kind in kinds],
-            k=1
+            [kind[0] for kind in kinds], weights=[kind[1] for kind in kinds], k=1
         )[0]
 
         return kind(view=view, depth=depth)
@@ -107,7 +105,8 @@ class Column(BodyNode):
         self.view = view
 
         self.nodes = [
-            BodyNode.make(empty=True, view=view, depth=depth+1) for node in range(0, randint(0, 10))
+            BodyNode.make(empty=True, view=view, depth=depth + 1)
+            for node in range(0, randint(0, 10))
         ]
 
     def definition(self) -> list:
@@ -125,7 +124,8 @@ class Row(BodyNode):
         self.view = view
 
         self.nodes = [
-            BodyNode.make(empty=True, view=view, depth=depth+1) for node in range(0, randint(0, 10))
+            BodyNode.make(empty=True, view=view, depth=depth + 1)
+            for node in range(0, randint(0, 10))
         ]
 
     def definition(self) -> list:
@@ -142,12 +142,12 @@ class If(BodyNode):
     def __init__(self, view: "TestView", depth: int):
         self.view = view
         self.flip = view.pick_flip()
-        self.node = BodyNode.make(empty=True, view=view, depth=depth+1)
+        self.node = BodyNode.make(empty=True, view=view, depth=depth + 1)
 
     def definition(self) -> list:
         return indent(
             [
-                f"if {self.view.flips[self.flip]} {{",
+                f"if {self.flip.name} {{",
                 *self.node.definition(),
                 "}",
             ]
@@ -158,17 +158,17 @@ class IfElse(BodyNode):
     def __init__(self, view: "TestView", depth: int):
         self.view = view
         self.flip = view.pick_flip()
-        self.node_if = BodyNode.make(empty=True, view=view, depth=depth+1)
-        self.node_else = BodyNode.make(empty=True, view=view, depth=depth+1)
+        self.node_if = BodyNode.make(empty=True, view=view, depth=depth + 1)
+        self.node_else = BodyNode.make(empty=True, view=view, depth=depth + 1)
 
     def definition(self) -> list:
         return indent(
             [
-                f"if {self.view.flips[self.flip]} {{",
+                f"if {self.flip.name} {{",
                 *self.node_if.definition(),
                 "} else {",
                 *self.node_else.definition(),
-                "}"
+                "}",
             ]
         )
 
@@ -177,24 +177,24 @@ class IfElseIf(BodyNode):
     def __init__(self, view: "TestView", depth: int):
         self.view = view
         self.flip = view.pick_flip()
-        self.node_if = BodyNode.make(empty=True, view=view, depth=depth+1)
+        self.node_if = BodyNode.make(empty=True, view=view, depth=depth + 1)
 
         self.elseifs = [
-            (BodyNode.make(empty=True, view=view, depth=depth+1), view.pick_flip())
+            (BodyNode.make(empty=True, view=view, depth=depth + 1), view.pick_flip())
             for _ in range(0, randint(2, 8))
         ]
 
     def gen_elseifs(self) -> list:
         res = []
         for elseif, flip in self.elseifs:
-            res += [f"}} else if {self.view.flips[flip]} {{"]
+            res += [f"}} else if {flip.name} {{"]
             res += elseif.definition()
         return res
 
     def definition(self) -> list:
         return indent(
             [
-                f"if {self.view.flips[self.flip]} {{",
+                f"if {self.flip.name} {{",
                 *self.node_if.definition(),
                 *self.gen_elseifs(),
                 "}",
@@ -206,30 +206,30 @@ class IfElseIfElse(BodyNode):
     def __init__(self, view: "TestView", depth: int):
         self.view = view
         self.flip = view.pick_flip()
-        self.node_if = BodyNode.make(empty=True, view=view, depth=depth+1)
-        self.node_else = BodyNode.make(empty=True, view=view, depth=depth+1)
+        self.node_if = BodyNode.make(empty=True, view=view, depth=depth + 1)
+        self.node_else = BodyNode.make(empty=True, view=view, depth=depth + 1)
 
         self.elseifs = [
-            (BodyNode.make(empty=True, view=view, depth=depth+1), view.pick_flip())
+            (BodyNode.make(empty=True, view=view, depth=depth + 1), view.pick_flip())
             for _ in range(0, randint(2, 8))
         ]
 
     def gen_elseifs(self) -> list:
         res = []
         for elseif, flip in self.elseifs:
-            res += [f"}} else if {self.view.flips[flip]} {{"]
+            res += [f"}} else if {self.flip.name} {{"]
             res += elseif.definition()
         return res
 
     def definition(self) -> list:
         return indent(
             [
-                f"if {self.view.flips[self.flip]} {{",
+                f"if {self.flip.name} {{",
                 *self.node_if.definition(),
                 *self.gen_elseifs(),
                 "} else {",
                 *self.node_else.definition(),
-                "}"
+                "}",
             ]
         )
 
@@ -248,7 +248,7 @@ class TextText:
         if hasattr(self, "text"):
             return f'"{self.text}"'
         else:
-            return f'"{self.variable}=\({self.view.variables[self.variable]})"'
+            return f'"{self.variable.name}=\({self.variable.name})"'
 
 
 class Text(BodyNode):
@@ -274,7 +274,7 @@ class ImageSource:
         if hasattr(self, "source"):
             return self.source
         else:
-            return f"https://pictures.com/picture\({self.view.variables[self.variable]}).jpg"
+            return f"https://pictures.com/picture\({self.variable.name}).jpg"
 
 
 class Image(BodyNode):
@@ -307,27 +307,27 @@ class NestedView(BodyNode):
             else:
                 self.nestedvariables += [view.pick_variable()]
 
-    def flip_value(self, idx) -> str:
+    def flip_definition(self, idx) -> str:
         if isinstance(self.nestedflips[idx], str):
             return self.nestedflips[idx]
         else:
-            return self.view.flips[self.nestedflips[idx]]
+            return self.nestedflips[idx].name
 
-    def variable_value(self, idx) -> str:
+    def variable_definition(self, idx) -> str:
         if isinstance(self.nestedvariables[idx], str):
             return self.nestedvariables[idx]
         else:
-            return self.view.variables[self.nestedvariables[idx]]
+            return self.nestedvariables[idx].name
 
     def gen_flips(self) -> list:
         return [
-            f"{flip}: {self.flip_value(idx)}"
+            f"{flip.name}: {self.flip_definition(idx)}"
             for (idx, flip) in enumerate(self.nestedview.flips)
         ]
 
     def gen_variables(self) -> list:
         return [
-            f"{variable}: {self.variable_value(idx)}"
+            f"{variable.name}: {self.variable_definition(idx)}"
             for (idx, variable) in enumerate(self.nestedview.variables)
         ]
 
@@ -340,7 +340,7 @@ class NestedView(BodyNode):
         )
 
     def definition(self) -> list:
-        return indent([f'{self.nestedview.name}({self.gen_args()})'])
+        return indent([f"{self.nestedview.name}({self.gen_args()})"])
 
 
 class ViewBody:
@@ -354,6 +354,18 @@ class ViewBody:
             *[f"        {line}" for line in self.node.definition()],
             "        }",
         ]
+
+
+@dataclass
+class Variable:
+    name: str
+    value: Optional[int] = None
+
+
+@dataclass
+class Flip:
+    name: str
+    value: Optional[bool] = None
 
 
 class TestView:
@@ -377,32 +389,34 @@ class TestView:
         ]
 
     def gen_flips(self) -> list:
-        return [f"        let {flip}: Bool" for flip in self.flips]
+        return [f"        let {flip.name}: Bool" for flip in self.flips]
 
     def gen_variables(self) -> list:
-        return [f"        let {variable}: Int" for variable in self.variables]
+        return [f"        let {variable.name}: Int" for variable in self.variables]
 
-    def pick_variable(self) -> int:
+    def pick_variable(self) -> Variable:
         # Either pick an existing variable or create one
         # If there is no variable, always create a new one
         # If we already created enough variables, always pick one
         if (not self.variables or coin_toss()) and len(self.variables) < maxvars:
             idx = len(self.variables)
-            self.variables += ["variable" + str(idx)]
-            return idx
+            variable = Variable(name="variable" + str(idx))
+            self.variables += [variable]
+            return variable
         else:
-            return randint(0, len(self.variables) - 1)
+            return choice(self.variables)
 
-    def pick_flip(self) -> int:
+    def pick_flip(self) -> Flip:
         # Either pick an existing flip or create one
         # If there is no flip, always create a new one
         # If we already created enough flips, always pick one
         if (not self.flips or coin_toss()) and len(self.flips) < maxflips:
             idx = len(self.flips)
-            self.flips += ["flip" + str(idx)]
-            return idx
+            flip = Flip(name="flip" + str(idx))
+            self.flips += [flip]
+            return flip
         else:
-            return randint(0, len(self.flips) - 1)
+            return choice(self.flips)
 
 
 class TestCase:
@@ -444,7 +458,18 @@ for test in range(0, count):
     testcase = output / f"{name}.swift"
     testcase.parent.mkdir(parents=True, exist_ok=True)
 
-    lines = TestCase(name).definition()
+    lines = [
+        "// Generated by bodynode_fuzzer.py, do not edit",
+        "",
+        "import Foundation",
+        "import XCTest",
+        "import Quick",
+        "import Nimble",
+        "@testable import ScarletUICore",
+        "",
+    ]
+
+    lines += TestCase(name).definition()
 
     with open(testcase, "w") as file:
         file.write("\n".join(lines))
