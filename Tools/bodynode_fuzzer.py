@@ -65,23 +65,32 @@ def indent(lines: list) -> list:
 # Test case data model
 class BodyNode:
     @staticmethod
-    def make(empty: bool, view: "TestView", depth: int) -> "BodyNode":
+    def make(ifs: bool, empty: bool, view: "TestView", depth: int) -> "BodyNode":
+        # Leaf views
         kinds = [
             (Text, 20),
             (Image, 20),
             (NestedView, 10),
         ]
 
+        # Everything that increases depth
         if depth < maxdepth:
             kinds += [
                 (Column, 10),
                 (Row, 10),
-                (If, 10),
-                (IfElse, 10),
-                (IfElseIf, 15),
-                (IfElseIfElse, 15),
             ]
 
+            # Only add if structures if allowed
+            if ifs:
+                kinds += [
+                    (If, 10),
+                    (IfElse, 10),
+                    (IfElseIf, 15),
+                    (IfElseIfElse, 15),
+                ]
+
+
+        # Empty
         if empty:
             kinds += [(Empty, 1)]
 
@@ -105,7 +114,7 @@ class Column(BodyNode):
         self.view = view
 
         self.nodes = [
-            BodyNode.make(empty=True, view=view, depth=depth + 1)
+            BodyNode.make(ifs=True, empty=True, view=view, depth=depth + 1)
             for node in range(0, randint(0, 10))
         ]
 
@@ -124,7 +133,7 @@ class Row(BodyNode):
         self.view = view
 
         self.nodes = [
-            BodyNode.make(empty=True, view=view, depth=depth + 1)
+            BodyNode.make(ifs=True, empty=True, view=view, depth=depth + 1)
             for node in range(0, randint(0, 10))
         ]
 
@@ -142,7 +151,7 @@ class If(BodyNode):
     def __init__(self, view: "TestView", depth: int):
         self.view = view
         self.flip = view.pick_flip()
-        self.node = BodyNode.make(empty=True, view=view, depth=depth + 1)
+        self.node = BodyNode.make(ifs=True, empty=True, view=view, depth=depth + 1)
 
     def definition(self) -> list:
         return indent(
@@ -158,8 +167,8 @@ class IfElse(BodyNode):
     def __init__(self, view: "TestView", depth: int):
         self.view = view
         self.flip = view.pick_flip()
-        self.node_if = BodyNode.make(empty=True, view=view, depth=depth + 1)
-        self.node_else = BodyNode.make(empty=True, view=view, depth=depth + 1)
+        self.node_if = BodyNode.make(ifs=True, empty=True, view=view, depth=depth + 1)
+        self.node_else = BodyNode.make(ifs=True, empty=True, view=view, depth=depth + 1)
 
     def definition(self) -> list:
         return indent(
@@ -177,10 +186,13 @@ class IfElseIf(BodyNode):
     def __init__(self, view: "TestView", depth: int):
         self.view = view
         self.flip = view.pick_flip()
-        self.node_if = BodyNode.make(empty=True, view=view, depth=depth + 1)
+        self.node_if = BodyNode.make(ifs=True, empty=True, view=view, depth=depth + 1)
 
         self.elseifs = [
-            (BodyNode.make(empty=True, view=view, depth=depth + 1), view.pick_flip())
+            (
+                BodyNode.make(ifs=True, empty=True, view=view, depth=depth + 1),
+                view.pick_flip(),
+            )
             for _ in range(0, randint(2, 8))
         ]
 
@@ -206,11 +218,14 @@ class IfElseIfElse(BodyNode):
     def __init__(self, view: "TestView", depth: int):
         self.view = view
         self.flip = view.pick_flip()
-        self.node_if = BodyNode.make(empty=True, view=view, depth=depth + 1)
-        self.node_else = BodyNode.make(empty=True, view=view, depth=depth + 1)
+        self.node_if = BodyNode.make(ifs=True, empty=True, view=view, depth=depth + 1)
+        self.node_else = BodyNode.make(ifs=True, empty=True, view=view, depth=depth + 1)
 
         self.elseifs = [
-            (BodyNode.make(empty=True, view=view, depth=depth + 1), view.pick_flip())
+            (
+                BodyNode.make(ifs=True, empty=True, view=view, depth=depth + 1),
+                view.pick_flip(),
+            )
             for _ in range(0, randint(2, 8))
         ]
 
@@ -346,7 +361,9 @@ class NestedView(BodyNode):
 class ViewBody:
     def __init__(self, view: "TestView"):
         self.view = view
-        self.node = BodyNode.make(empty=False, view=view, depth=0)
+
+        # TODO: change ifs to True here once body has ViewBuilder support
+        self.node = BodyNode.make(ifs=False, empty=False, view=view, depth=0)
 
     def definition(self) -> list:
         return [
@@ -387,6 +404,22 @@ class TestView:
             *self.body.definition(),
             "    }",
         ]
+
+    def populate_input(self):
+        for flip in self.flips:
+            flip.value = choice([True, False])
+
+        for variable in self.variables:
+            variable.value = randint(0, 250)
+
+    def gen_constructor(self) -> str:
+        params = [f"{flip.name}: {str(flip.value).lower()}" for flip in self.flips]
+        params += [f"{variable.name}: {variable.value}" for variable in self.variables]
+
+        return f"{self.name}({', '.join(params)})"
+
+    def gen_expected(self) -> list:
+        raise NotImplementedError()
 
     def gen_flips(self) -> list:
         return [f"        let {flip.name}: Bool" for flip in self.flips]
@@ -430,11 +463,27 @@ class TestCase:
     def definition(self) -> list:
         return [
             f"struct {self.name}: BodyNodeTestCase {{",
-            *self.gen_views(),
+            *self.gen_views_definition(),
+            "",
+            *self.gen_initial(),
             "}",
         ]
 
-    def gen_views(self) -> list:
+    def gen_initial(self) -> list:
+        # Give random values to all flips and variables
+        self.root_testview.populate_input()
+
+        return [
+            f"    static var initialView: {self.root_testview.name} {{",
+            f"        {self.root_testview.gen_constructor()}",
+            "    }",
+            "",
+            "    static var expectedInitialTree: some View {",
+            f"        {self.root_testview.gen_expected()}",
+            "    }"
+        ]
+
+    def gen_views_definition(self) -> list:
         """Makes all views of this test case."""
         return chain(*[view.definition() for view in self.views])
 
