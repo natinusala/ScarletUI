@@ -89,7 +89,6 @@ class BodyNode:
                     (IfElseIfElse, 15),
                 ]
 
-
         # Empty
         if empty:
             kinds += [(Empty, 1)]
@@ -108,6 +107,9 @@ class Empty(BodyNode):
     def definition(self) -> list:
         return []
 
+    def expected(self) -> list:
+        return []
+
 
 class Column(BodyNode):
     def __init__(self, view: "TestView", depth: int):
@@ -123,6 +125,15 @@ class Column(BodyNode):
             [
                 "Column {",
                 *chain(*[node.definition() for node in self.nodes]),
+                "}",
+            ],
+        )
+
+    def expected(self) -> list:
+        return indent(
+            [
+                "Column {",
+                *chain(*[node.expected() for node in self.nodes]),
                 "}",
             ],
         )
@@ -146,6 +157,15 @@ class Row(BodyNode):
             ],
         )
 
+    def expected(self) -> list:
+        return indent(
+            [
+                "Row {",
+                *chain(*[node.expected() for node in self.nodes]),
+                "}",
+            ],
+        )
+
 
 class If(BodyNode):
     def __init__(self, view: "TestView", depth: int):
@@ -158,6 +178,15 @@ class If(BodyNode):
             [
                 f"if {self.flip.name} {{",
                 *self.node.definition(),
+                "}",
+            ]
+        )
+
+    def expected(self) -> list:
+        return indent(
+            [
+                f"if {self.flip.swiftValue} {{",
+                *self.node.expected(),
                 "}",
             ]
         )
@@ -181,6 +210,17 @@ class IfElse(BodyNode):
             ]
         )
 
+    def expected(self) -> list:
+        return indent(
+            [
+                f"if {self.flip.swiftValue} {{",
+                *self.node_if.expected(),
+                "} else {",
+                *self.node_else.expected(),
+                "}",
+            ]
+        )
+
 
 class IfElseIf(BodyNode):
     def __init__(self, view: "TestView", depth: int):
@@ -196,7 +236,7 @@ class IfElseIf(BodyNode):
             for _ in range(0, randint(2, 8))
         ]
 
-    def gen_elseifs(self) -> list:
+    def gen_elseifs_definition(self) -> list:
         res = []
         for elseif, flip in self.elseifs:
             res += [f"}} else if {flip.name} {{"]
@@ -208,7 +248,24 @@ class IfElseIf(BodyNode):
             [
                 f"if {self.flip.name} {{",
                 *self.node_if.definition(),
-                *self.gen_elseifs(),
+                *self.gen_elseifs_definition(),
+                "}",
+            ]
+        )
+
+    def gen_elseifs_expected(self) -> list:
+        res = []
+        for elseif, flip in self.elseifs:
+            res += [f"}} else if {flip.swiftValue} {{"]
+            res += elseif.expected()
+        return res
+
+    def expected(self) -> list:
+        return indent(
+            [
+                f"if {self.flip.swiftValue} {{",
+                *self.node_if.expected(),
+                *self.gen_elseifs_expected(),
                 "}",
             ]
         )
@@ -229,7 +286,7 @@ class IfElseIfElse(BodyNode):
             for _ in range(0, randint(2, 8))
         ]
 
-    def gen_elseifs(self) -> list:
+    def gen_elseifs_definition(self) -> list:
         res = []
         for elseif, flip in self.elseifs:
             res += [f"}} else if {self.flip.name} {{"]
@@ -241,9 +298,28 @@ class IfElseIfElse(BodyNode):
             [
                 f"if {self.flip.name} {{",
                 *self.node_if.definition(),
-                *self.gen_elseifs(),
+                *self.gen_elseifs_definition(),
                 "} else {",
                 *self.node_else.definition(),
+                "}",
+            ]
+        )
+
+    def gen_elseifs_expected(self) -> list:
+        res = []
+        for elseif, flip in self.elseifs:
+            res += [f"}} else if {self.flip.swiftValue} {{"]
+            res += elseif.expected()
+        return res
+
+    def expected(self) -> list:
+        return indent(
+            [
+                f"if {self.flip.swiftValue} {{",
+                *self.node_if.expected(),
+                *self.gen_elseifs_expected(),
+                "} else {",
+                *self.node_else.expected(),
                 "}",
             ]
         )
@@ -259,11 +335,17 @@ class TextText:
         else:
             self.variable = view.pick_variable()
 
-    def gen_text(self) -> str:
+    def gen_text_definition(self) -> str:
         if hasattr(self, "text"):
             return f'"{self.text}"'
         else:
             return f'"{self.variable.name}=\({self.variable.name})"'
+
+    def gen_text_expected(self) -> str:
+        if hasattr(self, "text"):
+            return f'"{self.text}"'
+        else:
+            return f'"{self.variable.name}={self.variable.value}"'
 
 
 class Text(BodyNode):
@@ -272,7 +354,10 @@ class Text(BodyNode):
         self.text = TextText(view=view)
 
     def definition(self) -> list:
-        return indent([f"Text({self.text.gen_text()})"])
+        return indent([f"Text({self.text.gen_text_definition()})"])
+
+    def expected(self) -> list:
+        return indent([f"Text({self.text.gen_text_expected()})"])
 
 
 class ImageSource:
@@ -285,11 +370,17 @@ class ImageSource:
         else:
             self.variable = view.pick_variable()
 
-    def gen_source(self) -> str:
+    def gen_source_definition(self) -> str:
         if hasattr(self, "source"):
             return self.source
         else:
             return f"https://pictures.com/picture\({self.variable.name}).jpg"
+
+    def gen_source_expected(self) -> str:
+        if hasattr(self, "source"):
+            return self.source
+        else:
+            return f"https://pictures.com/picture{self.variable.value}.jpg"
 
 
 class Image(BodyNode):
@@ -298,7 +389,10 @@ class Image(BodyNode):
         self.source = ImageSource(view=view)
 
     def definition(self) -> list:
-        return indent([f'Image(source: "{self.source.gen_source()}")'])
+        return indent([f'Image(source: "{self.source.gen_source_definition()}")'])
+
+    def expected(self) -> list:
+        return indent([f'Image(source: "{self.source.gen_source_expected()}")'])
 
 
 class NestedView(BodyNode):
@@ -334,28 +428,63 @@ class NestedView(BodyNode):
         else:
             return self.nestedvariables[idx].name
 
-    def gen_flips(self) -> list:
+    def flip_expected(self, idx) -> str:
+        if isinstance(self.nestedflips[idx], str):
+            return self.nestedflips[idx]
+        else:
+            return self.nestedflips[idx].swiftValue
+
+    def variable_expected(self, idx) -> str:
+        if isinstance(self.nestedvariables[idx], str):
+            return self.nestedvariables[idx]
+        else:
+            return self.nestedvariables[idx].value
+
+    def gen_flips_definition(self) -> list:
         return [
             f"{flip.name}: {self.flip_definition(idx)}"
             for (idx, flip) in enumerate(self.nestedview.flips)
         ]
 
-    def gen_variables(self) -> list:
+    def gen_variables_definition(self) -> list:
         return [
             f"{variable.name}: {self.variable_definition(idx)}"
             for (idx, variable) in enumerate(self.nestedview.variables)
         ]
 
-    def gen_args(self) -> str:
+    def gen_args_definition(self) -> str:
         return ", ".join(
             [
-                *self.gen_flips(),
-                *self.gen_variables(),
+                *self.gen_flips_definition(),
+                *self.gen_variables_definition(),
             ]
         )
 
     def definition(self) -> list:
-        return indent([f"{self.nestedview.name}({self.gen_args()})"])
+        return indent([f"{self.nestedview.name}({self.gen_args_definition()})"])
+
+    def gen_flips_expected(self) -> list:
+        return [
+            f"{flip.name}: {self.flip_expected(idx)}"
+            for (idx, flip) in enumerate(self.nestedview.flips)
+        ]
+
+    def gen_variables_expected(self) -> list:
+        return [
+            f"{variable.name}: {self.variable_expected(idx)}"
+            for (idx, variable) in enumerate(self.nestedview.variables)
+        ]
+
+    def gen_args_expected(self) -> str:
+        return ", ".join(
+            [
+                *self.gen_flips_expected(),
+                *self.gen_variables_expected(),
+            ]
+        )
+
+    def expected(self) -> list:
+        return indent([f"{self.nestedview.name}({self.gen_args_expected()})"])
 
 
 class ViewBody:
@@ -372,6 +501,9 @@ class ViewBody:
             "        }",
         ]
 
+    def expected(self) -> list:
+        return self.node.expected()
+
 
 @dataclass
 class Variable:
@@ -383,6 +515,10 @@ class Variable:
 class Flip:
     name: str
     value: Optional[bool] = None
+
+    @property
+    def swiftValue(self) -> str:
+        return "true" if self.value else "false"
 
 
 class TestView:
@@ -419,7 +555,7 @@ class TestView:
         return f"{self.name}({', '.join(params)})"
 
     def gen_expected(self) -> list:
-        raise NotImplementedError()
+        return self.body.expected()
 
     def gen_flips(self) -> list:
         return [f"        let {flip.name}: Bool" for flip in self.flips]
@@ -479,8 +615,8 @@ class TestCase:
             "    }",
             "",
             "    static var expectedInitialTree: some View {",
-            f"        {self.root_testview.gen_expected()}",
-            "    }"
+            "    " + "\n".join(self.root_testview.gen_expected()),
+            "    }",
         ]
 
     def gen_views_definition(self) -> list:
