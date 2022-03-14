@@ -54,7 +54,11 @@ public struct ElementOperations {
     var updates: [ElementUpdate]
     var removals: [ElementRemoval]
 
-    init(insertions: [ElementInsertion] = [], updates: [ElementUpdate] = [], removals: [ElementRemoval] = []) {
+    init(
+        insertions: [ElementInsertion] = [],
+        updates: [ElementUpdate] = [],
+        removals: [ElementRemoval] = []
+    ) {
         self.insertions = insertions
         self.updates = updates
         self.removals = removals
@@ -68,5 +72,27 @@ public struct ElementOperations {
             updates: self.updates + operations.updates.map { $0.offsetBy(offset) },
             removals: self.removals + operations.removals.map { $0.offsetBy(offset) }
         )
+    }
+
+    /// Prints a summary of every operation as debug messages.
+    func debugSummary(nodeType: Any.Type) {
+        debug("------------------------------------------")
+        debug("Update operations summary for \(nodeType)")
+        debug("------------------------------------------")
+
+        debug("Updates:")
+        for update in self.updates {
+            debug("     - \(update.updatedView.elementType) \(update.position)")
+        }
+
+        debug("Removals:")
+        for removal in self.removals {
+            debug("     - \(removal.position)")
+        }
+
+        debug("Insertions:")
+        for insertion in self.insertions {
+            debug("     - \(insertion.newView.elementType) \(insertion.position)")
+        }
     }
 }

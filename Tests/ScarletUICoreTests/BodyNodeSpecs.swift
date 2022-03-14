@@ -24,34 +24,195 @@ import Nimble
 
 // TODO: Use a mock on the implementation to see if `update()`, `insert()` and `remove()` are called (remember to test that unnecessary updates are not performed if the view is equal)
 
-// TODO: Make a Python fuzzy tester that makes countless random test cases (in its own folder, one file per case, gitignored) -> every failing test has to be included here in its own test case for fixing
-
 /// Add every test case here
 fileprivate let cases: [BodyNodeTestCase.Type] = [
-    // Generic cases
-    NoInputTestCase.self,
-    UpdateTestCase.self,
-    OffsetsTestCase.self,
-    NestedViewTestCase.self,
-    // Optional cases
-    OptionalUpdateTestCase.self,
-    OptionalInsertionTestCase.self,
-    OptionalRemovalTestCase.self,
-    OptionalUnchangedTestCase.self,
-    NestedOptionalInsertionTestCase.self,
-    NestedOptionalRemovalTestCase.self,
-    NestedOptionalUpdateTestCase.self,
-    // Conditional casesw
-    UnbalancedConditionalTestCase.self,
-    BalancedConditionalTestCase.self,
-    ConditionalRemoveOptionalTestCase.self,
-    ConditionalAddOptionalTestCase.self,
-    EmptyFirstAddSecondConditionalTestCase.self,
-    EmptyFirstRemoveSecondConditionalTestCase.self,
-    EmptySecondAddFirstConditionalTestCase.self,
-    EmptySecondRemoveFirstConditionalTestCase.self,
-    NestedConditionalsTestCase.self,
+    // // Generic cases
+    // NoInputTestCase.self,
+    // UpdateTestCase.self,
+    // OffsetsTestCase.self,
+    // NestedViewTestCase.self,
+    // // Optional cases
+    // OptionalUpdateTestCase.self,
+    // OptionalInsertionTestCase.self,
+    // OptionalRemovalTestCase.self,
+    // OptionalUnchangedTestCase.self,
+    // NestedOptionalInsertionTestCase.self,
+    // NestedOptionalRemovalTestCase.self,
+    // NestedOptionalUpdateTestCase.self,
+    // // Conditional cases
+    // UnbalancedConditionalTestCase.self,
+    // BalancedConditionalTestCase.self,
+    // ConditionalRemoveOptionalTestCase.self,
+    // ConditionalAddOptionalTestCase.self,
+    // EmptyFirstAddSecondConditionalTestCase.self,
+    // EmptyFirstRemoveSecondConditionalTestCase.self,
+    // EmptySecondAddFirstConditionalTestCase.self,
+    // EmptySecondRemoveFirstConditionalTestCase.self,
+    // NestedConditionalsTestCase.self,
+    // Edge cases identified by fuzzer
+    TOBENAMED.self,
 ]
+
+struct TOBENAMED: BodyNodeTestCase {
+    struct Picture: View, Equatable {
+        let variable0: Int
+
+        var body: some View {
+            Image(source: "https://pictures.com/picture\(variable0).jpg")
+        }
+    }
+    struct TestView: View, Equatable {
+        let flip0: Bool
+        let flip1: Bool
+        let variable0: Int
+        let variable1: Int
+        let variable2: Int
+        let variable3: Int
+        let variable4: Int
+
+        var body: some View {
+            Row {
+                Row {
+                    // 0
+                    if flip0 {
+                        Text("Mouse")
+                    } else {
+                        Text("Doug")
+                    }
+                    // 1
+                    if flip0 {
+                        Text("Cat")
+                    } else if flip0 {
+                        Text("Apple")
+                    } else if flip1 {
+                        Image(source: "https://pictures.com/Switch.jpg")
+                    } else if flip1 {
+                        Image(source: "https://pictures.com/picture\(variable0).jpg")
+                    }
+                    // 2
+                    Column {
+                        Picture(variable0: variable1)
+                        Text("variable1=\(variable1)")
+                    }
+                    // 3
+                    Picture(variable0: 91)
+                    // 4
+                    Text("variable0=\(variable0)")
+                    if flip1 {
+                        Text("Chocolate")
+                    } else if flip0 {
+                        Text("variable1=\(variable1)")
+                    } else if flip1 {
+                        Text("variable1=\(variable1)")
+                    }
+                    Row {
+                        Text("Pear")
+                        Text("variable2=\(variable2)")
+                        Picture(variable0: variable3)
+                        Picture(variable0: variable1)
+                    }
+                    Image(source: "https://pictures.com/picture\(variable4).jpg")
+                }
+            }
+        }
+    }
+
+    static var initialView: TestView {
+        TestView(flip0: false, flip1: false, variable0: 42, variable1: 227, variable2: 28, variable3: 165, variable4: 97)
+    }
+
+    static var expectedInitialTree: some View {
+        Row {
+            Row {
+                // 0
+                if false {
+                    Text("Mouse")
+                } else {
+                    Text("Doug")
+                }
+                // 1
+                if false {
+                    Text("Cat")
+                } else if false {
+                    Text("Apple")
+                } else if false {
+                    Image(source: "https://pictures.com/Switch.jpg")
+                } else if false {
+                    Image(source: "https://pictures.com/picture42.jpg")
+                }
+                // 2
+                Column {
+                    Picture(variable0: 227)
+                    Text("variable1=227")
+                }
+                // 3
+                Picture(variable0: 91)
+                // 4
+                Text("variable0=42")
+                // 5
+                if false {
+                    Text("Chocolate")
+                } else if false {
+                    Text("variable1=227")
+                } else if false {
+                    Text("variable1=227")
+                }
+                Row {
+                    Text("Pear")
+                    Text("variable2=28")
+                    Picture(variable0: 165)
+                    Picture(variable0: 227)
+                }
+                Image(source: "https://pictures.com/picture97.jpg")
+            }
+        }
+    }
+
+    static var updatedView: TestView {
+        TestView(flip0: true, flip1: true, variable0: 149, variable1: 195, variable2: 59, variable3: 101, variable4: 3)
+    }
+
+    static var expectedUpdatedTree: some View {
+        Row {
+            Row {
+                if true {
+                    Text("Mouse")
+                } else {
+                    Text("Doug")
+                }
+                if true {
+                    Text("Cat")
+                } else if true {
+                    Text("Apple")
+                } else if true {
+                    Image(source: "https://pictures.com/Switch.jpg")
+                } else if true {
+                    Image(source: "https://pictures.com/picture149.jpg")
+                }
+                Column {
+                    Picture(variable0: 195)
+                    Text("variable1=195")
+                }
+                Picture(variable0: 91)
+                Text("variable0=149")
+                if true {
+                    Text("Chocolate")
+                } else if true {
+                    Text("variable1=195")
+                } else if true {
+                    Text("variable1=195")
+                }
+                Row {
+                    Text("Pear")
+                    Text("variable2=59")
+                    Picture(variable0: 101)
+                    Picture(variable0: 195)
+                }
+                Image(source: "https://pictures.com/picture3.jpg")
+            }
+        }
+    }
+}
 
 /// Test with multiple internal views.
 struct NestedViewTestCase: BodyNodeTestCase {
@@ -1557,8 +1718,8 @@ extension BodyNode {
         let description = "mounted views count of \(self.body.elementType) is different (\(self.listMountedViews()) VS. \(other.listMountedViews()))"
         expect(self.mountedElements.count).to(equal(other.mountedElements.count), description: description)
 
-        for (lhs, rhs) in zip(self.mountedElements, other.mountedElements) {
-            lhs.expectToBe(rhs)
+        for (n, (lhs, rhs)) in zip(self.mountedElements, other.mountedElements).enumerated() {
+            lhs.expectToBe(rhs, position: n, bodyType: self.body.elementType)
         }
     }
 
@@ -1584,9 +1745,9 @@ extension AnyElement {
 
 extension MountedElement{
     /// Runs assertions to check that this mounted element is equal to the given one.
-    func expectToBe(_ other: MountedElement) {
+    func expectToBe(_ other: MountedElement, position: Int, bodyType: Any.Type) {
         // Check that the element is equal
-        self.element.expectToBe(other.element, propertyName: "`MountedElement` view")
+        self.element.expectToBe(other.element, propertyName: "#\(position) MountedElement's view of body node \(bodyType)")
 
         // Check that the body node is equal
         self.children.expectToBe(other.children)

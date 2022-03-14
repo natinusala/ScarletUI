@@ -39,7 +39,11 @@ struct BodyNode {
     mutating func update(next: BodyNode) {
         // Call `makeViews` on the new node giving ourselves as the previous node
         // to get the list of changes to apply
-        self.applyOperations(next.makeViews(previous: self))
+        let operations = next.makeViews(previous: self)
+
+        operations.debugSummary(nodeType: self.body.elementType)
+
+        self.applyOperations(operations)
 
         // Update `body` property once every operation is applied
         self.body = next.body

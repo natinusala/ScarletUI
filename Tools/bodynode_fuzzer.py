@@ -602,6 +602,8 @@ class TestCase:
             *self.gen_views_definition(),
             "",
             *self.gen_initial(),
+            "",
+            *self.gen_updated(),
             "}",
         ]
 
@@ -615,6 +617,20 @@ class TestCase:
             "    }",
             "",
             "    static var expectedInitialTree: some View {",
+            "    " + "\n".join(self.root_testview.gen_expected()),
+            "    }",
+        ]
+
+    def gen_updated(self) -> list:
+        # Give random values to all flips and variables
+        self.root_testview.populate_input()
+
+        return [
+            f"    static var updatedView: {self.root_testview.name} {{",
+            f"        {self.root_testview.gen_constructor()}",
+            "    }",
+            "",
+            "    static var expectedUpdatedTree: some View {",
             "    " + "\n".join(self.root_testview.gen_expected()),
             "    }",
         ]
