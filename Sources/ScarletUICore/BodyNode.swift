@@ -25,7 +25,7 @@ struct BodyNode {
         self.body = AnyElement(view: body)
     }
 
-    private func makeViews(previous: BodyNode?) -> ElementOperations {
+    private func makeViews(previous: BodyNode?) -> [ElementOperation] {
         if let previous = previous {
             if self.body.elementType != previous.body.elementType {
                 fatalError("`makeViews(previous:)` called with two bodies of a different type: `\(self.body.elementType)` and `\(previous.body.elementType)`")
@@ -59,39 +59,52 @@ struct BodyNode {
     }
 
     /// Mutates the body node to apply given operations.
-    private mutating func applyOperations(_ operations: ElementOperations) {
-        // Avoid mutating the list to preserve the original elements positions,
-        // otherwise we won't be able to apply all operations:
-        //  - Process updates
-        //  - Mark all elements that need to be removed
-        //  - Process insertions, this will mutate the list but it doesn't matter anymore
-        //  - Filter the list to remove those marked previously
-
-        // Start with updates
-        for update in operations.updates {
-            debug("  -> Updating \(update.updatedView.elementType) at position \(update.position)")
-            self.updateElement(at: update.position, with: update.updatedView)
+    private mutating func applyOperations(_ operations: [ElementOperation]) {
+        for operation in operations {
+            switch operation {
+                case let .insertion(element, position):
+                    self.insertElement(element: element, at: position)
+                case let .update(newElement, position):
+                    self.updateElement(at: position, with: newElement)
+                case let .removal(position):
+                    self.removeElement(at: position)
+            }
         }
 
-        // Mark removals
-        for removal in operations.removals {
-            debug("  -> Removing \(self.mountedElements[removal.position].element.elementType)")
-            self.mountedElements[removal.position].toBeRemoved = true
-        }
+        // // Avoid mutating the list to preserve the original elements positions,
+        // // otherwise we won't be able to apply all operations:
+        // //  - Process updates
+        // //  - Mark all elements that need to be removed
+        // //  - Process insertions, this will mutate the list but it doesn't matter anymore
+        // //  - Filter the list to remove those marked previously
 
-        // Process insertions
-        for insertion in operations.insertions {
-            debug("  -> Inserting \(insertion.newView.elementType)")
-            self.insertElement(element: insertion.newView, at: insertion.position)
-        }
+        // // Start with updates
+        // for update in operations.updates {
+        //     debug("  -> Updating \(update.updatedView.elementType) at position \(update.position)")
+        //     self.updateElement(at: update.position, with: update.updatedView)
+        // }
 
-        // Sweep the list for removed elements
-        self.mountedElements = self.mountedElements.filter { !$0.toBeRemoved }
+        // // Mark removals
+        // for removal in operations.removals {
+        //     debug("  -> Removing \(self.mountedElements[removal.position].element.elementType)")
+        //     self.mountedElements[removal.position].toBeRemoved = true
+        // }
+
+        // // Process insertions
+        // for insertion in operations.insertions {
+        //     debug("  -> Inserting \(insertion.newView.elementType)")
+        //     self.insertElement(element: insertion.newView, at: insertion.position)
+        // }
+
+        // // Sweep the list for removed elements
+        // self.mountedElements = self.mountedElements.filter { !$0.toBeRemoved }
     }
 
     /// Updates the element at the given position with its new version.
     mutating func updateElement(at position: ElementPosition, with newElement: AnyElement) {
-        let mountedView = self.mountedElements[position]
+        guard let mountedView = self.mountedElements[safe: position] else {
+            fatalError("Cannot update \(newElement.elementType) at position \(position): array index out of range")
+        }
 
         // Compare the two elements to detect any change
         debug("Comparing \(mountedView.element.elementType) with \(newElement.elementType)")
@@ -120,6 +133,15 @@ struct BodyNode {
 
         // Insert the element
         self.mountedElements.insert(mountedView, at: position)
+    }
+
+    /// Removes the element at the given position.
+    mutating func removeElement(at position: ElementPosition) {
+        guard position < self.mountedElements.count else {
+            fatalError("Cannot remove element at position \(position) from body node \(self.body.elementType): array index out of range")
+        }
+
+        self.mountedElements.remove(at: position)
     }
 
     func printTree(indent: Int = 0) {

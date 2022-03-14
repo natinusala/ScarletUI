@@ -16,14 +16,14 @@
 
 /// A type-erased app, scene or view, used internally to access its properties.
 /// TODO: needs to be a class to prevent duplications between `body` and `children` inside `BodyNode`.
-class AnyElement: CustomStringConvertible {
+public class AnyElement: CustomStringConvertible {
     var element: TreeNodeMetadata
     var elementType: Any.Type
 
     var isLeaf: Bool
 
     internal var bodyClosure: (Any) -> BodyNode
-    internal var makeClosure: (Any, BodyNode?) -> ElementOperations
+    internal var makeClosure: (Any, BodyNode?) -> [ElementOperation]
     internal var equalsClosure: (Any, AnyElement) -> Bool
 
     init<V: View>(view: V) {
@@ -63,11 +63,11 @@ class AnyElement: CustomStringConvertible {
         return self.equalsClosure(self.element, other)
     }
 
-    func make(previous: BodyNode?) -> ElementOperations {
+    func make(previous: BodyNode?) -> [ElementOperation] {
         return self.makeClosure(self.element, previous)
     }
 
-    var description: String {
+    public var description: String {
         return "AnyElement<\(self.elementType)>"
     }
 }

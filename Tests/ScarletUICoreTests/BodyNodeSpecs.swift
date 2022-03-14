@@ -26,34 +26,34 @@ import Nimble
 
 /// Add every test case here
 fileprivate let cases: [BodyNodeTestCase.Type] = [
-    // // Generic cases
-    // NoInputTestCase.self,
-    // UpdateTestCase.self,
-    // OffsetsTestCase.self,
-    // NestedViewTestCase.self,
-    // // Optional cases
-    // OptionalUpdateTestCase.self,
-    // OptionalInsertionTestCase.self,
-    // OptionalRemovalTestCase.self,
-    // OptionalUnchangedTestCase.self,
-    // NestedOptionalInsertionTestCase.self,
-    // NestedOptionalRemovalTestCase.self,
-    // NestedOptionalUpdateTestCase.self,
-    // // Conditional cases
-    // UnbalancedConditionalTestCase.self,
-    // BalancedConditionalTestCase.self,
-    // ConditionalRemoveOptionalTestCase.self,
-    // ConditionalAddOptionalTestCase.self,
-    // EmptyFirstAddSecondConditionalTestCase.self,
-    // EmptyFirstRemoveSecondConditionalTestCase.self,
-    // EmptySecondAddFirstConditionalTestCase.self,
-    // EmptySecondRemoveFirstConditionalTestCase.self,
-    // NestedConditionalsTestCase.self,
-    // Edge cases identified by fuzzer
-    TOBENAMED.self,
+    // Generic cases
+    NoInputTestCase.self,
+    UpdateTestCase.self,
+    OffsetsTestCase.self,
+    NestedViewTestCase.self,
+    // Optional cases
+    OptionalUpdateTestCase.self,
+    OptionalInsertionTestCase.self,
+    OptionalRemovalTestCase.self,
+    OptionalUnchangedTestCase.self,
+    NestedOptionalInsertionTestCase.self,
+    NestedOptionalRemovalTestCase.self,
+    NestedOptionalUpdateTestCase.self,
+    // Conditional cases
+    UnbalancedConditionalTestCase.self,
+    BalancedConditionalTestCase.self,
+    ConditionalRemoveOptionalTestCase.self,
+    ConditionalAddOptionalTestCase.self,
+    EmptyFirstAddSecondConditionalTestCase.self,
+    EmptyFirstRemoveSecondConditionalTestCase.self,
+    EmptySecondAddFirstConditionalTestCase.self,
+    EmptySecondRemoveFirstConditionalTestCase.self,
+    NestedConditionalsTestCase.self,
+    ConsecutiveConditionalsInsertionTestCase.self,
 ]
 
-struct TOBENAMED: BodyNodeTestCase {
+/// Tests two consecutive conditionals that perform an insertion.
+struct ConsecutiveConditionalsInsertionTestCase: BodyNodeTestCase {
     struct Picture: View, Equatable {
         let variable0: Int
 

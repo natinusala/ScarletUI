@@ -26,13 +26,9 @@ public protocol View: TreeNodeMetadata {
     /// Compares this view with its previous version and tells what needs to be done
     /// to the expanded views list in order to migrate from the old version to the new one.
     ///
-    /// Ranges in returned operations are relative to this view's expanded list.
-    /// If called recursively, the caller needs to offset the ranges to translate them
-    /// and make them fit into its own expanded list.
-    ///
-    /// Order is not important. Positions should match the initial expanded list, without
-    /// considering previous operations that might mutate the list and shuffle positions.
-    static func makeViews(view: Self, previous: Self?) -> ElementOperations
+    /// Positions in returned operations are relative to the views list considering all previous
+    /// operations are applied. Order is therefore important.
+    static func makeViews(view: Self, previous: Self?) -> [ElementOperation]
 
     /// Returns the number of expanded views that make that view.
     static func viewsCount(view: Self) -> Int
@@ -41,14 +37,14 @@ public protocol View: TreeNodeMetadata {
 public extension View {
     /// Default implementation of `makeViews`: insert or update the view.
     /// Removal is handled by its parent view (`Optional` or `ConditionalView`).
-    static func makeViews(view: Self, previous: Self?) -> ElementOperations {
+    static func makeViews(view: Self, previous: Self?) -> [ElementOperation] {
         debug("Calling View makeViews on \(Self.self) - previous: \(previous == nil ? "no" : "yes")")
 
         if previous == nil {
-            return ElementOperations(insertions: [ElementInsertion(newView: AnyElement(view: view), position: 0)])
+            return [.insertion(element: AnyElement(view: view), position: 0)]
         }
 
-        return ElementOperations(updates: [ElementUpdate(updatedView: AnyElement(view: view), position: 0)])
+        return [.update(newElement: AnyElement(view: view), position: 0)]
     }
 
     /// Default implementation of `viewsCount`: one view, itself.

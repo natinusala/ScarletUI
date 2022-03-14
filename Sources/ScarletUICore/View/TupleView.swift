@@ -23,7 +23,7 @@ public struct TupleView2<C0, C1>: View where C0: View, C1: View {
     let c0: C0
     let c1: C1
 
-    public  static func makeViews(view: Self, previous: Self?) -> ElementOperations {
+    public static func makeViews(view: Self, previous: Self?) -> [ElementOperation] {
         let c0Operations = C0.makeViews(view: view.c0, previous: previous?.c0)
         let c1Operations = C1.makeViews(view: view.c1, previous: previous?.c1)
 
@@ -31,7 +31,7 @@ public struct TupleView2<C0, C1>: View where C0: View, C1: View {
         let c1Offset: Int
 
         if let previous = previous {
-            c1Offset = C0.viewsCount(view: previous.c0) + c0Offset
+            c1Offset = C0.viewsCount(view: view.c0) + c0Offset
         } else {
             c1Offset = C0.viewsCount(view: view.c0) + c0Offset
         }
@@ -68,7 +68,7 @@ public struct TupleView3<C0, C1, C2>: View where C0: View, C1: View, C2: View {
     let c1: C1
     let c2: C2
 
-    public  static func makeViews(view: Self, previous: Self?) -> ElementOperations {
+    public static func makeViews(view: Self, previous: Self?) -> [ElementOperation] {
         let c0Operations = C0.makeViews(view: view.c0, previous: previous?.c0)
         let c1Operations = C1.makeViews(view: view.c1, previous: previous?.c1)
         let c2Operations = C2.makeViews(view: view.c2, previous: previous?.c2)
@@ -78,8 +78,8 @@ public struct TupleView3<C0, C1, C2>: View where C0: View, C1: View, C2: View {
         let c2Offset: Int
 
         if let previous = previous {
-            c1Offset = C0.viewsCount(view: previous.c0) + c0Offset
-            c2Offset = C1.viewsCount(view: previous.c1) + c1Offset
+            c1Offset = C0.viewsCount(view: view.c0) + c0Offset
+            c2Offset = C1.viewsCount(view: view.c1) + c1Offset
         } else {
             c1Offset = C0.viewsCount(view: view.c0) + c0Offset
             c2Offset = C1.viewsCount(view: view.c1) + c1Offset
@@ -121,7 +121,7 @@ public struct TupleView4<C0, C1, C2, C3>: View where C0: View, C1: View, C2: Vie
     let c2: C2
     let c3: C3
 
-    public  static func makeViews(view: Self, previous: Self?) -> ElementOperations {
+    public static func makeViews(view: Self, previous: Self?) -> [ElementOperation] {
         let c0Operations = C0.makeViews(view: view.c0, previous: previous?.c0)
         let c1Operations = C1.makeViews(view: view.c1, previous: previous?.c1)
         let c2Operations = C2.makeViews(view: view.c2, previous: previous?.c2)
@@ -133,9 +133,9 @@ public struct TupleView4<C0, C1, C2, C3>: View where C0: View, C1: View, C2: Vie
         let c3Offset: Int
 
         if let previous = previous {
-            c1Offset = C0.viewsCount(view: previous.c0) + c0Offset
-            c2Offset = C1.viewsCount(view: previous.c1) + c1Offset
-            c3Offset = C2.viewsCount(view: previous.c2) + c2Offset
+            c1Offset = C0.viewsCount(view: view.c0) + c0Offset
+            c2Offset = C1.viewsCount(view: view.c1) + c1Offset
+            c3Offset = C2.viewsCount(view: view.c2) + c2Offset
         } else {
             c1Offset = C0.viewsCount(view: view.c0) + c0Offset
             c2Offset = C1.viewsCount(view: view.c1) + c1Offset
@@ -182,7 +182,7 @@ public struct TupleView5<C0, C1, C2, C3, C4>: View where C0: View, C1: View, C2:
     let c3: C3
     let c4: C4
 
-    public  static func makeViews(view: Self, previous: Self?) -> ElementOperations {
+    public static func makeViews(view: Self, previous: Self?) -> [ElementOperation] {
         let c0Operations = C0.makeViews(view: view.c0, previous: previous?.c0)
         let c1Operations = C1.makeViews(view: view.c1, previous: previous?.c1)
         let c2Operations = C2.makeViews(view: view.c2, previous: previous?.c2)
@@ -196,10 +196,10 @@ public struct TupleView5<C0, C1, C2, C3, C4>: View where C0: View, C1: View, C2:
         let c4Offset: Int
 
         if let previous = previous {
-            c1Offset = C0.viewsCount(view: previous.c0) + c0Offset
-            c2Offset = C1.viewsCount(view: previous.c1) + c1Offset
-            c3Offset = C2.viewsCount(view: previous.c2) + c2Offset
-            c4Offset = C3.viewsCount(view: previous.c3) + c3Offset
+            c1Offset = C0.viewsCount(view: view.c0) + c0Offset
+            c2Offset = C1.viewsCount(view: view.c1) + c1Offset
+            c3Offset = C2.viewsCount(view: view.c2) + c2Offset
+            c4Offset = C3.viewsCount(view: view.c3) + c3Offset
         } else {
             c1Offset = C0.viewsCount(view: view.c0) + c0Offset
             c2Offset = C1.viewsCount(view: view.c1) + c1Offset
@@ -251,7 +251,7 @@ public struct TupleView6<C0, C1, C2, C3, C4, C5>: View where C0: View, C1: View,
     let c4: C4
     let c5: C5
 
-    public  static func makeViews(view: Self, previous: Self?) -> ElementOperations {
+    public static func makeViews(view: Self, previous: Self?) -> [ElementOperation] {
         let c0Operations = C0.makeViews(view: view.c0, previous: previous?.c0)
         let c1Operations = C1.makeViews(view: view.c1, previous: previous?.c1)
         let c2Operations = C2.makeViews(view: view.c2, previous: previous?.c2)
@@ -267,11 +267,11 @@ public struct TupleView6<C0, C1, C2, C3, C4, C5>: View where C0: View, C1: View,
         let c5Offset: Int
 
         if let previous = previous {
-            c1Offset = C0.viewsCount(view: previous.c0) + c0Offset
-            c2Offset = C1.viewsCount(view: previous.c1) + c1Offset
-            c3Offset = C2.viewsCount(view: previous.c2) + c2Offset
-            c4Offset = C3.viewsCount(view: previous.c3) + c3Offset
-            c5Offset = C4.viewsCount(view: previous.c4) + c4Offset
+            c1Offset = C0.viewsCount(view: view.c0) + c0Offset
+            c2Offset = C1.viewsCount(view: view.c1) + c1Offset
+            c3Offset = C2.viewsCount(view: view.c2) + c2Offset
+            c4Offset = C3.viewsCount(view: view.c3) + c3Offset
+            c5Offset = C4.viewsCount(view: view.c4) + c4Offset
         } else {
             c1Offset = C0.viewsCount(view: view.c0) + c0Offset
             c2Offset = C1.viewsCount(view: view.c1) + c1Offset
@@ -328,7 +328,7 @@ public struct TupleView7<C0, C1, C2, C3, C4, C5, C6>: View where C0: View, C1: V
     let c5: C5
     let c6: C6
 
-    public  static func makeViews(view: Self, previous: Self?) -> ElementOperations {
+    public static func makeViews(view: Self, previous: Self?) -> [ElementOperation] {
         let c0Operations = C0.makeViews(view: view.c0, previous: previous?.c0)
         let c1Operations = C1.makeViews(view: view.c1, previous: previous?.c1)
         let c2Operations = C2.makeViews(view: view.c2, previous: previous?.c2)
@@ -346,12 +346,12 @@ public struct TupleView7<C0, C1, C2, C3, C4, C5, C6>: View where C0: View, C1: V
         let c6Offset: Int
 
         if let previous = previous {
-            c1Offset = C0.viewsCount(view: previous.c0) + c0Offset
-            c2Offset = C1.viewsCount(view: previous.c1) + c1Offset
-            c3Offset = C2.viewsCount(view: previous.c2) + c2Offset
-            c4Offset = C3.viewsCount(view: previous.c3) + c3Offset
-            c5Offset = C4.viewsCount(view: previous.c4) + c4Offset
-            c6Offset = C5.viewsCount(view: previous.c5) + c5Offset
+            c1Offset = C0.viewsCount(view: view.c0) + c0Offset
+            c2Offset = C1.viewsCount(view: view.c1) + c1Offset
+            c3Offset = C2.viewsCount(view: view.c2) + c2Offset
+            c4Offset = C3.viewsCount(view: view.c3) + c3Offset
+            c5Offset = C4.viewsCount(view: view.c4) + c4Offset
+            c6Offset = C5.viewsCount(view: view.c5) + c5Offset
         } else {
             c1Offset = C0.viewsCount(view: view.c0) + c0Offset
             c2Offset = C1.viewsCount(view: view.c1) + c1Offset
@@ -413,7 +413,7 @@ public struct TupleView8<C0, C1, C2, C3, C4, C5, C6, C7>: View where C0: View, C
     let c6: C6
     let c7: C7
 
-    public  static func makeViews(view: Self, previous: Self?) -> ElementOperations {
+    public static func makeViews(view: Self, previous: Self?) -> [ElementOperation] {
         let c0Operations = C0.makeViews(view: view.c0, previous: previous?.c0)
         let c1Operations = C1.makeViews(view: view.c1, previous: previous?.c1)
         let c2Operations = C2.makeViews(view: view.c2, previous: previous?.c2)
@@ -433,13 +433,13 @@ public struct TupleView8<C0, C1, C2, C3, C4, C5, C6, C7>: View where C0: View, C
         let c7Offset: Int
 
         if let previous = previous {
-            c1Offset = C0.viewsCount(view: previous.c0) + c0Offset
-            c2Offset = C1.viewsCount(view: previous.c1) + c1Offset
-            c3Offset = C2.viewsCount(view: previous.c2) + c2Offset
-            c4Offset = C3.viewsCount(view: previous.c3) + c3Offset
-            c5Offset = C4.viewsCount(view: previous.c4) + c4Offset
-            c6Offset = C5.viewsCount(view: previous.c5) + c5Offset
-            c7Offset = C6.viewsCount(view: previous.c6) + c6Offset
+            c1Offset = C0.viewsCount(view: view.c0) + c0Offset
+            c2Offset = C1.viewsCount(view: view.c1) + c1Offset
+            c3Offset = C2.viewsCount(view: view.c2) + c2Offset
+            c4Offset = C3.viewsCount(view: view.c3) + c3Offset
+            c5Offset = C4.viewsCount(view: view.c4) + c4Offset
+            c6Offset = C5.viewsCount(view: view.c5) + c5Offset
+            c7Offset = C6.viewsCount(view: view.c6) + c6Offset
         } else {
             c1Offset = C0.viewsCount(view: view.c0) + c0Offset
             c2Offset = C1.viewsCount(view: view.c1) + c1Offset
@@ -506,7 +506,7 @@ public struct TupleView9<C0, C1, C2, C3, C4, C5, C6, C7, C8>: View where C0: Vie
     let c7: C7
     let c8: C8
 
-    public  static func makeViews(view: Self, previous: Self?) -> ElementOperations {
+    public static func makeViews(view: Self, previous: Self?) -> [ElementOperation] {
         let c0Operations = C0.makeViews(view: view.c0, previous: previous?.c0)
         let c1Operations = C1.makeViews(view: view.c1, previous: previous?.c1)
         let c2Operations = C2.makeViews(view: view.c2, previous: previous?.c2)
@@ -528,14 +528,14 @@ public struct TupleView9<C0, C1, C2, C3, C4, C5, C6, C7, C8>: View where C0: Vie
         let c8Offset: Int
 
         if let previous = previous {
-            c1Offset = C0.viewsCount(view: previous.c0) + c0Offset
-            c2Offset = C1.viewsCount(view: previous.c1) + c1Offset
-            c3Offset = C2.viewsCount(view: previous.c2) + c2Offset
-            c4Offset = C3.viewsCount(view: previous.c3) + c3Offset
-            c5Offset = C4.viewsCount(view: previous.c4) + c4Offset
-            c6Offset = C5.viewsCount(view: previous.c5) + c5Offset
-            c7Offset = C6.viewsCount(view: previous.c6) + c6Offset
-            c8Offset = C7.viewsCount(view: previous.c7) + c7Offset
+            c1Offset = C0.viewsCount(view: view.c0) + c0Offset
+            c2Offset = C1.viewsCount(view: view.c1) + c1Offset
+            c3Offset = C2.viewsCount(view: view.c2) + c2Offset
+            c4Offset = C3.viewsCount(view: view.c3) + c3Offset
+            c5Offset = C4.viewsCount(view: view.c4) + c4Offset
+            c6Offset = C5.viewsCount(view: view.c5) + c5Offset
+            c7Offset = C6.viewsCount(view: view.c6) + c6Offset
+            c8Offset = C7.viewsCount(view: view.c7) + c7Offset
         } else {
             c1Offset = C0.viewsCount(view: view.c0) + c0Offset
             c2Offset = C1.viewsCount(view: view.c1) + c1Offset
@@ -607,7 +607,7 @@ public struct TupleView10<C0, C1, C2, C3, C4, C5, C6, C7, C8, C9>: View where C0
     let c8: C8
     let c9: C9
 
-    public  static func makeViews(view: Self, previous: Self?) -> ElementOperations {
+    public static func makeViews(view: Self, previous: Self?) -> [ElementOperation] {
         let c0Operations = C0.makeViews(view: view.c0, previous: previous?.c0)
         let c1Operations = C1.makeViews(view: view.c1, previous: previous?.c1)
         let c2Operations = C2.makeViews(view: view.c2, previous: previous?.c2)
@@ -631,15 +631,15 @@ public struct TupleView10<C0, C1, C2, C3, C4, C5, C6, C7, C8, C9>: View where C0
         let c9Offset: Int
 
         if let previous = previous {
-            c1Offset = C0.viewsCount(view: previous.c0) + c0Offset
-            c2Offset = C1.viewsCount(view: previous.c1) + c1Offset
-            c3Offset = C2.viewsCount(view: previous.c2) + c2Offset
-            c4Offset = C3.viewsCount(view: previous.c3) + c3Offset
-            c5Offset = C4.viewsCount(view: previous.c4) + c4Offset
-            c6Offset = C5.viewsCount(view: previous.c5) + c5Offset
-            c7Offset = C6.viewsCount(view: previous.c6) + c6Offset
-            c8Offset = C7.viewsCount(view: previous.c7) + c7Offset
-            c9Offset = C8.viewsCount(view: previous.c8) + c8Offset
+            c1Offset = C0.viewsCount(view: view.c0) + c0Offset
+            c2Offset = C1.viewsCount(view: view.c1) + c1Offset
+            c3Offset = C2.viewsCount(view: view.c2) + c2Offset
+            c4Offset = C3.viewsCount(view: view.c3) + c3Offset
+            c5Offset = C4.viewsCount(view: view.c4) + c4Offset
+            c6Offset = C5.viewsCount(view: view.c5) + c5Offset
+            c7Offset = C6.viewsCount(view: view.c6) + c6Offset
+            c8Offset = C7.viewsCount(view: view.c7) + c7Offset
+            c9Offset = C8.viewsCount(view: view.c8) + c8Offset
         } else {
             c1Offset = C0.viewsCount(view: view.c0) + c0Offset
             c2Offset = C1.viewsCount(view: view.c1) + c1Offset

@@ -26,7 +26,7 @@ public struct ConditionalView<FirstContent, SecondContent>: View where FirstCont
 
     let storage: Storage
 
-    public static func makeViews(view: Self, previous: Self?) -> ElementOperations {
+    public static func makeViews(view: Self, previous: Self?) -> [ElementOperation] {
         // If there is no previous node, always insert (by giving no previous node)
         guard let previous = previous else {
             switch view.storage {
@@ -50,23 +50,28 @@ public struct ConditionalView<FirstContent, SecondContent>: View where FirstCont
         }
     }
 
-    /// Returns a view operations that's a replacement of every view with the given new view.
-    private static func replace(count: Int, newView: Storage) -> ElementOperations {
-        var operations = ElementOperations()
+    /// Returns view operations making a replacement of every view with the given new view.
+    private static func replace(count: Int, newView: Storage) -> [ElementOperation] {
+        var operations = [ElementOperation]()
 
         // Remove every view
-        for i in 0..<count {
-            operations.removals.append(ElementRemoval(position: i))
-        }
+        // As every removal shifts the list to the left, we need to remove N times
+        // the 1st element
+        operations = Array(0..<count).map { _ in .removal(position: 0) }
 
-        // Make an insertion operation by calling `makeViews` on the new view without
+        // Make insertion operations by calling `makeViews` on the new view without
         // giving a previous one
+        let insertions: [ElementOperation]
         switch newView {
             case let .first(view):
-                return operations.appendAndOffset(operations: FirstContent.makeViews(view: view, previous: nil), offset: 0)
+                insertions = FirstContent.makeViews(view: view, previous: nil)
             case let .second(view):
-                return operations.appendAndOffset(operations: SecondContent.makeViews(view: view, previous: nil), offset: 0)
+                insertions = SecondContent.makeViews(view: view, previous: nil)
         }
+
+        operations.append(contentsOf: insertions)
+
+        return operations
     }
 
     public static func viewsCount(view: Self) -> Int {

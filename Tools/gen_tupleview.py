@@ -64,7 +64,7 @@ def gen_makeviews(i: int) -> list:
         def gen_previous() -> list:
             """Generate offsets for when there is a previous view."""
             return [
-                f"            c{ci}Offset = C{ci-1}.viewsCount(view: previous.c{ci-1}) + c{ci-1}Offset"
+                f"            c{ci}Offset = C{ci-1}.viewsCount(view: view.c{ci-1}) + c{ci-1}Offset"
                 for ci in range(1, i)
             ]
 
@@ -103,7 +103,7 @@ def gen_makeviews(i: int) -> list:
         return [result]
 
     return [
-        "    public  static func makeViews(view: Self, previous: Self?) -> ElementOperations {",
+        "    public static func makeViews(view: Self, previous: Self?) -> [ElementOperation] {",
         *gen_operations(),
         "",
         *gen_offsets(),
