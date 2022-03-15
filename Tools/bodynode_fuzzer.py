@@ -20,10 +20,10 @@ from itertools import chain
 from typing import List, Optional
 from random import choice, randint, choices
 
-# Use `swift test -Xswiftc -D -Xswiftc ENABLE_FUZZER` to run the fuzzer after running this Python script
+# Use `swift test -Xswiftc -D -Xswiftc ENABLE_FUZZER -Xswiftc -suppress-warnings` to run the fuzzer after running this Python script
 
 output = Path("Tests") / "ScarletUICoreTests" / "BodyNodeFuzzerTests"
-count = 10  # how many tests to generate?
+count = 1000  # how many tests to generate?
 maxdepth = 3  # maximum depth of generated views body TODO: randomize for each test case
 maxflips = 5  # maximum number of flips inside each test view
 maxvars = 5  # maximum number of variables inside each test view
@@ -678,38 +678,6 @@ for test in range(0, count):
 # Generate the specs file
 specs = output / "BodyNodeFuzzerTests.swift"
 
-specs_func = """        for testCase in cases {
-            describe("body node for \(testCase)") {
-                it("creates the initial view tree") {
-                    var node = testCase.initialViewBodyNode
-                    node.initialMount()
-
-                    var expectedNode = testCase.expectedInitialViewBodyNode
-                    expectedNode.initialMount()
-
-                    node.expectToBe(expectedNode)
-                }
-
-                it("applies updates") {
-                    // Create and mount initial node
-                    var node = testCase.initialViewNode
-                    node.initialMount()
-
-                    // Create updated node, apply updates to the initial node
-                    let updatedNode = testCase.updatedViewNode
-                    node.update(next: updatedNode)
-
-                    // Create initial node
-                    var expectedNode = testCase.expectedUpdatedViewBodyNode
-                    expectedNode.initialMount()
-
-                    // Assert that the 1st mounted view (our initial view) is now updated
-                    node.mountedElements[0].children!.expectToBe(expectedNode)
-                }
-            }
-        }
-"""
-
 
 def gen_cases() -> list:
     """Generates the `cases` variable."""
@@ -725,13 +693,13 @@ lines = [
     "import Nimble",
     "@testable import ScarletUICore",
     "",
-    "fileprivate let cases: [BodyNodeTestCase.Type] = [",
+    "fileprivate let specs: [BodyNodeTestCaseSpecs.Type] = [",
     *gen_cases(),
     "]",
     "",
     "class BodyNodeFuzzerTests: QuickSpec {",
     "    override func spec() {",
-    specs_func,
+    "        for spec in specs { spec.spec() }",
     "    }",
     "}",
 ]

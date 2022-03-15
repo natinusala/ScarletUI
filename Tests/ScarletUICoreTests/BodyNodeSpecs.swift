@@ -25,7 +25,7 @@ import Nimble
 // TODO: Use a mock on the implementation to see if `update()`, `insert()` and `remove()` are called (remember to test that unnecessary updates are not performed if the view is equal)
 
 /// Add every test case here
-fileprivate let cases: [BodyNodeTestCase.Type] = [
+fileprivate let specs: [BodyNodeTestCaseSpecs.Type] = [
     // Generic cases
     NoInputTestCase.self,
     UpdateTestCase.self,
@@ -1623,40 +1623,17 @@ struct OptionalRemovalTestCase: BodyNodeTestCase {
 /// view input is changed, the body is re-evaluated and the resulting tree is controlled.
 class BodyNodeSpecs: QuickSpec {
     override func spec() {
-        for testCase in cases {
-            describe("body node for \(testCase)") {
-                it("creates the initial view tree") {
-                    var node = testCase.initialViewBodyNode
-                    node.initialMount()
-
-                    var expectedNode = testCase.expectedInitialViewBodyNode
-                    expectedNode.initialMount()
-
-                    node.expectToBe(expectedNode)
-                }
-
-                it("applies updates") {
-                    // Create and mount initial node
-                    var node = testCase.initialViewNode
-                    node.initialMount()
-
-                    // Create updated node, apply updates to the initial node
-                    let updatedNode = testCase.updatedViewNode
-                    node.update(next: updatedNode)
-
-                    // Create initial node
-                    var expectedNode = testCase.expectedUpdatedViewBodyNode
-                    expectedNode.initialMount()
-
-                    // Assert that the 1st mounted view (our initial view) is now updated
-                    node.mountedElements[0].children!.expectToBe(expectedNode)
-                }
-            }
+        for spec in specs {
+            spec.spec()
         }
     }
 }
 
-protocol BodyNodeTestCase {
+protocol BodyNodeTestCaseSpecs {
+    static func spec()
+}
+
+protocol BodyNodeTestCase: BodyNodeTestCaseSpecs {
     /// The type of the view tested in this test case.
     associatedtype TestedView: View
 
@@ -1705,6 +1682,39 @@ extension BodyNodeTestCase {
     /// Creates the expected body node for the updated view for this test case.
     static var expectedUpdatedViewBodyNode: BodyNode {
         return BodyNode(of: Self.expectedUpdatedTree)
+    }
+}
+
+extension BodyNodeTestCase {
+    static func spec() {
+        describe("body node for \(Self.self)") {
+            it("creates the initial view tree") {
+                var node = Self.initialViewBodyNode
+                node.initialMount()
+
+                var expectedNode = Self.expectedInitialViewBodyNode
+                expectedNode.initialMount()
+
+                node.expectToBe(expectedNode)
+            }
+
+            it("applies updates") {
+                // Create and mount initial node
+                var node = Self.initialViewNode
+                node.initialMount()
+
+                // Create updated node, apply updates to the initial node
+                let updatedNode = Self.updatedViewNode
+                node.update(next: updatedNode)
+
+                // Create initial node
+                var expectedNode = Self.expectedUpdatedViewBodyNode
+                expectedNode.initialMount()
+
+                // Assert that the 1st mounted view (our initial view) is now updated
+                node.mountedElements[0].children!.expectToBe(expectedNode)
+            }
+        }
     }
 }
 

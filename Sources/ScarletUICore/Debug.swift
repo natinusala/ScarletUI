@@ -14,7 +14,7 @@
    limitations under the License.
 */
 
-fileprivate let DEBUG = true
+fileprivate let DEBUG = false
 
 func debug(_ message: @autoclosure () -> String) { // TODO: kill this and replace by a proper logger w/ a debug level and debug scopes
     if DEBUG {

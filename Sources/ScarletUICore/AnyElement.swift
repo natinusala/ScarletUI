@@ -17,7 +17,7 @@
 /// A type-erased app, scene or view, used internally to access its properties.
 /// TODO: needs to be a class to prevent duplications between `body` and `children` inside `BodyNode`.
 public class AnyElement: CustomStringConvertible {
-    var element: TreeNodeMetadata
+    var element: Any
     var elementType: Any.Type
 
     var isLeaf: Bool
