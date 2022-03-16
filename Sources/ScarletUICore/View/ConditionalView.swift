@@ -15,21 +15,16 @@
 */
 
 /// A conditional view that is either the "first one" or the "second one".
-public struct ConditionalView<FirstContent, SecondContent>: View where FirstContent: View, SecondContent: View {
-    /// Storage for the actual view.
-    public enum Storage {
-        case first(FirstContent)
-        case second(SecondContent)
-    }
+public enum ConditionalView<FirstContent, SecondContent>: View where FirstContent: View, SecondContent: View {
+    case first(FirstContent)
+    case second(SecondContent)
 
     public typealias Body = Never
-
-    let storage: Storage
 
     public static func makeViews(view: Self, previous: Self?) -> [ElementOperation] {
         // If there is no previous node, always insert (by giving no previous node)
         guard let previous = previous else {
-            switch view.storage {
+            switch view {
                 case let .first(view):
                     return FirstContent.makeViews(view: view, previous: nil)
                 case let .second(view):
@@ -38,20 +33,20 @@ public struct ConditionalView<FirstContent, SecondContent>: View where FirstCont
         }
 
         // Otherwise check for every possibility
-        switch (view.storage, previous.storage) {
+        switch (view, previous) {
             case let (.first(view), .first(previous)):
                 return FirstContent.makeViews(view: view, previous: previous)
             case let (.second(view), .second(previous)):
                 return SecondContent.makeViews(view: view, previous: previous)
             case let (.first, .second(previous)):
-                return Self.replace(count: SecondContent.viewsCount(view: previous), newView: view.storage)
+                return Self.replace(count: SecondContent.viewsCount(view: previous), newView: view)
             case let (.second, .first(previous)):
-                return Self.replace(count: FirstContent.viewsCount(view: previous), newView: view.storage)
+                return Self.replace(count: FirstContent.viewsCount(view: previous), newView: view)
         }
     }
 
     /// Returns view operations making a replacement of every view with the given new view.
-    private static func replace(count: Int, newView: Storage) -> [ElementOperation] {
+    private static func replace(count: Int, newView: Self) -> [ElementOperation] {
         var operations = [ElementOperation]()
 
         // Remove every view
@@ -75,7 +70,7 @@ public struct ConditionalView<FirstContent, SecondContent>: View where FirstCont
     }
 
     public static func viewsCount(view: Self) -> Int {
-        switch view.storage {
+        switch view {
             case let .first(view):
                 return FirstContent.viewsCount(view: view)
             case let .second(view):
@@ -84,7 +79,7 @@ public struct ConditionalView<FirstContent, SecondContent>: View where FirstCont
     }
 
     public static func equals(lhs: Self, rhs: Self) -> Bool {
-        switch (lhs.storage, rhs.storage) {
+        switch (lhs, rhs) {
             case (.first, .second), (.second, .first):
                 return false
             case let (.first(lhs), .first(rhs)):
