@@ -82,13 +82,18 @@ def gen_makeviews(i: int) -> list:
             for ci in range(1, i)
         ]
 
+        # offsets += [
+        #     "",
+        #     "        if let previous = previous {",
+        #     *gen_previous(),
+        #     "        } else {",
+        #     *gen_noprevious(),
+        #     "        }"
+        # ]
+
         offsets += [
             "",
-            "        if let previous = previous {",
-            *gen_previous(),
-            "        } else {",
             *gen_noprevious(),
-            "        }"
         ]
 
         return offsets
