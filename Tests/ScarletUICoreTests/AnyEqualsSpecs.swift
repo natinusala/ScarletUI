@@ -52,6 +52,26 @@ class TryEquatableSpecs: QuickSpec {
                     expect(result).to(beFalse())
                 }
             }
+
+            context("on standard types") {
+                it("returns `true` when values are equal") {
+                    let lhs: Any = "test string 1"
+                    let rhs: Any = "test string 1"
+
+                    let result = tryEquatable(lhs: lhs, rhs: rhs)
+
+                    expect(result).to(beTrue())
+                }
+
+                it("returns `false` when values are different") {
+                    let lhs: Any = 778
+                    let rhs: Any = 6
+
+                    let result = tryEquatable(lhs: lhs, rhs: rhs)
+
+                    expect(result).to(beFalse())
+                }
+            }
         }
     }
 }
