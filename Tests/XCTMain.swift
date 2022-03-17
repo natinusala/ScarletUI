@@ -24,6 +24,7 @@ import Backtrace
 let specs: [QuickSpec.Type] = [
     // ScarletUICoreTests
     BodyNodeSpecs.self,
+    TryEquatableSpecs.self,
 ]
 
 @main
