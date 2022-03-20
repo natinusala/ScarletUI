@@ -25,6 +25,7 @@ let specs: [QuickSpec.Type] = [
     // ScarletUICoreTests
     BodyNodeSpecs.self,
     TryEquatableSpecs.self,
+    AnyEqualsSpecs.self,
 ]
 
 @main

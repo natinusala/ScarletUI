@@ -16,6 +16,33 @@
    limitations under the License.
 */
 
+/// Performs an equality check on two type-erased values.
+/// This method tries its best to use the correct method with the info available at runtime
+/// by testing the following methods in order:
+///     1. `Equatable` conformance
+///     2. `AnyClass` conformance (compare references)
+///     3. Recursive field by field comparison using a `Mirror`
+///     4. `memcmp` on the whole value as a fallback
+internal func anyEquals(lhs: Any, rhs: Any) -> Bool {
+    // Type check
+    if type(of: lhs) != type(of: rhs) {
+        return false
+    }
+
+    // `Equatable` conformance
+    if let equatableResult = tryEquatable(lhs: lhs, rhs: rhs) {
+        return equatableResult
+    }
+
+    // `AnyClass` conformance
+    if type(of: rhs) is AnyClass {
+        return (lhs as AnyObject) === (rhs as AnyObject)
+    }
+
+    // Recursive field by field comparison
+    fatalError("Unimplemented")
+}
+
 // MARK: Ported from https://gist.github.com/anandabits/d9494d14fef221983ff4f1cafa318d47
 
 /// Tries to compare `lhs` and `rhs` using an hypothetical `Equatable` conformance
