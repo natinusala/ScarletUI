@@ -45,7 +45,21 @@ let tryEquatableSpecs: [(description: String, lhs: Any, rhs: Any, expected: Bool
     (description: "conforming enum", lhs: EquatableEnum.int(1234), rhs: EquatableEnum.int(1234), expected: true),
     (description: "conforming enum", lhs: EquatableEnum.int(4321), rhs: EquatableEnum.int(8888), expected: false),
     (description: "nonconforming enum", lhs: NonEquatableEnum.int(1234), rhs: NonEquatableEnum.int(1234), expected: nil),
-    // TODO: add conforming + nonconforming closures + arrays + dicts + optionals
+    // Closures (will most likely never conform)
+    (description: "nonconforming closure", lhs: {(param: Int) in return param + 10}, rhs: {(param: Int) in return param + 10}, expected: nil),
+    // Arrays
+    (description: "conforming array", lhs: [1, 2, 3, 4], rhs: [1, 2, 3, 4], expected: true),
+    (description: "conforming array", lhs: [1, 2, 3, 4], rhs: [8, 7, 8, 4], expected: false),
+    (description: "nonconforming array", lhs: [NonEquatableEnum.int(1234), NonEquatableEnum.int(4321)], rhs: [NonEquatableEnum.int(1234), NonEquatableEnum.int(4321)], expected: nil),
+    // Dicts values (keys are always conforming since `Hashable` conforms to `Equatable`)
+    (description: "conforming dict", lhs: [1: 2, 3: 4], rhs: [1: 2, 3: 4], expected: true),
+    (description: "conforming dict", lhs: [1: 2, 3: 4], rhs: [8: 7, 4: 4], expected: false),
+    (description: "nonconforming dict", lhs: [10: NonEquatableEnum.int(4321)], rhs: [10: NonEquatableEnum.int(4321)], expected: nil),
+    // Optionals - cast to `Any` is to silence an implicit coercion warning
+    (description: "conforming optional", lhs: Optional<Int>.some(10) as Any, rhs: Optional<Int>.some(10) as Any, expected: true),
+    (description: "conforming optional", lhs: Optional<Int>.some(10) as Any, rhs: Optional<Int>.some(250) as Any, expected: false),
+    (description: "nonconforming optional", lhs: Optional<NonEquatableEnum>.some(NonEquatableEnum.int(10)) as Any, rhs: Optional<NonEquatableEnum>.some(NonEquatableEnum.int(10)) as Any, expected: nil),
+    (description: "nil optional", lhs: Optional<Int>.none as Any, rhs: Optional<Int>.none as Any, expected: true),
 ]
 
 class TryEquatableSpecs: QuickSpec {
