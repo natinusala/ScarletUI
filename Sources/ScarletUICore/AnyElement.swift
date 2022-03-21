@@ -22,9 +22,9 @@ public class AnyElement: CustomStringConvertible {
 
     var isLeaf: Bool
 
-    internal var bodyClosure: (Any) -> BodyNode
-    internal var makeClosure: (Any, BodyNode?) -> [ElementOperation]
-    internal var equalsClosure: (Any, AnyElement) -> Bool
+    var bodyClosure: (Any) -> BodyNode
+    var makeClosure: (Any, BodyNode?) -> [ElementOperation]
+    var equalsClosure: (Any, AnyElement) -> Bool
 
     init<V: View>(view: V) {
         self.element = view

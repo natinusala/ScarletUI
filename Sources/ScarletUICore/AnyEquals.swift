@@ -22,7 +22,7 @@
 ///     1. `Equatable` conformance
 ///     2. `AnyClass` conformance (compare references)
 ///     3. Recursive field by field comparison using a `Mirror`
-internal func anyEquals(lhs: Any, rhs: Any) -> Bool {
+func anyEquals(lhs: Any, rhs: Any) -> Bool {
     // Type check
     if type(of: lhs) != type(of: rhs) {
         return false
@@ -57,7 +57,7 @@ internal func anyEquals(lhs: Any, rhs: Any) -> Bool {
 
 /// Tries to compare `lhs` and `rhs` using an hypothetical `Equatable` conformance
 /// on an unknown type. Returns `nil` if type isn't conforming to `Equatable`.
-internal func tryEquatable(lhs: Any, rhs: Any) -> Bool? {
+func tryEquatable(lhs: Any, rhs: Any) -> Bool? {
     /// Called by `_openExistential` with the correct LHS type.
     func receiveLHS<LHS>(_ typedLHS: LHS) -> Bool? {
         guard let typedRHS = rhs as? LHS else {
