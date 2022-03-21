@@ -1712,7 +1712,7 @@ extension BodyNodeTestCase {
                 expectedNode.initialMount()
 
                 // Assert that the 1st mounted view (our initial view) is now updated
-                node.mountedElements[0].children!.expectToBe(expectedNode)
+                node.mountedElements[0].body!.expectToBe(expectedNode)
             }
         }
     }
@@ -1760,7 +1760,7 @@ extension MountedElement{
         self.element.expectToBe(other.element, propertyName: "#\(position) MountedElement's view of body node \(bodyType)")
 
         // Check that the body node is equal
-        self.children.expectToBe(other.children)
+        self.body.expectToBe(other.body)
     }
 }
 

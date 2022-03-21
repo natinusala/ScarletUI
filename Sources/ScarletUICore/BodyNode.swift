@@ -127,8 +127,8 @@ struct BodyNode {
 
         // Perform initial mount
         if !mountedView.element.isLeaf {
-            mountedView.children = mountedView.element.body
-            mountedView.children?.initialMount()
+            mountedView.body = mountedView.element.body
+            mountedView.body?.initialMount()
         }
 
         // Insert the element
@@ -151,7 +151,7 @@ struct BodyNode {
 
         for mountedView in self.mountedElements {
             debug("\(str)\(mountedView.element.elementType)")
-            mountedView.children?.printTree(indent: indent + 4)
+            mountedView.body?.printTree(indent: indent + 4)
         }
     }
 }

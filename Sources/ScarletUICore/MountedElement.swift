@@ -23,16 +23,16 @@ class MountedElement: CustomStringConvertible {
             // If the element changes, call body again and compare the new body node
             // with the previous one (unless the element is a leaf node)
             if self.element.isLeaf {
-                self.children = nil
+                self.body = nil
             } else {
                 let newBody = self.element.body
-                self.children?.update(next: newBody)
+                self.body?.update(next: newBody)
             }
         }
     }
 
     /// The body node corresponding to this element's body.
-    var children: BodyNode?
+    var body: BodyNode?
 
     /// Set to `true` to have this element be removed when possible.
     var toBeRemoved = false
