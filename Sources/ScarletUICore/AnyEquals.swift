@@ -22,7 +22,6 @@
 ///     1. `Equatable` conformance
 ///     2. `AnyClass` conformance (compare references)
 ///     3. Recursive field by field comparison using a `Mirror`
-///     4. `memcmp` on the whole value as a fallback
 internal func anyEquals(lhs: Any, rhs: Any) -> Bool {
     // Type check
     if type(of: lhs) != type(of: rhs) {
@@ -35,12 +34,23 @@ internal func anyEquals(lhs: Any, rhs: Any) -> Bool {
     }
 
     // `AnyClass` conformance
+    // TODO:    Having a different reference doesn't mean the _value_ is different:
+    //          if `===` returns `true` then we know it's the same, however if it returns `false` we
+    //          should still compare field by field to see if the _values_ of both references are
+    //          the same and prevent an useless `body` call.
+    //          We should implement this optimization if we notice a lot of useless `body` calls
+    //          on changing observable objects and/or on views with class property wrappers.
     if type(of: rhs) is AnyClass {
         return (lhs as AnyObject) === (rhs as AnyObject)
     }
 
     // Recursive field by field comparison
-    fatalError("Unimplemented")
+    let lhsMirror = Mirror(reflecting: lhs)
+    let rhsMirror = Mirror(reflecting: rhs)
+
+    return zip(lhsMirror.children, rhsMirror.children).all { (lhsChild, rhsChild) in
+        anyEquals(lhs: lhsChild.value, rhs: rhsChild.value)
+    }
 }
 
 // MARK: Ported from https://gist.github.com/anandabits/d9494d14fef221983ff4f1cafa318d47

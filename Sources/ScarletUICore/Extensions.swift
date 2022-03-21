@@ -20,3 +20,17 @@ extension Collection {
         return indices.contains(index) ? self[index] : nil
     }
 }
+
+extension Sequence {
+    /// Returns `true` if all elements of the sequence match the given predicate,
+    /// `false` otherwise.
+    func all(predicate: (Element) -> Bool) -> Bool {
+        for element in self {
+            if !predicate(element) {
+                return false
+            }
+        }
+
+        return true
+    }
+}
