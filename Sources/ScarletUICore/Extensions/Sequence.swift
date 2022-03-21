@@ -14,13 +14,6 @@
    limitations under the License.
 */
 
-extension Collection {
-    /// Returns the element at the specified index if it is within bounds, otherwise `nil`.
-    subscript (safe index: Index) -> Element? {
-        return indices.contains(index) ? self[index] : nil
-    }
-}
-
 extension Sequence {
     /// Returns `true` if all elements of the sequence match the given predicate,
     /// `false` otherwise.
