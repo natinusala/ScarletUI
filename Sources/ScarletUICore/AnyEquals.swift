@@ -48,6 +48,10 @@ func anyEquals(lhs: Any, rhs: Any) -> Bool {
     let lhsMirror = Mirror(reflecting: lhs)
     let rhsMirror = Mirror(reflecting: rhs)
 
+    // This can happen for enums with different associated values count:
+    //      cases with no associated value will have 0 children, cases with associated values
+    //      will have 1 child (a tuple containing all associated values), but either way the
+    //      type of `lhs` and `rhs` will be the same
     if lhsMirror.children.count != rhsMirror.children.count {
         return false
     }
