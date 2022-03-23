@@ -15,7 +15,7 @@
 */
 
 /// A column containing one or multiple views.
-public struct Column<Content>: View, EquatableStruct where Content: View {
+public struct Column<Content>: View where Content: View {
     var content: Content
 
     public init(@ViewBuilder content: () -> Content) {
@@ -24,9 +24,5 @@ public struct Column<Content>: View, EquatableStruct where Content: View {
 
     public var body: some View {
         self.content
-    }
-
-    public static func equals(lhs: Self, rhs: Self) -> Bool {
-        return Content.equals(lhs: lhs.content, rhs: rhs.content)
     }
 }

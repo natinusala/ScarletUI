@@ -54,14 +54,14 @@ fileprivate let specs: [BodyNodeTestCaseSpecs.Type] = [
 
 /// Tests two consecutive conditionals that perform an insertion.
 struct ConsecutiveConditionalsInsertionTestCase: BodyNodeTestCase {
-    struct Picture: View, Equatable {
+    struct Picture: View {
         let variable0: Int
 
         var body: some View {
             Image(source: "https://pictures.com/picture\(variable0).jpg")
         }
     }
-    struct TestView: View, Equatable {
+    struct TestView: View {
         let flip0: Bool
         let flip1: Bool
         let variable0: Int
@@ -216,7 +216,7 @@ struct ConsecutiveConditionalsInsertionTestCase: BodyNodeTestCase {
 
 /// Test with multiple internal views.
 struct NestedViewTestCase: BodyNodeTestCase {
-    struct TestView: View, Equatable {
+    struct TestView: View {
         var counter: Int
 
         var body: some View {
@@ -231,7 +231,7 @@ struct NestedViewTestCase: BodyNodeTestCase {
         }
     }
 
-    struct LivesCounter: View, Equatable {
+    struct LivesCounter: View {
         var counter: Int
 
         var body: some View {
@@ -272,7 +272,7 @@ struct NestedViewTestCase: BodyNodeTestCase {
 
 /// Tests nested conditionals (else-ifs).
 struct NestedConditionalsTestCase: BodyNodeTestCase {
-    struct TestView: View, Equatable {
+    struct TestView: View {
         var value: Int
 
         var body: some View {
@@ -353,7 +353,7 @@ struct NestedConditionalsTestCase: BodyNodeTestCase {
 
 /// Tests that all views are removed and added in a "balanced" conditional.
 struct BalancedConditionalTestCase: BodyNodeTestCase {
-    struct TestView: View, Equatable {
+    struct TestView: View {
         var flip: Bool
 
         var body: some View {
@@ -446,7 +446,7 @@ struct BalancedConditionalTestCase: BodyNodeTestCase {
 
 /// Tests a conditional view with an empty `else` clause (remove `if` views).
 struct EmptySecondRemoveFirstConditionalTestCase: BodyNodeTestCase {
-    struct TestView: View, Equatable {
+    struct TestView: View {
         var flip: Bool
 
         var body: some View {
@@ -500,7 +500,7 @@ struct EmptySecondRemoveFirstConditionalTestCase: BodyNodeTestCase {
 
 /// Tests a conditional view with an empty `else` clause (add `if` views).
 struct EmptySecondAddFirstConditionalTestCase: BodyNodeTestCase {
-    struct TestView: View, Equatable {
+    struct TestView: View {
         var flip: Bool
 
         var body: some View {
@@ -554,7 +554,7 @@ struct EmptySecondAddFirstConditionalTestCase: BodyNodeTestCase {
 
 /// Tests a conditional view with an empty `if` clause (remove `else` views).
 struct EmptyFirstRemoveSecondConditionalTestCase: BodyNodeTestCase {
-    struct TestView: View, Equatable {
+    struct TestView: View {
         var flip: Bool
 
         var body: some View {
@@ -608,7 +608,7 @@ struct EmptyFirstRemoveSecondConditionalTestCase: BodyNodeTestCase {
 
 /// Tests a conditional view with an empty `if` clause (add `else` views).
 struct EmptyFirstAddSecondConditionalTestCase: BodyNodeTestCase {
-    struct TestView: View, Equatable {
+    struct TestView: View {
         var flip: Bool
 
         var body: some View {
@@ -662,7 +662,7 @@ struct EmptyFirstAddSecondConditionalTestCase: BodyNodeTestCase {
 
 /// Tests a conditional with an optional in the conditional cases that gets removed.
 struct ConditionalRemoveOptionalTestCase: BodyNodeTestCase {
-    struct TestView: View, Equatable {
+    struct TestView: View {
         var flip: Bool
         let constant = false
 
@@ -741,7 +741,7 @@ struct ConditionalRemoveOptionalTestCase: BodyNodeTestCase {
 
 /// Tests a conditional with an optional in the conditional cases that gets added.
 struct ConditionalAddOptionalTestCase: BodyNodeTestCase {
-    struct TestView: View, Equatable {
+    struct TestView: View {
         var flip: Bool
         let constant = false
 
@@ -821,7 +821,7 @@ struct ConditionalAddOptionalTestCase: BodyNodeTestCase {
 /// Tests an "unbalanced" conditional where there are more views on one side
 /// than there are on the other, with entirely different types.
 struct UnbalancedConditionalTestCase: BodyNodeTestCase {
-    struct TestView: View, Equatable {
+    struct TestView: View {
         var flip: Bool
 
         var body: some View {
@@ -891,7 +891,7 @@ struct UnbalancedConditionalTestCase: BodyNodeTestCase {
 /// Tests nesting optionals: insert views in the middle of a
 /// tuple view, itself inside an optional.
 struct NestedOptionalInsertionTestCase: BodyNodeTestCase {
-    struct TestView: View, Equatable {
+    struct TestView: View {
         var fillColumn = true
         var full: Bool
 
@@ -956,7 +956,7 @@ struct NestedOptionalInsertionTestCase: BodyNodeTestCase {
 /// Tests nesting optionals: insert views in the middle of a
 /// tuple view, itself inside an optional.
 struct NestedOptionalUpdateTestCase: BodyNodeTestCase {
-    struct TestView: View, Equatable {
+    struct TestView: View {
         var fillColumn = true
         var full: Bool
 
@@ -1015,7 +1015,7 @@ struct NestedOptionalUpdateTestCase: BodyNodeTestCase {
 /// Tests nesting optionals: removed views in the middle of a
 /// tuple view, itself inside an optional.
 struct NestedOptionalRemovalTestCase: BodyNodeTestCase {
-    struct TestView: View, Equatable {
+    struct TestView: View {
         var fillColumn = true
         var full: Bool
 
@@ -1081,7 +1081,7 @@ struct NestedOptionalRemovalTestCase: BodyNodeTestCase {
 /// the offset mechanism on tuple views, optionals and conditionals.
 /// TODO: add if / elses somewhere to test conditionals once they are implemented
 struct OffsetsTestCase: BodyNodeTestCase {
-    struct TestView: View, Equatable {
+    struct TestView: View {
         var detailed: Bool
 
         var body: some View {
@@ -1288,7 +1288,7 @@ struct OffsetsTestCase: BodyNodeTestCase {
 
 /// Checks that the views are updated.
 struct UpdateTestCase: BodyNodeTestCase {
-    struct TestView: View, Equatable {
+    struct TestView: View {
         var urlPrefix: String
 
         var body: some View {
@@ -1330,7 +1330,7 @@ struct UpdateTestCase: BodyNodeTestCase {
 
 /// Test case for a view that has no input and therefore cannot change.
 struct NoInputTestCase: BodyNodeTestCase {
-    struct TestView: View, Equatable {
+    struct TestView: View {
         var body: some View {
             Column {
                 Row {
@@ -1382,7 +1382,7 @@ struct NoInputTestCase: BodyNodeTestCase {
 
 /// Test case for a view that has an optional part in its body that gets updated.
 struct OptionalUpdateTestCase: BodyNodeTestCase {
-    struct TestView: View, Equatable {
+    struct TestView: View {
         var hasImageRow: Bool
         var imageUrl: String
 
@@ -1443,7 +1443,7 @@ struct OptionalUpdateTestCase: BodyNodeTestCase {
 
 /// Test case for a view that has an optional part in its body that does not get updated.
 struct OptionalUnchangedTestCase: BodyNodeTestCase {
-    struct TestView: View, Equatable {
+    struct TestView: View {
         var hasImageRow: Bool
 
         var body: some View {
@@ -1500,7 +1500,7 @@ struct OptionalUnchangedTestCase: BodyNodeTestCase {
 
 /// Test case for a view that has an optional part in its body that gets inserted.
 struct OptionalInsertionTestCase: BodyNodeTestCase {
-    struct TestView: View, Equatable {
+    struct TestView: View {
         var hasImageRow: Bool
 
         var body: some View {
@@ -1560,7 +1560,7 @@ struct OptionalInsertionTestCase: BodyNodeTestCase {
 
 /// Test case for a view that has an optional part in its body that gets inserted.
 struct OptionalRemovalTestCase: BodyNodeTestCase {
-    struct TestView: View, Equatable {
+    struct TestView: View {
         var hasImageRow: Bool
 
         var body: some View {
@@ -1725,7 +1725,7 @@ extension BodyNode {
         self.body.expectToBe(other.body, propertyName: "`BodyNode` body")
 
         // Check that every mounted view is equal
-        let description = "mounted views count of \(self.body.elementType) is different (\(self.listMountedViews()) VS. \(other.listMountedViews()))"
+        let description = "mounted views count of \(self.body.elementType) is different (got \(self.listMountedViews()), expected \(other.listMountedViews()))"
         expect(self.mountedElements.count).to(equal(other.mountedElements.count), description: description)
 
         for (n, (lhs, rhs)) in zip(self.mountedElements, other.mountedElements).enumerated() {
@@ -1746,7 +1746,7 @@ extension AnyElement {
             XCTFail("when comparing \(propertyName), view has a different type: got \(self.elementType) and \(other.elementType)")
         } else {
             // Then compare field by field
-            if !self.equalsClosure(self.element, other) {
+            if !anyEquals(lhs: self.element, rhs: other.element) {
                 XCTFail("when comparing \(propertyName), \(self.elementType) is different")
             }
         }
@@ -1779,7 +1779,7 @@ extension Optional where Wrapped == BodyNode {
 
 // MARK: Dummy views for testing
 
-struct Text: View, Equatable {
+struct Text: View {
     let text: String
     typealias Body = Never
 
@@ -1788,12 +1788,12 @@ struct Text: View, Equatable {
     }
 }
 
-struct Image: View, Equatable {
+struct Image: View {
     let source: String
     typealias Body = Never
 }
 
-struct Column<Content>: View, EquatableStruct where Content: View {
+struct Column<Content>: View where Content: View {
     var content: Content
 
     init(@ViewBuilder content: () -> Content) {
@@ -1803,14 +1803,9 @@ struct Column<Content>: View, EquatableStruct where Content: View {
     var body: some View {
         self.content
     }
-
-    /// Usually generated.
-    static func equals(lhs: Self, rhs: Self) -> Bool {
-        return Content.equals(lhs: lhs.content, rhs: rhs.content)
-    }
 }
 
-struct Row<Content>: View, EquatableStruct where Content: View {
+struct Row<Content>: View where Content: View {
     var content: Content
 
     init(@ViewBuilder content: () -> Content) {
@@ -1820,13 +1815,8 @@ struct Row<Content>: View, EquatableStruct where Content: View {
     var body: some View {
         self.content
     }
-
-    /// Usually generated.
-    static func equals(lhs: Self, rhs: Self) -> Bool {
-        return Content.equals(lhs: lhs.content, rhs: rhs.content)
-    }
 }
 
-struct Divider: View, Equatable {
+struct Divider: View {
     typealias Body = Never
 }

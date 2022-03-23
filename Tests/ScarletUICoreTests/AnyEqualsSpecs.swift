@@ -47,6 +47,12 @@ let anyEqualsSpecs: [(_: String, lhs: Any, rhs: Any, expected: Bool)] = [
     ("equatable floats", lhs: 1234.5, rhs: 4321.5, expected: false),
     ("equatable structs", lhs: EquatableStruct(val1: true, val2: 10), rhs: EquatableStruct(val1: true, val2: 10), expected: true),
     ("equatable structs", lhs: EquatableStruct(val1: true, val2: 20), rhs: EquatableStruct(val1: true, val2: 750), expected: false),
+    ("equatable enums", lhs: EquatableEnum.int(1234), rhs: EquatableEnum.int(1234), expected: true),
+    ("equatable enums", lhs: EquatableEnum.int(4321), rhs: EquatableEnum.int(8888), expected: false),
+    ("nonequatable same enums", lhs: NonEquatableEnum.int(1234), rhs: NonEquatableEnum.int(1234), expected: true),
+    ("nonequatable same enums", lhs: NonEquatableEnum.int(1234), rhs: NonEquatableEnum.int(8888), expected: false),
+    ("nonequatable different enums", lhs: NonEquatableEnum.int(1234), rhs: NonEquatableEnum.bool(false), expected: false),
+    ("unbalanced enums", lhs: UnbalancedEnum.none, rhs: UnbalancedEnum.one("string"), expected: false),
     // Objects
     ("different nonequatable objects with same value", lhs: nonEquatableObjectEqual1, rhs: nonEquatableObjectEqual2, expected: false),
     ("different nonequatable objects with different values", lhs: nonEquatableObjectEqual1, rhs: nonEquatableObject3, expected: false),
@@ -237,4 +243,10 @@ fileprivate enum EquatableEnum: Equatable {
 fileprivate enum NonEquatableEnum {
     case bool(Bool)
     case int(Int)
+}
+
+
+fileprivate enum UnbalancedEnum {
+    case none
+    case one(String)
 }

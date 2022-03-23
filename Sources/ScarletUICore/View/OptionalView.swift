@@ -15,7 +15,7 @@
 */
 
 /// `Optional` extension to add `View` conformance.
-extension Optional: View, EquatableStruct, TreeNodeMetadata where Wrapped: View {
+extension Optional: View where Wrapped: View {
     public typealias Body = Never
 
     public static func makeViews(view: Self, previous: Self?) -> [ElementOperation] {
@@ -60,16 +60,4 @@ extension Optional: View, EquatableStruct, TreeNodeMetadata where Wrapped: View 
                 return Wrapped.viewsCount(view: view)
         }
     }
-
-    public static func equals(lhs: Self, rhs: Self) -> Bool {
-        switch (lhs, rhs) {
-            case (.none, .some), (.some, .none):
-                return false
-            case (.none, .none):
-                return true
-            case let (.some(lhs), .some(rhs)):
-                return Wrapped.equals(lhs: lhs, rhs: rhs)
-        }
-    }
 }
-

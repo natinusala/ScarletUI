@@ -38,17 +38,6 @@ public struct TupleView2<C0, C1>: View where C0: View, C1: View {
     public static func viewsCount(view: Self) -> Int {
         return C0.viewsCount(view: view.c0) + C1.viewsCount(view: view.c1)
     }
-
-    public static func equals(lhs: Self, rhs: Self) -> Bool {
-        guard C0.equals(lhs: lhs.c0, rhs: rhs.c0) else {
-            return false
-        }
-        guard C1.equals(lhs: lhs.c1, rhs: rhs.c1) else {
-            return false
-        }
-
-        return true
-    }
 }
 
 public extension ViewBuilder {
@@ -81,20 +70,6 @@ public struct TupleView3<C0, C1, C2>: View where C0: View, C1: View, C2: View {
 
     public static func viewsCount(view: Self) -> Int {
         return C0.viewsCount(view: view.c0) + C1.viewsCount(view: view.c1) + C2.viewsCount(view: view.c2)
-    }
-
-    public static func equals(lhs: Self, rhs: Self) -> Bool {
-        guard C0.equals(lhs: lhs.c0, rhs: rhs.c0) else {
-            return false
-        }
-        guard C1.equals(lhs: lhs.c1, rhs: rhs.c1) else {
-            return false
-        }
-        guard C2.equals(lhs: lhs.c2, rhs: rhs.c2) else {
-            return false
-        }
-
-        return true
     }
 }
 
@@ -132,23 +107,6 @@ public struct TupleView4<C0, C1, C2, C3>: View where C0: View, C1: View, C2: Vie
 
     public static func viewsCount(view: Self) -> Int {
         return C0.viewsCount(view: view.c0) + C1.viewsCount(view: view.c1) + C2.viewsCount(view: view.c2) + C3.viewsCount(view: view.c3)
-    }
-
-    public static func equals(lhs: Self, rhs: Self) -> Bool {
-        guard C0.equals(lhs: lhs.c0, rhs: rhs.c0) else {
-            return false
-        }
-        guard C1.equals(lhs: lhs.c1, rhs: rhs.c1) else {
-            return false
-        }
-        guard C2.equals(lhs: lhs.c2, rhs: rhs.c2) else {
-            return false
-        }
-        guard C3.equals(lhs: lhs.c3, rhs: rhs.c3) else {
-            return false
-        }
-
-        return true
     }
 }
 
@@ -190,26 +148,6 @@ public struct TupleView5<C0, C1, C2, C3, C4>: View where C0: View, C1: View, C2:
 
     public static func viewsCount(view: Self) -> Int {
         return C0.viewsCount(view: view.c0) + C1.viewsCount(view: view.c1) + C2.viewsCount(view: view.c2) + C3.viewsCount(view: view.c3) + C4.viewsCount(view: view.c4)
-    }
-
-    public static func equals(lhs: Self, rhs: Self) -> Bool {
-        guard C0.equals(lhs: lhs.c0, rhs: rhs.c0) else {
-            return false
-        }
-        guard C1.equals(lhs: lhs.c1, rhs: rhs.c1) else {
-            return false
-        }
-        guard C2.equals(lhs: lhs.c2, rhs: rhs.c2) else {
-            return false
-        }
-        guard C3.equals(lhs: lhs.c3, rhs: rhs.c3) else {
-            return false
-        }
-        guard C4.equals(lhs: lhs.c4, rhs: rhs.c4) else {
-            return false
-        }
-
-        return true
     }
 }
 
@@ -255,29 +193,6 @@ public struct TupleView6<C0, C1, C2, C3, C4, C5>: View where C0: View, C1: View,
 
     public static func viewsCount(view: Self) -> Int {
         return C0.viewsCount(view: view.c0) + C1.viewsCount(view: view.c1) + C2.viewsCount(view: view.c2) + C3.viewsCount(view: view.c3) + C4.viewsCount(view: view.c4) + C5.viewsCount(view: view.c5)
-    }
-
-    public static func equals(lhs: Self, rhs: Self) -> Bool {
-        guard C0.equals(lhs: lhs.c0, rhs: rhs.c0) else {
-            return false
-        }
-        guard C1.equals(lhs: lhs.c1, rhs: rhs.c1) else {
-            return false
-        }
-        guard C2.equals(lhs: lhs.c2, rhs: rhs.c2) else {
-            return false
-        }
-        guard C3.equals(lhs: lhs.c3, rhs: rhs.c3) else {
-            return false
-        }
-        guard C4.equals(lhs: lhs.c4, rhs: rhs.c4) else {
-            return false
-        }
-        guard C5.equals(lhs: lhs.c5, rhs: rhs.c5) else {
-            return false
-        }
-
-        return true
     }
 }
 
@@ -327,32 +242,6 @@ public struct TupleView7<C0, C1, C2, C3, C4, C5, C6>: View where C0: View, C1: V
 
     public static func viewsCount(view: Self) -> Int {
         return C0.viewsCount(view: view.c0) + C1.viewsCount(view: view.c1) + C2.viewsCount(view: view.c2) + C3.viewsCount(view: view.c3) + C4.viewsCount(view: view.c4) + C5.viewsCount(view: view.c5) + C6.viewsCount(view: view.c6)
-    }
-
-    public static func equals(lhs: Self, rhs: Self) -> Bool {
-        guard C0.equals(lhs: lhs.c0, rhs: rhs.c0) else {
-            return false
-        }
-        guard C1.equals(lhs: lhs.c1, rhs: rhs.c1) else {
-            return false
-        }
-        guard C2.equals(lhs: lhs.c2, rhs: rhs.c2) else {
-            return false
-        }
-        guard C3.equals(lhs: lhs.c3, rhs: rhs.c3) else {
-            return false
-        }
-        guard C4.equals(lhs: lhs.c4, rhs: rhs.c4) else {
-            return false
-        }
-        guard C5.equals(lhs: lhs.c5, rhs: rhs.c5) else {
-            return false
-        }
-        guard C6.equals(lhs: lhs.c6, rhs: rhs.c6) else {
-            return false
-        }
-
-        return true
     }
 }
 
@@ -406,35 +295,6 @@ public struct TupleView8<C0, C1, C2, C3, C4, C5, C6, C7>: View where C0: View, C
 
     public static func viewsCount(view: Self) -> Int {
         return C0.viewsCount(view: view.c0) + C1.viewsCount(view: view.c1) + C2.viewsCount(view: view.c2) + C3.viewsCount(view: view.c3) + C4.viewsCount(view: view.c4) + C5.viewsCount(view: view.c5) + C6.viewsCount(view: view.c6) + C7.viewsCount(view: view.c7)
-    }
-
-    public static func equals(lhs: Self, rhs: Self) -> Bool {
-        guard C0.equals(lhs: lhs.c0, rhs: rhs.c0) else {
-            return false
-        }
-        guard C1.equals(lhs: lhs.c1, rhs: rhs.c1) else {
-            return false
-        }
-        guard C2.equals(lhs: lhs.c2, rhs: rhs.c2) else {
-            return false
-        }
-        guard C3.equals(lhs: lhs.c3, rhs: rhs.c3) else {
-            return false
-        }
-        guard C4.equals(lhs: lhs.c4, rhs: rhs.c4) else {
-            return false
-        }
-        guard C5.equals(lhs: lhs.c5, rhs: rhs.c5) else {
-            return false
-        }
-        guard C6.equals(lhs: lhs.c6, rhs: rhs.c6) else {
-            return false
-        }
-        guard C7.equals(lhs: lhs.c7, rhs: rhs.c7) else {
-            return false
-        }
-
-        return true
     }
 }
 
@@ -492,38 +352,6 @@ public struct TupleView9<C0, C1, C2, C3, C4, C5, C6, C7, C8>: View where C0: Vie
 
     public static func viewsCount(view: Self) -> Int {
         return C0.viewsCount(view: view.c0) + C1.viewsCount(view: view.c1) + C2.viewsCount(view: view.c2) + C3.viewsCount(view: view.c3) + C4.viewsCount(view: view.c4) + C5.viewsCount(view: view.c5) + C6.viewsCount(view: view.c6) + C7.viewsCount(view: view.c7) + C8.viewsCount(view: view.c8)
-    }
-
-    public static func equals(lhs: Self, rhs: Self) -> Bool {
-        guard C0.equals(lhs: lhs.c0, rhs: rhs.c0) else {
-            return false
-        }
-        guard C1.equals(lhs: lhs.c1, rhs: rhs.c1) else {
-            return false
-        }
-        guard C2.equals(lhs: lhs.c2, rhs: rhs.c2) else {
-            return false
-        }
-        guard C3.equals(lhs: lhs.c3, rhs: rhs.c3) else {
-            return false
-        }
-        guard C4.equals(lhs: lhs.c4, rhs: rhs.c4) else {
-            return false
-        }
-        guard C5.equals(lhs: lhs.c5, rhs: rhs.c5) else {
-            return false
-        }
-        guard C6.equals(lhs: lhs.c6, rhs: rhs.c6) else {
-            return false
-        }
-        guard C7.equals(lhs: lhs.c7, rhs: rhs.c7) else {
-            return false
-        }
-        guard C8.equals(lhs: lhs.c8, rhs: rhs.c8) else {
-            return false
-        }
-
-        return true
     }
 }
 
@@ -585,41 +413,6 @@ public struct TupleView10<C0, C1, C2, C3, C4, C5, C6, C7, C8, C9>: View where C0
 
     public static func viewsCount(view: Self) -> Int {
         return C0.viewsCount(view: view.c0) + C1.viewsCount(view: view.c1) + C2.viewsCount(view: view.c2) + C3.viewsCount(view: view.c3) + C4.viewsCount(view: view.c4) + C5.viewsCount(view: view.c5) + C6.viewsCount(view: view.c6) + C7.viewsCount(view: view.c7) + C8.viewsCount(view: view.c8) + C9.viewsCount(view: view.c9)
-    }
-
-    public static func equals(lhs: Self, rhs: Self) -> Bool {
-        guard C0.equals(lhs: lhs.c0, rhs: rhs.c0) else {
-            return false
-        }
-        guard C1.equals(lhs: lhs.c1, rhs: rhs.c1) else {
-            return false
-        }
-        guard C2.equals(lhs: lhs.c2, rhs: rhs.c2) else {
-            return false
-        }
-        guard C3.equals(lhs: lhs.c3, rhs: rhs.c3) else {
-            return false
-        }
-        guard C4.equals(lhs: lhs.c4, rhs: rhs.c4) else {
-            return false
-        }
-        guard C5.equals(lhs: lhs.c5, rhs: rhs.c5) else {
-            return false
-        }
-        guard C6.equals(lhs: lhs.c6, rhs: rhs.c6) else {
-            return false
-        }
-        guard C7.equals(lhs: lhs.c7, rhs: rhs.c7) else {
-            return false
-        }
-        guard C8.equals(lhs: lhs.c8, rhs: rhs.c8) else {
-            return false
-        }
-        guard C9.equals(lhs: lhs.c9, rhs: rhs.c9) else {
-            return false
-        }
-
-        return true
     }
 }
 

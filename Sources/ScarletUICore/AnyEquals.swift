@@ -48,6 +48,10 @@ func anyEquals(lhs: Any, rhs: Any) -> Bool {
     let lhsMirror = Mirror(reflecting: lhs)
     let rhsMirror = Mirror(reflecting: rhs)
 
+    if lhsMirror.children.count != rhsMirror.children.count {
+        return false
+    }
+
     return zip(lhsMirror.children, rhsMirror.children).all { (lhsChild, rhsChild) in
         anyEquals(lhs: lhsChild.value, rhs: rhsChild.value)
     }

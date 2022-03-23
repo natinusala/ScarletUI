@@ -158,8 +158,8 @@ for i in range(2, tv_max + 1):
         *gen_makeviews(i),
         "",
         *gen_viewcount(i),
-        "",
-        *gen_equals(i),
+        # "",
+        # *gen_equals(i),
         "}",
         "",
     ]

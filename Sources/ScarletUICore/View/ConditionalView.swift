@@ -77,15 +77,4 @@ public enum ConditionalView<FirstContent, SecondContent>: View where FirstConten
                 return SecondContent.viewsCount(view: view)
         }
     }
-
-    public static func equals(lhs: Self, rhs: Self) -> Bool {
-        switch (lhs, rhs) {
-            case (.first, .second), (.second, .first):
-                return false
-            case let (.first(lhs), .first(rhs)):
-                return FirstContent.equals(lhs: lhs, rhs: rhs)
-            case let (.second(lhs), .second(rhs)):
-                return SecondContent.equals(lhs: lhs, rhs: rhs)
-        }
-    }
 }

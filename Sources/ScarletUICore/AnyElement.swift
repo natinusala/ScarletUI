@@ -24,7 +24,6 @@ public class AnyElement: CustomStringConvertible {
 
     var bodyClosure: (Any) -> BodyNode
     var makeClosure: (Any, BodyNode?) -> [ElementOperation]
-    var equalsClosure: (Any, AnyElement) -> Bool
 
     init<V: View>(view: V) {
         self.element = view
@@ -43,24 +42,10 @@ public class AnyElement: CustomStringConvertible {
 
             return V.makeViews(view: (view as! V), previous: nil)
         }
-
-        self.equalsClosure = { view, newView in
-            return V.equals(lhs: (view as! V), rhs: (newView.element as! V))
-        }
     }
 
     var body: BodyNode {
         return self.bodyClosure(self.element)
-    }
-
-    func equals(other: AnyElement) -> Bool {
-        // First compare view type
-        guard self.elementType == other.elementType else {
-            return false
-        }
-
-        // Then compare field by field
-        return self.equalsClosure(self.element, other)
     }
 
     func make(previous: BodyNode?) -> [ElementOperation] {

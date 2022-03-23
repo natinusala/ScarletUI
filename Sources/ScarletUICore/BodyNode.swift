@@ -108,7 +108,7 @@ struct BodyNode {
 
         // Compare the two elements to detect any change
         debug("Comparing \(mountedView.element.elementType) with \(newElement.elementType)")
-        guard !mountedView.element.equals(other: newElement) else {
+        if anyEquals(lhs: mountedView.element.element, rhs: newElement.element) {
             debug("They are equal")
             return
         }
