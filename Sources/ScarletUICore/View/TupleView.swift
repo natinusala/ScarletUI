@@ -46,6 +46,19 @@ public extension ViewBuilder {
     }
 }
 
+extension TupleView2: Equatable where C0: Equatable, C1: Equatable {
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        guard lhs.c0 == rhs.c0 else {
+            return false
+        }
+        guard lhs.c1 == rhs.c1 else {
+            return false
+        }
+
+        return true
+    }
+}
+
 public struct TupleView3<C0, C1, C2>: View where C0: View, C1: View, C2: View {
     public typealias Body = Never
 
@@ -76,6 +89,22 @@ public struct TupleView3<C0, C1, C2>: View where C0: View, C1: View, C2: View {
 public extension ViewBuilder {
     static func buildBlock<C0: View, C1: View, C2: View>(_ c0: C0, _ c1: C1, _ c2: C2) -> TupleView3<C0, C1, C2> {
         return .init(c0: c0, c1: c1, c2: c2)
+    }
+}
+
+extension TupleView3: Equatable where C0: Equatable, C1: Equatable, C2: Equatable {
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        guard lhs.c0 == rhs.c0 else {
+            return false
+        }
+        guard lhs.c1 == rhs.c1 else {
+            return false
+        }
+        guard lhs.c2 == rhs.c2 else {
+            return false
+        }
+
+        return true
     }
 }
 
@@ -113,6 +142,25 @@ public struct TupleView4<C0, C1, C2, C3>: View where C0: View, C1: View, C2: Vie
 public extension ViewBuilder {
     static func buildBlock<C0: View, C1: View, C2: View, C3: View>(_ c0: C0, _ c1: C1, _ c2: C2, _ c3: C3) -> TupleView4<C0, C1, C2, C3> {
         return .init(c0: c0, c1: c1, c2: c2, c3: c3)
+    }
+}
+
+extension TupleView4: Equatable where C0: Equatable, C1: Equatable, C2: Equatable, C3: Equatable {
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        guard lhs.c0 == rhs.c0 else {
+            return false
+        }
+        guard lhs.c1 == rhs.c1 else {
+            return false
+        }
+        guard lhs.c2 == rhs.c2 else {
+            return false
+        }
+        guard lhs.c3 == rhs.c3 else {
+            return false
+        }
+
+        return true
     }
 }
 
@@ -154,6 +202,28 @@ public struct TupleView5<C0, C1, C2, C3, C4>: View where C0: View, C1: View, C2:
 public extension ViewBuilder {
     static func buildBlock<C0: View, C1: View, C2: View, C3: View, C4: View>(_ c0: C0, _ c1: C1, _ c2: C2, _ c3: C3, _ c4: C4) -> TupleView5<C0, C1, C2, C3, C4> {
         return .init(c0: c0, c1: c1, c2: c2, c3: c3, c4: c4)
+    }
+}
+
+extension TupleView5: Equatable where C0: Equatable, C1: Equatable, C2: Equatable, C3: Equatable, C4: Equatable {
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        guard lhs.c0 == rhs.c0 else {
+            return false
+        }
+        guard lhs.c1 == rhs.c1 else {
+            return false
+        }
+        guard lhs.c2 == rhs.c2 else {
+            return false
+        }
+        guard lhs.c3 == rhs.c3 else {
+            return false
+        }
+        guard lhs.c4 == rhs.c4 else {
+            return false
+        }
+
+        return true
     }
 }
 
@@ -199,6 +269,31 @@ public struct TupleView6<C0, C1, C2, C3, C4, C5>: View where C0: View, C1: View,
 public extension ViewBuilder {
     static func buildBlock<C0: View, C1: View, C2: View, C3: View, C4: View, C5: View>(_ c0: C0, _ c1: C1, _ c2: C2, _ c3: C3, _ c4: C4, _ c5: C5) -> TupleView6<C0, C1, C2, C3, C4, C5> {
         return .init(c0: c0, c1: c1, c2: c2, c3: c3, c4: c4, c5: c5)
+    }
+}
+
+extension TupleView6: Equatable where C0: Equatable, C1: Equatable, C2: Equatable, C3: Equatable, C4: Equatable, C5: Equatable {
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        guard lhs.c0 == rhs.c0 else {
+            return false
+        }
+        guard lhs.c1 == rhs.c1 else {
+            return false
+        }
+        guard lhs.c2 == rhs.c2 else {
+            return false
+        }
+        guard lhs.c3 == rhs.c3 else {
+            return false
+        }
+        guard lhs.c4 == rhs.c4 else {
+            return false
+        }
+        guard lhs.c5 == rhs.c5 else {
+            return false
+        }
+
+        return true
     }
 }
 
@@ -248,6 +343,34 @@ public struct TupleView7<C0, C1, C2, C3, C4, C5, C6>: View where C0: View, C1: V
 public extension ViewBuilder {
     static func buildBlock<C0: View, C1: View, C2: View, C3: View, C4: View, C5: View, C6: View>(_ c0: C0, _ c1: C1, _ c2: C2, _ c3: C3, _ c4: C4, _ c5: C5, _ c6: C6) -> TupleView7<C0, C1, C2, C3, C4, C5, C6> {
         return .init(c0: c0, c1: c1, c2: c2, c3: c3, c4: c4, c5: c5, c6: c6)
+    }
+}
+
+extension TupleView7: Equatable where C0: Equatable, C1: Equatable, C2: Equatable, C3: Equatable, C4: Equatable, C5: Equatable, C6: Equatable {
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        guard lhs.c0 == rhs.c0 else {
+            return false
+        }
+        guard lhs.c1 == rhs.c1 else {
+            return false
+        }
+        guard lhs.c2 == rhs.c2 else {
+            return false
+        }
+        guard lhs.c3 == rhs.c3 else {
+            return false
+        }
+        guard lhs.c4 == rhs.c4 else {
+            return false
+        }
+        guard lhs.c5 == rhs.c5 else {
+            return false
+        }
+        guard lhs.c6 == rhs.c6 else {
+            return false
+        }
+
+        return true
     }
 }
 
@@ -301,6 +424,37 @@ public struct TupleView8<C0, C1, C2, C3, C4, C5, C6, C7>: View where C0: View, C
 public extension ViewBuilder {
     static func buildBlock<C0: View, C1: View, C2: View, C3: View, C4: View, C5: View, C6: View, C7: View>(_ c0: C0, _ c1: C1, _ c2: C2, _ c3: C3, _ c4: C4, _ c5: C5, _ c6: C6, _ c7: C7) -> TupleView8<C0, C1, C2, C3, C4, C5, C6, C7> {
         return .init(c0: c0, c1: c1, c2: c2, c3: c3, c4: c4, c5: c5, c6: c6, c7: c7)
+    }
+}
+
+extension TupleView8: Equatable where C0: Equatable, C1: Equatable, C2: Equatable, C3: Equatable, C4: Equatable, C5: Equatable, C6: Equatable, C7: Equatable {
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        guard lhs.c0 == rhs.c0 else {
+            return false
+        }
+        guard lhs.c1 == rhs.c1 else {
+            return false
+        }
+        guard lhs.c2 == rhs.c2 else {
+            return false
+        }
+        guard lhs.c3 == rhs.c3 else {
+            return false
+        }
+        guard lhs.c4 == rhs.c4 else {
+            return false
+        }
+        guard lhs.c5 == rhs.c5 else {
+            return false
+        }
+        guard lhs.c6 == rhs.c6 else {
+            return false
+        }
+        guard lhs.c7 == rhs.c7 else {
+            return false
+        }
+
+        return true
     }
 }
 
@@ -358,6 +512,40 @@ public struct TupleView9<C0, C1, C2, C3, C4, C5, C6, C7, C8>: View where C0: Vie
 public extension ViewBuilder {
     static func buildBlock<C0: View, C1: View, C2: View, C3: View, C4: View, C5: View, C6: View, C7: View, C8: View>(_ c0: C0, _ c1: C1, _ c2: C2, _ c3: C3, _ c4: C4, _ c5: C5, _ c6: C6, _ c7: C7, _ c8: C8) -> TupleView9<C0, C1, C2, C3, C4, C5, C6, C7, C8> {
         return .init(c0: c0, c1: c1, c2: c2, c3: c3, c4: c4, c5: c5, c6: c6, c7: c7, c8: c8)
+    }
+}
+
+extension TupleView9: Equatable where C0: Equatable, C1: Equatable, C2: Equatable, C3: Equatable, C4: Equatable, C5: Equatable, C6: Equatable, C7: Equatable, C8: Equatable {
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        guard lhs.c0 == rhs.c0 else {
+            return false
+        }
+        guard lhs.c1 == rhs.c1 else {
+            return false
+        }
+        guard lhs.c2 == rhs.c2 else {
+            return false
+        }
+        guard lhs.c3 == rhs.c3 else {
+            return false
+        }
+        guard lhs.c4 == rhs.c4 else {
+            return false
+        }
+        guard lhs.c5 == rhs.c5 else {
+            return false
+        }
+        guard lhs.c6 == rhs.c6 else {
+            return false
+        }
+        guard lhs.c7 == rhs.c7 else {
+            return false
+        }
+        guard lhs.c8 == rhs.c8 else {
+            return false
+        }
+
+        return true
     }
 }
 
@@ -419,5 +607,42 @@ public struct TupleView10<C0, C1, C2, C3, C4, C5, C6, C7, C8, C9>: View where C0
 public extension ViewBuilder {
     static func buildBlock<C0: View, C1: View, C2: View, C3: View, C4: View, C5: View, C6: View, C7: View, C8: View, C9: View>(_ c0: C0, _ c1: C1, _ c2: C2, _ c3: C3, _ c4: C4, _ c5: C5, _ c6: C6, _ c7: C7, _ c8: C8, _ c9: C9) -> TupleView10<C0, C1, C2, C3, C4, C5, C6, C7, C8, C9> {
         return .init(c0: c0, c1: c1, c2: c2, c3: c3, c4: c4, c5: c5, c6: c6, c7: c7, c8: c8, c9: c9)
+    }
+}
+
+extension TupleView10: Equatable where C0: Equatable, C1: Equatable, C2: Equatable, C3: Equatable, C4: Equatable, C5: Equatable, C6: Equatable, C7: Equatable, C8: Equatable, C9: Equatable {
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        guard lhs.c0 == rhs.c0 else {
+            return false
+        }
+        guard lhs.c1 == rhs.c1 else {
+            return false
+        }
+        guard lhs.c2 == rhs.c2 else {
+            return false
+        }
+        guard lhs.c3 == rhs.c3 else {
+            return false
+        }
+        guard lhs.c4 == rhs.c4 else {
+            return false
+        }
+        guard lhs.c5 == rhs.c5 else {
+            return false
+        }
+        guard lhs.c6 == rhs.c6 else {
+            return false
+        }
+        guard lhs.c7 == rhs.c7 else {
+            return false
+        }
+        guard lhs.c8 == rhs.c8 else {
+            return false
+        }
+        guard lhs.c9 == rhs.c9 else {
+            return false
+        }
+
+        return true
     }
 }

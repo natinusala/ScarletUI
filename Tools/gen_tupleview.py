@@ -118,20 +118,20 @@ def gen_makeviews(i: int) -> list:
     ]
 
 def gen_equals(i: int) -> list:
-    """Generate the `equals` method."""
+    """Generate the `==` method."""
     def gen_guards() -> list:
         guards = []
 
         for ci in range(0, i):
             guards += [
-                f"        guard C{ci}.equals(lhs: lhs.c{ci}, rhs: rhs.c{ci}) else {{",
+                f"        guard lhs.c{ci} == rhs.c{ci} else {{",
                 "            return false",
                 "        }"
             ]
 
         return guards
     return [
-        "    public static func equals(lhs: Self, rhs: Self) -> Bool {",
+        "    public static func == (lhs: Self, rhs: Self) -> Bool {",
         *gen_guards(),
         "",
         "        return true",
@@ -171,6 +171,15 @@ for i in range(2, tv_max + 1):
         f"        return .init({', '.join([f'c{ci}: c{ci}' for ci in range(0, i)])})",
         "    }",
         "}",
+        "",
+    ]
+
+    # `TupleView` `Equatable` extension
+    lines += [
+        f"extension TupleView{i}: Equatable where {', '.join([f'C{ci}: Equatable' for ci in range(0, i)])} {{",
+        *gen_equals(i),
+        "}"
+        "",
         "",
     ]
 

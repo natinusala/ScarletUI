@@ -78,3 +78,17 @@ public enum ConditionalView<FirstContent, SecondContent>: View where FirstConten
         }
     }
 }
+
+extension ConditionalView: Equatable where FirstContent: Equatable, SecondContent: Equatable {
+    /// `Equatable` conformance when both content types are `Equatable`.
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        switch (lhs, rhs) {
+            case (.first, .second), (.second, .first):
+                return false
+            case let (.first(lhs), .first(rhs)):
+                return lhs == rhs
+            case let (.second(lhs), .second(rhs)):
+                return lhs == rhs
+        }
+    }
+}
