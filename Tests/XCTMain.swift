@@ -18,11 +18,11 @@ import Quick
 import Backtrace
 
 // Add every test target here
-@testable import ScarletUICoreTests
+@testable import ScarletCoreTests
 
 // Add every spec file here
 let specs: [QuickSpec.Type] = [
-    // ScarletUICoreTests
+    // ScarletCoreTests
     BodyNodeSpecs.self,
     TryEquatableSpecs.self,
     AnyEqualsSpecs.self,

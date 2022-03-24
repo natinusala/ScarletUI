@@ -18,7 +18,7 @@
 import Quick
 import Nimble
 
-@testable import ScarletUICore
+@testable import ScarletCore
 
 // MARK: `anyEquals` tests
 

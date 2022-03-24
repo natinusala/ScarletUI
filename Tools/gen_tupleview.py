@@ -139,7 +139,7 @@ def gen_equals(i: int) -> list:
     ]
 
 # Where to write the generated file
-output = Path("Sources") / "ScarletUICore" / "View" / "TupleView.swift"
+output = Path("Sources") / "ScarletCore" / "View" / "TupleView.swift"
 
 # Size of the biggest TupleView to generate (from 2 to `tv_max`)
 tv_max = 10

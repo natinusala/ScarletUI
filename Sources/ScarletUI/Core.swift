@@ -14,4 +14,4 @@
    limitations under the License.
 */
 
-@_exported import ScarletUICore
+@_exported import ScarletCore

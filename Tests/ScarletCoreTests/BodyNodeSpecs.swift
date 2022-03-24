@@ -20,7 +20,7 @@ import XCTest
 import Quick
 import Nimble
 
-@testable import ScarletUICore
+@testable import ScarletCore
 
 // TODO: Use a mock on the implementation to see if `update()`, `insert()` and `remove()` are called (remember to test that unnecessary updates are not performed if the view is equal)
 

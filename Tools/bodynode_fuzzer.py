@@ -22,7 +22,7 @@ from random import choice, randint, choices
 
 # Use `swift test -Xswiftc -D -Xswiftc ENABLE_FUZZER -Xswiftc -suppress-warnings` to run the fuzzer after running this Python script
 
-output = Path("Tests") / "ScarletUICoreTests" / "BodyNodeFuzzerTests"
+output = Path("Tests") / "ScarletCoreTests" / "BodyNodeFuzzerTests"
 count = 1000  # how many tests to generate?
 maxdepth = 3  # maximum depth of generated views body TODO: randomize for each test case
 maxflips = 5  # maximum number of flips inside each test view
@@ -666,7 +666,7 @@ for test in range(0, count):
         "import XCTest",
         "import Quick",
         "import Nimble",
-        "@testable import ScarletUICore",
+        "@testable import ScarletCore",
         "",
     ]
 
@@ -691,7 +691,7 @@ lines = [
     "import XCTest",
     "import Quick",
     "import Nimble",
-    "@testable import ScarletUICore",
+    "@testable import ScarletCore",
     "",
     "fileprivate let specs: [BodyNodeTestCaseSpecs.Type] = [",
     *gen_cases(),
