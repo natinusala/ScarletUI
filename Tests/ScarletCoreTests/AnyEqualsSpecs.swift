@@ -124,10 +124,10 @@ let tryEquatableSpecs: [(_: String, lhs: Any, rhs: Any, expected: Bool?)] = [
     ("conforming dicts", lhs: [1: 2, 3: 4], rhs: [8: 7, 4: 4], expected: false),
     ("nonconforming dicts", lhs: [10: NonEquatableEnum.int(4321)], rhs: [10: NonEquatableEnum.int(4321)], expected: nil),
     // Optionals - cast to `Any` is to silence an implicit coercion warning
-    ("conforming optionals", lhs: Optional<Int>.some(10) as Any, rhs: Optional<Int>.some(10) as Any, expected: true),
-    ("conforming optionals", lhs: Optional<Int>.some(10) as Any, rhs: Optional<Int>.some(250) as Any, expected: false),
-    ("nonconforming optionals", lhs: Optional<NonEquatableEnum>.some(NonEquatableEnum.int(10)) as Any, rhs: Optional<NonEquatableEnum>.some(NonEquatableEnum.int(10)) as Any, expected: nil),
-    ("nil optionals", lhs: Optional<Int>.none as Any, rhs: Optional<Int>.none as Any, expected: true),
+    ("conforming optionals", lhs: Int?.some(10) as Any, rhs: Int?.some(10) as Any, expected: true),
+    ("conforming optionals", lhs: Int?.some(10) as Any, rhs: Int?.some(250) as Any, expected: false),
+    ("nonconforming optionals", lhs: NonEquatableEnum?.some(NonEquatableEnum.int(10)) as Any, rhs: NonEquatableEnum?.some(NonEquatableEnum.int(10)) as Any, expected: nil),
+    ("nil optionals", lhs: Int?.none as Any, rhs: Int?.none as Any, expected: true),
 ]
 
 class TryEquatableSpecs: QuickSpec {

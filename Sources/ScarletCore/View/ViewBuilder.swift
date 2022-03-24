@@ -18,8 +18,8 @@
 @resultBuilder
 public struct ViewBuilder {
     /// Builds a block for an empty view. Returns an empty view.
-    public static func buildBlock() -> EmptyView {
-        return EmptyView()
+    public static func buildBlock() -> EmptyView? {
+        return EmptyView?.none
     }
 
     /// Builds a block for an optional view. Can return the optional view directly thanks
