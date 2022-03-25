@@ -21,7 +21,7 @@ public protocol View {
     associatedtype Body: View
 
     /// This view's body.
-    var body: Body { get }
+    @ViewBuilder var body: Body { get }
 
     /// Compares this view with its previous version and tells what needs to be done
     /// to the expanded views list in order to migrate from the old version to the new one.

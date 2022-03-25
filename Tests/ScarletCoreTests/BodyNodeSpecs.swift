@@ -24,7 +24,7 @@ import Nimble
 
 // TODO: Use a mock on the implementation to see if `update()`, `insert()` and `remove()` are called (remember to test that unnecessary updates are not performed if the view is equal)
 
-/// Add every test case here
+/// Add every test case here.
 fileprivate let specs: [BodyNodeTestCaseSpecs.Type] = [
     // Generic cases
     NoInputTestCase.self,
@@ -39,6 +39,8 @@ fileprivate let specs: [BodyNodeTestCaseSpecs.Type] = [
     NestedOptionalInsertionTestCase.self,
     NestedOptionalRemovalTestCase.self,
     NestedOptionalUpdateTestCase.self,
+    TopLevelOptionalInsertionTestCase.self,
+    TopLevelOptionalRemovalTestCase.self,
     // Conditional cases
     UnbalancedConditionalTestCase.self,
     BalancedConditionalTestCase.self,
@@ -50,7 +52,170 @@ fileprivate let specs: [BodyNodeTestCaseSpecs.Type] = [
     EmptySecondRemoveFirstConditionalTestCase.self,
     NestedConditionalsTestCase.self,
     ConsecutiveConditionalsInsertionTestCase.self,
+    TopLevelConditionalTestCase.self,
+    TopLevelNestedConditionalTestCase.self,
 ]
+
+/// Tests nested top-level conditionals.
+struct TopLevelNestedConditionalTestCase: BodyNodeTestCase {
+    struct TestView: View {
+        var flip1: Bool
+        var flip2: Bool
+        var flip3: Bool
+
+        var body: some View {
+            if flip1 {
+                Text("Enabled")
+            } else if flip2 {
+                Text("Disabled")
+            } else if flip3 {
+                Text("Maybe?")
+            }
+            else {
+                Image(source: "error-icon")
+            }
+        }
+    }
+
+    static var initialView: TestView {
+        TestView(flip1: false, flip2: true, flip3: false)
+    }
+
+    static var expectedInitialTree: some View {
+        if false {
+            Text("Enabled")
+        } else if true {
+            Text("Disabled")
+        } else if false {
+            Text("Maybe?")
+        }
+        else {
+            Image(source: "error-icon")
+        }
+    }
+
+    static var updatedView: TestView {
+        TestView(flip1: false, flip2: false, flip3: false)
+    }
+
+    static var expectedUpdatedTree: some View {
+        if false {
+            Text("Enabled")
+        } else if false {
+            Text("Disabled")
+        } else if false {
+            Text("Maybe?")
+        }
+        else {
+            Image(source: "error-icon")
+        }
+    }
+}
+
+/// Tests a simple top-level conditional.
+struct TopLevelConditionalTestCase: BodyNodeTestCase {
+    struct TestView: View {
+        var flip: Bool
+
+        var body: some View {
+            if flip {
+                Text("Enabled")
+            } else {
+                Image(source: "error-icon")
+            }
+        }
+    }
+
+    static var initialView: TestView {
+        TestView(flip: false)
+    }
+
+    static var expectedInitialTree: some View {
+        if false {
+            Text("Enabled")
+        } else {
+            Image(source: "error-icon")
+        }
+    }
+
+    static var updatedView: TestView {
+        TestView(flip: true)
+    }
+
+    static var expectedUpdatedTree: some View {
+        if true {
+            Text("Enabled")
+        } else {
+            Image(source: "error-icon")
+        }
+    }
+}
+
+/// Tests a top-level optional insertion with `@ViewBuilder`.
+struct TopLevelOptionalInsertionTestCase: BodyNodeTestCase {
+    struct TestView: View {
+        var flip: Bool
+
+        var body: some View {
+            if flip {
+                Text("Enabled")
+            }
+        }
+    }
+
+    static var initialView: TestView {
+        TestView(flip: false)
+    }
+
+    static var expectedInitialTree: some View {
+        if false {
+            Text("Enabled")
+        }
+    }
+
+    static var updatedView: TestView {
+        TestView(flip: true)
+    }
+
+    static var expectedUpdatedTree: some View {
+        if true {
+            Text("Enabled")
+        }
+    }
+}
+
+/// Tests a top-level optional removal with `@ViewBuilder`.
+struct TopLevelOptionalRemovalTestCase: BodyNodeTestCase {
+    struct TestView: View {
+        var flip: Bool
+
+        var body: some View {
+            if flip {
+                Text("Enabled")
+            }
+        }
+    }
+
+    static var initialView: TestView {
+        TestView(flip: true)
+    }
+
+    static var expectedInitialTree: some View {
+        if true {
+            Text("Enabled")
+        }
+    }
+
+    static var updatedView: TestView {
+        TestView(flip: false)
+    }
+
+    static var expectedUpdatedTree: some View {
+        if false {
+            Text("Enabled")
+        }
+    }
+}
 
 /// Tests two consecutive conditionals that perform an insertion.
 struct ConsecutiveConditionalsInsertionTestCase: BodyNodeTestCase {
@@ -1647,13 +1812,13 @@ protocol BodyNodeTestCase: BodyNodeTestCaseSpecs {
     static var initialView: TestedView { get }
 
     /// The full expected tree after creating the initial view.
-    static var expectedInitialTree: InitialTree { get }
+    @ViewBuilder static var expectedInitialTree: InitialTree { get }
 
     /// The `TestedView` instance of the updated version of `initialView`.
     static var updatedView: TestedView { get }
 
     /// The expected tree after updating the initial view with the updated one.
-    static var expectedUpdatedTree: UpdatedTree { get }
+    @ViewBuilder static var expectedUpdatedTree: UpdatedTree { get }
 }
 
 extension BodyNodeTestCase {

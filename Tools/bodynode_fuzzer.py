@@ -490,9 +490,7 @@ class NestedView(BodyNode):
 class ViewBody:
     def __init__(self, view: "TestView"):
         self.view = view
-
-        # TODO: change ifs to True here once body has ViewBuilder support
-        self.node = BodyNode.make(ifs=False, empty=False, view=view, depth=0)
+        self.node = BodyNode.make(ifs=True, empty=False, view=view, depth=0)
 
     def definition(self) -> list:
         return [
