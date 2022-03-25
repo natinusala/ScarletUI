@@ -53,6 +53,11 @@ let anyEqualsSpecs: [(_: String, lhs: Any, rhs: Any, expected: Bool)] = [
     ("nonequatable same enums", lhs: NonEquatableEnum.int(1234), rhs: NonEquatableEnum.int(8888), expected: false),
     ("nonequatable different enums", lhs: NonEquatableEnum.int(1234), rhs: NonEquatableEnum.bool(false), expected: false),
     ("unbalanced enums", lhs: UnbalancedEnum.none, rhs: UnbalancedEnum.one("string"), expected: false),
+    ("equatable dicts", lhs: [1: 2, 3: 4], rhs: [1: 2, 3: 4], expected: true),
+    ("equatable dicts", lhs: [1: 2, 3: 4], rhs: [8: 7, 4: 4], expected: false),
+    // Tuples
+    ("nonequatable tuples", lhs: ("string 1", 100, NonEquatableStruct(val1: true, val2: 789)), rhs: ("string 1", 100, NonEquatableStruct(val1: true, val2: 789)), expected: true),
+    ("nonequatable tuples", lhs: ("string 1", 100, NonEquatableStruct(val1: true, val2: 7)), rhs: ("string 1", 0, NonEquatableStruct(val1: false, val2: 250)), expected: false),
     // Objects
     ("different nonequatable objects with same value", lhs: nonEquatableObjectEqual1, rhs: nonEquatableObjectEqual2, expected: false),
     ("different nonequatable objects with different values", lhs: nonEquatableObjectEqual1, rhs: nonEquatableObject3, expected: false),
@@ -66,6 +71,12 @@ let anyEqualsSpecs: [(_: String, lhs: Any, rhs: Any, expected: Bool)] = [
     ("nonequatable structs with computed property wrappers", lhs: ComputedWrappedNonEquatableStruct(val1: true, val2: 6845), rhs: ComputedWrappedNonEquatableStruct(val1: true, val2: 6845), expected: true),
     ("nonequatable structs with class property wrappers", lhs: ClassWrappedNonEquatableStruct(val1: true, val2: 50), rhs: ClassWrappedNonEquatableStruct(val1: true, val2: 50), expected: false), // this is never equal because field by field comparison will use `===` on `ClassWrapped`, which are different
     ("nonequatable structs with class property wrappers", lhs: classWrappedObject1, rhs: classWrappedObject2, expected: true), // this is equal because the `ClassWrapped` references inside the structs are the same
+    // Arrays
+    ("nonequatable arrays", lhs: [NonEquatableEnum.int(1234), NonEquatableEnum.int(4321)], rhs: [NonEquatableEnum.int(1234), NonEquatableEnum.int(4321)], expected: true),
+    ("nonequatable arrays", lhs: [NonEquatableEnum.int(1234), NonEquatableEnum.int(8888)], rhs: [NonEquatableEnum.int(1234), NonEquatableEnum.int(4321)], expected: false),
+    // Dicts
+    ("nonequatable dicts", lhs: [10: NonEquatableEnum.int(4321)], rhs: [10: NonEquatableEnum.int(4321)], expected: true),
+    ("nonequatable dicts", lhs: [10: NonEquatableEnum.int(4321)], rhs: [10: NonEquatableEnum.int(8874)], expected: false),
 ]
 
 class AnyEqualsSpecs: QuickSpec {
