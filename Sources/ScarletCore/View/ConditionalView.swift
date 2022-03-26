@@ -15,6 +15,7 @@
 */
 
 /// A conditional view that is either the "first one" or the "second one".
+/// TODO: rename to ConditionalContent
 public enum ConditionalView<FirstContent, SecondContent>: View where FirstContent: View, SecondContent: View {
     case first(FirstContent)
     case second(SecondContent)

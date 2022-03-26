@@ -54,7 +54,45 @@ fileprivate let specs: [BodyNodeTestCaseSpecs.Type] = [
     ConsecutiveConditionalsInsertionTestCase.self,
     TopLevelConditionalTestCase.self,
     TopLevelNestedConditionalTestCase.self,
+    // View modifiers cases
+    ModifierUpdateTestCase.self,
 ]
+
+/// Tests that a modifier is updated.
+struct ModifierUpdateTestCase: BodyNodeTestCase {
+    struct TestView: View {
+        var textId: String
+
+        var body: some View {
+            Column {
+                Text("My great string")
+            }
+            .id(textId)
+        }
+    }
+
+    static var initialView: TestView {
+        TestView(textId: "id1")
+    }
+
+    static var expectedInitialTree: some View {
+        Column {
+            Text("My great string")
+        }
+        .id("id1")
+    }
+
+    static var updatedView: TestView {
+        TestView(textId: "id2")
+    }
+
+    static var expectedUpdatedTree: some View {
+        Column {
+            Text("My great string")
+        }
+        .id("id2")
+    }
+}
 
 /// Tests nested top-level conditionals.
 struct TopLevelNestedConditionalTestCase: BodyNodeTestCase {
@@ -1984,4 +2022,14 @@ struct Row<Content>: View where Content: View {
 
 struct Divider: View {
     typealias Body = Never
+}
+
+struct IDModifier<Content: View>: ViewModifier {
+    let id: String
+}
+
+extension View {
+    func id(_ id: String) -> some View {
+        return modifier(IDModifier<Self>(id: id))
+    }
 }
