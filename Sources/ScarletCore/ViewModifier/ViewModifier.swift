@@ -18,8 +18,9 @@
 ///     - set a view attribute
 ///     - wrap a view in another (modified or not) view (unimplemented)
 protocol ViewModifier {
+    typealias Content = ViewModifierContent<Self>
+
     associatedtype Body: View
-    associatedtype Content: View
 
     func body(content: Content) -> Body
 }
@@ -32,13 +33,20 @@ extension ViewModifier {
 }
 
 /// A modified view, input to a view modifier `body` method.
+///
+/// This is a placeholder struct that's replaced by `ModifiedContent` to inject
+/// the actual modified view instead.
 struct ViewModifierContent<Modifier>: View where Modifier: ViewModifier {
     typealias Body = Never
 }
 
-extension ModifiedContent: View where Modifier: ViewModifier, Modifier.Content == Content {
-    var body: some View {
-        self.modifier.body(content: self.content)
+extension ModifiedContent: View where Modifier: ViewModifier, Content: View {
+    typealias Body = Never
+
+    static func makeViews(view: Self, previous: Self?) -> [ElementOperation] {
+        // Call `makeViews` on the modifier and iterate over all operations
+        // to replace every `ViewModifierContent` occurence by our content view
+        let operations = Modifier.makeViews(modifier: view.modifier, previous: previous?.modifier)
     }
 }
 

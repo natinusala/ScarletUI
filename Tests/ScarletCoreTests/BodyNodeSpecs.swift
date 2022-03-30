@@ -2024,12 +2024,12 @@ struct Divider: View {
     typealias Body = Never
 }
 
-struct IDModifier<Content: View>: ViewModifier {
+struct IDModifier: ViewModifier {
     let id: String
 }
 
 extension View {
     func id(_ id: String) -> some View {
-        return modifier(IDModifier<Self>(id: id))
+        return modifier(IDModifier(id: id))
     }
 }

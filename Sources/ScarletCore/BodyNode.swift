@@ -70,34 +70,6 @@ struct BodyNode {
                     self.removeElement(at: position)
             }
         }
-
-        // // Avoid mutating the list to preserve the original elements positions,
-        // // otherwise we won't be able to apply all operations:
-        // //  - Process updates
-        // //  - Mark all elements that need to be removed
-        // //  - Process insertions, this will mutate the list but it doesn't matter anymore
-        // //  - Filter the list to remove those marked previously
-
-        // // Start with updates
-        // for update in operations.updates {
-        //     debug("  -> Updating \(update.updatedView.elementType) at position \(update.position)")
-        //     self.updateElement(at: update.position, with: update.updatedView)
-        // }
-
-        // // Mark removals
-        // for removal in operations.removals {
-        //     debug("  -> Removing \(self.mountedElements[removal.position].element.elementType)")
-        //     self.mountedElements[removal.position].toBeRemoved = true
-        // }
-
-        // // Process insertions
-        // for insertion in operations.insertions {
-        //     debug("  -> Inserting \(insertion.newView.elementType)")
-        //     self.insertElement(element: insertion.newView, at: insertion.position)
-        // }
-
-        // // Sweep the list for removed elements
-        // self.mountedElements = self.mountedElements.filter { !$0.toBeRemoved }
     }
 
     /// Updates the element at the given position with its new version.
