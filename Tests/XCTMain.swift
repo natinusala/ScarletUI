@@ -23,7 +23,7 @@ import Backtrace
 // Add every spec file here
 let specs: [QuickSpec.Type] = [
     // ScarletCoreTests
-    BodyNodeSpecs.self,
+    GraphNodeSpecs.self,
     TryEquatableSpecs.self,
     AnyEqualsSpecs.self,
 ]

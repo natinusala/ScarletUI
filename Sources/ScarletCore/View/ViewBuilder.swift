@@ -17,29 +17,13 @@
 /// Result builder for a view's body.
 @resultBuilder
 public struct ViewBuilder {
-    /// Builds a block for an empty view. Returns an empty view.
-    public static func buildBlock() -> EmptyView? {
-        return EmptyView?.none
+    /// Builds a block for an empty content. Returns an empty view.
+    public static func buildBlock() -> EmptyView {
+        return EmptyView()
     }
 
-    /// Builds a block for an optional view. Can return the optional view directly thanks
-    /// to the `Optional` extension.
-    public static func buildIf<Content: View>(_ content: Content?) -> Content? {
+    /// Builds a block one view. Returns the view itself.
+    public static func buildBlock<Content>(_ content: Content) -> Content {
         return content
-    }
-
-    /// Builds a block for a single view.
-    public static func buildBlock<Content: View>(_ content: Content) -> Content {
-        return content
-    }
-
-    /// Builds a block for a conditional view with first content.
-    public static func buildEither<FirstContent, SecondContent>(first: FirstContent) -> ConditionalView<FirstContent, SecondContent> {
-        return .first(first)
-    }
-
-    /// Builds a block for a conditional view.
-    public static func buildEither<FirstContent, SecondContent>(second: SecondContent) -> ConditionalView<FirstContent, SecondContent> {
-        return .second(second)
     }
 }

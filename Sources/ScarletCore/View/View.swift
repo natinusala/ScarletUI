@@ -23,39 +23,66 @@ public protocol View {
     /// This view's body.
     @ViewBuilder var body: Body { get }
 
-    /// Compares this view with its previous version and tells what needs to be done
-    /// to the expanded views list in order to migrate from the old version to the new one.
-    ///
-    /// Positions in returned operations are relative to the views list considering all previous
-    /// operations are applied. Order is therefore important.
-    static func makeViews(view: Self, previous: Self?) -> [ElementOperation]
+    /// Creates the graph node for this view.
+    static func makeView(view: Self) -> GraphValue
 
-    /// Returns the number of expanded views that make that view.
-    static func viewsCount(view: Self) -> Int
+    /// Returns this view's children.
+    static func makeChildren(view: Self) -> ElementChildren
+
+    /// The number of static children of this view.
+    /// Must be constant.
+    static var staticChildrenCount: Int { get }
+}
+
+public extension View where Body == Never {
+    /// Default implementation of `makeView` when `Body` is `Never`: create a node
+    /// without storage.
+    static func makeView(view: Self) -> GraphValue {
+        return GraphValue(
+            elementType: Self.self,
+            storage: nil
+        )
+    }
+
+    /// Default implementation of `makeChildren` when `Body` is `Never`: returns an empty list.
+    /// Useful for "leaf" views that have no children.
+    static func makeChildren(view: Self) -> ElementChildren {
+        return ElementChildren(staticChildren: [])
+    }
+
+    /// Default value for `staticChildrenCount` when `Body` is `Never`: 0, the view has no children.
+    static var staticChildrenCount: Int {
+        return 0
+    }
 }
 
 public extension View {
-    /// Default implementation of `makeViews`: insert or update the view.
-    /// Removal is handled by its parent view (`Optional` or `ConditionalView`).
-    static func makeViews(view: Self, previous: Self?) -> [ElementOperation] {
-        debug("Calling View makeViews on \(Self.self) - previous: \(previous == nil ? "no" : "yes")")
-
-        if previous == nil {
-            return [.insertion(element: AnyElement(view: view), position: 0)]
-        }
-
-        return [.update(newElement: AnyElement(view: view), position: 0)]
+    /// Default implementation of `makeView`: creates a graph node with storage.
+    static func makeView(view: Self) -> GraphValue {
+        return GraphValue(
+            elementType: Self.self,
+            storage: AnyElement(view: view)
+        )
     }
 
-    /// Default implementation of `viewsCount`: one view, itself.
-    static func viewsCount(view: Self) -> Int {
+    /// Default implementation of `makeChildren`: returns the view `body` directly.
+    static func makeChildren(view: Self) -> ElementChildren {
+        return ElementChildren(staticChildren: [AnyElement(view: view.body)])
+    }
+
+    /// Default value for `staticChildrenCount`: 1, the view has one child, its body.
+    static var staticChildrenCount: Int {
         return 1
     }
 }
 
 extension Never: View {
     public var body: Never {
-        fatalError()
+        return fatalError()
+    }
+
+    public static var staticChildrenCount: Int {
+        return 0
     }
 }
 

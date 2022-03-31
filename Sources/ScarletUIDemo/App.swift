@@ -16,11 +16,12 @@
 
 import ScarletUI
 
-@main
-struct ScarletUIDemo: App {
-    var body: some Scene {
-        Window(title: "ScarletUI Demo") {
-            Column {}
-        }
-    }
-}
+// @main
+// struct ScarletUIDemo: App {
+//     var body: some Scene {
+//         Window(title: "ScarletUI Demo") {
+//             Column {}
+//         }
+//     }
+// }
+

@@ -14,23 +14,13 @@
    limitations under the License.
 */
 
-import ScarletCore
+import Quick
+import Nimble
 
-/// A view that arranges its children in a column.
-public struct Column<Content>: View where Content: View {
-    public typealias Body = Never
+@testable import ScarletCore
 
-    var content: Content
-
-    public init(@ViewBuilder content: () -> Content) {
-        self.content = content()
-    }
-
-    public static func makeChildren(view: Self) -> ElementChildren {
-        return ElementChildren(staticChildren: [AnyElement(view: view.content)])
-    }
-
-    public static var staticChildrenCount: Int {
-        return 1
+class GraphNodeSpecs: QuickSpec {
+    override func spec() {
+        
     }
 }

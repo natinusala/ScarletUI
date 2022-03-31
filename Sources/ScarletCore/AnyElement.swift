@@ -15,41 +15,45 @@
 */
 
 /// A type-erased app, scene or view, used internally to access its properties.
-/// TODO: needs to be a class to prevent duplications between `body` and `children` inside `BodyNode`.
-public class AnyElement: CustomStringConvertible {
+public struct AnyElement: CustomStringConvertible {
     var element: Any
     var elementType: Any.Type
 
     var isLeaf: Bool
 
-    var bodyClosure: (Any) -> BodyNode
-    var makeClosure: (Any, BodyNode?) -> [ElementOperation]
+    var makeClosure: (Any) -> GraphValue
+    var makeChildrenClosure: (Any) -> ElementChildren
+    var staticChildrenCountClosure: () -> Int
 
-    init<V: View>(view: V) {
+    public init<V: View>(view: V) {
         self.element = view
         self.elementType = V.self
 
         self.isLeaf = V.Body.self == Never.self
 
-        self.bodyClosure = { view in
-            return BodyNode(of: (view as! V).body)
+        self.makeClosure = { view in
+            return V.makeView(view: (view as! V))
         }
 
-        self.makeClosure = { view, previous in
-            if let previous = previous {
-                return V.makeViews(view: (view as! V), previous: (previous.body.element as! V))
-            }
+        self.makeChildrenClosure = { view in
+            return V.makeChildren(view: (view as! V))
+        }
 
-            return V.makeViews(view: (view as! V), previous: nil)
+        self.staticChildrenCountClosure = {
+            return V.staticChildrenCount
         }
     }
 
-    var body: BodyNode {
-        return self.bodyClosure(self.element)
+    func make() -> GraphValue {
+        return self.makeClosure(self.element)
     }
 
-    func make(previous: BodyNode?) -> [ElementOperation] {
-        return self.makeClosure(self.element, previous)
+    func makeChildren() -> ElementChildren {
+        return self.makeChildrenClosure(self.element)
+    }
+
+    var staticChildrenCount: Int {
+        return self.staticChildrenCountClosure()
     }
 
     public var description: String {

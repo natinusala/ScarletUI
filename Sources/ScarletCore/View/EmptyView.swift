@@ -17,4 +17,8 @@
 /// An view with no body.
 public struct EmptyView: View, Equatable {
     public typealias Body = Never
+
+    public init() {}
+
+    public static let staticChildrenCount = 0
 }

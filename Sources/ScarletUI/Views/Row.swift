@@ -16,8 +16,8 @@
 
 import ScarletCore
 
-/// A view that arranges its children in a column.
-public struct Column<Content>: View where Content: View {
+/// A view that arranges its children in a row.
+public struct Row<Content>: View where Content: View {
     public typealias Body = Never
 
     var content: Content
