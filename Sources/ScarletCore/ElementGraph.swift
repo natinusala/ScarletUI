@@ -136,7 +136,7 @@ public class GraphNode {
         if newElement.elementType == current.value.elementType {
             current.updateValue(newValue: newElement.make(), with: newElement)
         } else {
-            debug("Replacing edge at position \(idx)")
+            debug("Replacing edge \(self.edges[idx]!.value.elementType) at position \(idx)")
 
             // Remove the current edge
             self.removeEdge(at: idx)
@@ -148,13 +148,13 @@ public class GraphNode {
 
     /// Removes the edge at the given position.
     private func removeEdge(at idx: Int) {
-        debug("Removing edge at position \(idx)")
+        debug("Removing edge \(self.edges[idx]!.value.elementType) at position \(idx)")
         self.edges[idx] = nil
     }
 
     /// Inserts a new edge at the given position.
     private func insertEdge(_ edge: AnyElement, at idx: Int) {
-        debug("Inserting edge at position \(idx)")
+        debug("Inserting edge \(edge.elementType) at position \(idx)")
         self.edges[idx] = GraphNode(mounting: edge.make(), with: edge)
     }
 

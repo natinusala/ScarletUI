@@ -25,6 +25,8 @@ struct Divider: View {
 }
 
 struct Sidebar: View {
+    let debug: Bool
+
     var body: some View {
         Row {
             Text("Item 1")
@@ -36,6 +38,12 @@ struct Sidebar: View {
             Text("Item 1")
             Text("Item 2")
             Text("Item 3")
+
+            if debug {
+                Divider()
+
+                Text("- Debug mode enabled -")
+            }
         }
     }
 }
@@ -47,7 +55,7 @@ struct MainView: View {
 
     var body: some View {
         if expanded {
-            Sidebar()
+            Sidebar(debug: debug)
         }
 
         Column {
@@ -57,7 +65,7 @@ struct MainView: View {
         }
 
         if debug {
-            Sidebar()
+            Sidebar(debug: false)
         } else {
             Column {
                 Text("Debug sidebar disabled")
@@ -94,7 +102,8 @@ let graph = ElementGraph(
     with: AnyElement(view: root)
 )
 
-graph.printTree()
+// graph.printTree()
+print("-------------")
 
 // ----------------------------
 
@@ -105,7 +114,8 @@ graph.updateValue(
     with: AnyElement(view: newView)
 )
 
-graph.printTree()
+// graph.printTree()
+print("-------------")
 
 // ----------------------------
 
@@ -116,5 +126,23 @@ graph.updateValue(
     with: AnyElement(view: newView)
 )
 
-graph.printTree()
+// graph.printTree()
+print("-------------")
 
+newView = MainView(expanded: true, debug: true)
+
+graph.updateValue(
+    newValue: MainView.makeView(view: newView),
+    with: AnyElement(view: newView)
+)
+
+print("-------------")
+
+newView = MainView(expanded: true, debug: false)
+
+graph.updateValue(
+    newValue: MainView.makeView(view: newView),
+    with: AnyElement(view: newView)
+)
+
+print("-------------")
