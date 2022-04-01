@@ -1,148 +1,148 @@
-import Foundation
+// import Foundation
 
-import ScarletUI
+// import ScarletUI
 
-struct Image: View {
-    typealias Body = Never
-}
+// struct Image: View {
+//     typealias Body = Never
+// }
 
-struct Text: View {
-    let text: String
+// struct Text: View {
+//     let text: String
 
-    init(_ text: String) {
-        self.text = text
-    }
-}
+//     init(_ text: String) {
+//         self.text = text
+//     }
+// }
 
-struct Content: View {
-    var body: some View {
-        Text("Hello, world!")
-    }
-}
+// struct Content: View {
+//     var body: some View {
+//         Text("Hello, world!")
+//     }
+// }
 
-struct Divider: View {
-    typealias Body = Never
-}
+// struct Divider: View {
+//     typealias Body = Never
+// }
 
-struct Sidebar: View {
-    let debug: Bool
+// struct Sidebar: View {
+//     let debug: Bool
 
-    var body: some View {
-        Row {
-            Text("Item 1")
-            Text("Item 2")
-            Text("Item 3")
+//     var body: some View {
+//         Row {
+//             Text("Item 1")
+//             Text("Item 2")
+//             Text("Item 3")
 
-            Divider()
+//             Divider()
 
-            Text("Item 1")
-            Text("Item 2")
-            Text("Item 3")
+//             Text("Item 1")
+//             Text("Item 2")
+//             Text("Item 3")
 
-            if debug {
-                Divider()
+//             if debug {
+//                 Divider()
 
-                Text("- Debug mode enabled -")
-            }
-        }
-    }
-}
+//                 Text("- Debug mode enabled -")
+//             }
+//         }
+//     }
+// }
 
-struct MainView: View {
-    let expanded: Bool
+// struct MainView: View {
+//     let expanded: Bool
 
-    let debug: Bool
+//     let debug: Bool
 
-    var body: some View {
-        if expanded {
-            Sidebar(debug: debug)
-        }
+//     var body: some View {
+//         if expanded {
+//             Sidebar(debug: debug)
+//         }
 
-        Column {
-            Header()
-            Content()
-            Footer()
-        }
+//         Column {
+//             Header()
+//             Content()
+//             Footer()
+//         }
 
-        if debug {
-            Sidebar(debug: false)
-        } else {
-            Column {
-                Text("Debug sidebar disabled")
-            }
-        }
-    }
-}
+//         if debug {
+//             Sidebar(debug: false)
+//         } else {
+//             Column {
+//                 Text("Debug sidebar disabled")
+//             }
+//         }
+//     }
+// }
 
-struct Footer: View {
-    var body: some View {
-        Row {
-            Image()
-            Text("Header")
-            Image()
-        }
-    }
-}
+// struct Footer: View {
+//     var body: some View {
+//         Row {
+//             Image()
+//             Text("Header")
+//             Image()
+//         }
+//     }
+// }
 
-struct Header: View {
-    var body: some View {
-        Row {
-            Image()
-            Text("Header")
-        }
-    }
-}
+// struct Header: View {
+//     var body: some View {
+//         Row {
+//             Image()
+//             Text("Header")
+//         }
+//     }
+// }
 
-// ----------------------------
+// // ----------------------------
 
-let root = MainView(expanded: false, debug: false)
+// let root = MainView(expanded: false, debug: false)
 
-let graph = ElementGraph(
-    mounting: MainView.makeView(view: root),
-    with: AnyElement(view: root)
-)
+// let graph = ElementGraph(
+//     mounting: MainView.makeView(view: root),
+//     with: AnyElement(view: root)
+// )
 
-// graph.printTree()
-print("-------------")
+// // graph.printTree()
+// print("-------------")
 
-// ----------------------------
+// // ----------------------------
 
-var newView = MainView(expanded: true, debug: false)
+// var newView = MainView(expanded: true, debug: false)
 
-graph.updateValue(
-    newValue: MainView.makeView(view: newView),
-    with: AnyElement(view: newView)
-)
+// graph.updateValue(
+//     newValue: MainView.makeView(view: newView),
+//     with: AnyElement(view: newView)
+// )
 
-// graph.printTree()
-print("-------------")
+// // graph.printTree()
+// print("-------------")
 
-// ----------------------------
+// // ----------------------------
 
-newView = MainView(expanded: true, debug: true)
+// newView = MainView(expanded: true, debug: true)
 
-graph.updateValue(
-    newValue: MainView.makeView(view: newView),
-    with: AnyElement(view: newView)
-)
+// graph.updateValue(
+//     newValue: MainView.makeView(view: newView),
+//     with: AnyElement(view: newView)
+// )
 
-// graph.printTree()
-print("-------------")
+// // graph.printTree()
+// print("-------------")
 
-newView = MainView(expanded: true, debug: true)
+// newView = MainView(expanded: true, debug: true)
 
-graph.updateValue(
-    newValue: MainView.makeView(view: newView),
-    with: AnyElement(view: newView)
-)
+// graph.updateValue(
+//     newValue: MainView.makeView(view: newView),
+//     with: AnyElement(view: newView)
+// )
 
-print("-------------")
+// print("-------------")
 
-newView = MainView(expanded: true, debug: false)
+// newView = MainView(expanded: true, debug: false)
 
-graph.updateValue(
-    newValue: MainView.makeView(view: newView),
-    with: AnyElement(view: newView)
-)
+// graph.updateValue(
+//     newValue: MainView.makeView(view: newView),
+//     with: AnyElement(view: newView)
+// )
 
-print("-------------")
+// print("-------------")
