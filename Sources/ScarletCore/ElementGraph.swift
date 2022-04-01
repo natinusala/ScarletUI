@@ -17,6 +17,7 @@
 // TODO: remove public everywhere once i'm done testing
 
 /// Represents the value of a node in the mounted elements graph (app, scenes, views).
+/// TODO: rename to ViewOutput, add necessary stuff, remove value from GraphNode to clean it up (put all necessary properties inside instead)
 public struct GraphValue {
     /// The node element's type.
     var elementType: Any.Type
@@ -38,6 +39,7 @@ public struct GraphValue {
 
 /// Output of `makeChildren()`: contains static children
 /// and dynamic children.
+/// TODO: Rename to ChildrenOutput
 public struct ElementChildren {
     /// The static children. Must always contain as many items as
     /// what's declared in the element `staticChildrenCount` property.
