@@ -17,12 +17,12 @@
 extension Optional: View where Wrapped: View {
     public typealias Body = Never
 
-    public static func makeChildren(view: Self) -> ElementChildren {
+    public static func makeChildren(view: Self) -> ChildrenOutput {
         switch view {
             case .none:
-                return ElementChildren(staticChildren: [nil])
+                return ChildrenOutput(staticChildren: [nil])
             case let .some(view):
-                return ElementChildren(staticChildren: [AnyElement(view: view)])
+                return ChildrenOutput(staticChildren: [AnyElement(view: view)])
         }
     }
 

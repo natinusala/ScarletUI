@@ -29,8 +29,7 @@ public struct ElementOutput {
 
 /// Output of `makeChildren()`: contains static children
 /// and dynamic children.
-/// TODO: Rename to ChildrenOutput
-public struct ElementChildren {
+public struct ChildrenOutput {
     /// The static children. Must always contain as many items as
     /// what's declared in the element `staticChildrenCount` property.
     ///

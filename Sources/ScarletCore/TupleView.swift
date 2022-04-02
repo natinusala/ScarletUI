@@ -27,8 +27,8 @@ public struct TupleView2<C0, C1>: View where C0: View, C1: View {
         self.c1 = c1
     }
 
-    public static func makeChildren(view: Self) -> ElementChildren {
-        return ElementChildren(staticChildren: [
+    public static func makeChildren(view: Self) -> ChildrenOutput {
+        return ChildrenOutput(staticChildren: [
             AnyElement(view: view.c0),
             AnyElement(view: view.c1),
         ])
@@ -50,8 +50,8 @@ public struct TupleView3<C0, C1, C2>: View where C0: View, C1: View, C2: View {
         self.c2 = c2
     }
 
-    public static func makeChildren(view: Self) -> ElementChildren {
-        return ElementChildren(staticChildren: [
+    public static func makeChildren(view: Self) -> ChildrenOutput {
+        return ChildrenOutput(staticChildren: [
             AnyElement(view: view.c0),
             AnyElement(view: view.c1),
             AnyElement(view: view.c2),
@@ -76,8 +76,8 @@ public struct TupleView4<C0, C1, C2, C3>: View where C0: View, C1: View, C2: Vie
         self.c3 = c3
     }
 
-    public static func makeChildren(view: Self) -> ElementChildren {
-        return ElementChildren(staticChildren: [
+    public static func makeChildren(view: Self) -> ChildrenOutput {
+        return ChildrenOutput(staticChildren: [
             AnyElement(view: view.c0),
             AnyElement(view: view.c1),
             AnyElement(view: view.c2),
@@ -105,8 +105,8 @@ public struct TupleView5<C0, C1, C2, C3, C4>: View where C0: View, C1: View, C2:
         self.c4 = c4
     }
 
-    public static func makeChildren(view: Self) -> ElementChildren {
-        return ElementChildren(staticChildren: [
+    public static func makeChildren(view: Self) -> ChildrenOutput {
+        return ChildrenOutput(staticChildren: [
             AnyElement(view: view.c0),
             AnyElement(view: view.c1),
             AnyElement(view: view.c2),
@@ -137,8 +137,8 @@ public struct TupleView6<C0, C1, C2, C3, C4, C5>: View where C0: View, C1: View,
         self.c5 = c5
     }
 
-    public static func makeChildren(view: Self) -> ElementChildren {
-        return ElementChildren(staticChildren: [
+    public static func makeChildren(view: Self) -> ChildrenOutput {
+        return ChildrenOutput(staticChildren: [
             AnyElement(view: view.c0),
             AnyElement(view: view.c1),
             AnyElement(view: view.c2),
@@ -172,8 +172,8 @@ public struct TupleView7<C0, C1, C2, C3, C4, C5, C6>: View where C0: View, C1: V
         self.c6 = c6
     }
 
-    public static func makeChildren(view: Self) -> ElementChildren {
-        return ElementChildren(staticChildren: [
+    public static func makeChildren(view: Self) -> ChildrenOutput {
+        return ChildrenOutput(staticChildren: [
             AnyElement(view: view.c0),
             AnyElement(view: view.c1),
             AnyElement(view: view.c2),
@@ -210,8 +210,8 @@ public struct TupleView8<C0, C1, C2, C3, C4, C5, C6, C7>: View where C0: View, C
         self.c7 = c7
     }
 
-    public static func makeChildren(view: Self) -> ElementChildren {
-        return ElementChildren(staticChildren: [
+    public static func makeChildren(view: Self) -> ChildrenOutput {
+        return ChildrenOutput(staticChildren: [
             AnyElement(view: view.c0),
             AnyElement(view: view.c1),
             AnyElement(view: view.c2),
@@ -251,8 +251,8 @@ public struct TupleView9<C0, C1, C2, C3, C4, C5, C6, C7, C8>: View where C0: Vie
         self.c8 = c8
     }
 
-    public static func makeChildren(view: Self) -> ElementChildren {
-        return ElementChildren(staticChildren: [
+    public static func makeChildren(view: Self) -> ChildrenOutput {
+        return ChildrenOutput(staticChildren: [
             AnyElement(view: view.c0),
             AnyElement(view: view.c1),
             AnyElement(view: view.c2),

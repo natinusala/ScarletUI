@@ -26,8 +26,8 @@ public struct Row<Content>: View where Content: View {
         self.content = content()
     }
 
-    public static func makeChildren(view: Self) -> ElementChildren {
-        return ElementChildren(staticChildren: [AnyElement(view: view.content)])
+    public static func makeChildren(view: Self) -> ChildrenOutput {
+        return ChildrenOutput(staticChildren: [AnyElement(view: view.content)])
     }
 
     public static var staticChildrenCount: Int {

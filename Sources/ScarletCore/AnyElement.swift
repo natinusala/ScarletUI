@@ -22,7 +22,7 @@ public struct AnyElement: CustomStringConvertible {
     var isLeaf: Bool
 
     var makeClosure: (Any) -> ElementOutput
-    var makeChildrenClosure: (Any) -> ElementChildren
+    var makeChildrenClosure: (Any) -> ChildrenOutput
     var staticChildrenCountClosure: () -> Int
 
     public init<V: View>(view: V) {
@@ -48,7 +48,7 @@ public struct AnyElement: CustomStringConvertible {
         return self.makeClosure(self.element)
     }
 
-    func makeChildren() -> ElementChildren {
+    func makeChildren() -> ChildrenOutput {
         return self.makeChildrenClosure(self.element)
     }
 

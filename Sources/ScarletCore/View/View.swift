@@ -27,7 +27,7 @@ public protocol View {
     static func makeView(view: Self) -> ElementOutput
 
     /// Returns this view's children.
-    static func makeChildren(view: Self) -> ElementChildren
+    static func makeChildren(view: Self) -> ChildrenOutput
 
     /// The number of static children of this view.
     /// Must be constant.
@@ -46,8 +46,8 @@ public extension View where Body == Never {
 
     /// Default implementation of `makeChildren` when `Body` is `Never`: returns an empty list.
     /// Useful for "leaf" views that have no children.
-    static func makeChildren(view: Self) -> ElementChildren {
-        return ElementChildren(staticChildren: [])
+    static func makeChildren(view: Self) -> ChildrenOutput {
+        return ChildrenOutput(staticChildren: [])
     }
 
     /// Default value for `staticChildrenCount` when `Body` is `Never`: 0, the view has no children.
@@ -66,8 +66,8 @@ public extension View {
     }
 
     /// Default implementation of `makeChildren`: returns the view `body` directly.
-    static func makeChildren(view: Self) -> ElementChildren {
-        return ElementChildren(staticChildren: [AnyElement(view: view.body)])
+    static func makeChildren(view: Self) -> ChildrenOutput {
+        return ChildrenOutput(staticChildren: [AnyElement(view: view.body)])
     }
 
     /// Default value for `staticChildrenCount`: 1, the view has one child, its body.

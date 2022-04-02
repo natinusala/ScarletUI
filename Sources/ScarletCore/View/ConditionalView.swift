@@ -21,12 +21,12 @@ public enum ConditionalView<FirstContent, SecondContent>: View where FirstConten
 
     public typealias Body = Never
 
-    public static func makeChildren(view: Self) -> ElementChildren {
+    public static func makeChildren(view: Self) -> ChildrenOutput {
         switch view {
             case let .first(firstContent):
-                return ElementChildren(staticChildren: [AnyElement(view: firstContent)])
+                return ChildrenOutput(staticChildren: [AnyElement(view: firstContent)])
             case let .second(secondContent):
-                return ElementChildren(staticChildren: [AnyElement(view: secondContent)])
+                return ChildrenOutput(staticChildren: [AnyElement(view: secondContent)])
         }
     }
 
