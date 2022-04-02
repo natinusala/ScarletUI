@@ -21,7 +21,7 @@ public struct AnyElement: CustomStringConvertible {
 
     var isLeaf: Bool
 
-    var makeClosure: (Any) -> GraphValue
+    var makeClosure: (Any) -> ElementOutput
     var makeChildrenClosure: (Any) -> ElementChildren
     var staticChildrenCountClosure: () -> Int
 
@@ -44,7 +44,7 @@ public struct AnyElement: CustomStringConvertible {
         }
     }
 
-    func make() -> GraphValue {
+    func make() -> ElementOutput {
         return self.makeClosure(self.element)
     }
 

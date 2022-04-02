@@ -14,7 +14,7 @@
    limitations under the License.
 */
 
-/// The app implementation, aka the real app that's actually running.
+/// The app implementation, aka. the real app that's actually running.
 public class ScarletUIAppImplementation: AppImplementation {}
 
 public extension App {

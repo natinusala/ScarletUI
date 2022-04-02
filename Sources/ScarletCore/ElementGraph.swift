@@ -16,25 +16,15 @@
 
 // TODO: remove public everywhere once i'm done testing
 
-/// Represents the value of a node in the mounted elements graph (app, scenes, views).
-/// TODO: rename to ViewOutput, add necessary stuff, remove value from GraphNode to clean it up (put all necessary properties inside instead)
-public struct GraphValue {
-    /// The node element's type.
-    var elementType: Any.Type
-
+/// Output of an element's "make" method.
+public struct ElementOutput {
     /// The node element.
-    var storage: AnyElement?
+    let element: AnyElement
 
-    /// Returns true if the element is "stored", aka if we are able
-    /// to rebuild its edges by calling `makeChildren()` again.
-    var stored: Bool {
-        return storage != nil
-    }
-
-    public init(elementType: Any.Type, storage: ScarletCore.AnyElement? = nil) {
-        self.elementType = elementType
-        self.storage = storage
-    }
+    /// Should the element be stored in the resulting graph node?
+    /// Only necessary if the view holds input that needs to be compared
+    /// before updating the graph node (typically user views).
+    let stored: Bool
 }
 
 /// Output of `makeChildren()`: contains static children
@@ -55,56 +45,68 @@ public struct ElementChildren {
 
 /// A node in the mounted element graph.
 public class GraphNode {
-    /// The node value.
-    var value: GraphValue
+    /// The node element type.
+    var elementType: Any.Type
+
+    /// The node element. Is only stored if `stored` is `true`
+    /// in the element "make" output.
+    var element: AnyElement?
 
     /// The node edges
     var edges: [GraphNode?] = []
 
+    /// Is the element stored, aka. are we able to rebuild its children
+    /// directly by calling `makeChildren()`?
+    var stored: Bool {
+        return self.element != nil
+    }
+
     /// Creates a new graph node, mounting the given value recursively until
     /// the end of the graph is reached. The element is given in case the value
     /// is a non-stored element.
-    public init(mounting value: GraphValue, with element: AnyElement) {
-        self.value = value
+    public init(mounting output: ElementOutput) {
+        if output.stored {
+            self.element = output.element
+        }
+        self.elementType = output.element.elementType
 
         // Run `makeChildren()` on the element to mount its static children first
         // The array will be filled with `staticChildrenCount` elements, missing children
         // will have `nil` in their position
-        self.edges = element.makeChildren().staticChildren.map { child in
+        self.edges = output.element.makeChildren().staticChildren.map { child in
             if let child = child {
-                return GraphNode(mounting: child.make(), with: child)
+                return GraphNode(mounting: child.make())
             }
 
             return nil
         }
 
-        if element.staticChildrenCount != edges.count {
-            fatalError("`\(element.elementType).makeChildren()` did not return exactly \(element.staticChildrenCount) static children")
+        if output.element.staticChildrenCount != edges.count {
+            fatalError("`\(output.element.elementType).makeChildren()` did not return exactly \(output.element.staticChildrenCount) static children")
         }
     }
 
-    /// Updates the node value and re-evaluates the edges down
-    /// the whole graph until no changes are found.
-    public func updateValue(newValue: GraphValue, with element: AnyElement) {
-        if element.elementType != self.value.elementType {
-            fatalError("Cannot update value of node with type \(self.value.elementType) with \(element.elementType)")
+    /// Updates the node and re-evaluates the edges down the whole graph until no changes are found.
+    public func update(with newElement: ElementOutput) {
+        if newElement.element.elementType != self.elementType {
+            fatalError("Cannot update node of type \(self.elementType) with \(newElement.element.elementType)")
         }
 
         // If we are a stored element, compare both elements to see if they are
         // the same. If they are, we can stop here. Otherwise assume elements cannot
         // be compared and always re-evaluate the edges.
-        if let stored = self.value.storage {
-            if anyEquals(lhs: stored, rhs: element) {
+        if let stored = self.element {
+            if anyEquals(lhs: stored, rhs: newElement.element) {
                 return
             }
         }
 
         // Call `makeChildren()` to get the new edges list.
         // Ensure we have the right count.
-        let newEdges = element.makeChildren().staticChildren
+        let newEdges = newElement.element.makeChildren().staticChildren
 
-        if element.staticChildrenCount != newEdges.count {
-            fatalError("`\(element.elementType).makeChildren()` did not return exactly \(element.staticChildrenCount) static children")
+        if newElement.element.staticChildrenCount != newEdges.count {
+            fatalError("`\(newElement.element.elementType).makeChildren()` did not return exactly \(newElement.element.staticChildrenCount) static children")
         }
 
         for idx in 0..<newEdges.count {
@@ -124,7 +126,13 @@ public class GraphNode {
             }
         }
 
-        self.value = newValue
+        // Update storage
+        if newElement.stored {
+            self.element = newElement.element
+        } else {
+            self.element = nil
+        }
+        self.elementType = newElement.element.elementType
     }
 
     /// Updates the edge at the given position with the given element.
@@ -135,10 +143,10 @@ public class GraphNode {
 
         // Check edge type: if it's the same, simply update the node
         // Otherwise remove the current edge and add the new one instead.
-        if newElement.elementType == current.value.elementType {
-            current.updateValue(newValue: newElement.make(), with: newElement)
+        if newElement.elementType == current.elementType {
+            current.update(with: newElement.make())
         } else {
-            debug("Replacing edge \(self.edges[idx]!.value.elementType) at position \(idx)")
+            debug("Replacing edge \(self.edges[idx]!.elementType) at position \(idx)")
 
             // Remove the current edge
             self.removeEdge(at: idx)
@@ -150,19 +158,19 @@ public class GraphNode {
 
     /// Removes the edge at the given position.
     private func removeEdge(at idx: Int) {
-        debug("Removing edge \(self.edges[idx]!.value.elementType) at position \(idx)")
+        debug("Removing edge \(self.edges[idx]!.elementType) at position \(idx)")
         self.edges[idx] = nil
     }
 
     /// Inserts a new edge at the given position.
     private func insertEdge(_ edge: AnyElement, at idx: Int) {
         debug("Inserting edge \(edge.elementType) at position \(idx)")
-        self.edges[idx] = GraphNode(mounting: edge.make(), with: edge)
+        self.edges[idx] = GraphNode(mounting: edge.make())
     }
 
     public func printTree(indent: Int = 0) {
         let indentStr = String(repeating: " ", count: indent)
-        print("\(indentStr)- \(self.value.elementType) (stored: \(self.value.stored))")
+        print("\(indentStr)- \(self.elementType) (stored: \(self.stored))")
 
         for edge in self.edges {
             if let edge = edge {

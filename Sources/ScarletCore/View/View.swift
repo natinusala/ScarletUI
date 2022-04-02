@@ -24,7 +24,7 @@ public protocol View {
     @ViewBuilder var body: Body { get }
 
     /// Creates the graph node for this view.
-    static func makeView(view: Self) -> GraphValue
+    static func makeView(view: Self) -> ElementOutput
 
     /// Returns this view's children.
     static func makeChildren(view: Self) -> ElementChildren
@@ -37,10 +37,10 @@ public protocol View {
 public extension View where Body == Never {
     /// Default implementation of `makeView` when `Body` is `Never`: create a node
     /// without storage.
-    static func makeView(view: Self) -> GraphValue {
-        return GraphValue(
-            elementType: Self.self,
-            storage: nil
+    static func makeView(view: Self) -> ElementOutput {
+        return ElementOutput(
+            element: AnyElement(view: view),
+            stored: false
         )
     }
 
@@ -58,10 +58,10 @@ public extension View where Body == Never {
 
 public extension View {
     /// Default implementation of `makeView`: creates a graph node with storage.
-    static func makeView(view: Self) -> GraphValue {
-        return GraphValue(
-            elementType: Self.self,
-            storage: AnyElement(view: view)
+    static func makeView(view: Self) -> ElementOutput {
+        return ElementOutput(
+            element: AnyElement(view: view),
+            stored: true
         )
     }
 
