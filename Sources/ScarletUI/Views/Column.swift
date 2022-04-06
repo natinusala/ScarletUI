@@ -26,11 +26,19 @@ public struct Column<Content>: View where Content: View {
         self.content = content()
     }
 
-    public static func makeChildren(view: Self) -> ChildrenOutput {
-        return ChildrenOutput(staticChildren: [AnyElement(view: view.content)])
+    public static func make(view: Self, input: MakeInput) -> MakeOutput {
+        let output = ElementOutput(type: Self.self, storage: nil)
+        let contentStorage = input.storage?.edges[0]
+
+        let contentInput = MakeInput(storage: contentStorage)
+
+        return .changed(new: .init(
+            node: output,
+            staticEdges: [Content.make(view: view.content, input: contentInput)]
+        ))
     }
 
-    public static var staticChildrenCount: Int {
+    public static func staticEdgesCount() -> Int {
         return 1
     }
 }

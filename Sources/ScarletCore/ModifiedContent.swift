@@ -15,7 +15,7 @@
 */
 
 /// Some content modified by a modifier.
-struct ModifiedContent<Content, Modifier> {
+public struct ModifiedContent<Content, Modifier> {
     let content: Content
     let modifier: Modifier
 }

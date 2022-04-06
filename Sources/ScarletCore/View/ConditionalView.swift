@@ -14,33 +14,3 @@
    limitations under the License.
 */
 
-/// A view that is either the first content or the second content.
-public enum ConditionalView<FirstContent, SecondContent>: View where FirstContent: View, SecondContent: View {
-    case first(FirstContent)
-    case second(SecondContent)
-
-    public typealias Body = Never
-
-    public static func makeChildren(view: Self) -> ChildrenOutput {
-        switch view {
-            case let .first(firstContent):
-                return ChildrenOutput(staticChildren: [AnyElement(view: firstContent)])
-            case let .second(secondContent):
-                return ChildrenOutput(staticChildren: [AnyElement(view: secondContent)])
-        }
-    }
-
-    public static var staticChildrenCount: Int {
-        return 1
-    }
-}
-
-public extension ViewBuilder {
-    static func buildEither<FirstContent, SecondContent>(first: FirstContent) -> ConditionalView<FirstContent, SecondContent> {
-        return .first(first)
-    }
-
-    static func buildEither<FirstContent, SecondContent>(second: SecondContent) -> ConditionalView<FirstContent, SecondContent> {
-        return .second(second)
-    }
-}

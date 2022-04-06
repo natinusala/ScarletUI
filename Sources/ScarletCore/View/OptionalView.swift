@@ -17,23 +17,28 @@
 extension Optional: View where Wrapped: View {
     public typealias Body = Never
 
-    public static func makeChildren(view: Self) -> ChildrenOutput {
+    public static func make(view: Self, input: MakeInput) -> MakeOutput {
+        let output = ElementOutput(type: Self.self, storage: nil)
+        let edges: [MakeOutput?]
+
         switch view {
             case .none:
-                return ChildrenOutput(staticChildren: [nil])
+                edges = [nil]
             case let .some(view):
-                return ChildrenOutput(staticChildren: [AnyElement(view: view)])
+                let wrappedInput = MakeInput(storage: input.storage?.edges[0])
+                edges = [Wrapped.make(view: view, input: wrappedInput)]
         }
+
+        return .changed(new: .init(node: output, staticEdges: edges))
     }
 
-    public static var staticChildrenCount: Int {
+    public static func staticEdgesCount() -> Int {
         return 1
     }
 }
 
 public extension ViewBuilder {
-    /// Builds an optional view.
-    static func buildIf<Content: View>(_ content: Content?) -> Content? {
+    static func buildOptional<Content>(_ content: Content?) -> Content? where Content: View {
         return content
     }
 }

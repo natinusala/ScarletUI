@@ -2,11 +2,9 @@ import Foundation
 
 import ScarletUI
 
-struct Image: View {
-    typealias Body = Never
-}
-
 struct Text: View {
+    typealias Body = Never
+
     let text: String
 
     init(_ text: String) {
@@ -14,130 +12,85 @@ struct Text: View {
     }
 }
 
-struct Content: View {
-    var body: some View {
-        Text("Hello, world!")
-    }
-}
-
 struct Divider: View {
     typealias Body = Never
 }
 
+struct Content: View {
+    var body: some View {
+        Row {
+            Text("Hello world")
+        }
+    }
+}
+
 struct Sidebar: View {
-    let debug: Bool
+    var title: String
+    var debug: Bool
 
     var body: some View {
         Row {
-            Text("Item 1")
-            Text("Item 2")
-            Text("Item 3")
+            Text(title)
+            Text("Logged in as FooBar")
 
             Divider()
 
-            Text("Item 1")
-            Text("Item 2")
-            Text("Item 3")
+            Text("Main Menu")
+            Text("About")
 
             if debug {
                 Divider()
 
-                Text("- Debug mode enabled -")
+                Text("Debug Menu")
             }
         }
     }
 }
 
-struct MainView: View {
-    let expanded: Bool
-
-    let debug: Bool
+struct ContentView: View {
+    var collapsed = true
+    var title = "Sidebar Title"
+    var debug = false
 
     var body: some View {
-        if expanded {
-            Sidebar(debug: debug)
-        }
+        Row {
+            if !collapsed {
+                Sidebar(title: title, debug: debug)
+            }
 
-        Column {
-            Header()
             Content()
-            Footer()
-        }
-
-        if debug {
-            Sidebar(debug: false)
-        } else {
-            Column {
-                Text("Debug sidebar disabled")
-            }
         }
     }
 }
 
-struct Footer: View {
-    var body: some View {
-        Row {
-            Image()
-            Text("Header")
-            Image()
-        }
-    }
-}
+let root = ElementNode(making: ContentView())
 
-struct Header: View {
-    var body: some View {
-        Row {
-            Image()
-            Text("Header")
-        }
-    }
-}
+print(" --------------- Should insert Sidebar ---------------")
 
-// ----------------------------
+var updated = ContentView(collapsed: false)
+root.update(with: updated)
 
-let root = MainView(expanded: false, debug: false)
+print(" --------------- Should remove Sidebar ---------------")
 
-let graph = ElementGraph(
-    mounting: MainView.makeView(view: root)
-)
+updated = ContentView(collapsed: true)
+root.update(with: updated)
 
-// graph.printTree()
-print("-------------")
+print(" --------------- Should say that ContentView is unchanged ---------------")
 
-// ----------------------------
+updated = ContentView(collapsed: true)
+root.update(with: updated)
 
-var newView = MainView(expanded: true, debug: false)
+print(" --------------- Should update all of Sidebar (don't print anything yet) ---------------")
 
-graph.update(
-    with: MainView.makeView(view: newView)
-)
+updated = ContentView(collapsed: true, title: "Updated Sidebar Title")
+root.update(with: updated)
 
-// graph.printTree()
-print("-------------")
+print(" --------------- Should insert sidebar back with divider and test ---------------")
 
-// ----------------------------
+updated = ContentView(collapsed: false, title: "Updated Sidebar Title", debug: true)
+root.update(with: updated)
 
-newView = MainView(expanded: true, debug: true)
+print(" --------------- Should remove divider and text ---------------")
 
-graph.update(
-    with: MainView.makeView(view: newView)
-)
-
-// graph.printTree()
-print("-------------")
-
-newView = MainView(expanded: true, debug: true)
-
-graph.update(
-    with: MainView.makeView(view: newView)
-)
-
-print("-------------")
-
-newView = MainView(expanded: true, debug: false)
-
-graph.update(
-    with: MainView.makeView(view: newView)
-)
-
-print("-------------")
+updated = ContentView(collapsed: false, title: "Updated Sidebar Title", debug: false)
+root.update(with: updated)

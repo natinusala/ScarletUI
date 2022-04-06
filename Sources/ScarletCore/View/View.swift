@@ -24,55 +24,48 @@ public protocol View {
     @ViewBuilder var body: Body { get }
 
     /// Creates the graph node for this view.
-    static func makeView(view: Self) -> ElementOutput
+    static func make(view: Self, input: MakeInput) -> MakeOutput
 
-    /// Returns this view's children.
-    static func makeChildren(view: Self) -> ChildrenOutput
-
-    /// The number of static children of this view.
+    /// The number of static edges of this view.
     /// Must be constant.
-    static var staticChildrenCount: Int { get }
+    static func staticEdgesCount() -> Int
 }
 
-public extension View where Body == Never {
-    /// Default implementation of `makeView` when `Body` is `Never`: create a node
-    /// without storage.
-    static func makeView(view: Self) -> ElementOutput {
-        return ElementOutput(
-            element: AnyElement(view: view),
-            stored: false
-        )
+extension View {
+    /// Default implementation of `make()` when the view has a body: compare the view with the previous stored
+    /// one and see if it changed. If it did, re-evaluate its `body`.
+    public static func make(view: Self, input: MakeInput) -> MakeOutput {
+        // Get the previous view and compare it
+        if let previous = input.storage?.value, anyEquals(lhs: view, rhs: previous) {
+            return .unchanged(type: Self.self)
+        }
+
+        // The view changed
+        let output = ElementOutput(type: Self.self, storage: view)
+
+        // Re-evaluate body
+        let body = view.body
+        let bodyStorage = input.storage?.edges[0]
+        let bodyInput = MakeInput(storage: bodyStorage)
+        let bodyOutput = Body.make(view: body, input: bodyInput)
+
+        return .changed(new: .init(node: output, staticEdges: [bodyOutput]))
     }
 
-    /// Default implementation of `makeChildren` when `Body` is `Never`: returns an empty list.
-    /// Useful for "leaf" views that have no children.
-    static func makeChildren(view: Self) -> ChildrenOutput {
-        return ChildrenOutput(staticChildren: [])
-    }
-
-    /// Default value for `staticChildrenCount` when `Body` is `Never`: 0, the view has no children.
-    static var staticChildrenCount: Int {
-        return 0
-    }
-}
-
-public extension View {
-    /// Default implementation of `makeView`: creates a graph node with storage.
-    static func makeView(view: Self) -> ElementOutput {
-        return ElementOutput(
-            element: AnyElement(view: view),
-            stored: true
-        )
-    }
-
-    /// Default implementation of `makeChildren`: returns the view `body` directly.
-    static func makeChildren(view: Self) -> ChildrenOutput {
-        return ChildrenOutput(staticChildren: [AnyElement(view: view.body)])
-    }
-
-    /// Default value for `staticChildrenCount`: 1, the view has one child, its body.
-    static var staticChildrenCount: Int {
+    public static func staticEdgesCount() -> Int {
         return 1
+    }
+}
+
+extension View {
+    /// Default implementation of `make()` when the view has no body: return the view itself with
+    /// no storage and no edges. Used for "leaves" of the view graph.
+    public static func make(view: Self, input: MakeInput) -> MakeOutput where Body == Never {
+        return .changed(new: .init(node: ElementOutput(type: Self.self, storage: nil), staticEdges: []))
+    }
+
+    public static func staticEdgesCount() -> Int where Body == Never {
+        return 0
     }
 }
 
@@ -81,8 +74,10 @@ extension Never: View {
         return fatalError()
     }
 
-    public static var staticChildrenCount: Int {
-        return 0
+    public static func make(view: Self, input: MakeInput) -> MakeOutput {}
+
+    public static func staticEdgesCount() -> Int {
+        fatalError()
     }
 }
 

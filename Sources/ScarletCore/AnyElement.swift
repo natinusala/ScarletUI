@@ -21,9 +21,8 @@ public struct AnyElement: CustomStringConvertible {
 
     var isLeaf: Bool
 
-    var makeClosure: (Any) -> ElementOutput
-    var makeChildrenClosure: (Any) -> ChildrenOutput
-    var staticChildrenCountClosure: () -> Int
+    var makeClosure: (Any, MakeInput) -> MakeOutput
+    var staticEdgesCountClosure: () -> Int
 
     public init<V: View>(view: V) {
         self.element = view
@@ -31,29 +30,21 @@ public struct AnyElement: CustomStringConvertible {
 
         self.isLeaf = V.Body.self == Never.self
 
-        self.makeClosure = { view in
-            return V.makeView(view: (view as! V))
+        self.makeClosure = { view, id in
+            return V.make(view: (view as! V), input: id)
         }
 
-        self.makeChildrenClosure = { view in
-            return V.makeChildren(view: (view as! V))
-        }
-
-        self.staticChildrenCountClosure = {
-            return V.staticChildrenCount
+        self.staticEdgesCountClosure = {
+            return V.staticEdgesCount()
         }
     }
 
-    func make() -> ElementOutput {
-        return self.makeClosure(self.element)
+    func make(input: MakeInput) -> MakeOutput {
+        return self.makeClosure(self.element, input)
     }
 
-    func makeChildren() -> ChildrenOutput {
-        return self.makeChildrenClosure(self.element)
-    }
-
-    var staticChildrenCount: Int {
-        return self.staticChildrenCountClosure()
+    var staticEdgesCount: Int {
+        return self.staticEdgesCountClosure()
     }
 
     public var description: String {
