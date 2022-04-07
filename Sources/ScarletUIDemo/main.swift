@@ -2,6 +2,34 @@ import Foundation
 
 import ScarletUI
 
+struct IdModifier: ViewModifier {
+    let id: String
+}
+
+extension View {
+    func id(_ id: String) -> some View {
+        return modifier(IdModifier(id: id))
+    }
+}
+
+struct Wrapper: ViewModifier {
+    var contain: Bool
+
+    func body(content: Content) -> some View {
+        if contain {
+            content
+        } else {
+            Text("Missing content!")
+        }
+    }
+}
+
+extension View {
+    func wrapper(contain: Bool) -> some View {
+        return modifier(Wrapper(contain: contain))
+    }
+}
+
 struct Text: View {
     typealias Body = Never
 
@@ -16,10 +44,14 @@ struct Divider: View {
     typealias Body = Never
 }
 
-struct Content: View {
+struct MainContent: View {
+    var contain: Bool
+
     var body: some View {
         Row {
             Text("Hello world")
+                .id("helloworl")
+                .wrapper(contain: contain)
         }
     }
 }
@@ -52,13 +84,36 @@ struct ContentView: View {
     var title = "Sidebar Title"
     var debug = false
 
+    var flip1 = true
+    var flip2 = true
+
+    var contain = true
+
     var body: some View {
         Row {
             if !collapsed {
                 Sidebar(title: title, debug: debug)
+                    .id("sidebar")
             }
 
-            Content()
+            MainContent(contain: contain)
+
+            if flip1 && flip2 {
+                Text("Flip 1")
+                Text("Flip 2")
+            } else if flip1 {
+                Text("Flip 1")
+            } else if flip2 {
+                Divider()
+            } else {
+                Divider()
+                Divider()
+
+                if debug {
+                    Text("Debug Menu")
+                        .id("identifier")
+                }
+            }
         }
     }
 }
@@ -93,4 +148,28 @@ root.update(with: updated)
 print(" --------------- Should remove divider and text ---------------")
 
 updated = ContentView(collapsed: false, title: "Updated Sidebar Title", debug: false)
+root.update(with: updated)
+
+print(" --------------- Should remove TupleView2<Text, Text> and insert Text ---------------")
+
+updated = ContentView(collapsed: false, title: "Updated Sidebar Title", debug: false, flip2: false)
+root.update(with: updated)
+
+print(" --------------- Should remove Text and insert Divider, Divider ---------------")
+
+updated = ContentView(collapsed: false, title: "Updated Sidebar Title", debug: false, flip1: false, flip2: false)
+root.update(with: updated)
+
+print(" --------------- Should add Text ---------------")
+
+updated = ContentView(collapsed: false, title: "Updated Sidebar Title", debug: true, flip1: false, flip2: false)
+root.update(with: updated)
+
+print(" --------------- Modifiers ---------------")
+
+root.printGraph()
+
+print(" --------------- Should remove and insert Text ---------------")
+
+updated = ContentView(collapsed: false, title: "Updated Sidebar Title", debug: true, flip1: false, flip2: false, contain: false)
 root.update(with: updated)

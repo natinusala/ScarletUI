@@ -14,3 +14,44 @@
    limitations under the License.
 */
 
+/// A view that is either the "first one" or the "second one".
+public enum ConditionalView<FirstContent, SecondContent>: View where FirstContent: View, SecondContent: View {
+    case first(FirstContent)
+    case second(SecondContent)
+
+    public typealias Body = Never
+
+    public static func make(view: Self, input: MakeInput) -> MakeOutput {
+        let output = ElementOutput(type: Self.self, storage: nil)
+        let edges: [MakeOutput?]
+
+        switch view {
+            case let .first(first):
+                let firstInput = MakeInput(storage: input.storage?.edges[0])
+                edges = [FirstContent.make(view: first, input: firstInput), nil]
+            case let .second(second):
+                let secondInput = MakeInput(storage: input.storage?.edges[1])
+                edges = [nil, SecondContent.make(view: second, input: secondInput)]
+        }
+
+        return .changed(new: .init(node: output, staticEdges: edges))
+    }
+
+    public static func staticEdgesCount() -> Int {
+        return 2
+    }
+}
+
+public extension ViewBuilder {
+    static func buildEither<FirstContent, SecondContent>(
+        first content: FirstContent
+    ) -> ConditionalView<FirstContent, SecondContent> where FirstContent: View, SecondContent: View {
+        return .first(content)
+    }
+
+    static func buildEither<FirstContent, SecondContent>(
+        second content: SecondContent
+    ) -> ConditionalView<FirstContent, SecondContent> where FirstContent: View, SecondContent: View {
+        return .second(content)
+    }
+}

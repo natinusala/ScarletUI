@@ -175,7 +175,7 @@ public class ElementNode {
     /// Inserts a new edge at the given index.
     private func insertEdge(_ edge: MakeOutput, at idx: Int) {
         guard case let .changed(new) = edge else {
-            fatalError("Cannot insert an unchanged edge")
+            fatalError("Cannot insert an unchanged edge \(edge)")
         }
 
         guard self.storage.edges[idx] == nil else {
@@ -206,21 +206,7 @@ public class ElementNode {
             fatalError("Cannot update an edge that doesn't exist")
         }
 
-        // If the edge is unchanged, don't do anything
-        guard case let .changed(new) = newEdge else {
-            debug("Edge \(edge.type) is unchanged (\(newEdge))")
-            return
-        }
-
-        // If the type is the same, update it
-        // Otherwise remove the old one entirely and put
-        // the new one in place
-        if edge.type == new.node.type {
-            edge.update(with: newEdge)
-        } else {
-            self.removeEdge(at: idx)
-            self.insertEdge(newEdge, at: idx)
-        }
+        edge.update(with: newEdge)
     }
 
     /// Removes edge at given position.

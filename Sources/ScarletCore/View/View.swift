@@ -57,15 +57,19 @@ extension View {
     }
 }
 
-extension View {
+public extension View where Body == Never {
     /// Default implementation of `make()` when the view has no body: return the view itself with
     /// no storage and no edges. Used for "leaves" of the view graph.
-    public static func make(view: Self, input: MakeInput) -> MakeOutput where Body == Never {
+     static func make(view: Self, input: MakeInput) -> MakeOutput {
         return .changed(new: .init(node: ElementOutput(type: Self.self, storage: nil), staticEdges: []))
     }
 
-    public static func staticEdgesCount() -> Int where Body == Never {
+    static func staticEdgesCount() -> Int {
         return 0
+    }
+
+    var body: Never {
+        fatalError()
     }
 }
 
@@ -77,12 +81,6 @@ extension Never: View {
     public static func make(view: Self, input: MakeInput) -> MakeOutput {}
 
     public static func staticEdgesCount() -> Int {
-        fatalError()
-    }
-}
-
-public extension View where Body == Never {
-    var body: Never {
         fatalError()
     }
 }
