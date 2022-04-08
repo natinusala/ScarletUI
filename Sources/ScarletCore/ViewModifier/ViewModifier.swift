@@ -54,7 +54,8 @@ public extension ViewModifier {
         return .changed(new: .init(node: output, staticEdges: [bodyOutput]))
     }
 
-    /// Default implementation for `staticEdgesCount()` when there is a body.
+    /// Default implementation for `staticEdgesCount()` when there is a body: return one edge,
+    /// the body.
     static func staticEdgesCount() -> Int {
         return 1
     }
@@ -67,6 +68,7 @@ public extension ViewModifier where Body == Never {
     }
 
     /// Default implementation for `staticEdgesCount()` when there is no body.
+    /// There are no edges.
     static func staticEdgesCount() -> Int {
         return 0
     }
@@ -85,6 +87,7 @@ public struct ViewModifierContent<Modifier>: View where Modifier: ViewModifier {
         return .changed(new: .init(node: output, staticEdges: []))
     }
 
+    /// View modifier content has no edges.
     public static func staticEdgesCount() -> Int {
         return 0
     }
@@ -110,6 +113,8 @@ extension ModifiedContent: View where Content: View, Modifier: ViewModifier {
         return .changed(new: .init(node: output, staticEdges: edges))
     }
 
+    /// Modified content has two edges: the first one is the modifier and the second one
+    /// is the wrapped content.
     public static func staticEdgesCount() -> Int {
         return 2
     }

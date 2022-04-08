@@ -52,6 +52,8 @@ extension View {
         return .changed(new: .init(node: output, staticEdges: [bodyOutput]))
     }
 
+    /// Default implementation for `staticEdgesCount()` when there is a body: return one edge,
+    /// the body.
     public static func staticEdgesCount() -> Int {
         return 1
     }
@@ -64,6 +66,7 @@ public extension View where Body == Never {
         return .changed(new: .init(node: ElementOutput(type: Self.self, storage: nil), staticEdges: []))
     }
 
+    /// Default implementation for `staticEdgesCount()` when there is no body: no edges.
     static func staticEdgesCount() -> Int {
         return 0
     }

@@ -14,6 +14,7 @@
    limitations under the License.
 */
 
+/// An optional view.
 extension Optional: View where Wrapped: View {
     public typealias Body = Never
 
@@ -32,6 +33,7 @@ extension Optional: View where Wrapped: View {
         return .changed(new: .init(node: output, staticEdges: edges))
     }
 
+    /// Optional views have one edge, the wrapped view (or `nil`).
     public static func staticEdgesCount() -> Int {
         return 1
     }

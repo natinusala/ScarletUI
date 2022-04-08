@@ -37,6 +37,7 @@ public enum ConditionalView<FirstContent, SecondContent>: View where FirstConten
         return .changed(new: .init(node: output, staticEdges: edges))
     }
 
+    /// Conditionals have two edges: the first content and the second content. Only one of them has a value at a time.
     public static func staticEdgesCount() -> Int {
         return 2
     }
