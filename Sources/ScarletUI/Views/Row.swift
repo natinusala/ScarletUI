@@ -19,6 +19,7 @@ import ScarletCore
 /// A view that arranges its children in a row.
 public struct Row<Content>: View where Content: View {
     public typealias Body = Never
+    public typealias Implementation = RowImplementation
 
     var content: Content
 
@@ -27,7 +28,7 @@ public struct Row<Content>: View where Content: View {
     }
 
     public static func make(view: Self, input: MakeInput) -> MakeOutput {
-        let output = ElementOutput(type: Self.self, storage: nil)
+        let output = ElementOutput(type: Self.self, storage: nil, implementationProxy: view.implementationProxy)
         let contentStorage = input.storage?.edges[0]
 
         let contentInput = MakeInput(storage: contentStorage)
@@ -41,4 +42,10 @@ public struct Row<Content>: View where Content: View {
     public static func staticEdgesCount() -> Int {
         return 1
     }
+
+    public static func updateImplementation(_ implementation: Implementation, with view: Self) {
+        // Nothing to update
+    }
 }
+
+public class RowImplementation: ViewImplementation {}

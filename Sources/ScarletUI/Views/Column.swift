@@ -16,9 +16,12 @@
 
 import ScarletCore
 
+// TODO: remove duplication between Column and Row by making a Node view used for both, with an (axis: Axis) parameter
+
 /// A view that arranges its children in a column.
 public struct Column<Content>: View where Content: View {
     public typealias Body = Never
+    public typealias Implementation = ColumnImplementation
 
     var content: Content
 
@@ -27,7 +30,7 @@ public struct Column<Content>: View where Content: View {
     }
 
     public static func make(view: Self, input: MakeInput) -> MakeOutput {
-        let output = ElementOutput(type: Self.self, storage: nil)
+        let output = ElementOutput(type: Self.self, storage: nil, implementationProxy: view.implementationProxy)
         let contentStorage = input.storage?.edges[0]
 
         let contentInput = MakeInput(storage: contentStorage)
@@ -41,4 +44,10 @@ public struct Column<Content>: View where Content: View {
     public static func staticEdgesCount() -> Int {
         return 1
     }
+
+    public static func updateImplementation(_ implementation: Implementation, with view: Self) {
+        // Nothing to update
+    }
 }
+
+public class ColumnImplementation: ViewImplementation {}

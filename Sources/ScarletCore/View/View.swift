@@ -14,6 +14,8 @@
    limitations under the License.
 */
 
+import Foundation
+
 /// A view is the building block of an on-screen element. A scene is made
 /// of a views tree.
 public protocol View {
@@ -23,12 +25,43 @@ public protocol View {
     /// This view's body.
     @ViewBuilder var body: Body { get }
 
-    /// Creates the graph node for this view.
+    /// Creates the graph node for the view.
     static func make(view: Self, input: MakeInput) -> MakeOutput
 
-    /// The number of static edges of this view.
+    /// The number of static edges of the view.
     /// Must be constant.
     static func staticEdgesCount() -> Int
+
+    /// The type of the view's implementation.
+    associatedtype Implementation: ElementImplementation
+
+    /// Returns the implementations of the view.
+    static func makeImplementations(of view: Self) -> [ElementImplementation]
+
+    /// Updates given implementation with the view's data.
+    static func updateImplementation(_ implementation: Implementation, with view: Self)
+}
+
+public extension View {
+    /// Default implementation of `makeImplementations`: returns one implementation, the view itself or
+    /// an empty array if `Implementation` is `Never`.
+    // static func makeImplementations(of view: Self) -> [ElementImplementation] {
+    //     if Implementation.self is Never.Type {
+    //         return []
+    //     } else {
+    //         return [Implementation(displayName: view.displayName)]
+    //     }
+    // }
+
+    /// Default implementation of `update(implementation:)` when there is no implementation: do nothing.
+    static func updateImplementation(_ implementation: Implementation, with view: Self) where Implementation == Never {
+        // No implementation to update
+    }
+
+    /// The view's "display name", aka the view name stripped of its generic parameters.
+    var displayName: String {
+        return String(describing: Self.self).before(first: "<")
+    }
 }
 
 extension View {
@@ -41,7 +74,7 @@ extension View {
         }
 
         // The view changed
-        let output = ElementOutput(type: Self.self, storage: view)
+        let output = ElementOutput(type: Self.self, storage: view, implementationProxy: view.implementationProxy)
 
         // Re-evaluate body
         let body = view.body
@@ -63,7 +96,7 @@ public extension View where Body == Never {
     /// Default implementation of `make()` when the view has no body: return the view itself with
     /// no storage and no edges. Used for "leaves" of the view graph.
      static func make(view: Self, input: MakeInput) -> MakeOutput {
-        return .changed(new: .init(node: ElementOutput(type: Self.self, storage: nil), staticEdges: []))
+        return .changed(new: .init(node: ElementOutput(type: Self.self, storage: nil, implementationProxy: view.implementationProxy), staticEdges: []))
     }
 
     /// Default implementation for `staticEdgesCount()` when there is no body: no edges.
@@ -77,6 +110,8 @@ public extension View where Body == Never {
 }
 
 extension Never: View {
+    public typealias Implementation = Never
+
     public var body: Never {
         return fatalError()
     }

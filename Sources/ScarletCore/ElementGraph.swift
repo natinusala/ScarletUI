@@ -14,7 +14,7 @@
    limitations under the License.
 */
 
-// TODO: remove public everywhere once i'm done testing
+// TODO: remove as much public as possible everywhere once i'm done testing
 
 /// Input for the `make()` function.
 public struct MakeInput {
@@ -61,9 +61,13 @@ public struct ElementOutput {
     /// Any value to store and pass to the next `make()` call.
     public let storage: Any?
 
-    public init(type: Any.Type, storage: Any?) {
+    /// Proxy to create or update the element implementation.
+    public var implementationProxy: ImplementationProxy
+
+    public init(type: Any.Type, storage: Any?, implementationProxy: ImplementationProxy) {
         self.type = type
         self.storage = storage
+        self.implementationProxy = implementationProxy
     }
 }
 
@@ -98,24 +102,43 @@ public class ElementNode {
     /// Edges for this element.
     var edges: [ElementNode?]
 
+    /// Implementation of this element, if any.
+    /// One node can have multiple implementations, when using
+    /// the content multiple times in a modifier for example.
+    public var implementations: [ElementImplementation]
+
     var hasStorage: Bool {
         return storage.value != nil
     }
 
     /// Creates a new node for the given view, making it in the process.
     public init<V: View>(making view: V) {
+        // Set properties
         self.type = V.self
-        self.storage = StorageNode.init(for: view)
         self.edges = [ElementNode?](repeating: nil, count: V.staticEdgesCount())
 
-        let input = MakeInput(storage: self.storage)
-        self.update(with: V.make(view: view, input: input))
+        // Create storage node
+        let storage = StorageNode(for: view)
+
+        // Make the view
+        let input = MakeInput(storage: storage)
+
+        guard case let .changed(output) = V.make(view: view, input: input) else {
+            fatalError("`ElementNode(making:)` received output with an unchanged element")
+        }
+
+        self.implementation = output.node.implementationProxy.make()
+        self.storage = storage
+
+        // Update the node
+        self.update(with: output)
     }
 
-    init(type: Any.Type, storage: StorageNode, edges: [ElementNode?]) {
+    init(type: Any.Type, storage: StorageNode, edges: [ElementNode?], implementation: ElementImplementation?) {
         self.type = type
         self.storage = storage
         self.edges = edges
+        self.implementation = implementation
     }
 
     /// Updates the node with the given view.
@@ -130,32 +153,30 @@ public class ElementNode {
         self.update(with: output)
     }
 
-    /// Updates the node with the output of the given element.
-    public func update(with output: MakeOutput) {
-        guard case let .changed(new) = output else {
-            // Element is unchanged, nothing to do
-            debug("\(self.type) is unchanged")
-            return
-        }
-
+    /// Updates the node with given unwrapped element output.
+    public func update(with output: MakeOutput.Output) {
         // Update node data
         assert(
-            new.node.type == self.type,
-            "make() returned a node of the wrong type (expected \(self.type), got \(new.node.type))"
+            output.node.type == self.type,
+            "make() returned a node of the wrong type (expected \(self.type), got \(output.node.type))"
         )
 
-        let node = new.node
+        let node = output.node
         self.type = node.type
         self.storage.value = node.storage
 
+        if let implementation = self.implementation {
+            node.implementationProxy.update(implementation: implementation)
+        }
+
         // Compare static edges one by one
         assert(
-            new.staticEdges.count == self.edges.count,
-            "`make()` returned the wrong number of static edges (expected \(self.edges.count), got \(new.staticEdges.count))"
+            output.staticEdges.count == self.edges.count,
+            "`make()` returned the wrong number of static edges (expected \(self.edges.count), got \(output.staticEdges.count))"
         )
 
         for idx in 0..<self.edges.count {
-            switch (self.edges[idx], new.staticEdges[idx]) {
+            switch (self.edges[idx], output.staticEdges[idx]) {
                 case (.none, .none):
                     // Nothing to do
                     break
@@ -170,6 +191,17 @@ public class ElementNode {
                     self.updateEdge(at: idx, with: newEdge)
             }
         }
+    }
+
+    /// Updates the node with given element output.
+    public func update(with output: MakeOutput) {
+        guard case let .changed(new) = output else {
+            // Element is unchanged, nothing to do
+            debug("\(self.type) is unchanged")
+            return
+        }
+
+        self.update(with: new)
     }
 
     /// Inserts a new edge at the given index.
@@ -195,7 +227,8 @@ public class ElementNode {
         self.edges[idx] = ElementNode(
             type: new.node.type,
             storage: edgeStorage,
-            edges: [ElementNode?](repeating: nil, count: new.staticEdges.count)
+            edges: [ElementNode?](repeating: nil, count: new.staticEdges.count),
+            implementation: new.node.implementationProxy.make()
         )
         self.edges[idx]?.update(with: edge)
     }
@@ -219,8 +252,13 @@ public class ElementNode {
         // Discard storage
         self.storage.edges[idx] = nil
     }
+}
 
-    public func printGraph(indent: Int = 0) {
+/// An element graph.
+public typealias ElementGraph = ElementNode
+
+public extension ElementGraph {
+    func printGraph(indent: Int = 0) {
         let indentString = String(repeating: " ", count: indent)
         print("\(indentString)- \(self.type) (has storage: \(self.hasStorage))")
 
@@ -233,6 +271,3 @@ public class ElementNode {
         }
     }
 }
-
-/// An element graph.
-public typealias ElementGraph = ElementNode

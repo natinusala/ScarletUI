@@ -14,9 +14,22 @@
    limitations under the License.
 */
 
-/// An view with no body.
-public struct EmptyView: View, Equatable {
+/// A view that displays text.
+public struct Text: View {
     public typealias Body = Never
+    public typealias Implementation = TextImplementation
 
-    public init() {}
+    let text: String
+
+    public init(_ text: String) {
+        self.text = text
+    }
+
+    public static func updateImplementation(_ implementation: TextImplementation, with view: Text) {
+        implementation.text = view.text
+    }
+}
+
+public class TextImplementation: ViewImplementation {
+    var text: String?
 }

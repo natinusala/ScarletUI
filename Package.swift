@@ -50,7 +50,7 @@ let package = Package(
         ),
         .executableTarget(
             name: "ScarletUIDemo",
-            dependencies: ["ScarletUI"]
+            dependencies: ["ScarletUI", .product(name: "Backtrace", package: "swift-backtrace")]
         ),
         .testTarget(
             name: "ScarletCoreTests",

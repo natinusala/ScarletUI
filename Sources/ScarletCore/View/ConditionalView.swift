@@ -20,9 +20,10 @@ public enum ConditionalView<FirstContent, SecondContent>: View where FirstConten
     case second(SecondContent)
 
     public typealias Body = Never
+    public typealias Implementation = Never
 
     public static func make(view: Self, input: MakeInput) -> MakeOutput {
-        let output = ElementOutput(type: Self.self, storage: nil)
+        let output = ElementOutput(type: Self.self, storage: nil, implementationProxy: view.implementationProxy)
         let edges: [MakeOutput?]
 
         switch view {

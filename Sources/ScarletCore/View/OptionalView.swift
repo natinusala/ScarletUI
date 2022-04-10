@@ -17,9 +17,10 @@
 /// An optional view.
 extension Optional: View where Wrapped: View {
     public typealias Body = Never
+    public typealias Implementation = Never
 
     public static func make(view: Self, input: MakeInput) -> MakeOutput {
-        let output = ElementOutput(type: Self.self, storage: nil)
+        let output = ElementOutput(type: Self.self, storage: nil, implementationProxy: view.implementationProxy)
         let edges: [MakeOutput?]
 
         switch view {
@@ -36,6 +37,15 @@ extension Optional: View where Wrapped: View {
     /// Optional views have one edge, the wrapped view (or `nil`).
     public static func staticEdgesCount() -> Int {
         return 1
+    }
+
+    public static func makeImplementations(of view: Self) -> [ElementImplementation] {
+        switch view {
+            case .none:
+                return []
+            case let .some(view):
+                return Wrapped.makeImplementations(of: view)
+        }
     }
 }
 

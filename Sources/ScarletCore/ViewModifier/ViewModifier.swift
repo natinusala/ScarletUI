@@ -43,7 +43,7 @@ public extension ViewModifier {
         }
 
         // The modifier changed
-        let output = ElementOutput(type: Self.self, storage: modifier)
+        let output = ElementOutput(type: Self.self, storage: modifier, implementationProxy: ImplementationProxy())
 
         // Re-evaluate body
         let body = modifier.body(content: ViewModifierContent())
@@ -62,9 +62,9 @@ public extension ViewModifier {
 }
 
 public extension ViewModifier where Body == Never {
-    /// Default implementation for `make()` when there is no body: compare the modifier and call `body` if needed.
+    /// Default implementation for `make()` when there is no body: return an empty unchanged node.
     static func make(modifier: Self, input: MakeInput) -> MakeOutput {
-        return .changed(new: .init(node: ElementOutput(type: Self.self, storage: nil), staticEdges: []))
+        return .changed(new: .init(node: ElementOutput(type: Self.self, storage: nil, implementationProxy: ImplementationProxy()), staticEdges: []))
     }
 
     /// Default implementation for `staticEdgesCount()` when there is no body.
@@ -81,9 +81,10 @@ public extension ViewModifier where Body == Never {
 /// Placeholder for view modifier content.
 public struct ViewModifierContent<Modifier>: View where Modifier: ViewModifier {
     public typealias Body = Never
+    public typealias Implementation = Never
 
     public static func make(view: ViewModifierContent, input: MakeInput) -> MakeOutput {
-        let output = ElementOutput(type: Self.self, storage: nil)
+        let output = ElementOutput(type: Self.self, storage: nil, implementationProxy: view.implementationProxy)
         return .changed(new: .init(node: output, staticEdges: []))
     }
 
@@ -102,9 +103,10 @@ public extension View {
 
 extension ModifiedContent: View where Content: View, Modifier: ViewModifier {
     public typealias Body = Never
+    public typealias Implementation = Never
 
     public static func make(view: ModifiedContent, input: MakeInput) -> MakeOutput {
-        let output = ElementOutput(type: Self.self, storage: nil)
+        let output = ElementOutput(type: Self.self, storage: nil, implementationProxy: view.implementationProxy)
         let edges = [
             Modifier.make(modifier: view.modifier, input: MakeInput(storage: input.storage?.edges[0])),
             Content.make(view: view.content, input: MakeInput(storage: input.storage?.edges[1]))
@@ -117,5 +119,9 @@ extension ModifiedContent: View where Content: View, Modifier: ViewModifier {
     /// is the wrapped content.
     public static func staticEdgesCount() -> Int {
         return 2
+    }
+
+    public static func makeImplementations(of view: Self) -> [ElementImplementation] {
+        fatalError("Unimplemented")
     }
 }

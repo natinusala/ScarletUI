@@ -18,6 +18,7 @@
 
 public struct TupleView2<C0, C1>: View where C0: View, C1: View {
     public typealias Body = Never
+    public typealias Implementation = Never
 
     let c0: C0
     let c1: C1
@@ -28,7 +29,7 @@ public struct TupleView2<C0, C1>: View where C0: View, C1: View {
     }
 
     public static func make(view: Self, input: MakeInput) -> MakeOutput {
-        let output = ElementOutput(type: Self.self, storage: nil)
+        let output = ElementOutput(type: Self.self, storage: nil, implementationProxy: view.implementationProxy)
         let edges = [
             C0.make(view: view.c0, input: MakeInput(storage: input.storage?.edges[0])),
             C1.make(view: view.c1, input: MakeInput(storage: input.storage?.edges[1])),
@@ -44,6 +45,7 @@ public struct TupleView2<C0, C1>: View where C0: View, C1: View {
 
 public struct TupleView3<C0, C1, C2>: View where C0: View, C1: View, C2: View {
     public typealias Body = Never
+    public typealias Implementation = Never
 
     let c0: C0
     let c1: C1
@@ -56,7 +58,7 @@ public struct TupleView3<C0, C1, C2>: View where C0: View, C1: View, C2: View {
     }
 
     public static func make(view: Self, input: MakeInput) -> MakeOutput {
-        let output = ElementOutput(type: Self.self, storage: nil)
+        let output = ElementOutput(type: Self.self, storage: nil, implementationProxy: view.implementationProxy)
         let edges = [
             C0.make(view: view.c0, input: MakeInput(storage: input.storage?.edges[0])),
             C1.make(view: view.c1, input: MakeInput(storage: input.storage?.edges[1])),
@@ -73,6 +75,7 @@ public struct TupleView3<C0, C1, C2>: View where C0: View, C1: View, C2: View {
 
 public struct TupleView4<C0, C1, C2, C3>: View where C0: View, C1: View, C2: View, C3: View {
     public typealias Body = Never
+    public typealias Implementation = Never
 
     let c0: C0
     let c1: C1
@@ -87,7 +90,7 @@ public struct TupleView4<C0, C1, C2, C3>: View where C0: View, C1: View, C2: Vie
     }
 
     public static func make(view: Self, input: MakeInput) -> MakeOutput {
-        let output = ElementOutput(type: Self.self, storage: nil)
+        let output = ElementOutput(type: Self.self, storage: nil, implementationProxy: view.implementationProxy)
         let edges = [
             C0.make(view: view.c0, input: MakeInput(storage: input.storage?.edges[0])),
             C1.make(view: view.c1, input: MakeInput(storage: input.storage?.edges[1])),
@@ -105,6 +108,7 @@ public struct TupleView4<C0, C1, C2, C3>: View where C0: View, C1: View, C2: Vie
 
 public struct TupleView5<C0, C1, C2, C3, C4>: View where C0: View, C1: View, C2: View, C3: View, C4: View {
     public typealias Body = Never
+    public typealias Implementation = Never
 
     let c0: C0
     let c1: C1
@@ -121,7 +125,7 @@ public struct TupleView5<C0, C1, C2, C3, C4>: View where C0: View, C1: View, C2:
     }
 
     public static func make(view: Self, input: MakeInput) -> MakeOutput {
-        let output = ElementOutput(type: Self.self, storage: nil)
+        let output = ElementOutput(type: Self.self, storage: nil, implementationProxy: view.implementationProxy)
         let edges = [
             C0.make(view: view.c0, input: MakeInput(storage: input.storage?.edges[0])),
             C1.make(view: view.c1, input: MakeInput(storage: input.storage?.edges[1])),
@@ -140,6 +144,7 @@ public struct TupleView5<C0, C1, C2, C3, C4>: View where C0: View, C1: View, C2:
 
 public struct TupleView6<C0, C1, C2, C3, C4, C5>: View where C0: View, C1: View, C2: View, C3: View, C4: View, C5: View {
     public typealias Body = Never
+    public typealias Implementation = Never
 
     let c0: C0
     let c1: C1
@@ -158,7 +163,7 @@ public struct TupleView6<C0, C1, C2, C3, C4, C5>: View where C0: View, C1: View,
     }
 
     public static func make(view: Self, input: MakeInput) -> MakeOutput {
-        let output = ElementOutput(type: Self.self, storage: nil)
+        let output = ElementOutput(type: Self.self, storage: nil, implementationProxy: view.implementationProxy)
         let edges = [
             C0.make(view: view.c0, input: MakeInput(storage: input.storage?.edges[0])),
             C1.make(view: view.c1, input: MakeInput(storage: input.storage?.edges[1])),
