@@ -24,7 +24,9 @@ public protocol View {
     @ViewBuilder var body: Body { get }
 
     /// Creates the graph node for this view.
-    static func make(view: Self, input: MakeInput) -> MakeOutput
+    /// If no view is specified, assume it hasn't changed but still evaluate
+    /// edges with `view: nil` recursively.
+    static func make(view: Self?, input: MakeInput) -> MakeOutput
 
     /// The number of static edges of this view.
     /// Must be constant.
@@ -34,14 +36,21 @@ public protocol View {
 extension View {
     /// Default implementation of `make()` when the view has a body: compare the view with the previous stored
     /// one and see if it changed. If it did, re-evaluate its `body`.
-    public static func make(view: Self, input: MakeInput) -> MakeOutput {
+    public static func make(view: Self?, input: MakeInput) -> MakeOutput {
+        // If no view is specified, consider the view entirely unchanged,
+        // including its body
+        guard let view = view else {
+            return Self.output(node: nil, staticEdges: nil)
+        }
+
         // Get the previous view and compare it
+        // Return an unchanged output of it's equal
         if let previous = input.storage?.value, anyEquals(lhs: view, rhs: previous) {
-            return .unchanged(type: Self.self)
+            return Self.output(node: nil, staticEdges: nil)
         }
 
         // The view changed
-        let output = ElementOutput(type: Self.self, storage: view)
+        let output = ElementOutput(storage: view)
 
         // Re-evaluate body
         let body = view.body
@@ -49,7 +58,7 @@ extension View {
         let bodyInput = MakeInput(storage: bodyStorage)
         let bodyOutput = Body.make(view: body, input: bodyInput)
 
-        return .changed(new: .init(node: output, staticEdges: [bodyOutput]))
+        return Self.output(node: output, staticEdges: [bodyOutput])
     }
 
     /// Default implementation for `staticEdgesCount()` when there is a body: return one edge,
@@ -62,8 +71,8 @@ extension View {
 public extension View where Body == Never {
     /// Default implementation of `make()` when the view has no body: return the view itself with
     /// no storage and no edges. Used for "leaves" of the view graph.
-     static func make(view: Self, input: MakeInput) -> MakeOutput {
-        return .changed(new: .init(node: ElementOutput(type: Self.self, storage: nil), staticEdges: []))
+    static func make(view: Self?, input: MakeInput) -> MakeOutput {
+        return Self.output(node: nil, staticEdges: [])
     }
 
     /// Default implementation for `staticEdgesCount()` when there is no body: no edges.
@@ -76,12 +85,27 @@ public extension View where Body == Never {
     }
 }
 
+public extension View {
+    /// Convenience function to create a `MakeOutput` from a `View` with less boilerplate.
+    static func output(node: ElementOutput?, staticEdges: [MakeOutput?]?) -> MakeOutput {
+        return MakeOutput(
+            nodeKind: .view,
+            nodeType: Self.self,
+            node: node,
+            staticEdges: staticEdges,
+            staticEdgesCount: Self.staticEdgesCount()
+        )
+    }
+}
+
 extension Never: View {
     public var body: Never {
         return fatalError()
     }
 
-    public static func make(view: Self, input: MakeInput) -> MakeOutput {}
+    public static func make(view: Self?, input: MakeInput) -> MakeOutput {
+        fatalError()
+    }
 
     public static func staticEdgesCount() -> Int {
         fatalError()

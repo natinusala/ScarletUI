@@ -29,46 +29,57 @@ public struct MakeInput {
 }
 
 /// Output of the `make()` function.
-public enum MakeOutput {
-    /// Output of the `make()` function in case the element changed.
-    public struct Output {
-        /// The resulting node itself.
-        let node: ElementOutput
+public struct MakeOutput {
+    /// The node kind.
+    public let nodeKind: ElementKind
 
-        /// Static edges of the node.
-        /// Must contain exactly `staticEdgesCount` elements.
-        let staticEdges: [MakeOutput?]
+    /// The node type.
+    public let nodeType: Any.Type
 
-        public init(node: ElementOutput, staticEdges: [MakeOutput?]) {
-            self.node = node
-            self.staticEdges = staticEdges
-        }
+    /// The resulting node itself.
+    /// Can be `nil` if the node did not change.
+    let node: ElementOutput?
+
+    /// Static edges of the node.
+    /// Must contain exactly `staticEdgesCount` elements.
+    /// Can be `nil` if the node children did not change.
+    var staticEdges: [MakeOutput?]?
+
+    /// Size of `staticEdges`, or the size it would be if `nil`.
+    /// Used to create a storage node with the appropriate
+    /// number of edges if `staticEdges` is `nil`.
+    let staticEdgesCount: Int
+
+    public init(
+        nodeKind: ElementKind,
+        nodeType: Any.Type,
+        node: ElementOutput?,
+        staticEdges: [MakeOutput?]?,
+        staticEdgesCount: Int
+    ) {
+        self.nodeKind = nodeKind
+        self.nodeType = nodeType
+        self.node = node
+        self.staticEdges = staticEdges
+        self.staticEdgesCount = staticEdgesCount
     }
-
-    /// The element did not change compared to the
-    /// stored value.
-    case unchanged(type: Any.Type)
-
-    /// The element changed compared to the stored value.
-    case changed(new: Output)
 }
 
 /// Output of one element in the `make()` function.
 public struct ElementOutput {
-    /// The element type.
-    public let type: Any.Type
-
     /// Any value to store and pass to the next `make()` call.
     public let storage: Any?
 
-    public init(type: Any.Type, storage: Any?) {
-        self.type = type
+    public init(storage: Any?) {
         self.storage = storage
     }
 }
 
 /// An element storage graph node.
 public class StorageNode {
+    /// Type of the element this storage node belongs to.
+    public var elementType: Any.Type
+
     /// Node value.
     public var value: Any?
 
@@ -77,11 +88,13 @@ public class StorageNode {
 
     /// Creates a new empty storage node for the given view.
     init<V: View>(for view: V) {
+        self.elementType = V.self
         self.value = nil
         self.edges = [StorageNode?](repeating: nil, count: V.staticEdgesCount())
     }
 
-    init(value: Any?, edges: [StorageNode?]) {
+    init(elementType: Any.Type, value: Any?, edges: [StorageNode?]) {
+        self.elementType = elementType
         self.value = value
         self.edges = edges
     }
@@ -89,6 +102,9 @@ public class StorageNode {
 
 /// A node of the element graph.
 public class ElementNode {
+    /// Kind of the element.
+    public var kind: ElementKind
+
     /// Type of the element.
     var type: Any.Type
 
@@ -104,15 +120,17 @@ public class ElementNode {
 
     /// Creates a new node for the given view, making it in the process.
     public init<V: View>(making view: V) {
+        self.kind = .view
         self.type = V.self
-        self.storage = StorageNode.init(for: view)
+        self.storage = StorageNode(for: view)
         self.edges = [ElementNode?](repeating: nil, count: V.staticEdgesCount())
 
         let input = MakeInput(storage: self.storage)
         self.update(with: V.make(view: view, input: input))
     }
 
-    init(type: Any.Type, storage: StorageNode, edges: [ElementNode?]) {
+    init(kind: ElementKind, type: Any.Type, storage: StorageNode, edges: [ElementNode?]) {
+        self.kind = kind
         self.type = type
         self.storage = storage
         self.edges = edges
@@ -131,71 +149,67 @@ public class ElementNode {
     }
 
     /// Updates the node with the output of the given element.
+    /// Can update the node data, its edges recursively or nothing at all.
     public func update(with output: MakeOutput) {
-        guard case let .changed(new) = output else {
-            // Element is unchanged, nothing to do
-            debug("\(self.type) is unchanged")
-            return
+        assert(
+            output.nodeType == self.type,
+            "make() returned a node of the wrong type (expected \(self.type), got \(output.nodeType))"
+        )
+
+        // Node update
+        if let node = output.node {
+            self.type = output.nodeType
+            self.storage.value = node.storage
         }
 
-        // Update node data
-        assert(
-            new.node.type == self.type,
-            "make() returned a node of the wrong type (expected \(self.type), got \(new.node.type))"
-        )
+        // Static edges update
+        if let staticEdges = output.staticEdges {
+            assert(
+                staticEdges.count == self.edges.count,
+                "`\(output.nodeType).make()` returned the wrong number of static edges (expected \(self.edges.count), got \(staticEdges.count))"
+            )
 
-        let node = new.node
-        self.type = node.type
-        self.storage.value = node.storage
-
-        // Compare static edges one by one
-        assert(
-            new.staticEdges.count == self.edges.count,
-            "`make()` returned the wrong number of static edges (expected \(self.edges.count), got \(new.staticEdges.count))"
-        )
-
-        for idx in 0..<self.edges.count {
-            switch (self.edges[idx], new.staticEdges[idx]) {
-                case (.none, .none):
-                    // Nothing to do
-                    break
-                case let (.none, .some(newEdge)):
-                    // Create a new edge
-                    self.insertEdge(newEdge, at: idx)
-                case (.some, .none):
-                    // Remove the old edge
-                    self.removeEdge(at: idx)
-                case let (.some, .some(newEdge)):
-                    // Update the edge
-                    self.updateEdge(at: idx, with: newEdge)
+            for idx in 0..<self.edges.count {
+                switch (self.edges[idx], staticEdges[idx]) {
+                    case (.none, .none):
+                        // Nothing to do
+                        break
+                    case let (.none, .some(newEdge)):
+                        // Create a new edge
+                        self.insertEdge(newEdge, at: idx)
+                    case (.some, .none):
+                        // Remove the old edge
+                        self.removeEdge(at: idx)
+                    case let (.some, .some(newEdge)):
+                        // Update the edge
+                        self.updateEdge(at: idx, with: newEdge)
+                }
             }
         }
     }
 
     /// Inserts a new edge at the given index.
     private func insertEdge(_ edge: MakeOutput, at idx: Int) {
-        guard case let .changed(new) = edge else {
-            fatalError("Cannot insert an unchanged edge \(edge)")
-        }
-
         guard self.storage.edges[idx] == nil else {
             fatalError("Tried to insert an edge on a non-empty storage node")
         }
 
-        debug("Inserting \(new.node.type)")
+        debug("Inserting \(edge.nodeType)")
 
-        // Create the storage node if needed
+        // Create the storage node
         let edgeStorage = StorageNode(
-            value: new.node.storage,
-            edges: [StorageNode?](repeating: nil, count: new.staticEdges.count)
+            elementType: edge.nodeType,
+            value: edge.node?.storage,
+            edges: [StorageNode?](repeating: nil, count: edge.staticEdgesCount)
         )
         self.storage.edges[idx] = edgeStorage
 
         // Create and insert the edge node
         self.edges[idx] = ElementNode(
-            type: new.node.type,
+            kind: edge.nodeKind,
+            type: edge.nodeType,
             storage: edgeStorage,
-            edges: [ElementNode?](repeating: nil, count: new.staticEdges.count)
+            edges: [ElementNode?](repeating: nil, count: edge.staticEdgesCount)
         )
         self.edges[idx]?.update(with: edge)
     }
@@ -206,7 +220,14 @@ public class ElementNode {
             fatalError("Cannot update an edge that doesn't exist")
         }
 
-        edge.update(with: newEdge)
+        // If the type is the same, simply update the edge
+        // otherwise remove the old one and put the new one in place
+        if edge.type == newEdge.nodeType {
+            edge.update(with: newEdge)
+        } else {
+            self.removeEdge(at: idx)
+            self.insertEdge(newEdge, at: idx)
+        }
     }
 
     /// Removes edge at given position.
@@ -222,7 +243,7 @@ public class ElementNode {
 
     public func printGraph(indent: Int = 0) {
         let indentString = String(repeating: " ", count: indent)
-        print("\(indentString)- \(self.type) (has storage: \(self.hasStorage))")
+        print("\(indentString)- \(self.type): \(self.kind.displayName) (has storage: \(self.hasStorage))")
 
         for edge in self.edges {
             if let edge = edge {
@@ -236,3 +257,20 @@ public class ElementNode {
 
 /// An element graph.
 public typealias ElementGraph = ElementNode
+
+/// Kind of an element in the graph.
+public enum ElementKind {
+    case app
+    case scene
+    case view
+    case viewModifier
+
+    var displayName: String {
+        switch self {
+            case .app: return "App"
+            case .scene: return "Scene"
+            case .view: return "View"
+            case .viewModifier: return "ViewModifier"
+        }
+    }
+}

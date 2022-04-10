@@ -27,14 +27,13 @@ public struct TupleView2<C0, C1>: View where C0: View, C1: View {
         self.c1 = c1
     }
 
-    public static func make(view: Self, input: MakeInput) -> MakeOutput {
-        let output = ElementOutput(type: Self.self, storage: nil)
+    public static func make(view: Self?, input: MakeInput) -> MakeOutput {
         let edges = [
-            C0.make(view: view.c0, input: MakeInput(storage: input.storage?.edges[0])),
-            C1.make(view: view.c1, input: MakeInput(storage: input.storage?.edges[1])),
+            C0.make(view: view?.c0, input: MakeInput(storage: input.storage?.edges[0])),
+            C1.make(view: view?.c1, input: MakeInput(storage: input.storage?.edges[1])),
         ]
 
-        return .changed(new: .init(node: output, staticEdges: edges))
+        return Self.output(node: nil, staticEdges: edges)
     }
 
     public static func staticEdgesCount() -> Int {
@@ -55,15 +54,14 @@ public struct TupleView3<C0, C1, C2>: View where C0: View, C1: View, C2: View {
         self.c2 = c2
     }
 
-    public static func make(view: Self, input: MakeInput) -> MakeOutput {
-        let output = ElementOutput(type: Self.self, storage: nil)
+    public static func make(view: Self?, input: MakeInput) -> MakeOutput {
         let edges = [
-            C0.make(view: view.c0, input: MakeInput(storage: input.storage?.edges[0])),
-            C1.make(view: view.c1, input: MakeInput(storage: input.storage?.edges[1])),
-            C2.make(view: view.c2, input: MakeInput(storage: input.storage?.edges[2])),
+            C0.make(view: view?.c0, input: MakeInput(storage: input.storage?.edges[0])),
+            C1.make(view: view?.c1, input: MakeInput(storage: input.storage?.edges[1])),
+            C2.make(view: view?.c2, input: MakeInput(storage: input.storage?.edges[2])),
         ]
 
-        return .changed(new: .init(node: output, staticEdges: edges))
+        return Self.output(node: nil, staticEdges: edges)
     }
 
     public static func staticEdgesCount() -> Int {
@@ -86,16 +84,15 @@ public struct TupleView4<C0, C1, C2, C3>: View where C0: View, C1: View, C2: Vie
         self.c3 = c3
     }
 
-    public static func make(view: Self, input: MakeInput) -> MakeOutput {
-        let output = ElementOutput(type: Self.self, storage: nil)
+    public static func make(view: Self?, input: MakeInput) -> MakeOutput {
         let edges = [
-            C0.make(view: view.c0, input: MakeInput(storage: input.storage?.edges[0])),
-            C1.make(view: view.c1, input: MakeInput(storage: input.storage?.edges[1])),
-            C2.make(view: view.c2, input: MakeInput(storage: input.storage?.edges[2])),
-            C3.make(view: view.c3, input: MakeInput(storage: input.storage?.edges[3])),
+            C0.make(view: view?.c0, input: MakeInput(storage: input.storage?.edges[0])),
+            C1.make(view: view?.c1, input: MakeInput(storage: input.storage?.edges[1])),
+            C2.make(view: view?.c2, input: MakeInput(storage: input.storage?.edges[2])),
+            C3.make(view: view?.c3, input: MakeInput(storage: input.storage?.edges[3])),
         ]
 
-        return .changed(new: .init(node: output, staticEdges: edges))
+        return Self.output(node: nil, staticEdges: edges)
     }
 
     public static func staticEdgesCount() -> Int {
@@ -120,17 +117,16 @@ public struct TupleView5<C0, C1, C2, C3, C4>: View where C0: View, C1: View, C2:
         self.c4 = c4
     }
 
-    public static func make(view: Self, input: MakeInput) -> MakeOutput {
-        let output = ElementOutput(type: Self.self, storage: nil)
+    public static func make(view: Self?, input: MakeInput) -> MakeOutput {
         let edges = [
-            C0.make(view: view.c0, input: MakeInput(storage: input.storage?.edges[0])),
-            C1.make(view: view.c1, input: MakeInput(storage: input.storage?.edges[1])),
-            C2.make(view: view.c2, input: MakeInput(storage: input.storage?.edges[2])),
-            C3.make(view: view.c3, input: MakeInput(storage: input.storage?.edges[3])),
-            C4.make(view: view.c4, input: MakeInput(storage: input.storage?.edges[4])),
+            C0.make(view: view?.c0, input: MakeInput(storage: input.storage?.edges[0])),
+            C1.make(view: view?.c1, input: MakeInput(storage: input.storage?.edges[1])),
+            C2.make(view: view?.c2, input: MakeInput(storage: input.storage?.edges[2])),
+            C3.make(view: view?.c3, input: MakeInput(storage: input.storage?.edges[3])),
+            C4.make(view: view?.c4, input: MakeInput(storage: input.storage?.edges[4])),
         ]
 
-        return .changed(new: .init(node: output, staticEdges: edges))
+        return Self.output(node: nil, staticEdges: edges)
     }
 
     public static func staticEdgesCount() -> Int {
@@ -157,18 +153,17 @@ public struct TupleView6<C0, C1, C2, C3, C4, C5>: View where C0: View, C1: View,
         self.c5 = c5
     }
 
-    public static func make(view: Self, input: MakeInput) -> MakeOutput {
-        let output = ElementOutput(type: Self.self, storage: nil)
+    public static func make(view: Self?, input: MakeInput) -> MakeOutput {
         let edges = [
-            C0.make(view: view.c0, input: MakeInput(storage: input.storage?.edges[0])),
-            C1.make(view: view.c1, input: MakeInput(storage: input.storage?.edges[1])),
-            C2.make(view: view.c2, input: MakeInput(storage: input.storage?.edges[2])),
-            C3.make(view: view.c3, input: MakeInput(storage: input.storage?.edges[3])),
-            C4.make(view: view.c4, input: MakeInput(storage: input.storage?.edges[4])),
-            C5.make(view: view.c5, input: MakeInput(storage: input.storage?.edges[5])),
+            C0.make(view: view?.c0, input: MakeInput(storage: input.storage?.edges[0])),
+            C1.make(view: view?.c1, input: MakeInput(storage: input.storage?.edges[1])),
+            C2.make(view: view?.c2, input: MakeInput(storage: input.storage?.edges[2])),
+            C3.make(view: view?.c3, input: MakeInput(storage: input.storage?.edges[3])),
+            C4.make(view: view?.c4, input: MakeInput(storage: input.storage?.edges[4])),
+            C5.make(view: view?.c5, input: MakeInput(storage: input.storage?.edges[5])),
         ]
 
-        return .changed(new: .init(node: output, staticEdges: edges))
+        return Self.output(node: nil, staticEdges: edges)
     }
 
     public static func staticEdgesCount() -> Int {

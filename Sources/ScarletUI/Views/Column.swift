@@ -26,16 +26,16 @@ public struct Column<Content>: View where Content: View {
         self.content = content()
     }
 
-    public static func make(view: Self, input: MakeInput) -> MakeOutput {
-        let output = ElementOutput(type: Self.self, storage: nil)
+    public static func make(view: Self?, input: MakeInput) -> MakeOutput {
+        let output = ElementOutput(storage: nil)
         let contentStorage = input.storage?.edges[0]
 
         let contentInput = MakeInput(storage: contentStorage)
 
-        return .changed(new: .init(
+        return Self.output(
             node: output,
-            staticEdges: [Content.make(view: view.content, input: contentInput)]
-        ))
+            staticEdges: [Content.make(view: view?.content, input: contentInput)]
+        )
     }
 
     public static func staticEdgesCount() -> Int {

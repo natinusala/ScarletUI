@@ -16,21 +16,54 @@
 
 /// An optional view.
 extension Optional: View where Wrapped: View {
+    enum Storage {
+        case none
+        case some
+    }
+
+    var storageValue: Storage {
+        switch self {
+            case .none:
+                return .none
+            case .some:
+                return .some
+        }
+    }
+
     public typealias Body = Never
 
-    public static func make(view: Self, input: MakeInput) -> MakeOutput {
-        let output = ElementOutput(type: Self.self, storage: nil)
+    public static func make(view: Self?, input: MakeInput) -> MakeOutput {
+        let output: ElementOutput?
         let edges: [MakeOutput?]
 
-        switch view {
-            case .none:
-                edges = [nil]
-            case let .some(view):
-                let wrappedInput = MakeInput(storage: input.storage?.edges[0])
-                edges = [Wrapped.make(view: view, input: wrappedInput)]
+        // If we have a view, evaluate it normally
+        // If not, consider the view unchanged and
+        // use our storage to know if `make` needs to be called on our content
+        if let view = view {
+            output = ElementOutput(storage: view.storageValue)
+
+            switch view {
+                case .none:
+                    edges = [nil]
+                case let .some(view):
+                    let wrappedInput = MakeInput(storage: input.storage?.edges[0])
+                    edges = [Wrapped.make(view: view, input: wrappedInput)]
+            }
+        } else if let storage = input.storage, let storageValue = storage.value as? Storage {
+            output = nil
+
+            switch storageValue {
+                case .none:
+                    edges = [nil]
+                case .some:
+                    let wrappedInput = MakeInput(storage: storage.edges[0])
+                    edges = [Wrapped.make(view: nil, input: wrappedInput)]
+            }
+        } else {
+            fatalError("Cannot make an `Optional` view without a view or a storage node")
         }
 
-        return .changed(new: .init(node: output, staticEdges: edges))
+        return Self.output(node: output, staticEdges: edges)
     }
 
     /// Optional views have one edge, the wrapped view (or `nil`).
