@@ -86,38 +86,35 @@ extension View {
     }
 }
 
+struct Wrapper: ViewModifier {
+    func body(content: Content) -> some View {
+        Column {
+            Text("Wrapper")
+            Divider()
+            content
+        }
+    }
+}
+
+extension View {
+    func wrapper() -> some View {
+        self.modifier(Wrapper())
+    }
+}
+
 struct ContentView: View {
     var debug = false
     var double = false
 
     var body: some View {
-        Row {
-            Sidebar(debug: debug)
-                .divide(double: double)
-
-            Image("picture1")
-                .threeTimes()
+        Group {
+            Text("Text 1")
+            Text("Text 2")
+            Text("Text 3")
         }
+            .wrapper()
     }
 }
 
 let root = ElementNode(making: ContentView())
-root.printGraph()
-
-print("---- Should not do anything ----")
-
-root.update(with: ContentView())
-
-print("---- Should add Divider, Text only, without calling modifier body ----")
-
-root.update(with: ContentView(debug: true))
-
-print("---- Modify modifier - should call its body but NOT the content body ----")
-
-root.update(with: ContentView(debug: true, double: true))
-
-print("---- Both bodies are called - Divider, Text is removed + Text is removed ----")
-
-root.update(with: ContentView(debug: false, double: false))
-
 root.printGraph()
