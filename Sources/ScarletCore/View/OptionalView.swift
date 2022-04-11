@@ -31,6 +31,7 @@ extension Optional: View where Wrapped: View {
     }
 
     public typealias Body = Never
+    public typealias Implementation = Never
 
     public static func make(view: Self?, input: MakeInput) -> MakeOutput {
         let output: ElementOutput?
@@ -40,7 +41,7 @@ extension Optional: View where Wrapped: View {
         // If not, consider the view unchanged and
         // use our storage to know if `make` needs to be called on our content
         if let view = view {
-            output = ElementOutput(storage: view.storageValue)
+            output = ElementOutput(storage: view.storageValue, implementationProxy: view.implementationProxy)
 
             switch view {
                 case .none:

@@ -21,19 +21,19 @@ public struct Group<Content> {
 
 extension Group: View where Content: View {
     public typealias Body = Never
+    public typealias Implementation = Never
 
     public init(@ViewBuilder content: () -> Content) {
         self.content = content()
     }
 
     public static func make(view: Self?, input: MakeInput) -> MakeOutput {
-        let output = ElementOutput(storage: nil)
         let contentStorage = input.storage?.edges[0]
 
         let contentInput = MakeInput(storage: contentStorage)
 
         return Self.output(
-            node: output,
+            node: nil,
             staticEdges: [Content.make(view: view?.content, input: contentInput)]
         )
     }

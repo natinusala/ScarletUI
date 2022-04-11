@@ -27,13 +27,12 @@ public struct Row<Content>: View where Content: View {
     }
 
     public static func make(view: Self?, input: MakeInput) -> MakeOutput {
-        let output = ElementOutput(storage: nil)
         let contentStorage = input.storage?.edges[0]
 
         let contentInput = MakeInput(storage: contentStorage)
 
         return Self.output(
-            node: output,
+            node: nil,
             staticEdges: [Content.make(view: view?.content, input: contentInput)]
         )
     }

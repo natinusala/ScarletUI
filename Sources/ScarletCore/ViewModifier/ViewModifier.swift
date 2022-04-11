@@ -58,7 +58,7 @@ public extension ViewModifier {
             return Self.output(node: nil, staticEdges: [bodyOutput])
         } else {
             // Modifier has changed
-            let output = ElementOutput(storage: modifier)
+            let output = ElementOutput(storage: modifier, implementationProxy: ImplementationProxy())
             let bodyInput = MakeInput(storage: input.storage?.edges[0])
             let bodyOutput = Body.make(view: modifier.body(content: ViewModifierContent()), input: bodyInput)
 
@@ -118,6 +118,7 @@ public extension ViewModifier {
 
 extension ModifiedContent: View where Content: View, Modifier: ViewModifier {
     public typealias Body = Never
+    public typealias Implementation = Never
 
     public static func make(view: Self?, input: MakeInput) -> MakeOutput {
         // Make our one edge: the modifier
@@ -127,16 +128,14 @@ extension ModifiedContent: View where Content: View, Modifier: ViewModifier {
 
         // Visit the output and find any `ViewModifierContent` - replace its empty edges list by
         // a new "content" node
-        modifierOutput.transform(storage: modifierStorage) { output, storage in
+        modifierOutput = modifierOutput.transform(storage: modifierStorage, predicate: { $0.nodeType == ViewModifierContent<Modifier>.self }) { output, storage in
             var output = output
 
-            if output.nodeType == ViewModifierContent<Modifier>.self {
-                // Content storage is storage of VMC edge 0
-                let contentInput = MakeInput(storage: storage?.edges[0])
-                let contentOutput = Content.make(view: view?.content, input: contentInput)
+            // Content storage is storage of VMC edge 0
+            let contentInput = MakeInput(storage: storage?.edges[0])
+            let contentOutput = Content.make(view: view?.content, input: contentInput)
 
-                output.staticEdges = [contentOutput]
-            }
+            output.staticEdges = [contentOutput]
 
             return output
         }
@@ -153,13 +152,23 @@ extension ModifiedContent: View where Content: View, Modifier: ViewModifier {
 }
 
 extension MakeOutput {
-    /// Transforms the node and all of its edges using a transformation function. Storage nodes are
-    /// properly resolved by following the same path between the output graph and storage graph.
-    mutating func transform(storage: StorageNode?, transform: (MakeOutput, StorageNode?) -> MakeOutput) {
-        self = transform(self, storage)
-
-        for i in 0..<self.staticEdgesCount {
-            self.staticEdges?[i]?.transform(storage: storage?.edges[i], transform: transform)
+    /// Runs the predicate on every node down the graph. If it ever returns `true`, runs the transformation function and returns the resulting
+    /// output node, stopping the recursion there.
+    /// Storage nodes are visited the same way as output nodes to give every output node its storage node.
+    func transform(
+        storage: StorageNode?,
+        predicate: (MakeOutput) -> Bool,
+        transform function: (MakeOutput, StorageNode?) -> MakeOutput
+    ) -> MakeOutput {
+        if predicate(self) {
+            return function(self, storage)
         }
+
+        var output = self
+        output.staticEdges = output.staticEdges?.enumerated().map { idx, edge in
+            return edge?.transform(storage: storage?.edges[idx], predicate: predicate, transform: function)
+        }
+
+        return output
     }
 }

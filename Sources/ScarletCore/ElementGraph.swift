@@ -70,8 +70,12 @@ public struct ElementOutput {
     /// Any value to store and pass to the next `make()` call.
     public let storage: Any?
 
-    public init(storage: Any?) {
+    /// Proxy to make and update the element's implementation.
+    let implementationProxy: ImplementationProxy
+
+    public init(storage: Any?, implementationProxy: ImplementationProxy) {
         self.storage = storage
+        self.implementationProxy = implementationProxy
     }
 }
 
@@ -114,6 +118,15 @@ public class ElementNode {
     /// Edges for this element.
     var edges: [ElementNode?]
 
+    /// Implementation of this element.
+    let implementation: ImplementationNode?
+
+    /// Is this element substantial, aka. does it exist onscreen?
+    var substantial: Bool {
+        return implementation != nil
+    }
+
+    /// Does this element have a storage node?
     var hasStorage: Bool {
         return storage.value != nil
     }
@@ -126,14 +139,25 @@ public class ElementNode {
         self.edges = [ElementNode?](repeating: nil, count: V.staticEdgesCount())
 
         let input = MakeInput(storage: self.storage)
-        self.update(with: V.make(view: view, input: input))
+        let output = V.make(view: view, input: input)
+
+        self.implementation = output.node?.implementationProxy.make()
+
+        self.update(with: output)
     }
 
-    init(kind: ElementKind, type: Any.Type, storage: StorageNode, edges: [ElementNode?]) {
+    init(
+        kind: ElementKind,
+        type: Any.Type,
+        storage: StorageNode,
+        edges: [ElementNode?],
+        implementation: ImplementationNode?
+    ) {
         self.kind = kind
         self.type = type
         self.storage = storage
         self.edges = edges
+        self.implementation = implementation
     }
 
     /// Updates the node with the given view.
@@ -209,7 +233,8 @@ public class ElementNode {
             kind: edge.nodeKind,
             type: edge.nodeType,
             storage: edgeStorage,
-            edges: [ElementNode?](repeating: nil, count: edge.staticEdgesCount)
+            edges: [ElementNode?](repeating: nil, count: edge.staticEdgesCount),
+            implementation: edge.node?.implementationProxy.make()
         )
         self.edges[idx]?.update(with: edge)
     }
