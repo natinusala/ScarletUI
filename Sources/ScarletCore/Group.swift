@@ -14,15 +14,14 @@
    limitations under the License.
 */
 
-import ScarletCore
+/// A type that collects multiple instances of a content type — like views, scenes, or commands — into a single unit.
+public struct Group<Content> {
+    let content: Content
+}
 
-// TODO: remove duplication between Column and Group by making a single Node view with an axis parameter
-
-/// A view that arranges its children in a column.
-public struct Column<Content>: View where Content: View {
+extension Group: View where Content: View {
     public typealias Body = Never
-
-    var content: Content
+    public typealias Implementation = Never
 
     public init(@ViewBuilder content: () -> Content) {
         self.content = content()
@@ -30,6 +29,7 @@ public struct Column<Content>: View where Content: View {
 
     public static func make(view: Self?, input: MakeInput) -> MakeOutput {
         let contentStorage = input.storage?.edges[0]
+
         let contentInput = MakeInput(storage: contentStorage)
 
         return Self.output(
@@ -43,3 +43,7 @@ public struct Column<Content>: View where Content: View {
         return 1
     }
 }
+
+// TODO: Make an extension of `ModifiedContent` where `Content == Group` to change how modifiers are applied to groups once implementations are finished
+// The SwiftUI documentation states "The modifier applies to all members of the group — and not to the group itself.", so we need a criteria to
+// determine what a "member" is, and the presence of an implementation is a good candidate (Text is a member, Sidebar is a member, Optional is not)

@@ -20,7 +20,45 @@ import ScarletUI
 struct ScarletUIDemo: App {
     var body: some Scene {
         Window(title: "ScarletUI Demo") {
-            Column {}
+            Column {
+                Header()
+                Content()
+                Footer()
+            }
         }
     }
+}
+
+struct Header: View {
+    var body: some View {
+        Row {
+            Image("appicon")
+            Text("ScarletUI Demo")
+        }
+    }
+}
+
+struct Footer: View {
+    var body: some View {
+        Row {
+            Image("login")
+            Text("Logged in as: User")
+        }
+    }
+}
+
+struct Content: View {
+    var body: some View {
+        Column {
+            Text("Lorem Ipsum")
+            Text("Ergo Sum")
+            Text("Dolor Sit Amet")
+        }
+    }
+}
+
+struct Image: View {
+    typealias Body = Never
+
+    init(_ src: String ) { }
 }

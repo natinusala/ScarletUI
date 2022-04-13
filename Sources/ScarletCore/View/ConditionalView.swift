@@ -14,82 +14,98 @@
    limitations under the License.
 */
 
-/// A conditional view that is either the "first one" or the "second one".
-/// TODO: rename to ConditionalContent
+/// A view that is either the "first one" or the "second one".
 public enum ConditionalView<FirstContent, SecondContent>: View where FirstContent: View, SecondContent: View {
+    enum Storage {
+        case first
+        case second
+    }
+
     case first(FirstContent)
     case second(SecondContent)
 
     public typealias Body = Never
+    public typealias Implementation = Never
 
-    public static func makeViews(view: Self, previous: Self?) -> [ElementOperation] {
-        // If there is no previous node, always insert (by giving no previous node)
-        guard let previous = previous else {
-            switch view {
-                case let .first(view):
-                    return FirstContent.makeViews(view: view, previous: nil)
-                case let .second(view):
-                    return SecondContent.makeViews(view: view, previous: nil)
+    var contentType: Any.Type {
+        switch self {
+            case .first:
+                return FirstContent.self
+            case .second:
+                return SecondContent.self
+        }
+    }
+
+    var storageValue: Storage {
+        switch self {
+        case .first:
+            return .first
+        case .second:
+            return .second
+        }
+    }
+
+    public static func make(view: Self?, input: MakeInput) -> MakeOutput {
+        let output: ElementOutput?
+        let edges: [MakeOutput]
+
+        // If we have a view, evaluate it normally
+        // If not, consider the view unchanged and
+        // use our storage to know where to redirect the edge `make` call
+        if let view = view {
+            output = ElementOutput(storage: view.storageValue)
+
+            // If the content storage belongs to a different type than the expected one,
+            // discard the node (it changed from `first` to `second` or `second` to `first`)
+            // TODO: if storage type is unused in the end, change that to use storage instead and remove storage type
+            var contentStorage = input.storage?.edges[0]
+            if let storage = contentStorage, storage.elementType != view.contentType {
+                contentStorage = nil
             }
+
+            let contentInput = MakeInput(storage: contentStorage)
+
+            switch view {
+                case let .first(first):
+                    edges = [FirstContent.make(view: first, input: contentInput)]
+                case let .second(second):
+                    edges = [SecondContent.make(view: second, input: contentInput)]
+            }
+        } else if let storage = input.storage, let storageValue = storage.value as? Storage {
+            output = nil
+
+            let contentStorage = storage.edges[0]
+            let contentInput = MakeInput(storage: contentStorage)
+
+            switch storageValue {
+                case .first:
+                    edges = [FirstContent.make(view: nil, input: contentInput)]
+                case .second:
+                    edges = [SecondContent.make(view: nil, input: contentInput)]
+            }
+        } else {
+            fatalError("Cannot make a `ConditionalView` without a view or a storage node")
         }
 
-        // Otherwise check for every possibility
-        switch (view, previous) {
-            case let (.first(view), .first(previous)):
-                return FirstContent.makeViews(view: view, previous: previous)
-            case let (.second(view), .second(previous)):
-                return SecondContent.makeViews(view: view, previous: previous)
-            case let (.first, .second(previous)):
-                return Self.replace(count: SecondContent.viewsCount(view: previous), newView: view)
-            case let (.second, .first(previous)):
-                return Self.replace(count: FirstContent.viewsCount(view: previous), newView: view)
-        }
+        return Self.output(node: output, staticEdges: edges, implementationProxy: view?.implementationProxy)
     }
 
-    /// Returns view operations making a replacement of every view with the given new view.
-    private static func replace(count: Int, newView: Self) -> [ElementOperation] {
-        var operations = [ElementOperation]()
-
-        // Remove every view
-        // As every removal shifts the list to the left, we need to remove N times
-        // the 1st element
-        operations = Array(0..<count).map { _ in .removal(position: 0) }
-
-        // Make insertion operations by calling `makeViews` on the new view without
-        // giving a previous one
-        let insertions: [ElementOperation]
-        switch newView {
-            case let .first(view):
-                insertions = FirstContent.makeViews(view: view, previous: nil)
-            case let .second(view):
-                insertions = SecondContent.makeViews(view: view, previous: nil)
-        }
-
-        operations.append(contentsOf: insertions)
-
-        return operations
-    }
-
-    public static func viewsCount(view: Self) -> Int {
-        switch view {
-            case let .first(view):
-                return FirstContent.viewsCount(view: view)
-            case let .second(view):
-                return SecondContent.viewsCount(view: view)
-        }
+    /// Conditionals have one edge: its content, either first or second.
+    public static func staticEdgesCount() -> Int {
+        return 1
     }
 }
 
-extension ConditionalView: Equatable where FirstContent: Equatable, SecondContent: Equatable {
-    /// `Equatable` conformance when both content types are `Equatable`.
-    public static func == (lhs: Self, rhs: Self) -> Bool {
-        switch (lhs, rhs) {
-            case (.first, .second), (.second, .first):
-                return false
-            case let (.first(lhs), .first(rhs)):
-                return lhs == rhs
-            case let (.second(lhs), .second(rhs)):
-                return lhs == rhs
-        }
+public extension ViewBuilder {
+    static func buildEither<FirstContent, SecondContent>(
+        first content: FirstContent
+    ) -> ConditionalView<FirstContent, SecondContent> where FirstContent: View, SecondContent: View {
+        return .first(content)
+    }
+
+    static func buildEither<FirstContent, SecondContent>(
+        second content: SecondContent
+    ) -> ConditionalView<FirstContent, SecondContent> where FirstContent: View, SecondContent: View {
+        return .second(content)
     }
 }

@@ -14,37 +14,163 @@
    limitations under the License.
 */
 
-/// A view modifier serves two purposes:
-///     - set a view attribute
-///     - wrap a view in another (modified or not) view (unimplemented)
-protocol ViewModifier {
-    associatedtype Body: View
-    associatedtype Content: View
+/// A modifier takes a view and produces a new version of the view.
+/// Can be used to set attributes or wrap in more views.
+public protocol ViewModifier {
+    /// Modifier content placeholder given to `body(content:)`.
+    typealias Content = ViewModifierContent<Self>
 
-    func body(content: Content) -> Body
+    /// The type of this modifier's body.
+    associatedtype Body: View
+
+    /// This modifier's body.
+    @ViewBuilder func body(content: Content) -> Body
+
+    /// Creates the graph node for this modifier.
+    static func make(modifier: Self?, input: MakeInput) -> MakeOutput
+
+    /// The number of static edges of this modifier.
+    /// Must be constant.
+    static func staticEdgesCount() -> Int
 }
 
-extension ViewModifier {
-    /// Default implementation of `body` for a view modifier: returns the unmodified view.
-    func body(content: Content) -> some View {
+public extension ViewModifier {
+    /// Default implementation for `make()` when there is a body: compare the modifier and call `body` if needed.
+    static func make(modifier: Self?, input: MakeInput) -> MakeOutput {
+        // First case: no modifier has been given, we assume it unchanged
+        // but content may still have changed
+        guard let modifier = modifier else {
+            let bodyInput = MakeInput(storage: input.storage?.edges[0])
+            let bodyOutput = Body.make(view: nil, input: bodyInput)
+
+            return Self.output(node: nil, staticEdges: [bodyOutput])
+        }
+
+        // Second case: a modifier has been given
+        // Compare it with the previous one to see if it changed
+        // If so, re-evaluate its body. Otherwise, its content may have changed
+        // so do the same as above
+        if let storageValue = input.storage?.value, anyEquals(lhs: storageValue, rhs: modifier) {
+            // Modifier has not changed
+            let bodyInput = MakeInput(storage: input.storage?.edges[0])
+            let bodyOutput = Body.make(view: nil, input: bodyInput)
+
+            return Self.output(node: nil, staticEdges: [bodyOutput])
+        } else {
+            // Modifier has changed
+            let output = ElementOutput(storage: modifier)
+            let bodyInput = MakeInput(storage: input.storage?.edges[0])
+            let bodyOutput = Body.make(view: modifier.body(content: ViewModifierContent()), input: bodyInput)
+
+            return Self.output(node: output, staticEdges: [bodyOutput])
+        }
+    }
+
+    /// Default implementation for `staticEdgesCount()` when there is a body: return one edge,
+    /// the body.
+    static func staticEdgesCount() -> Int {
+        return 1
+    }
+}
+
+public extension ViewModifier where Body == Content {
+    /// Body for attributes-only modifiers: return content itself, unmodified.
+    func body(content: Content) -> Content {
         return content
     }
 }
 
-/// A modified view, input to a view modifier `body` method.
-struct ViewModifierContent<Modifier>: View where Modifier: ViewModifier {
-    typealias Body = Never
-}
+/// Placeholder for view modifier content.
+public struct ViewModifierContent<Modifier>: View where Modifier: ViewModifier {
+    public typealias Body = Never
+    public typealias Implementation = Never
 
-extension ModifiedContent: View where Modifier: ViewModifier, Modifier.Content == Content {
-    var body: some View {
-        self.modifier.body(content: self.content)
+    public static func make(view: ViewModifierContent, input: MakeInput) -> MakeOutput {
+        /// Return an empty list for static edges. ModifiedContent will then go through this
+        /// result and replace the empty list by the modified content node.
+        return Self.output(node: nil, staticEdges: [], implementationProxy: nil)
+    }
+
+    /// View modifier content has one edge, the modified content.
+    public static func staticEdgesCount() -> Int {
+        return 1
     }
 }
 
-extension View {
-    /// Returns a modified version of this view, with the given modifier applied.
-    func modifier<Modifier>(_ modifier: Modifier) -> ModifiedContent<Self, Modifier> where Modifier: ViewModifier {
-        return ModifiedContent<Self, Modifier>(content: self, modifier: modifier)
+public extension View {
+    /// Returns a modified version of the view with the given modifier applied.
+    func modifier<Modifier>(_ modifier: Modifier) -> some View where Modifier: ViewModifier {
+        return ModifiedContent<Modifier, Self>(modifier: modifier, content: self)
+    }
+}
+
+public extension ViewModifier {
+    /// Convenience function to create a `MakeOutput` from a `ViewModifier` with less boilerplate.
+    static func output(node: ElementOutput?, staticEdges: [MakeOutput?]?) -> MakeOutput {
+        return MakeOutput(
+            nodeKind: .viewModifier,
+            nodeType: Self.self,
+            node: node,
+            staticEdges: staticEdges,
+            staticEdgesCount: Self.staticEdgesCount(),
+            implementationProxy: ImplementationProxy()
+        )
+    }
+}
+
+extension ModifiedContent: View where Content: View, Modifier: ViewModifier {
+    public typealias Body = Never
+    public typealias Implementation = Never
+
+    public static func make(view: Self?, input: MakeInput) -> MakeOutput {
+        // Make our one edge: the modifier
+        let modifierStorage = input.storage?.edges[0]
+        let modifierInput = MakeInput(storage: modifierStorage)
+        var modifierOutput = Modifier.make(modifier: view?.modifier, input: modifierInput)
+
+        // Visit the output and find any `ViewModifierContent` - replace its empty edges list by
+        // a new "content" node
+        modifierOutput = modifierOutput.transform(storage: modifierStorage, predicate: { $0.nodeType == ViewModifierContent<Modifier>.self }) { output, storage in
+            var output = output
+
+            // Content storage is storage of VMC edge 0
+            let contentInput = MakeInput(storage: storage?.edges[0])
+            let contentOutput = Content.make(view: view?.content, input: contentInput)
+
+            output.staticEdges = [contentOutput]
+
+            return output
+        }
+
+        let edges = [modifierOutput]
+        return Self.output(node: nil, staticEdges: edges, implementationProxy: view?.implementationProxy)
+
+    }
+
+    /// Modified content has one edge: the modifier body.
+    public static func staticEdgesCount() -> Int {
+        return 1
+    }
+}
+
+extension MakeOutput {
+    /// Runs the predicate on every node down the graph. If it ever returns `true`, runs the transformation function and returns the resulting
+    /// output node, stopping the recursion there.
+    /// Storage nodes are visited the same way as output nodes to give every output node its storage node.
+    func transform(
+        storage: StorageNode?,
+        predicate: (MakeOutput) -> Bool,
+        transform function: (MakeOutput, StorageNode?) -> MakeOutput
+    ) -> MakeOutput {
+        if predicate(self) {
+            return function(self, storage)
+        }
+
+        var output = self
+        output.staticEdges = output.staticEdges?.enumerated().map { idx, edge in
+            return edge?.transform(storage: storage?.edges[idx], predicate: predicate, transform: function)
+        }
+
+        return output
     }
 }

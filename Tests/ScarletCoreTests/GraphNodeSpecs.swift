@@ -14,15 +14,13 @@
    limitations under the License.
 */
 
-/// The app implementation, aka the real app that's actually running.
-public class ScarletUIAppImplementation: AppImplementation {}
+import Quick
+import Nimble
 
-public extension App {
-    static func main() {}
-}
+@testable import ScarletCore
 
-public extension App {
-    static func makeImplementation(app: Self) -> AppImplementation {
-        return ScarletUIAppImplementation()
+class GraphNodeSpecs: QuickSpec {
+    override func spec() {
+        
     }
 }

@@ -16,6 +16,9 @@
 
 /// A desktop window.
 public struct Window<Content>: Scene where Content: View {
+    public typealias Body = Never
+    public typealias Implementation = WindowImplementation
+
     let title: String
     let content: Content
 
@@ -24,7 +27,30 @@ public struct Window<Content>: Scene where Content: View {
         self.content = content()
     }
 
-    public var body: some View {
-        self.content
+    public static func make(scene: Self?, input: MakeInput) -> MakeOutput {
+        let contentStorage = input.storage?.edges[0]
+        let contentInput = MakeInput(storage: contentStorage)
+
+        return Self.output(
+            node: nil,
+            staticEdges: [Content.make(view: scene?.content, input: contentInput)],
+            implementationProxy: scene?.implementationProxy
+        )
+    }
+
+    public static func updateImplementation(_ implementation: WindowImplementation, with scene: Self) {
+        implementation.title = scene.title
+    }
+}
+
+public class WindowImplementation: SceneImplementation {
+    var title: String?
+
+    public override var description: String {
+        if let title = self.title {
+            return "Window(\"\(title)\")"
+        }
+
+        return "Window()"
     }
 }
