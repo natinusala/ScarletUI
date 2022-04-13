@@ -16,8 +16,6 @@
 
 import ScarletCore
 
-// TODO: remove duplication between Column and Group by making a single Node view with an axis parameter
-
 /// A view that arranges its children in a column.
 public struct Column<Content>: View where Content: View {
     public typealias Body = Never
