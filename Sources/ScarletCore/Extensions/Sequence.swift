@@ -27,3 +27,8 @@ extension Sequence {
         return true
     }
 }
+
+extension Sequence where Element: AdditiveArithmetic {
+    /// Makes the sum of all elements in the sequence.
+    func sum() -> Element { reduce(.zero, +) }
+}

@@ -41,7 +41,7 @@ extension Optional: View where Wrapped: View {
         // If not, consider the view unchanged and
         // use our storage to know if `make` needs to be called on our content
         if let view = view {
-            output = ElementOutput(storage: view.storageValue, implementationProxy: view.implementationProxy)
+            output = ElementOutput(storage: view.storageValue)
 
             switch view {
                 case .none:
@@ -64,7 +64,7 @@ extension Optional: View where Wrapped: View {
             fatalError("Cannot make an `Optional` view without a view or a storage node")
         }
 
-        return Self.output(node: output, staticEdges: edges)
+        return Self.output(node: output, staticEdges: edges, implementationProxy: view?.implementationProxy)
     }
 
     /// Optional views have one edge, the wrapped view (or `nil`).

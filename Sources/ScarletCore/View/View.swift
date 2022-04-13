@@ -32,34 +32,32 @@ public protocol View {
     /// Must be constant.
     static func staticEdgesCount() -> Int
 
-    /// The type of a view's implementation.
+    /// The type of this view's implementation.
+    /// Set to `Never` if there is none.
     associatedtype Implementation: ImplementationNode
 
-    /// Makes the implementation for a view.
-    static func makeImplementation(of view: Self) -> Implementation?
-
-    /// Updates the implementation for a view.
+    /// Updates an implementation node with the given view.
     static func updateImplementation(_ implementation: Implementation, with view: Self)
 }
 
-extension View {
+public extension View {
     /// Default implementation of `make()` when the view has a body: compare the view with the previous stored
     /// one and see if it changed. If it did, re-evaluate its `body`.
-    public static func make(view: Self?, input: MakeInput) -> MakeOutput {
+    static func make(view: Self?, input: MakeInput) -> MakeOutput {
         // If no view is specified, consider the view entirely unchanged,
         // including its body
         guard let view = view else {
-            return Self.output(node: nil, staticEdges: nil)
+            return Self.output(node: nil, staticEdges: nil, implementationProxy: nil)
         }
 
         // Get the previous view and compare it
         // Return an unchanged output of it's equal
         if let previous = input.storage?.value, anyEquals(lhs: view, rhs: previous) {
-            return Self.output(node: nil, staticEdges: nil)
+            return Self.output(node: nil, staticEdges: nil, implementationProxy: view.implementationProxy)
         }
 
         // The view changed
-        let output = ElementOutput(storage: view, implementationProxy: view.implementationProxy)
+        let output = ElementOutput(storage: view)
 
         // Re-evaluate body
         let body = view.body
@@ -67,13 +65,26 @@ extension View {
         let bodyInput = MakeInput(storage: bodyStorage)
         let bodyOutput = Body.make(view: body, input: bodyInput)
 
-        return Self.output(node: output, staticEdges: [bodyOutput])
+        return Self.output(node: output, staticEdges: [bodyOutput], implementationProxy: view.implementationProxy)
     }
 
     /// Default implementation for `staticEdgesCount()` when there is a body: return one edge,
     /// the body.
-    public static func staticEdgesCount() -> Int {
+    static func staticEdgesCount() -> Int {
         return 1
+    }
+
+    /// Creates the implementation for the view.
+    static func makeImplementation(of view: Self) -> ImplementationNode? {
+        if Implementation.self == Never.self {
+            return nil
+        }
+
+        return Implementation(kind: .view, displayName: view.displayName)
+    }
+
+    var implementationProxy: ImplementationProxy {
+        return ImplementationProxy(view: self)
     }
 }
 
@@ -81,7 +92,7 @@ public extension View where Body == Never {
     /// Default implementation of `make()` when the view has no body: return the view itself with
     /// no storage and no edges. Used for "leaves" of the view graph.
     static func make(view: Self?, input: MakeInput) -> MakeOutput {
-        return Self.output(node: nil, staticEdges: [])
+        return Self.output(node: nil, staticEdges: [], implementationProxy: view?.implementationProxy)
     }
 
     /// Default implementation for `staticEdgesCount()` when there is no body: no edges.
@@ -95,34 +106,20 @@ public extension View where Body == Never {
 }
 
 public extension View {
-    /// Default implementation of `makeImplementation()`: return a new implementation.
-    static func makeImplementation(of view: Self) -> Implementation? {
-        return Implementation(kind: .view, displayName: view.displayName)
-    }
-
     /// Default implementation of `updateImplementation()`: do nothing.
     static func updateImplementation(_ implementation: Implementation, with view: Self) {}
 }
 
-public extension View where Implementation == Never {
-    /// Default implementation of `makeImplementation()`: return `nil`.
-    static func makeImplementation(of view: Self) -> Never? {
-        return nil
-    }
-
-    /// Default implementation of `updateImplementation()` when the view has no implementation: do nothing.
-    static func updateImplementation(_ implementation: Never, with view: Self) {}
-}
-
 public extension View {
     /// Convenience function to create a `MakeOutput` from a `View` with less boilerplate.
-    static func output(node: ElementOutput?, staticEdges: [MakeOutput?]?) -> MakeOutput {
+    static func output(node: ElementOutput?, staticEdges: [MakeOutput?]?, implementationProxy: ImplementationProxy?) -> MakeOutput {
         return MakeOutput(
             nodeKind: .view,
             nodeType: Self.self,
             node: node,
             staticEdges: staticEdges,
-            staticEdgesCount: Self.staticEdgesCount()
+            staticEdgesCount: Self.staticEdgesCount(),
+            implementationProxy: implementationProxy
         )
     }
 
@@ -130,13 +127,11 @@ public extension View {
     var displayName: String {
         return String(describing: Self.self).before(first: "<")
     }
-
-    var implementationProxy: ImplementationProxy {
-        return ImplementationProxy(view: self)
-    }
 }
 
 extension Never: View {
+    public typealias Implementation = Never
+
     public var body: Never {
         return fatalError()
     }
@@ -148,4 +143,6 @@ extension Never: View {
     public static func staticEdgesCount() -> Int {
         fatalError()
     }
+
+    public static func updateImplementation(_ implementation: Never, with view: Never) {}
 }

@@ -18,8 +18,8 @@
 @resultBuilder
 public struct ViewBuilder {
     /// Builds a block for an empty content. Returns an empty view.
-    public static func buildBlock() -> EmptyView {
-        return EmptyView()
+    public static func buildBlock() -> Optional<Never> {
+        return .none
     }
 
     /// Builds a block one view. Returns the view itself.

@@ -34,7 +34,8 @@ extension Group: View where Content: View {
 
         return Self.output(
             node: nil,
-            staticEdges: [Content.make(view: view?.content, input: contentInput)]
+            staticEdges: [Content.make(view: view?.content, input: contentInput)],
+            implementationProxy: view?.implementationProxy
         )
     }
 

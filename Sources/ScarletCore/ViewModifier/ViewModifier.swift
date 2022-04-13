@@ -58,7 +58,7 @@ public extension ViewModifier {
             return Self.output(node: nil, staticEdges: [bodyOutput])
         } else {
             // Modifier has changed
-            let output = ElementOutput(storage: modifier, implementationProxy: ImplementationProxy())
+            let output = ElementOutput(storage: modifier)
             let bodyInput = MakeInput(storage: input.storage?.edges[0])
             let bodyOutput = Body.make(view: modifier.body(content: ViewModifierContent()), input: bodyInput)
 
@@ -83,11 +83,12 @@ public extension ViewModifier where Body == Content {
 /// Placeholder for view modifier content.
 public struct ViewModifierContent<Modifier>: View where Modifier: ViewModifier {
     public typealias Body = Never
+    public typealias Implementation = Never
 
     public static func make(view: ViewModifierContent, input: MakeInput) -> MakeOutput {
         /// Return an empty list for static edges. ModifiedContent will then go through this
         /// result and replace the empty list by the modified content node.
-        return Self.output(node: nil, staticEdges: [])
+        return Self.output(node: nil, staticEdges: [], implementationProxy: nil)
     }
 
     /// View modifier content has one edge, the modified content.
@@ -111,7 +112,8 @@ public extension ViewModifier {
             nodeType: Self.self,
             node: node,
             staticEdges: staticEdges,
-            staticEdgesCount: Self.staticEdgesCount()
+            staticEdgesCount: Self.staticEdgesCount(),
+            implementationProxy: ImplementationProxy()
         )
     }
 }
@@ -141,7 +143,7 @@ extension ModifiedContent: View where Content: View, Modifier: ViewModifier {
         }
 
         let edges = [modifierOutput]
-        return Self.output(node: nil, staticEdges: edges)
+        return Self.output(node: nil, staticEdges: edges, implementationProxy: view?.implementationProxy)
 
     }
 

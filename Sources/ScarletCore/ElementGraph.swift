@@ -37,7 +37,8 @@ public struct MakeOutput {
     public let nodeType: Any.Type
 
     /// The resulting node itself.
-    /// Can be `nil` if the node did not change.
+    /// Can be `nil` if there is nothing to store for that node
+    /// or the node did not change.
     let node: ElementOutput?
 
     /// Static edges of the node.
@@ -50,18 +51,24 @@ public struct MakeOutput {
     /// number of edges if `staticEdges` is `nil`.
     let staticEdgesCount: Int
 
+    /// Proxy to make and update the element's implementation.
+    /// Can be nil if there is no implementation of if the implementation did not change.
+    let implementationProxy: ImplementationProxy?
+
     public init(
         nodeKind: ElementKind,
         nodeType: Any.Type,
         node: ElementOutput?,
         staticEdges: [MakeOutput?]?,
-        staticEdgesCount: Int
+        staticEdgesCount: Int,
+        implementationProxy: ImplementationProxy?
     ) {
         self.nodeKind = nodeKind
         self.nodeType = nodeType
         self.node = node
         self.staticEdges = staticEdges
         self.staticEdgesCount = staticEdgesCount
+        self.implementationProxy = implementationProxy
     }
 }
 
@@ -70,12 +77,8 @@ public struct ElementOutput {
     /// Any value to store and pass to the next `make()` call.
     public let storage: Any?
 
-    /// Proxy to make and update the element's implementation.
-    let implementationProxy: ImplementationProxy
-
-    public init(storage: Any?, implementationProxy: ImplementationProxy) {
+    public init(storage: Any?) {
         self.storage = storage
-        self.implementationProxy = implementationProxy
     }
 }
 
@@ -97,6 +100,13 @@ public class StorageNode {
         self.edges = [StorageNode?](repeating: nil, count: V.staticEdgesCount())
     }
 
+    /// Creates a new empty storage node for the given app.
+    init<A: App>(for app: A) {
+        self.elementType = A.self
+        self.value = nil
+        self.edges = [StorageNode?](repeating: nil, count: A.staticEdgesCount())
+    }
+
     init(elementType: Any.Type, value: Any?, edges: [StorageNode?]) {
         self.elementType = elementType
         self.value = value
@@ -106,6 +116,12 @@ public class StorageNode {
 
 /// A node of the element graph.
 public class ElementNode {
+    /// The parent of this node.
+    public var parent: ElementNode?
+
+    /// Position of this node in the parent's edges list.
+    public var position: Int
+
     /// Kind of the element.
     public var kind: ElementKind
 
@@ -119,7 +135,7 @@ public class ElementNode {
     var edges: [ElementNode?]
 
     /// Implementation of this element.
-    let implementation: ImplementationNode?
+    public let implementation: ImplementationNode?
 
     /// Is this element substantial, aka. does it exist onscreen?
     var substantial: Bool {
@@ -131,8 +147,20 @@ public class ElementNode {
         return storage.value != nil
     }
 
+    /// Returns the number of implementations nodes this element and its edges have.
+    /// TODO: cache this value instead of requiring a full traversal each time
+    var implementationsCount: Int {
+        if self.implementation != nil {
+            return 1
+        }
+
+        return edges.reduce(0) { $0 + ($1?.implementationsCount ?? 0) }
+    }
+
     /// Creates a new node for the given view, making it in the process.
-    public init<V: View>(making view: V) {
+    public init<V: View>(parent: ElementNode?, position: Int, making view: V) {
+        self.parent = parent
+        self.position = position
         self.kind = .view
         self.type = V.self
         self.storage = StorageNode(for: view)
@@ -141,23 +169,115 @@ public class ElementNode {
         let input = MakeInput(storage: self.storage)
         let output = V.make(view: view, input: input)
 
-        self.implementation = output.node?.implementationProxy.make()
+        self.implementation = output.implementationProxy?.make()
 
         self.update(with: output)
+
+        self.attachImplementationToParent()
+    }
+
+    /// Creates a new node for the given app, making it in the process.
+    public init<A: App>(parent: ElementNode?, position: Int, making app: A) {
+        self.parent = parent
+        self.position = position
+        self.kind = .app
+        self.type = A.self
+        self.storage = StorageNode(for: app)
+        self.edges = [ElementNode?](repeating: nil, count: A.staticEdgesCount())
+
+        let input = MakeInput(storage: self.storage)
+        let output = A.make(app: app, input: input)
+
+        self.implementation = output.implementationProxy?.make()
+
+        self.update(with: output)
+
+        self.attachImplementationToParent()
     }
 
     init(
+        parent: ElementNode?,
+        position: Int,
         kind: ElementKind,
         type: Any.Type,
         storage: StorageNode,
         edges: [ElementNode?],
         implementation: ImplementationNode?
     ) {
+        self.parent = parent
+        self.position = position
         self.kind = kind
         self.type = type
         self.storage = storage
         self.edges = edges
         self.implementation = implementation
+    }
+
+    /// Attaches this node's implementation node to the parent, if any.
+    /// Must be called when creating a new element node, after fully populating its edges.
+    private func attachImplementationToParent() {
+        if let implementation = self.implementation, let parent = self.parent {
+            parent.attachImplementation(
+                implementation,
+                edgePosition: self.position,
+                translatedPosition: 0
+            )
+        }
+    }
+
+    /// Attaches the given implementation to this node's implementation, or
+    /// goes up the graph to find the first parent with an implementation node.
+    /// The end result is an `insertChild` call on the implementation node with the correct position.
+    func attachImplementation(_ implementation: ImplementationNode, edgePosition: Int, translatedPosition: Int) {
+        // Translate position: add the sum of implementations count for all edges up until this one
+        // `TP = TP + I[0] + I[1] + ... + I[edgePosition - 1]` where I[X] is the count of implementations for edge X
+        let translatedPosition = translatedPosition + Array(0..<edgePosition).map { self.edges[$0]?.implementationsCount ?? 0 }.sum()
+
+        // If we have an implementation node, insert it directly
+        // Otherwise pass it to the parent
+        if let parentImplementation = self.implementation {
+            parentImplementation.insertChild(implementation, at: translatedPosition)
+        } else {
+            self.parent?.attachImplementation(
+                implementation,
+                edgePosition: self.position,
+                translatedPosition: translatedPosition
+            )
+        }
+    }
+
+    /// Traverses the graph, finds and detaches every implementation node.
+    private func detachImplementationFromParent() {
+        if let implementation = self.implementation, let parent = self.parent {
+            parent.detachImplementation(
+                implementation,
+                edgePosition: self.position,
+                translatedPosition: 0
+            )
+        }
+
+        self.edges.forEach { $0?.detachImplementationFromParent() }
+    }
+
+    /// Detaches the given implementation to this node's implementation, or
+    /// goes up the graph to find the first parent with an implementation node.
+    /// The end result is a `removeChild` call on the implementation node with the correct position.
+    func detachImplementation(_ implementation: ImplementationNode, edgePosition: Int, translatedPosition: Int) {
+        // Translate position: add the sum of implementations count for all edges up until this one
+        // `TP = TP + I[0] + I[1] + ... + I[edgePosition - 1]` where I[X] is the count of implementations for edge X
+        let translatedPosition = translatedPosition + Array(0..<edgePosition).map { self.edges[$0]?.implementationsCount ?? 0 }.sum()
+
+        // If we have an implementation node, insert it directly
+        // Otherwise pass it to the parent
+        if let parentImplementation = self.implementation {
+            parentImplementation.removeChild(at: translatedPosition)
+        } else {
+            self.parent?.detachImplementation(
+                implementation,
+                edgePosition: self.position,
+                translatedPosition: translatedPosition
+            )
+        }
     }
 
     /// Updates the node with the given view.
@@ -184,6 +304,11 @@ public class ElementNode {
         if let node = output.node {
             self.type = output.nodeType
             self.storage.value = node.storage
+        }
+
+        // Implementation update
+        if let implementation = self.implementation, let proxy = output.implementationProxy {
+            proxy.update(implementation)
         }
 
         // Static edges update
@@ -230,13 +355,16 @@ public class ElementNode {
 
         // Create and insert the edge node
         self.edges[idx] = ElementNode(
+            parent: self,
+            position: idx,
             kind: edge.nodeKind,
             type: edge.nodeType,
             storage: edgeStorage,
             edges: [ElementNode?](repeating: nil, count: edge.staticEdgesCount),
-            implementation: edge.node?.implementationProxy.make()
+            implementation: edge.implementationProxy?.make()
         )
         self.edges[idx]?.update(with: edge)
+        self.edges[idx]?.attachImplementationToParent()
     }
 
     /// Updates edge at given position with a new edge.
@@ -259,10 +387,11 @@ public class ElementNode {
     private func removeEdge(at idx: Int) {
         debug("Removing \(self.edges[idx]!.type)")
 
-        // Remove edge
-        self.edges[idx] = nil
+        // Detach implementation nodes
+        self.edges[idx]?.detachImplementationFromParent()
 
-        // Discard storage
+        // Remove edge and discard storage
+        self.edges[idx] = nil
         self.storage.edges[idx] = nil
     }
 

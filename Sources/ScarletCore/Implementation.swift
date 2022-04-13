@@ -19,6 +19,7 @@
 ///
 /// All different implementations of the an app make a tree.
 public protocol ImplementationNode {
+    /// Creates a new implementation node for the given kind.
     init(kind: ImplementationKind, displayName: String)
 
     /// Inserts the given element into this implementation node.
@@ -48,10 +49,38 @@ public struct ImplementationProxy {
 
         self.updateClosure = { implementation in
             guard let implementation = implementation as? V.Implementation else {
-                fatalError("Tried to update an implementation with the wrong view type")
+                fatalError("Implementation update type mismatch: got \(type(of: implementation)), expected \(V.Implementation.self)")
             }
 
             V.updateImplementation(implementation, with: view)
+        }
+    }
+
+    init<A: App>(app: A) {
+        self.makeClosure = {
+            return A.makeImplementation(of: app)
+        }
+
+        self.updateClosure = { implementation in
+            guard let implementation = implementation as? A.Implementation else {
+                fatalError("Implementation update type mismatch: got \(type(of: implementation)), expected \(A.Implementation.self)")
+            }
+
+            A.updateImplementation(implementation, with: app)
+        }
+    }
+
+    init<S: Scene>(scene: S) {
+        self.makeClosure = {
+            return S.makeImplementation(of: scene)
+        }
+
+        self.updateClosure = { implementation in
+            guard let implementation = implementation as? S.Implementation else {
+                fatalError("Implementation update type mismatch: got \(type(of: implementation)), expected \(S.Implementation.self)")
+            }
+
+            S.updateImplementation(implementation, with: scene)
         }
     }
 
@@ -64,7 +93,7 @@ public struct ImplementationProxy {
         return self.makeClosure()
     }
 
-    func update(_ implementation: ImplementationNode) {
+    func update(_ implementation: any ImplementationNode) {
         self.updateClosure(implementation)
     }
 }

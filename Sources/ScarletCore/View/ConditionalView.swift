@@ -25,6 +25,7 @@ public enum ConditionalView<FirstContent, SecondContent>: View where FirstConten
     case second(SecondContent)
 
     public typealias Body = Never
+    public typealias Implementation = Never
 
     var contentType: Any.Type {
         switch self {
@@ -52,7 +53,7 @@ public enum ConditionalView<FirstContent, SecondContent>: View where FirstConten
         // If not, consider the view unchanged and
         // use our storage to know where to redirect the edge `make` call
         if let view = view {
-            output = ElementOutput(storage: view.storageValue, implementationProxy: view.implementationProxy)
+            output = ElementOutput(storage: view.storageValue)
 
             // If the content storage belongs to a different type than the expected one,
             // discard the node (it changed from `first` to `second` or `second` to `first`)
@@ -86,7 +87,7 @@ public enum ConditionalView<FirstContent, SecondContent>: View where FirstConten
             fatalError("Cannot make a `ConditionalView` without a view or a storage node")
         }
 
-        return Self.output(node: output, staticEdges: edges)
+        return Self.output(node: output, staticEdges: edges, implementationProxy: view?.implementationProxy)
     }
 
     /// Conditionals have one edge: its content, either first or second.

@@ -18,17 +18,95 @@
 /// An app is made of one scene, and a scene is made of one or multiple
 /// views.
 public protocol App {
+    /// Initializer used for the framework to create the app on boot.
+    init()
+
     /// The type of this app's body.
     associatedtype Body: Scene
 
     /// This app's body.
     var body: Body { get }
 
-    /// Creates an implementation of the given app.
-    static func makeImplementation(app: Self) -> AppImplementation
+    /// Creates the graph node for an app.
+    /// If no app is specified, assume it hasn't changed but still evaluate
+    /// edges with `app: nil` recursively.
+    static func make(app: Self?, input: MakeInput) -> MakeOutput
+
+    /// The number of static edges of an app.
+    /// Must be constant.
+    static func staticEdgesCount() -> Int
+
+    /// The type of this app's implementation.
+    /// Set to `Never` if there is none.
+    associatedtype Implementation: ImplementationNode
+
+    /// Updates an implementation node with the given app.
+    static func updateImplementation(_ implementation: Implementation, with app: Self)
 }
 
-/// The implementation of an app.
-public protocol AppImplementation {
+public extension App {
+    /// Default implementation of `make()`: compare the app with the previous stored
+    /// one and see if it changed. If it did, re-evaluate its `body`.
+    static func make(app: Self?, input: MakeInput) -> MakeOutput {
+        // If no app is specified, consider the app entirely unchanged,
+        // including its body
+        guard let app = app else {
+            return Self.output(node: nil, staticEdges: nil, implementationProxy: nil)
+        }
 
+        // Get the previous app and compare it
+        // Return an unchanged output of it's equal
+        if let previous = input.storage?.value, anyEquals(lhs: app, rhs: previous) {
+            return Self.output(node: nil, staticEdges: nil, implementationProxy: app.implementationProxy)
+        }
+
+        // The app changed
+        let output = ElementOutput(storage: app)
+
+        // Re-evaluate body
+        let body = app.body
+        let bodyStorage = input.storage?.edges[0]
+        let bodyInput = MakeInput(storage: bodyStorage)
+        let bodyOutput = Body.make(scene: body, input: bodyInput)
+
+        return Self.output(node: output, staticEdges: [bodyOutput], implementationProxy: app.implementationProxy)
+    }
+
+    /// An app has one edge: its body.
+    static func staticEdgesCount() -> Int {
+        return 1
+    }
+
+    /// Convenience function to create a `MakeOutput` from an `App` with less boilerplate.
+    static func output(node: ElementOutput?, staticEdges: [MakeOutput?]?, implementationProxy: ImplementationProxy?) -> MakeOutput {
+        return MakeOutput(
+            nodeKind: .app,
+            nodeType: Self.self,
+            node: node,
+            staticEdges: staticEdges,
+            staticEdgesCount: Self.staticEdgesCount(),
+            implementationProxy: implementationProxy
+        )
+    }
+
+    /// Creates the implementation for the app.
+    static func makeImplementation(of app: Self) -> ImplementationNode? {
+        if Implementation.self == Never.self {
+            return nil
+        }
+
+        return Implementation(kind: .app, displayName: app.displayName)
+    }
+
+    var implementationProxy: ImplementationProxy {
+        return ImplementationProxy(app: self)
+    }
+
+    /// Display name of the app, aka. its type stripped of any generic parameters.
+    var displayName: String {
+        return String(describing: Self.self).before(first: "<")
+    }
+
+    /// Default `updateImplementation()` implementation: don't do anything.
+    static func updateImplementation(_ implementation: Implementation, with app: Self) {}
 }

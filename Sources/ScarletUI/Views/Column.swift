@@ -30,12 +30,12 @@ public struct Column<Content>: View where Content: View {
 
     public static func make(view: Self?, input: MakeInput) -> MakeOutput {
         let contentStorage = input.storage?.edges[0]
-
         let contentInput = MakeInput(storage: contentStorage)
 
         return Self.output(
             node: nil,
-            staticEdges: [Content.make(view: view?.content, input: contentInput)]
+            staticEdges: [Content.make(view: view?.content, input: contentInput)],
+            implementationProxy: view?.implementationProxy
         )
     }
 
