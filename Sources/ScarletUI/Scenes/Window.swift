@@ -19,12 +19,13 @@ public struct Window<Content>: Scene where Content: View {
     public typealias Body = Never
     public typealias Implementation = WindowImplementation
 
-    let title: String
+    @AttributeValue(target: \WindowImplementation.title) var title
+
     let content: Content
 
     public init(title: String, @ViewBuilder content: () -> Content) {
-        self.title = title
         self.content = content()
+        self.title = title
     }
 
     public static func make(scene: Self?, input: MakeInput) -> MakeOutput {
@@ -39,18 +40,15 @@ public struct Window<Content>: Scene where Content: View {
     }
 
     public static func updateImplementation(_ implementation: WindowImplementation, with scene: Self) {
-        implementation.title = scene.title
+        scene.$title.set(on: implementation)
     }
 }
 
 public class WindowImplementation: SceneImplementation {
-    var title: String?
+    /// The window title.
+    @Attribute var title: String = ""
 
     public override var description: String {
-        if let title = self.title {
-            return "Window(\"\(title)\")"
-        }
-
-        return "Window()"
+        return "Window(\"\(title)\")"
     }
 }
