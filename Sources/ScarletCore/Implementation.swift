@@ -37,65 +37,12 @@ public enum ImplementationKind {
 }
 
 /// Proxy to access an element's implementation in a type-erased manner.
-/// TODO: Remove once Swift 5.7 is available and we have unlocked existentials, put the element directly in `MakeOutput`
-public struct ImplementationProxy {
-    let makeClosure: () -> ImplementationNode?
-    let updateClosure: (any ImplementationNode) -> ()
+public protocol ImplementationAccessor {
+    /// Makes the implementation node if any.
+    func make() -> ImplementationNode?
 
-    init<V: View>(view: V) {
-        self.makeClosure = {
-            return V.makeImplementation(of: view)
-        }
-
-        self.updateClosure = { implementation in
-            guard let implementation = implementation as? V.Implementation else {
-                fatalError("Implementation update type mismatch: got \(type(of: implementation)), expected \(V.Implementation.self)")
-            }
-
-            V.updateImplementation(implementation, with: view)
-        }
-    }
-
-    init<A: App>(app: A) {
-        self.makeClosure = {
-            return A.makeImplementation(of: app)
-        }
-
-        self.updateClosure = { implementation in
-            guard let implementation = implementation as? A.Implementation else {
-                fatalError("Implementation update type mismatch: got \(type(of: implementation)), expected \(A.Implementation.self)")
-            }
-
-            A.updateImplementation(implementation, with: app)
-        }
-    }
-
-    init<S: Scene>(scene: S) {
-        self.makeClosure = {
-            return S.makeImplementation(of: scene)
-        }
-
-        self.updateClosure = { implementation in
-            guard let implementation = implementation as? S.Implementation else {
-                fatalError("Implementation update type mismatch: got \(type(of: implementation)), expected \(S.Implementation.self)")
-            }
-
-            S.updateImplementation(implementation, with: scene)
-        }
-    }
-
-    init() {
-        self.makeClosure = { nil }
-        self.updateClosure = { _ in }
-    }
-
-    func make() -> ImplementationNode? {
-        return self.makeClosure()
-    }
-
-    func update(_ implementation: any ImplementationNode) {
-        self.updateClosure(implementation)
-    }
+    /// Updates the implementation node.
+    func update(_ implementation: any ImplementationNode)
 }
 
 extension Never: ImplementationNode {

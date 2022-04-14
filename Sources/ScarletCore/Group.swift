@@ -19,7 +19,7 @@ public struct Group<Content> {
     let content: Content
 }
 
-extension Group: View where Content: View {
+extension Group: View, ImplementationAccessor where Content: View {
     public typealias Body = Never
     public typealias Implementation = Never
 
@@ -35,7 +35,7 @@ extension Group: View where Content: View {
         return Self.output(
             node: nil,
             staticEdges: [Content.make(view: view?.content, input: contentInput)],
-            implementationProxy: view?.implementationProxy
+            implementationAccessor: view?.implementationAccessor
         )
     }
 

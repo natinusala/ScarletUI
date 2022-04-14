@@ -87,7 +87,7 @@ public enum ConditionalView<FirstContent, SecondContent>: View where FirstConten
             fatalError("Cannot make a `ConditionalView` without a view or a storage node")
         }
 
-        return Self.output(node: output, staticEdges: edges, implementationProxy: view?.implementationProxy)
+        return Self.output(node: output, staticEdges: edges, implementationAccessor: view?.implementationAccessor)
     }
 
     /// Conditionals have one edge: its content, either first or second.

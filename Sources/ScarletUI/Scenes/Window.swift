@@ -35,7 +35,7 @@ public struct Window<Content>: Scene where Content: View {
         return Self.output(
             node: nil,
             staticEdges: [Content.make(view: scene?.content, input: contentInput)],
-            implementationProxy: scene?.implementationProxy
+            implementationAccessor: scene?.implementationAccessor
         )
     }
 

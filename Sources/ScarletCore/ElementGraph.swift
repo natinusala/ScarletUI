@@ -53,7 +53,7 @@ public struct MakeOutput {
 
     /// Proxy to make and update the element's implementation.
     /// Can be nil if there is no implementation of if the implementation did not change.
-    let implementationProxy: ImplementationProxy?
+    let implementationAccessor: ImplementationAccessor?
 
     public init(
         nodeKind: ElementKind,
@@ -61,14 +61,14 @@ public struct MakeOutput {
         node: ElementOutput?,
         staticEdges: [MakeOutput?]?,
         staticEdgesCount: Int,
-        implementationProxy: ImplementationProxy?
+        implementationAccessor: ImplementationAccessor?
     ) {
         self.nodeKind = nodeKind
         self.nodeType = nodeType
         self.node = node
         self.staticEdges = staticEdges
         self.staticEdgesCount = staticEdgesCount
-        self.implementationProxy = implementationProxy
+        self.implementationAccessor = implementationAccessor
     }
 }
 
@@ -169,7 +169,7 @@ public class ElementNode {
         let input = MakeInput(storage: self.storage)
         let output = V.make(view: view, input: input)
 
-        self.implementation = output.implementationProxy?.make()
+        self.implementation = output.implementationAccessor?.make()
 
         self.update(with: output)
 
@@ -188,7 +188,7 @@ public class ElementNode {
         let input = MakeInput(storage: self.storage)
         let output = A.make(app: app, input: input)
 
-        self.implementation = output.implementationProxy?.make()
+        self.implementation = output.implementationAccessor?.make()
 
         self.update(with: output)
 
@@ -307,8 +307,8 @@ public class ElementNode {
         }
 
         // Implementation update
-        if let implementation = self.implementation, let proxy = output.implementationProxy {
-            proxy.update(implementation)
+        if let implementation = self.implementation, let accessor = output.implementationAccessor {
+            accessor.update(implementation)
         }
 
         // Static edges update
@@ -361,7 +361,7 @@ public class ElementNode {
             type: edge.nodeType,
             storage: edgeStorage,
             edges: [ElementNode?](repeating: nil, count: edge.staticEdgesCount),
-            implementation: edge.implementationProxy?.make()
+            implementation: edge.implementationAccessor?.make()
         )
         self.edges[idx]?.update(with: edge)
         self.edges[idx]?.attachImplementationToParent()
