@@ -15,7 +15,7 @@
 */
 
 /// An optional view.
-extension Optional: View, ImplementationAccessor where Wrapped: View {
+extension Optional: View, Accessor, ImplementationAccessor, AttributeAccessor where Wrapped: View {
     enum Storage {
         case none
         case some
@@ -64,7 +64,7 @@ extension Optional: View, ImplementationAccessor where Wrapped: View {
             fatalError("Cannot make an `Optional` view without a view or a storage node")
         }
 
-        return Self.output(node: output, staticEdges: edges, implementationAccessor: view?.implementationAccessor)
+        return Self.output(node: output, staticEdges: edges, accessor: view?.accessor)
     }
 
     /// Optional views have one edge, the wrapped view (or `nil`).

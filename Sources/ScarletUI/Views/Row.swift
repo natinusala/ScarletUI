@@ -33,7 +33,7 @@ public struct Row<Content>: View where Content: View {
         return Self.output(
             node: nil,
             staticEdges: [Content.make(view: view?.content, input: contentInput)],
-            implementationAccessor: view?.implementationAccessor
+            accessor: view?.accessor
         )
     }
 

@@ -39,10 +39,10 @@ public enum ImplementationKind {
 /// Proxy to access an element's implementation in a type-erased manner.
 public protocol ImplementationAccessor {
     /// Makes the implementation node if any.
-    func make() -> ImplementationNode?
+    func makeImplementation() -> ImplementationNode?
 
     /// Updates the implementation node.
-    func update(_ implementation: any ImplementationNode)
+    func updateImplementation(_ implementation: any ImplementationNode)
 }
 
 extension Never: ImplementationNode {

@@ -15,7 +15,7 @@
 */
 
 /// A scene is the container for the app views, typically a desktop window.
-public protocol Scene: ImplementationAccessor {
+public protocol Scene: Accessor {
     /// The type of this scene's body.
     associatedtype Body: Scene
 
@@ -46,13 +46,13 @@ public extension Scene {
         // If no scene is specified, consider the scene entirely unchanged,
         // including its body
         guard let scene = scene else {
-            return Self.output(node: nil, staticEdges: nil, implementationAccessor: nil)
+            return Self.output(node: nil, staticEdges: nil, accessor: nil)
         }
 
         // Get the previous scene and compare it
         // Return an unchanged output of it's equal
         if let previous = input.storage?.value, anyEquals(lhs: scene, rhs: previous) {
-            return Self.output(node: nil, staticEdges: nil, implementationAccessor: scene.implementationAccessor)
+            return Self.output(node: nil, staticEdges: nil, accessor: scene.accessor)
         }
 
         // The scene changed
@@ -64,7 +64,7 @@ public extension Scene {
         let bodyInput = MakeInput(storage: bodyStorage)
         let bodyOutput = Body.make(scene: body, input: bodyInput)
 
-        return Self.output(node: output, staticEdges: [bodyOutput], implementationAccessor: scene.implementationAccessor)
+        return Self.output(node: output, staticEdges: [bodyOutput], accessor: scene.accessor)
     }
 
     /// A scene has one edge: its body.
@@ -73,14 +73,14 @@ public extension Scene {
     }
 
     /// Convenience function to create a `MakeOutput` from a `Scene` with less boilerplate.
-    static func output(node: ElementOutput?, staticEdges: [MakeOutput?]?, implementationAccessor: ImplementationAccessor?) -> MakeOutput {
+    static func output(node: ElementOutput?, staticEdges: [MakeOutput?]?, accessor: Accessor?) -> MakeOutput {
         return MakeOutput(
             nodeKind: .scene,
             nodeType: Self.self,
             node: node,
             staticEdges: staticEdges,
             staticEdgesCount: Self.staticEdgesCount(),
-            implementationAccessor: implementationAccessor
+            accessor: accessor
         )
     }
 
@@ -93,7 +93,7 @@ public extension Scene {
         return Implementation(kind: .scene, displayName: scene.displayName)
     }
 
-    var implementationAccessor: ImplementationAccessor {
+    var accessor: Accessor {
         return self
     }
 
@@ -102,16 +102,20 @@ public extension Scene {
         return String(describing: Self.self).before(first: "<")
     }
 
-    func make() -> ImplementationNode? {
+    func makeImplementation() -> ImplementationNode? {
         return Self.makeImplementation(of: self)
     }
 
-    func update(_ implementation: any ImplementationNode) {
+    func updateImplementation(_ implementation: any ImplementationNode) {
         guard let implementation = implementation as? Implementation else {
             fatalError("Tried to update an implementation with a different type: got \(type(of: implementation)), expected \(Implementation.self))")
         }
 
         Self.updateImplementation(implementation, with: self)
+    }
+
+    func collectAttributes() -> [AttributeSetter] {
+        return self.collectAttributesUsingMirror()
     }
 }
 

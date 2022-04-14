@@ -17,7 +17,7 @@
 /// A ScarletUI application.
 /// An app is made of one scene, and a scene is made of one or multiple
 /// views.
-public protocol App: ImplementationAccessor {
+public protocol App: Accessor {
     /// Initializer used for the framework to create the app on boot.
     init()
 
@@ -51,13 +51,13 @@ public extension App {
         // If no app is specified, consider the app entirely unchanged,
         // including its body
         guard let app = app else {
-            return Self.output(node: nil, staticEdges: nil, implementationAccessor: nil)
+            return Self.output(node: nil, staticEdges: nil, accessor: nil)
         }
 
         // Get the previous app and compare it
         // Return an unchanged output of it's equal
         if let previous = input.storage?.value, anyEquals(lhs: app, rhs: previous) {
-            return Self.output(node: nil, staticEdges: nil, implementationAccessor: app.implementationAccessor)
+            return Self.output(node: nil, staticEdges: nil, accessor: app.accessor)
         }
 
         // The app changed
@@ -69,7 +69,7 @@ public extension App {
         let bodyInput = MakeInput(storage: bodyStorage)
         let bodyOutput = Body.make(scene: body, input: bodyInput)
 
-        return Self.output(node: output, staticEdges: [bodyOutput], implementationAccessor: app.implementationAccessor)
+        return Self.output(node: output, staticEdges: [bodyOutput], accessor: app.accessor)
     }
 
     /// An app has one edge: its body.
@@ -78,14 +78,14 @@ public extension App {
     }
 
     /// Convenience function to create a `MakeOutput` from an `App` with less boilerplate.
-    static func output(node: ElementOutput?, staticEdges: [MakeOutput?]?, implementationAccessor: ImplementationAccessor?) -> MakeOutput {
+    static func output(node: ElementOutput?, staticEdges: [MakeOutput?]?, accessor: Accessor?) -> MakeOutput {
         return MakeOutput(
             nodeKind: .app,
             nodeType: Self.self,
             node: node,
             staticEdges: staticEdges,
             staticEdgesCount: Self.staticEdgesCount(),
-            implementationAccessor: implementationAccessor
+            accessor: accessor
         )
     }
 
@@ -98,7 +98,7 @@ public extension App {
         return Implementation(kind: .app, displayName: app.displayName)
     }
 
-    var implementationAccessor: ImplementationAccessor {
+    var accessor: Accessor {
         return self
     }
 
@@ -110,15 +110,19 @@ public extension App {
     /// Default `updateImplementation()` implementation: don't do anything.
     static func updateImplementation(_ implementation: Implementation, with app: Self) {}
 
-    func make() -> ImplementationNode? {
+    func makeImplementation() -> ImplementationNode? {
         return Self.makeImplementation(of: self)
     }
 
-    func update(_ implementation: any ImplementationNode) {
+    func updateImplementation(_ implementation: any ImplementationNode) {
         guard let implementation = implementation as? Implementation else {
             fatalError("Tried to update an implementation with a different type: got \(type(of: implementation)), expected \(Implementation.self))")
         }
 
         Self.updateImplementation(implementation, with: self)
+    }
+
+    func collectAttributes() -> [AttributeSetter] {
+        return self.collectAttributesUsingMirror()
     }
 }

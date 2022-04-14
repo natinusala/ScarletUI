@@ -24,7 +24,7 @@
 ///
 /// TODO: remove `actualValue` and make a partial initializer once this is implemented, the point is to make it non optional: https://forums.swift.org/t/allow-property-wrappers-with-multiple-arguments-to-defer-initialization-when-wrappedvalue-is-not-specified/38319
 @propertyWrapper
-public struct AttributeValue<Implementation, Value> where Implementation: AnyObject, Value: Equatable {
+public struct AttributeValue<Implementation, Value>: AttributeSetter where Implementation: AnyObject, Value: Equatable {
     public typealias AttributeKeyPath = ReferenceWritableKeyPath<Implementation, Value>
 
     public var wrappedValue: Value {
@@ -76,5 +76,33 @@ public struct Attribute<Value> where Value: Equatable {
 
     public init(wrappedValue: Value) {
         self.wrappedValue = wrappedValue
+    }
+}
+
+/// Allows collecting all attributes of an element.
+public protocol AttributeAccessor {
+    func collectAttributes() -> [AttributeSetter]
+}
+
+/// Sets an attribute value to any implementation.
+public protocol AttributeSetter {
+    /// Set the value to the given implementation.
+    func set(on implementation: Any)
+}
+
+/// Collects attributes using a mirror on the given object.
+public extension AttributeAccessor {
+    func collectAttributesUsingMirror() -> [AttributeSetter] {
+        let mirror = Mirror(reflecting: self)
+
+        var attributes: [AttributeSetter] = []
+
+        for child in mirror.children {
+            if let attribute = child.value as? AttributeSetter {
+                attributes.append(attribute)
+            }
+        }
+
+        return attributes
     }
 }

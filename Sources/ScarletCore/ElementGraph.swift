@@ -51,9 +51,9 @@ public struct MakeOutput {
     /// number of edges if `staticEdges` is `nil`.
     let staticEdgesCount: Int
 
-    /// Proxy to make and update the element's implementation.
-    /// Can be nil if there is no implementation of if the implementation did not change.
-    let implementationAccessor: ImplementationAccessor?
+    /// Proxy to make and update the element's implementation or attributes.
+    /// Can be `nil` if there is no node of if the node did not change.
+    let accessor: Accessor?
 
     public init(
         nodeKind: ElementKind,
@@ -61,14 +61,14 @@ public struct MakeOutput {
         node: ElementOutput?,
         staticEdges: [MakeOutput?]?,
         staticEdgesCount: Int,
-        implementationAccessor: ImplementationAccessor?
+        accessor: Accessor?
     ) {
         self.nodeKind = nodeKind
         self.nodeType = nodeType
         self.node = node
         self.staticEdges = staticEdges
         self.staticEdgesCount = staticEdgesCount
-        self.implementationAccessor = implementationAccessor
+        self.accessor = accessor
     }
 }
 
@@ -169,7 +169,7 @@ public class ElementNode {
         let input = MakeInput(storage: self.storage)
         let output = V.make(view: view, input: input)
 
-        self.implementation = output.implementationAccessor?.make()
+        self.implementation = output.accessor?.makeImplementation()
 
         self.update(with: output)
 
@@ -188,7 +188,7 @@ public class ElementNode {
         let input = MakeInput(storage: self.storage)
         let output = A.make(app: app, input: input)
 
-        self.implementation = output.implementationAccessor?.make()
+        self.implementation = output.accessor?.makeImplementation()
 
         self.update(with: output)
 
@@ -307,8 +307,8 @@ public class ElementNode {
         }
 
         // Implementation update
-        if let implementation = self.implementation, let accessor = output.implementationAccessor {
-            accessor.update(implementation)
+        if let implementation = self.implementation, let accessor = output.accessor {
+            accessor.updateImplementation(implementation)
         }
 
         // Static edges update
@@ -361,7 +361,7 @@ public class ElementNode {
             type: edge.nodeType,
             storage: edgeStorage,
             edges: [ElementNode?](repeating: nil, count: edge.staticEdgesCount),
-            implementation: edge.implementationAccessor?.make()
+            implementation: edge.accessor?.makeImplementation()
         )
         self.edges[idx]?.update(with: edge)
         self.edges[idx]?.attachImplementationToParent()
@@ -428,3 +428,5 @@ public enum ElementKind {
         }
     }
 }
+
+public protocol Accessor: ImplementationAccessor, AttributeAccessor {}

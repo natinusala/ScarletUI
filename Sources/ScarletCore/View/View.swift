@@ -16,7 +16,7 @@
 
 /// A view is the building block of an on-screen element. A scene is made
 /// of a views tree.
-public protocol View: ImplementationAccessor {
+public protocol View: Accessor {
     /// The type of this view's body.
     associatedtype Body: View
 
@@ -47,13 +47,13 @@ public extension View {
         // If no view is specified, consider the view entirely unchanged,
         // including its body
         guard let view = view else {
-            return Self.output(node: nil, staticEdges: nil, implementationAccessor: nil)
+            return Self.output(node: nil, staticEdges: nil, accessor: nil)
         }
 
         // Get the previous view and compare it
         // Return an unchanged output of it's equal
         if let previous = input.storage?.value, anyEquals(lhs: view, rhs: previous) {
-            return Self.output(node: nil, staticEdges: nil, implementationAccessor: view.implementationAccessor)
+            return Self.output(node: nil, staticEdges: nil, accessor: view.accessor)
         }
 
         // The view changed
@@ -65,7 +65,7 @@ public extension View {
         let bodyInput = MakeInput(storage: bodyStorage)
         let bodyOutput = Body.make(view: body, input: bodyInput)
 
-        return Self.output(node: output, staticEdges: [bodyOutput], implementationAccessor: view.implementationAccessor)
+        return Self.output(node: output, staticEdges: [bodyOutput], accessor: view.accessor)
     }
 
     /// Default implementation for `staticEdgesCount()` when there is a body: return one edge,
@@ -83,7 +83,7 @@ public extension View {
         return Implementation(kind: .view, displayName: view.displayName)
     }
 
-    var implementationAccessor: ImplementationAccessor {
+    var accessor: Accessor {
         return self
     }
 }
@@ -92,7 +92,7 @@ public extension View where Body == Never {
     /// Default implementation of `make()` when the view has no body: return the view itself with
     /// no storage and no edges. Used for "leaves" of the view graph.
     static func make(view: Self?, input: MakeInput) -> MakeOutput {
-        return Self.output(node: nil, staticEdges: [], implementationAccessor: view?.implementationAccessor)
+        return Self.output(node: nil, staticEdges: [], accessor: view?.accessor)
     }
 
     /// Default implementation for `staticEdgesCount()` when there is no body: no edges.
@@ -109,29 +109,33 @@ public extension View {
     /// Default implementation of `updateImplementation()`: do nothing.
     static func updateImplementation(_ implementation: Implementation, with view: Self) {}
 
-    func make() -> ImplementationNode? {
+    func makeImplementation() -> ImplementationNode? {
         return Self.makeImplementation(of: self)
     }
 
-    func update(_ implementation: any ImplementationNode) {
+    func updateImplementation(_ implementation: any ImplementationNode) {
         guard let implementation = implementation as? Implementation else {
             fatalError("Tried to update an implementation with a different type: got \(type(of: implementation)), expected \(Implementation.self))")
         }
 
         Self.updateImplementation(implementation, with: self)
     }
+
+    func collectAttributes() -> [AttributeSetter] {
+        return self.collectAttributesUsingMirror()
+    }
 }
 
 public extension View {
     /// Convenience function to create a `MakeOutput` from a `View` with less boilerplate.
-    static func output(node: ElementOutput?, staticEdges: [MakeOutput?]?, implementationAccessor: ImplementationAccessor?) -> MakeOutput {
+    static func output(node: ElementOutput?, staticEdges: [MakeOutput?]?, accessor: Accessor?) -> MakeOutput {
         return MakeOutput(
             nodeKind: .view,
             nodeType: Self.self,
             node: node,
             staticEdges: staticEdges,
             staticEdgesCount: Self.staticEdgesCount(),
-            implementationAccessor: implementationAccessor
+            accessor: accessor
         )
     }
 
@@ -158,9 +162,13 @@ extension Never: View {
 
     public static func updateImplementation(_ implementation: Never, with view: Never) {}
 
-    public func make() -> ImplementationNode? {
+    public func makeImplementation() -> ImplementationNode? {
         fatalError()
     }
 
-    public func update(_ implementation: any ImplementationNode) {}
+    public func updateImplementation(_ implementation: any ImplementationNode) {}
+
+    public func collectAttributes() -> [AttributeSetter] {
+        fatalError()
+    }
 }

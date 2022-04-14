@@ -88,7 +88,7 @@ public struct ViewModifierContent<Modifier>: View where Modifier: ViewModifier {
     public static func make(view: ViewModifierContent, input: MakeInput) -> MakeOutput {
         /// Return an empty list for static edges. ModifiedContent will then go through this
         /// result and replace the empty list by the modified content node.
-        return Self.output(node: nil, staticEdges: [], implementationAccessor: nil)
+        return Self.output(node: nil, staticEdges: [], accessor: nil)
     }
 
     /// View modifier content has one edge, the modified content.
@@ -113,12 +113,12 @@ public extension ViewModifier {
             node: node,
             staticEdges: staticEdges,
             staticEdgesCount: Self.staticEdgesCount(),
-            implementationAccessor: .none
+            accessor: nil
         )
     }
 }
 
-extension ModifiedContent: View, ImplementationAccessor where Content: View, Modifier: ViewModifier {
+extension ModifiedContent: View, Accessor, ImplementationAccessor, AttributeAccessor where Content: View, Modifier: ViewModifier {
     public typealias Body = Never
     public typealias Implementation = Never
 
@@ -143,7 +143,7 @@ extension ModifiedContent: View, ImplementationAccessor where Content: View, Mod
         }
 
         let edges = [modifierOutput]
-        return Self.output(node: nil, staticEdges: edges, implementationAccessor: view?.implementationAccessor)
+        return Self.output(node: nil, staticEdges: edges, accessor: view?.accessor)
 
     }
 
