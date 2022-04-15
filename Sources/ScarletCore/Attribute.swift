@@ -22,7 +22,7 @@
 /// The value will only be written if it's different than the current value, which makes it
 /// possible to use with `didSet` observers.
 ///
-/// TODO: remove `actualValue` and make a partial initializer once this is implemented, the point is to make it non optional: https://forums.swift.org/t/allow-property-wrappers-with-multiple-arguments-to-defer-initialization-when-wrappedvalue-is-not-specified/38319
+/// TODO: remove `actualValue` and make a partial initializer once this is implemented, the point is to make it non optional and use synthesized initializers for modifiers: https://forums.swift.org/t/allow-property-wrappers-with-multiple-arguments-to-defer-initialization-when-wrappedvalue-is-not-specified/38319
 @propertyWrapper
 public struct AttributeValue<Implementation, Value>: AttributeSetter where Implementation: ImplementationNode, Value: Equatable {
     public typealias AttributeKeyPath = ReferenceWritableKeyPath<Implementation, Value>

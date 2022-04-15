@@ -25,6 +25,7 @@ struct ScarletUIDemo: App {
                 Content()
                 Footer()
             }
+                .padding(10)
         }
     }
 }

@@ -14,6 +14,8 @@
    limitations under the License.
 */
 
+import ScarletCore
+
 /// Implementation for all views.
 open class ViewImplementation: ImplementationNode, CustomStringConvertible {
     /// View display name for debugging purposes.
@@ -21,6 +23,9 @@ open class ViewImplementation: ImplementationNode, CustomStringConvertible {
 
     /// Children of this view.
     var children: [ViewImplementation] = []
+
+    /// The view padding, aka. the space between this view and its children.
+    @Attribute var padding: DIP4 = DIP4()
 
     public required init(kind: ImplementationKind, displayName: String) {
         guard kind == .view else {
@@ -44,7 +49,7 @@ open class ViewImplementation: ImplementationNode, CustomStringConvertible {
 
     public func printTree(indent: Int = 0) {
         let indentString = String(repeating: " ", count: indent)
-        print("\(indentString)- \(self.description) (\(Self.self))")
+        print("\(indentString)- \(self.description) (\(Self.self)) - padding: \(self.padding)")
 
         for child in self.children {
             child.printTree(indent: indent + 4)

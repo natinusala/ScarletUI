@@ -16,7 +16,7 @@
 
 /// A modifier takes a view and produces a new version of the view.
 /// Can be used to set attributes or wrap in more views.
-public protocol ViewModifier {
+public protocol ViewModifier: Accessor {
     /// Modifier content placeholder given to `body(content:)`.
     typealias Content = ViewModifierContent<Self>
 
@@ -43,7 +43,7 @@ public extension ViewModifier {
             let bodyInput = MakeInput(storage: input.storage?.edges[0])
             let bodyOutput = Body.make(view: nil, input: bodyInput)
 
-            return Self.output(node: nil, staticEdges: [bodyOutput])
+            return Self.output(node: nil, staticEdges: [bodyOutput], accessor: modifier?.accessor)
         }
 
         // Second case: a modifier has been given
@@ -55,14 +55,14 @@ public extension ViewModifier {
             let bodyInput = MakeInput(storage: input.storage?.edges[0])
             let bodyOutput = Body.make(view: nil, input: bodyInput)
 
-            return Self.output(node: nil, staticEdges: [bodyOutput])
+            return Self.output(node: nil, staticEdges: [bodyOutput], accessor: modifier.accessor)
         } else {
             // Modifier has changed
             let output = ElementOutput(storage: modifier)
             let bodyInput = MakeInput(storage: input.storage?.edges[0])
             let bodyOutput = Body.make(view: modifier.body(content: ViewModifierContent()), input: bodyInput)
 
-            return Self.output(node: output, staticEdges: [bodyOutput])
+            return Self.output(node: output, staticEdges: [bodyOutput], accessor: modifier.accessor)
         }
     }
 
@@ -70,6 +70,20 @@ public extension ViewModifier {
     /// the body.
     static func staticEdgesCount() -> Int {
         return 1
+    }
+
+    var accessor: Accessor {
+        return self
+    }
+
+    func makeImplementation() -> ImplementationNode? {
+        return nil // modifiers never have an implementation
+    }
+
+    func updateImplementation(_ implementation: any ImplementationNode) {}
+
+    func collectAttributes() -> [AttributeSetter] {
+        return self.collectAttributesUsingMirror()
     }
 }
 
@@ -106,14 +120,14 @@ public extension View {
 
 public extension ViewModifier {
     /// Convenience function to create a `MakeOutput` from a `ViewModifier` with less boilerplate.
-    static func output(node: ElementOutput?, staticEdges: [MakeOutput?]?) -> MakeOutput {
+    static func output(node: ElementOutput?, staticEdges: [MakeOutput?]?, accessor: Accessor?) -> MakeOutput {
         return MakeOutput(
             nodeKind: .viewModifier,
             nodeType: Self.self,
             node: node,
             staticEdges: staticEdges,
             staticEdgesCount: Self.staticEdgesCount(),
-            accessor: nil
+            accessor: accessor
         )
     }
 }
