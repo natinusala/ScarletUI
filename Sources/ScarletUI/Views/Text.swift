@@ -14,30 +14,24 @@
    limitations under the License.
 */
 
+import ScarletCore
+
 /// Displays text.
 public struct Text: View {
     public typealias Body = Never
     public typealias Implementation = TextImplementation
 
-    let text: String
+    @AttributeValue(\TextImplementation.text) var text
 
     public init(_ text: String) {
         self.text = text
     }
-
-    public static func updateImplementation(_ implementation: TextImplementation, with view: Text) {
-        implementation.text = view.text
-    }
 }
 
 public class TextImplementation: ViewImplementation {
-    var text: String?
+    var text: String = ""
 
     public override var description: String {
-        if let text = self.text {
-            return "Text(\"\(text)\")"
-        }
-
-        return "Text(nil)"
+        return "Text(\"\(text)\")"
     }
 }

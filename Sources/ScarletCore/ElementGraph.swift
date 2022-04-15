@@ -171,7 +171,7 @@ public class ElementNode {
 
         self.implementation = output.accessor?.makeImplementation()
 
-        self.update(with: output)
+        self.update(with: output, attributes: [])
 
         self.attachImplementationToParent()
     }
@@ -190,7 +190,7 @@ public class ElementNode {
 
         self.implementation = output.accessor?.makeImplementation()
 
-        self.update(with: output)
+        self.update(with: output, attributes: [])
 
         self.attachImplementationToParent()
     }
@@ -281,7 +281,7 @@ public class ElementNode {
     }
 
     /// Updates the node with the given view.
-    public func update<V: View>(with view: V) {
+    public func update<V: View>(with view: V, attributes: [AttributeSetter]) {
         assert(
             V.self == self.type,
             "cannot update a graph node with a view of a different type"
@@ -289,16 +289,18 @@ public class ElementNode {
 
         let input = MakeInput(storage: self.storage)
         let output = V.make(view: view, input: input)
-        self.update(with: output)
+        self.update(with: output, attributes: attributes)
     }
 
     /// Updates the node with the output of the given element.
     /// Can update the node data, its edges recursively or nothing at all.
-    public func update(with output: MakeOutput) {
+    public func update(with output: MakeOutput, attributes: [AttributeSetter]) {
         assert(
             output.nodeType == self.type,
             "make() returned a node of the wrong type (expected \(self.type), got \(output.nodeType))"
         )
+
+        var attributes = attributes // make mutable
 
         // Node update
         if let node = output.node {
@@ -306,9 +308,19 @@ public class ElementNode {
             self.storage.value = node.storage
         }
 
-        // Implementation update
-        if let implementation = self.implementation, let accessor = output.accessor {
-            accessor.updateImplementation(implementation)
+        // Implementation and attributes update
+        if let accessor = output.accessor {
+            attributes.append(contentsOf: accessor.collectAttributes())
+
+            if let implementation = self.implementation {
+                accessor.updateImplementation(implementation)
+
+                for attribute in attributes {
+                    attribute.set(on: implementation)
+                }
+
+                attributes = []
+            }
         }
 
         // Static edges update
@@ -325,20 +337,20 @@ public class ElementNode {
                         break
                     case let (.none, .some(newEdge)):
                         // Create a new edge
-                        self.insertEdge(newEdge, at: idx)
+                        self.insertEdge(newEdge, at: idx, attributes: attributes)
                     case (.some, .none):
                         // Remove the old edge
                         self.removeEdge(at: idx)
                     case let (.some, .some(newEdge)):
                         // Update the edge
-                        self.updateEdge(at: idx, with: newEdge)
+                        self.updateEdge(at: idx, with: newEdge, attributes: attributes)
                 }
             }
         }
     }
 
     /// Inserts a new edge at the given index.
-    private func insertEdge(_ edge: MakeOutput, at idx: Int) {
+    private func insertEdge(_ edge: MakeOutput, at idx: Int, attributes: [AttributeSetter]) {
         guard self.storage.edges[idx] == nil else {
             fatalError("Tried to insert an edge on a non-empty storage node")
         }
@@ -363,12 +375,12 @@ public class ElementNode {
             edges: [ElementNode?](repeating: nil, count: edge.staticEdgesCount),
             implementation: edge.accessor?.makeImplementation()
         )
-        self.edges[idx]?.update(with: edge)
+        self.edges[idx]?.update(with: edge, attributes: attributes)
         self.edges[idx]?.attachImplementationToParent()
     }
 
     /// Updates edge at given position with a new edge.
-    private func updateEdge(at idx: Int, with newEdge: MakeOutput) {
+    private func updateEdge(at idx: Int, with newEdge: MakeOutput, attributes: [AttributeSetter]) {
         guard let edge = self.edges[idx] else {
             fatalError("Cannot update an edge that doesn't exist")
         }
@@ -376,10 +388,10 @@ public class ElementNode {
         // If the type is the same, simply update the edge
         // otherwise remove the old one and put the new one in place
         if edge.type == newEdge.nodeType {
-            edge.update(with: newEdge)
+            edge.update(with: newEdge, attributes: attributes)
         } else {
             self.removeEdge(at: idx)
-            self.insertEdge(newEdge, at: idx)
+            self.insertEdge(newEdge, at: idx, attributes: attributes)
         }
     }
 

@@ -52,7 +52,7 @@ public struct AttributeValue<Implementation, Value>: AttributeSetter where Imple
     /// The path to the attribute in the implementation class.
     var keyPath: AttributeKeyPath
 
-    public init(target keyPath: AttributeKeyPath) {
+    public init(_ keyPath: AttributeKeyPath) {
         self.keyPath = keyPath
     }
 

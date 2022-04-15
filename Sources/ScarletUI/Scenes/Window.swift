@@ -19,7 +19,7 @@ public struct Window<Content>: Scene where Content: View {
     public typealias Body = Never
     public typealias Implementation = WindowImplementation
 
-    @AttributeValue(target: \WindowImplementation.title) var title
+    @AttributeValue(\WindowImplementation.title) var title
 
     let content: Content
 
@@ -38,15 +38,11 @@ public struct Window<Content>: Scene where Content: View {
             accessor: scene?.accessor
         )
     }
-
-    public static func updateImplementation(_ implementation: WindowImplementation, with scene: Self) {
-        scene.$title.set(on: implementation)
-    }
 }
 
 public class WindowImplementation: SceneImplementation {
     /// The window title.
-    @Attribute var title: String = ""
+    @Attribute var title = ""
 
     public override var description: String {
         return "Window(\"\(title)\")"
