@@ -14,8 +14,6 @@
    limitations under the License.
 */
 
-// TODO: remove public everywhere once i'm done testing
-
 /// Input for the `make()` function.
 public struct MakeInput {
     /// Any previously stored value, if any.
@@ -31,10 +29,10 @@ public struct MakeInput {
 /// Output of the `make()` function.
 public struct MakeOutput {
     /// The node kind.
-    public let nodeKind: ElementKind
+    let nodeKind: ElementKind
 
     /// The node type.
-    public let nodeType: Any.Type
+    let nodeType: Any.Type
 
     /// The resulting node itself.
     /// Can be `nil` if there is nothing to store for that node
@@ -75,7 +73,7 @@ public struct MakeOutput {
 /// Output of one element in the `make()` function.
 public struct ElementOutput {
     /// Any value to store and pass to the next `make()` call.
-    public let storage: Any?
+    let storage: Any?
 
     public init(storage: Any?) {
         self.storage = storage
@@ -117,13 +115,13 @@ public class StorageNode {
 /// A node of the element graph.
 public class ElementNode {
     /// The parent of this node.
-    public var parent: ElementNode?
+    var parent: ElementNode?
 
     /// Position of this node in the parent's edges list.
-    public var position: Int
+    var position: Int
 
     /// Kind of the element.
-    public var kind: ElementKind
+    var kind: ElementKind
 
     /// Type of the element.
     var type: Any.Type
@@ -281,7 +279,7 @@ public class ElementNode {
     }
 
     /// Updates the node with the given view.
-    public func update<V: View>(with view: V, attributes: [AttributeSetter]) {
+    func update<V: View>(with view: V, attributes: [AttributeSetter]) {
         assert(
             V.self == self.type,
             "cannot update a graph node with a view of a different type"
@@ -294,7 +292,7 @@ public class ElementNode {
 
     /// Updates the node with the output of the given element.
     /// Can update the node data, its edges recursively or nothing at all.
-    public func update(with output: MakeOutput, attributes: [AttributeSetter]) {
+    func update(with output: MakeOutput, attributes: [AttributeSetter]) {
         assert(
             output.nodeType == self.type,
             "make() returned a node of the wrong type (expected \(self.type), got \(output.nodeType))"
