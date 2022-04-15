@@ -14,6 +14,8 @@
    limitations under the License.
 */
 
+import Yoga
+
 import ScarletCore
 
 /// Implementation for all scenes.
@@ -24,15 +26,25 @@ open class SceneImplementation: ImplementationNode, CustomStringConvertible {
     /// Children of this scene.
     var children: [ViewImplementation] = []
 
+    /// The scene Yoga node.
+    let ygNode: YGNodeRef
+
     public required init(kind: ImplementationKind, displayName: String) {
         guard kind == .scene else {
             fatalError("Tried to create a `ViewImplementation` with kind \(kind)")
         }
 
         self.displayName = displayName
+
+        self.ygNode = YGNodeNew()
+        YGNodeStyleSetFlexDirection(self.ygNode, YGFlexDirectionColumn)
     }
 
-    public func insertChild(_ child: ImplementationNode, at position: Int) {
+    deinit {
+        YGNodeFree(self.ygNode)
+    }
+
+    open func insertChild(_ child: ImplementationNode, at position: Int) {
         guard let child = child as? ViewImplementation else {
             fatalError("Cannot add \(type(of: child)) as child of `SceneImplementation`")
         }
@@ -40,8 +52,12 @@ open class SceneImplementation: ImplementationNode, CustomStringConvertible {
         self.children.insert(child, at: position)
     }
 
-    public func removeChild(at position: Int) {
+    open func removeChild(at position: Int) {
         self.children.remove(at: position)
+    }
+
+    open func onAttributesReady() {
+        // Nothing by default
     }
 
     public var description: String {

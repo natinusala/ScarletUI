@@ -30,7 +30,7 @@ public struct AttributeValue<Implementation, Value>: AttributeSetter where Imple
     public var wrappedValue: Value {
         get {
             guard let value = self.actualValue else {
-                fatalError("Cannot read attribute \(self.keyPath): it has not been set")
+                fatalError("Cannot read attribute \(self.keyPath): it has not been set. Did you set its value in the element initializer?")
             }
 
             return value

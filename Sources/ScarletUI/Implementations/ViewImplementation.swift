@@ -47,9 +47,13 @@ open class ViewImplementation: ImplementationNode, CustomStringConvertible {
         self.children.remove(at: position)
     }
 
+    open func onAttributesReady() {
+        // Nothing by default
+    }
+
     public func printTree(indent: Int = 0) {
         let indentString = String(repeating: " ", count: indent)
-        print("\(indentString)- \(self.description) (\(Self.self)) - padding: \(self.padding)")
+        print("\(indentString)- \(self.description) (\(Self.self))")
 
         for child in self.children {
             child.printTree(indent: indent + 4)

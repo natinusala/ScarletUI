@@ -35,6 +35,9 @@ public protocol Scene: Accessor {
     /// Set to `Never` if there is none.
     associatedtype Implementation: ImplementationNode
 
+    /// Creates the implementation node for a scene.
+    static func makeImplementation(of scene: Self) -> ImplementationNode?
+
     /// Updates an implementation node with the given scene.
     static func updateImplementation(_ implementation: Implementation, with scene: Self)
 }

@@ -14,5 +14,8 @@
     limitations under the License.
 */
 
-/// Obscure libdispatch method to drain everything from the main queue.
-extern void _dispatch_main_queue_callback_4CF(void* msg);
+@_exported import CYoga
+
+/// Replaces the YGUndefined define. Safe to use because
+/// Yoga internally calls std::isnan.
+public let YGUndefined = Float.nan

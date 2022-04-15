@@ -14,6 +14,8 @@
    limitations under the License.
 */
 
+import Backtrace
+
 import ScarletCore
 
 /// Implementation for all apps.
@@ -44,11 +46,20 @@ open class AppImplementation: ImplementationNode, CustomStringConvertible {
         self.children.remove(at: position)
     }
 
+    /// Runs the app until closed by the user.
+    func run() {
+        
+    }
+
+    open func onAttributesReady() {
+        // Nothing by default
+    }
+
     public var description: String {
         return self.displayName
     }
 
-    public func printTree(indent: Int = 0) {
+    func printTree(indent: Int = 0) {
         let indentString = String(repeating: " ", count: indent)
         print("\(indentString)- \(self.description) (\(Self.self))")
 
@@ -65,9 +76,11 @@ public extension App {
 
 public extension App {
     static func main() {
+        Backtrace.install()
+
         let app = Self.init()
         let root = ElementGraph(parent: nil, position: 0, making: app)
 
-        (root.implementation as! AppImplementation).printTree()
+        (root.implementation as! AppImplementation).run()
     }
 }

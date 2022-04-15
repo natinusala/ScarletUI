@@ -34,27 +34,46 @@ let package = Package(
         .package(url: "https://github.com/Quick/Quick.git", .upToNextMajor(from: "4.0.0")),
         .package(url: "https://github.com/Quick/Nimble.git", .upToNextMajor(from: "9.2.1")),
         .package(url: "https://github.com/swift-server/swift-backtrace.git", .upToNextMajor(from: "1.3.1")),
+        .package(url: "https://github.com/onevcat/Rainbow.git", .upToNextMajor(from: "4.0.0")),
     ],
     targets: [
+        // ScarletUI: contains scenes, views, modifiers as well as the actual runtime
+        // on top of ScarletCore - also exposes ScarletCore for the DSL and custom views
+        .target(
+            name: "ScarletUI",
+            dependencies: ["ScarletCore", "ScarletNative", "Yoga", .product(name: "Backtrace", package: "swift-backtrace")]
+        ),
+        // ScarletCore: core library containing the DSL and graph / state management code
         .target(
             name: "ScarletCore",
-            dependencies: []
+            dependencies: ["Rainbow"]
         ),
+        // ScarletNative: native code companion to ScarletUI
         .target(
             name: "ScarletNative",
             dependencies: []
         ),
-        .target(
-            name: "ScarletUI",
-            dependencies: ["ScarletCore", "ScarletNative"]
-        ),
+        // ScarletUIDemo: simple ScarletUI demo app
         .executableTarget(
             name: "ScarletUIDemo",
             dependencies: ["ScarletUI"]
         ),
+        // Test targets
         .testTarget(
             name: "ScarletCoreTests",
             dependencies: ["ScarletCore", "Nimble", "Quick", .product(name: "Backtrace", package: "swift-backtrace")]
         ),
+        // Embedded native libraries
+        .target(
+            name: "CYoga",
+            path: "External/CYoga",
+            exclude: ["LICENSE"],
+            linkerSettings: [.linkedLibrary("m")]
+        ),
+        .target(
+            name: "Yoga",
+            dependencies: ["CYoga"],
+            path: "External/Yoga"
+        )
     ]
 )

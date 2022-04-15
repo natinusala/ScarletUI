@@ -135,6 +135,9 @@ public class ElementNode {
     /// Implementation of this element.
     public let implementation: ImplementationNode?
 
+    /// Current state of the implementation node.
+    var implementationState: ImplementationNodeState
+
     /// Is this element substantial, aka. does it exist onscreen?
     var substantial: Bool {
         return implementation != nil
@@ -168,6 +171,7 @@ public class ElementNode {
         let output = V.make(view: view, input: input)
 
         self.implementation = output.accessor?.makeImplementation()
+        self.implementationState = .creating
 
         self.update(with: output, attributes: [])
 
@@ -187,6 +191,7 @@ public class ElementNode {
         let output = A.make(app: app, input: input)
 
         self.implementation = output.accessor?.makeImplementation()
+        self.implementationState = .creating
 
         self.update(with: output, attributes: [])
 
@@ -200,7 +205,8 @@ public class ElementNode {
         type: Any.Type,
         storage: StorageNode,
         edges: [ElementNode?],
-        implementation: ImplementationNode?
+        implementation: ImplementationNode?,
+        implementationState: ImplementationNodeState
     ) {
         self.parent = parent
         self.position = position
@@ -209,6 +215,7 @@ public class ElementNode {
         self.storage = storage
         self.edges = edges
         self.implementation = implementation
+        self.implementationState = implementationState
     }
 
     /// Attaches this node's implementation node to the parent, if any.
@@ -318,6 +325,12 @@ public class ElementNode {
                 }
 
                 attributes = []
+
+                // Call `onAttributesReady()` only at first update
+                if self.implementationState == .creating {
+                    implementation.onAttributesReady()
+                    self.implementationState = .created
+                }
             }
         }
 
@@ -353,8 +366,6 @@ public class ElementNode {
             fatalError("Tried to insert an edge on a non-empty storage node")
         }
 
-        debug("Inserting \(edge.nodeType)")
-
         // Create the storage node
         let edgeStorage = StorageNode(
             elementType: edge.nodeType,
@@ -371,7 +382,8 @@ public class ElementNode {
             type: edge.nodeType,
             storage: edgeStorage,
             edges: [ElementNode?](repeating: nil, count: edge.staticEdgesCount),
-            implementation: edge.accessor?.makeImplementation()
+            implementation: edge.accessor?.makeImplementation(),
+            implementationState: .creating
         )
         self.edges[idx]?.update(with: edge, attributes: attributes)
         self.edges[idx]?.attachImplementationToParent()
@@ -395,8 +407,6 @@ public class ElementNode {
 
     /// Removes edge at given position.
     private func removeEdge(at idx: Int) {
-        debug("Removing \(self.edges[idx]!.type)")
-
         // Detach implementation nodes
         self.edges[idx]?.detachImplementationFromParent()
 
@@ -405,7 +415,7 @@ public class ElementNode {
         self.storage.edges[idx] = nil
     }
 
-    public func printGraph(indent: Int = 0) {
+    func printGraph(indent: Int = 0) {
         let indentString = String(repeating: " ", count: indent)
         print("\(indentString)- \(self.type): \(self.kind.displayName) (has storage: \(self.hasStorage))")
 
@@ -440,3 +450,12 @@ public enum ElementKind {
 }
 
 public protocol Accessor: ImplementationAccessor, AttributeAccessor {}
+
+/// Different states of an implementation node.
+enum ImplementationNodeState {
+    /// The node is being created and attributes are being set.
+    case creating
+
+    /// The node is fully created and all attributes are set.
+    case created
+}

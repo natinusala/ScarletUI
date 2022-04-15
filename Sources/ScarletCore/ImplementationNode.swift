@@ -22,6 +22,9 @@ public protocol ImplementationNode {
     /// Creates a new implementation node for the given kind.
     init(kind: ImplementationKind, displayName: String)
 
+    /// Called right after node creation when all attributes have been set.
+    func onAttributesReady()
+
     /// Inserts the given element into this implementation node.
     func insertChild(_ child: ImplementationNode, at position: Int)
 
@@ -55,6 +58,10 @@ extension Never: ImplementationNode {
     }
 
     public func removeChild(at position: Int) {
+        fatalError()
+    }
+
+    public func onAttributesReady() {
         fatalError()
     }
 }

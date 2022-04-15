@@ -14,10 +14,14 @@
    limitations under the License.
 */
 
-fileprivate let DEBUG = false
+/// App runtime "context", aka. shared state.
+class Context {
+    /// Shared context instance.
+    static let shared = Context()
 
-func debug(_ message: @autoclosure () -> String) { // TODO: kill this and replace by a proper logger w/ a debug level and debug scopes
-    if DEBUG {
-        print(message())
+    let platform = getCurrentPlatform()
+
+    private init() {
+        Logger.info("Using platform \(self.platform.name)")
     }
 }

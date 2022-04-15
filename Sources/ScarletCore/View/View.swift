@@ -166,6 +166,8 @@ extension Never: View {
         fatalError()
     }
 
+    public static func makeImplementation(of scene: Self) -> ImplementationNode? {}
+
     public func updateImplementation(_ implementation: any ImplementationNode) {}
 
     public func collectAttributes() -> [AttributeSetter] {
