@@ -24,7 +24,7 @@
 ///
 /// TODO: remove `actualValue` and make a partial initializer once this is implemented, the point is to make it non optional: https://forums.swift.org/t/allow-property-wrappers-with-multiple-arguments-to-defer-initialization-when-wrappedvalue-is-not-specified/38319
 @propertyWrapper
-public struct AttributeValue<Implementation, Value>: AttributeSetter where Implementation: AnyObject, Value: Equatable {
+public struct AttributeValue<Implementation, Value>: AttributeSetter where Implementation: ImplementationNode, Value: Equatable {
     public typealias AttributeKeyPath = ReferenceWritableKeyPath<Implementation, Value>
 
     public var wrappedValue: Value {
