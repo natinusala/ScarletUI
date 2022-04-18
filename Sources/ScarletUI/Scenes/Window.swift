@@ -61,16 +61,13 @@ public struct Window<Content>: Scene where Content: View {
 
 public class WindowImplementation: SceneImplementation {
     /// The window title.
-    @Attribute(defaultValue: "")
-    var title
+    var title = ""
 
     /// The window mode.
-    @Attribute(defaultValue: WindowMode.getDefault())
-    var mode
+    var mode = WindowMode.getDefault()
 
     /// The window graphics backend.
-    @Attribute(defaultValue: GraphicsBackend.getDefault())
-    var backend
+    var backend = GraphicsBackend.getDefault()
 
     /// The native window handle.
     var handle: NativeWindow?
@@ -98,10 +95,7 @@ public class WindowImplementation: SceneImplementation {
     /// Called after the window gets resized by the user.
     func onResize() {
         if let handle = self.handle {
-            YGNodeStyleSetWidth(self.ygNode, handle.size.width)
-            YGNodeStyleSetMinWidth(self.ygNode, handle.size.width)
-            YGNodeStyleSetHeight(self.ygNode, handle.size.height)
-            YGNodeStyleSetMinHeight(self.ygNode, handle.size.height)
+            self.desiredSize = Size(width: handle.size.width.dip, height: handle.size.height.dip)
         }
     }
 

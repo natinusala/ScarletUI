@@ -37,7 +37,7 @@ class DummyWindow: NativeWindow {
 
     var shouldClose: Bool { return false }
 
-    var size: Size {
+    var size: WindowSize {
         switch self.mode {
             case .windowed(let width, let height):
                 return (width, height)

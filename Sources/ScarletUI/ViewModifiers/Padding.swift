@@ -19,19 +19,19 @@ import ScarletCore
 public struct Padding: ViewModifier {
     @AttributeValue(\ViewImplementation.padding) var padding
 
-    public init(padding: DIP4) {
+    public init(padding: EdgesValues) {
         self.padding = padding
     }
 }
 
 public extension View {
     /// Sets the view padding, aka. the space between this view and its children
-    func padding(_ padding: DIP) -> some View {
-        self.modifier(Padding(padding: DIP4(top: padding, right: padding, bottom: padding, left: padding)))
+    func padding(_ padding: Value) -> some View {
+        self.modifier(Padding(padding: EdgesValues(top: padding, right: padding, bottom: padding, left: padding)))
     }
 
     /// Sets the view padding, aka. the space between this view and its children
-    func padding(top: DIP, right: DIP, bottom: DIP, left: DIP) -> some View {
-        self.modifier(Padding(padding: DIP4(top: top, right: right, bottom: bottom, left: left)))
+    func padding(top: Value, right: Value, bottom: Value, left: Value) -> some View {
+        self.modifier(Padding(padding: EdgesValues(top: top, right: right, bottom: bottom, left: left)))
     }
 }

@@ -14,70 +14,103 @@
     limitations under the License.
 */
 
-/// A percentage value. Internally contains a float between 0 and 1.
-public struct Percentage: Equatable {
-    public let value: Float
-
-    /// Creates a percentage from the given 0 to 100 integer.
-    public init(_ int: Int) {
-        self.value = Float(int) / 100.0
-    }
-
-    /// Creates a percentage from the given 0 to 1 float.
-    public init(_ float: Float) {
-        self.value = Float(float)
-    }
-}
-
-/// A display-independent pixel is the unit used for views after scaling is applied.
-public struct DIP: Equatable, ExpressibleByFloatLiteral, ExpressibleByIntegerLiteral, CustomStringConvertible {
-    public let value: Float
-
-    public init(_ value: Float) {
-        self.value = value
-    }
-
-    public init(floatLiteral value: Float) {
-        self.value = value
-    }
-
-    public init(integerLiteral value: Int) {
-        self.value = Float(value)
-    }
-
-    public var description: String {
-        return String(describing: self.value)
-    }
-}
+import Yoga
 
 /// Percentage postfix operator, used to convert integers to `Percentage`.
 postfix operator %
 
 public extension IntegerLiteralType {
-    /// Integer percentage "literal", converts a 0 to 100 integer to a
-    /// `Percentage`.
-    static postfix func % (int: Int) -> Percentage {
-        return Percentage(int)
+    /// Integer percentage "literal", converts any 0 to 100 integer to a
+    /// percentage value.
+    static postfix func % (int: Int) -> Value {
+        return .percentage(value: Float(int))
     }
 }
 
-public extension Int {
-    /// Converts the integer into a DIP.
-    var dip: DIP {
-        return DIP(Float(self))
+public extension FloatLiteralType {
+    /// Float percentage "literal", converts any 0 to 100 integer to a
+    /// percentage value.
+    static postfix func % (double: Double) -> Value {
+        return .percentage(value: Float(double))
     }
+}
+
+/// Contains values for all 4 edges of a view.
+public struct EdgesValues: Equatable {
+    let top: Value
+    let right: Value
+    let bottom: Value
+    let left: Value
+}
+
+/// Represents a value of a specific unit.
+public enum Value: Equatable, ExpressibleByIntegerLiteral, ExpressibleByFloatLiteral {
+    /// Let the framework decide the value to have a
+    /// balanced layout.
+    case auto
+
+    /// A display independent pixel.
+    case dip(value: Float)
+
+    /// A percentage value ranging from 0 to 100.
+    case percentage(value: Float)
+
+    /// Let the framework set any value without any rules
+    /// or balancing constraints.
+    case undefined
+
+    public init(integerLiteral: Int) {
+        self = .dip(value: Float(integerLiteral))
+    }
+
+    public init(floatLiteral: Float) {
+        self = .dip(value: floatLiteral)
+    }
+
+    /// Human readable unit name.
+    public var unitName: String {
+        switch self {
+            case .auto:
+                return "auto"
+            case .dip:
+                return "dip"
+            case .percentage:
+                return "percentage"
+            case .undefined:
+                return "undefined"
+        }
+    }
+
+    static func fromYGValue(_ value: YGValue) -> Value {
+        switch value.unit {
+            case YGUnitUndefined:
+                return .undefined
+            case YGUnitAuto:
+                return .auto
+            case YGUnitPoint:
+                return .dip(value: value.value)
+            case YGUnitPercent:
+                return .percentage(value: value.value)
+            default:
+                fatalError("Unsupported `YGUnit` \(value.unit)")
+        }
+    }
+}
+
+/// Width and height of a view.
+public struct Size: Equatable {
+    let width: Value
+    let height: Value
 }
 
 public extension Float {
-    /// Converts the float into a DIP.
-    var dip: DIP {
-        return DIP(self)
+    /// Converts a `Float` to a `Value` with `dip` unit.
+    var dip: Value {
+        return .dip(value: self)
     }
-}
 
-public struct DIP4: Equatable {
-    var top: DIP = 0
-    var right: DIP = 0
-    var bottom: DIP = 0
-    var left: DIP = 0
+    /// Converts a `Float` to a `Value` with `percentage` unit.
+    var percentage: Value {
+        return .percentage(value: self)
+    }
 }

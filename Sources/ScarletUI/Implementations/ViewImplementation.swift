@@ -30,17 +30,71 @@ open class ViewImplementation: ImplementationNode, CustomStringConvertible {
     let ygNode: YGNodeRef
 
     /// The node axis.
-    /// TODO: test the default value here: ensure a column is actually a column
-    @Attribute(defaultValue: Axis.column)
-    var axis {
-        didSet {
-            YGNodeStyleSetFlexDirection(self.ygNode, self.axis.ygFlexDirection)
+    var axis: Axis {
+        get {
+            return YGNodeStyleGetFlexDirection(self.ygNode).axis
+        }
+        set {
+            YGNodeStyleSetFlexDirection(self.ygNode, newValue.ygFlexDirection)
         }
     }
 
     /// The view padding, aka. the space between this view and its children.
-    @Attribute(defaultValue: DIP4())
-    var padding
+    var padding: EdgesValues {
+        get {
+            return EdgesValues(
+                top: .fromYGValue(YGNodeStyleGetPadding(self.ygNode, YGEdgeTop)),
+                right: .fromYGValue(YGNodeStyleGetPadding(self.ygNode, YGEdgeRight)),
+                bottom: .fromYGValue(YGNodeStyleGetPadding(self.ygNode, YGEdgeBottom)),
+                left: .fromYGValue(YGNodeStyleGetPadding(self.ygNode, YGEdgeLeft))
+            )
+        }
+        set {
+            switch newValue.top {
+                case let .dip(value):
+                    YGNodeStyleSetPadding(self.ygNode, YGEdgeTop, value)
+                case let .percentage(percentage):
+                    YGNodeStyleSetPaddingPercent(self.ygNode, YGEdgeTop, percentage)
+                case .undefined:
+                    YGNodeStyleSetPadding(self.ygNode, YGEdgeTop, YGUndefined)
+                case .auto:
+                    fatalError("Invalid unit \(newValue.top.unitName) for padding")
+            }
+
+            switch newValue.right {
+                case let .dip(value):
+                    YGNodeStyleSetPadding(self.ygNode, YGEdgeRight, value)
+                case let .percentage(percentage):
+                    YGNodeStyleSetPaddingPercent(self.ygNode, YGEdgeRight, percentage)
+                case .undefined:
+                    YGNodeStyleSetPadding(self.ygNode, YGEdgeTop, YGUndefined)
+                case .auto:
+                    fatalError("Invalid unit \(newValue.right.unitName) for padding")
+            }
+
+            switch newValue.bottom {
+                case let .dip(value):
+                    YGNodeStyleSetPadding(self.ygNode, YGEdgeBottom, value)
+                case let .percentage(percentage):
+                    YGNodeStyleSetPaddingPercent(self.ygNode, YGEdgeBottom, percentage)
+                case .undefined:
+                    YGNodeStyleSetPadding(self.ygNode, YGEdgeTop, YGUndefined)
+                case .auto:
+                    fatalError("Invalid unit \(newValue.bottom.unitName) for padding")
+            }
+
+            switch newValue.left {
+                case let .dip(value):
+                    YGNodeStyleSetPadding(self.ygNode, YGEdgeLeft, value)
+                case let .percentage(percentage):
+                    YGNodeStyleSetPaddingPercent(self.ygNode, YGEdgeLeft, percentage)
+                case .undefined:
+                    YGNodeStyleSetPadding(self.ygNode, YGEdgeTop, YGUndefined)
+                case .auto:
+                    fatalError("Invalid unit \(newValue.left.unitName) for padding")
+            }
+        }
+    }
 
     public required init(kind: ImplementationKind, displayName: String) {
         guard kind == .view else {
@@ -96,16 +150,43 @@ public enum Axis {
     /// Column (vertical) axis.
     case column
 
-    /// Column (horizontal) axis.
+    /// Reversed column (vertical) axis.
+    case columnReverse
+
+    /// Row (horizontal) axis.
     case row
+
+    /// Reversed row (horizontal) axis.
+    case rowReverse
 
     /// Associated Yoga flex direction.
     var ygFlexDirection: YGFlexDirection {
         switch self {
             case .column:
                 return YGFlexDirectionColumn
+            case .columnReverse:
+                return YGFlexDirectionColumnReverse
             case .row:
                 return YGFlexDirectionRow
+            case .rowReverse:
+                return YGFlexDirectionRowReverse
+        }
+    }
+}
+
+public extension YGFlexDirection {
+    var axis: Axis {
+        switch self {
+            case YGFlexDirectionColumn:
+                return .column
+            case YGFlexDirectionColumnReverse:
+                return .columnReverse
+            case YGFlexDirectionRow:
+                return .row
+            case YGFlexDirectionRowReverse:
+                return .rowReverse
+            default:
+                fatalError("Unknown `YGFlexDirection` \(self)")
         }
     }
 }

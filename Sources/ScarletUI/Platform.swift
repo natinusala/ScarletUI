@@ -35,13 +35,13 @@ func getCurrentPlatform() -> any Platform {
 
 /// A native, platform-dependent window.
 protocol NativeWindow {
-    typealias Size = (width: Float, height: Float)
+    typealias WindowSize = (width: Float, height: Float)
 
     /// Should return true if the platform requested the window to close.
     var shouldClose: Bool { get }
 
     /// Window dimensions.
-    var size: Size { get }
+    var size: WindowSize { get }
 
     /// Graphics canvas for this window.
     // var canvas: Canvas { get }

@@ -79,24 +79,6 @@ public struct AttributeValue<Implementation, Value>: AttributeSetter where Imple
     }
 }
 
-/// An attribute, aka. a value from the element graph
-/// passed to an implementation node.
-///
-/// The value will only be updated if it's different than the current value.
-/// This includes initial initialization: as such, the default value must accurately
-/// represent the _actual_ default value.
-///
-/// In other words, if the attribute is not set on the element, `didSet` will never be called
-/// in the implementation so the default value must already be "applied" there.
-@propertyWrapper
-public struct Attribute<Value> where Value: Equatable {
-    public var wrappedValue: Value
-
-    public init(defaultValue: Value) {
-        self.wrappedValue = defaultValue
-    }
-}
-
 /// Allows collecting all attributes of an element.
 public protocol AttributeAccessor {
     func collectAttributes() -> [AttributeSetter]
