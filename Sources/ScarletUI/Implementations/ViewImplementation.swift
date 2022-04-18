@@ -96,6 +96,50 @@ open class ViewImplementation: ImplementationNode, CustomStringConvertible {
         }
     }
 
+    /// The desired size of the view.
+    ///
+    /// The actual size after layout may or may not be the desired size,
+    /// however it cannot be less than the desired size.
+    var desiredSize: Size {
+        get {
+            return Size(
+                width: .fromYGValue(YGNodeStyleGetWidth(self.ygNode)),
+                height: .fromYGValue(YGNodeStyleGetHeight(self.ygNode))
+            )
+        }
+        set {
+            switch newValue.width {
+                case let .dip(value):
+                    YGNodeStyleSetWidth(self.ygNode, value)
+                    YGNodeStyleSetMinWidth(self.ygNode, value)
+                case let .percentage(percentage):
+                    YGNodeStyleSetWidthPercent(self.ygNode, percentage)
+                    YGNodeStyleSetMinWidthPercent(self.ygNode, percentage)
+                case .auto:
+                    YGNodeStyleSetWidthAuto(self.ygNode)
+                    YGNodeStyleSetMinWidth(self.ygNode, YGUndefined)
+                case .undefined:
+                    YGNodeStyleSetWidth(self.ygNode, YGUndefined)
+                    YGNodeStyleSetMinWidth(self.ygNode, YGUndefined)
+            }
+
+            switch newValue.height {
+                case let .dip(value):
+                    YGNodeStyleSetHeight(self.ygNode, value)
+                    YGNodeStyleSetMinHeight(self.ygNode, value)
+                case let .percentage(percentage):
+                    YGNodeStyleSetHeightPercent(self.ygNode, percentage)
+                    YGNodeStyleSetMinHeightPercent(self.ygNode, percentage)
+                case .auto:
+                    YGNodeStyleSetHeightAuto(self.ygNode)
+                    YGNodeStyleSetMinHeight(self.ygNode, YGUndefined)
+                case .undefined:
+                    YGNodeStyleSetHeight(self.ygNode, YGUndefined)
+                    YGNodeStyleSetMinHeight(self.ygNode, YGUndefined)
+            }
+        }
+    }
+
     public required init(kind: ImplementationKind, displayName: String) {
         guard kind == .view else {
             fatalError("Tried to create a `ViewImplementation` with kind \(kind)")
