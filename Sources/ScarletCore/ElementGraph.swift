@@ -326,9 +326,9 @@ public class ElementNode {
 
                 attributes = []
 
-                // Call `onAttributesReady()` only at first update
+                // Call `attributesDidSet()` only at first update
                 if self.implementationState == .creating {
-                    implementation.onAttributesReady()
+                    implementation.attributesDidSet()
                     self.implementationState = .created
                 }
             }
@@ -449,10 +449,10 @@ public enum ElementKind {
     }
 }
 
-public protocol Accessor: ImplementationAccessor, AttributeAccessor {}
+public typealias Accessor = ImplementationAccessor & AttributeAccessor
 
 /// Different states of an implementation node.
-enum ImplementationNodeState {
+public enum ImplementationNodeState {
     /// The node is being created and attributes are being set.
     case creating
 

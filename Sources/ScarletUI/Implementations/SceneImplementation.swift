@@ -29,6 +29,15 @@ open class SceneImplementation: ImplementationNode, CustomStringConvertible {
     /// The scene Yoga node.
     let ygNode: YGNodeRef
 
+    /// The node axis.
+    /// TODO: test the default value here: ensure a column is actually a column
+    @Attribute(defaultValue: Axis.column)
+    var axis {
+        didSet {
+            YGNodeStyleSetFlexDirection(self.ygNode, self.axis.ygFlexDirection)
+        }
+    }
+
     public required init(kind: ImplementationKind, displayName: String) {
         guard kind == .scene else {
             fatalError("Tried to create a `ViewImplementation` with kind \(kind)")
@@ -56,7 +65,7 @@ open class SceneImplementation: ImplementationNode, CustomStringConvertible {
         self.children.remove(at: position)
     }
 
-    open func onAttributesReady() {
+    open func attributesDidSet() {
         // Nothing by default
     }
 

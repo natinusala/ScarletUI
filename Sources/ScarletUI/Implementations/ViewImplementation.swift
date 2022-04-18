@@ -14,6 +14,8 @@
    limitations under the License.
 */
 
+import Yoga
+
 import ScarletCore
 
 /// Implementation for all views.
@@ -24,8 +26,21 @@ open class ViewImplementation: ImplementationNode, CustomStringConvertible {
     /// Children of this view.
     var children: [ViewImplementation] = []
 
+    /// The view Yoga node.
+    let ygNode: YGNodeRef
+
+    /// The node axis.
+    /// TODO: test the default value here: ensure a column is actually a column
+    @Attribute(defaultValue: Axis.column)
+    var axis {
+        didSet {
+            YGNodeStyleSetFlexDirection(self.ygNode, self.axis.ygFlexDirection)
+        }
+    }
+
     /// The view padding, aka. the space between this view and its children.
-    @Attribute var padding: DIP4 = DIP4()
+    @Attribute(defaultValue: DIP4())
+    var padding
 
     public required init(kind: ImplementationKind, displayName: String) {
         guard kind == .view else {
@@ -33,6 +48,12 @@ open class ViewImplementation: ImplementationNode, CustomStringConvertible {
         }
 
         self.displayName = displayName
+
+        self.ygNode = YGNodeNew()
+    }
+
+    deinit {
+        YGNodeFree(self.ygNode)
     }
 
     public func insertChild(_ child: ImplementationNode, at position: Int) {
@@ -47,7 +68,7 @@ open class ViewImplementation: ImplementationNode, CustomStringConvertible {
         self.children.remove(at: position)
     }
 
-    open func onAttributesReady() {
+    open func attributesDidSet() {
         // Nothing by default
     }
 
@@ -68,4 +89,23 @@ open class ViewImplementation: ImplementationNode, CustomStringConvertible {
 public extension View {
     /// Default implementation for user views.
     typealias Implementation = ViewImplementation
+}
+
+/// The "axis", aka. the direction in which children are laid out.
+public enum Axis {
+    /// Column (vertical) axis.
+    case column
+
+    /// Column (horizontal) axis.
+    case row
+
+    /// Associated Yoga flex direction.
+    var ygFlexDirection: YGFlexDirection {
+        switch self {
+            case .column:
+                return YGFlexDirectionColumn
+            case .row:
+                return YGFlexDirectionRow
+        }
+    }
 }

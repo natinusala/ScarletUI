@@ -14,6 +14,11 @@
    limitations under the License.
 */
 
+public enum AttributeStorage<Value> {
+    case unset
+    case set(value: Value)
+}
+
 /// Contains the value to give an attribute of an eventual implementation node.
 ///
 /// The key path defines where the value is written to (the target attribute) as well
@@ -21,22 +26,16 @@
 ///
 /// The value will only be written if it's different than the current value, which makes it
 /// possible to use with `didSet` observers.
-///
-/// TODO: remove `actualValue` and make a partial initializer once this is implemented, the point is to make it non optional and use synthesized initializers for modifiers: https://forums.swift.org/t/allow-property-wrappers-with-multiple-arguments-to-defer-initialization-when-wrappedvalue-is-not-specified/38319
 @propertyWrapper
 public struct AttributeValue<Implementation, Value>: AttributeSetter where Implementation: ImplementationNode, Value: Equatable {
     public typealias AttributeKeyPath = ReferenceWritableKeyPath<Implementation, Value>
 
     public var wrappedValue: Value {
         get {
-            guard let value = self.actualValue else {
-                fatalError("Cannot read attribute \(self.keyPath): it has not been set. Did you set its value in the element initializer?")
-            }
-
-            return value
+            fatalError("`AttributeValue` read not implemented")
         }
         set {
-            self.actualValue = newValue
+            self.actualValue = .set(value: newValue)
         }
     }
 
@@ -46,8 +45,7 @@ public struct AttributeValue<Implementation, Value>: AttributeSetter where Imple
     }
 
     /// The attribute value.
-    /// Must be optional until partial property wrappers initializers are implemented.
-    var actualValue: Value?
+    var actualValue: AttributeStorage<Value> = .unset
 
     /// The path to the attribute in the implementation class.
     var keyPath: AttributeKeyPath
@@ -62,20 +60,40 @@ public struct AttributeValue<Implementation, Value>: AttributeSetter where Imple
             fatalError("Attribute `set()` was given an implementation of the wrong type: got \(type(of: implementation)), expected \(Implementation.self)")
         }
 
-        if implementation[keyPath: self.keyPath] != self.wrappedValue {
-            implementation[keyPath: self.keyPath] = self.wrappedValue
+        guard case let .set(value) = self.actualValue else {
+            return
+        }
+
+        if implementation[keyPath: self.keyPath] != value {
+            implementation[keyPath: self.keyPath] = value
+        }
+    }
+
+    /// If the element parameter is an optional value and `nil` means "attribute unset",
+    /// use this convenience method to set the attribute value in one line instead of
+    /// manually unwrapping the optional.
+    public mutating func setFromOptional(value: Value?) {
+        if let value = value {
+            self.wrappedValue = value
         }
     }
 }
 
 /// An attribute, aka. a value from the element graph
 /// passed to an implementation node.
+///
+/// The value will only be updated if it's different than the current value.
+/// This includes initial initialization: as such, the default value must accurately
+/// represent the _actual_ default value.
+///
+/// In other words, if the attribute is not set on the element, `didSet` will never be called
+/// in the implementation so the default value must already be "applied" there.
 @propertyWrapper
 public struct Attribute<Value> where Value: Equatable {
     public var wrappedValue: Value
 
-    public init(wrappedValue: Value) {
-        self.wrappedValue = wrappedValue
+    public init(defaultValue: Value) {
+        self.wrappedValue = defaultValue
     }
 }
 

@@ -19,7 +19,7 @@ public struct Group<Content> {
     let content: Content
 }
 
-extension Group: View, Accessor, ImplementationAccessor, AttributeAccessor where Content: View {
+extension Group: View, Accessor where Content: View {
     public typealias Body = Never
     public typealias Implementation = Never
 

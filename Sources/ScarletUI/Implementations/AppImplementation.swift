@@ -51,7 +51,7 @@ open class AppImplementation: ImplementationNode, CustomStringConvertible {
         
     }
 
-    open func onAttributesReady() {
+    open func attributesDidSet() {
         // Nothing by default
     }
 

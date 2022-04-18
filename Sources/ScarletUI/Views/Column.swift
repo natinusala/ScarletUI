@@ -20,10 +20,14 @@ import ScarletCore
 public struct Column<Content>: View where Content: View {
     public typealias Body = Never
 
+    @AttributeValue(\ViewImplementation.axis) var axis
+
     var content: Content
 
     public init(@ViewBuilder content: () -> Content) {
         self.content = content()
+
+        self.axis = .column
     }
 
     public static func make(view: Self?, input: MakeInput) -> MakeOutput {

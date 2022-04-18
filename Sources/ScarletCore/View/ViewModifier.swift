@@ -132,7 +132,7 @@ public extension ViewModifier {
     }
 }
 
-extension ModifiedContent: View, Accessor, ImplementationAccessor, AttributeAccessor where Content: View, Modifier: ViewModifier {
+extension ModifiedContent: View, Accessor where Content: View, Modifier: ViewModifier {
     public typealias Body = Never
     public typealias Implementation = Never
 

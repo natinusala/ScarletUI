@@ -28,18 +28,23 @@ public struct Window<Content>: Scene where Content: View {
     @AttributeValue(\WindowImplementation.mode) var mode
     @AttributeValue(\WindowImplementation.backend) var backend
 
+    @AttributeValue(\SceneImplementation.axis) var axis
+
     let content: Content
 
     public init(
-        title: String,
-        mode: WindowMode = .getDefault(),
-        backend: GraphicsBackend = .getDefault(),
+        title: String? = nil,
+        mode: WindowMode? = nil,
+        backend: GraphicsBackend? = nil,
         @ViewBuilder content: () -> Content
     ) {
         self.content = content()
-        self.title = title
-        self.mode = mode
-        self.backend = backend
+
+        self.$title.setFromOptional(value: title)
+        self.$mode.setFromOptional(value: mode)
+        self.$backend.setFromOptional(value: backend)
+
+        self.axis = .column
     }
 
     public static func make(scene: Self?, input: MakeInput) -> MakeOutput {
@@ -56,18 +61,21 @@ public struct Window<Content>: Scene where Content: View {
 
 public class WindowImplementation: SceneImplementation {
     /// The window title.
-    @Attribute var title = ""
+    @Attribute(defaultValue: "")
+    var title
 
     /// The window mode.
-    @Attribute var mode: WindowMode = .getDefault()
+    @Attribute(defaultValue: WindowMode.getDefault())
+    var mode
 
     /// The window graphics backend.
-    @Attribute var backend: GraphicsBackend = .getDefault()
+    @Attribute(defaultValue: GraphicsBackend.getDefault())
+    var backend
 
     /// The native window handle.
     var handle: NativeWindow?
 
-    public override func onAttributesReady() {
+    public override func attributesDidSet() {
         do {
             // Create the native window
             let handle = try Context.shared.platform.createWindow(
@@ -77,7 +85,7 @@ public class WindowImplementation: SceneImplementation {
             )
             self.handle = handle
 
-            Logger.info("Created a \(self.mode.name) \(self.backend.name) window (\(handle.size.width)x\(handle.size.height))")
+            Logger.info("Created a \(self.mode.name) \(self.backend.name) window (title: \"\(self.title)\", size: \(handle.size.width)x\(handle.size.height))")
 
             // Set the initial node dimensions
             self.onResize()

@@ -17,13 +17,20 @@
 /// The implementation holds the element layout (size, position), attributes as well as all the
 /// necessary functions to draw it onscreen.
 ///
-/// All different implementations of the an app make a tree.
+/// All different implementations of an app make a tree.
+///
+/// The lifecycle of an implementation node is as follows:
+///     - `init`
+///     - all attributes are set one by one
+///         - the `didSet` observer is called for each one if the value is different that the default one
+///     - `attributesDidSet` is called once all attributes are set
+///     - `deinit`
 public protocol ImplementationNode {
     /// Creates a new implementation node for the given kind.
     init(kind: ImplementationKind, displayName: String)
 
     /// Called right after node creation when all attributes have been set.
-    func onAttributesReady()
+    func attributesDidSet()
 
     /// Inserts the given element into this implementation node.
     func insertChild(_ child: ImplementationNode, at position: Int)
@@ -61,7 +68,7 @@ extension Never: ImplementationNode {
         fatalError()
     }
 
-    public func onAttributesReady() {
+    public func attributesDidSet() {
         fatalError()
     }
 }
