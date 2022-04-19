@@ -97,6 +97,7 @@ open class ViewImplementation: ImplementationNode, CustomStringConvertible {
     }
 
     /// The desired size of the view.
+    /// Set to `auto` for all views by default.
     ///
     /// The actual size after layout may or may not be the desired size,
     /// however it cannot be less than the desired size.
@@ -148,6 +149,7 @@ open class ViewImplementation: ImplementationNode, CustomStringConvertible {
         self.displayName = displayName
 
         self.ygNode = YGNodeNew()
+        self.desiredSize = Size(width: .auto, height: .auto)
     }
 
     deinit {
@@ -159,10 +161,12 @@ open class ViewImplementation: ImplementationNode, CustomStringConvertible {
             fatalError("Cannot add \(type(of: child)) as child of `ViewImplementation`")
         }
 
+        YGNodeInsertChild(self.ygNode, child.ygNode, UInt32(position))
         self.children.insert(child, at: position)
     }
 
     public func removeChild(at position: Int) {
+        YGNodeRemoveChild(self.ygNode, self.children[position].ygNode)
         self.children.remove(at: position)
     }
 

@@ -27,7 +27,7 @@ public enum AttributeStorage<Value> {
 /// The value will only be written if it's different than the current value, which makes it
 /// possible to use with `didSet` observers.
 @propertyWrapper
-public struct AttributeValue<Implementation, Value>: AttributeSetter where Implementation: ImplementationNode, Value: Equatable {
+public struct Attribute<Implementation, Value>: AttributeSetter where Implementation: ImplementationNode, Value: Equatable {
     public typealias AttributeKeyPath = ReferenceWritableKeyPath<Implementation, Value>
 
     public var wrappedValue: Value {
@@ -104,5 +104,22 @@ public extension AttributeAccessor {
         }
 
         return attributes
+    }
+}
+
+/// A special kind of view modifiers to be used for attributes-only modifiers.
+/// As attributes ownership is in the implementation, they are compared at "setting" time instead
+/// of at "graph building" time. As such, they do not need to be stored in the graph nodes: this is
+/// what this protocol is for.
+public protocol AttributeViewModifier: ViewModifier {}
+
+public extension AttributeViewModifier {
+    /// Default implementation for `make()`: always return a node with our attributes and no storage.
+    static func make(modifier: Self?, input: MakeInput) -> MakeOutput {
+        let output = ElementOutput(storage: modifier, attributes: modifier?.collectAttributes() ?? [])
+        let bodyInput = MakeInput(storage: input.storage?.edges[0])
+        let bodyOutput = Body.make(view: modifier?.body(content: ViewModifierContent()), input: bodyInput)
+
+        return Self.output(node: output, staticEdges: [bodyOutput], accessor: modifier?.accessor)
     }
 }

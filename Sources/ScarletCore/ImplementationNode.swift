@@ -20,11 +20,15 @@
 /// All different implementations of an app make a tree.
 ///
 /// The lifecycle of an implementation node is as follows:
-///     - `init`
-///     - all attributes are set one by one
-///         - the `didSet` observer is called for each one if the value is different that the default one
-///     - `attributesDidSet` is called once all attributes are set
-///     - `deinit`
+///     - the node is created
+///         - `init`
+///         - all attributes are set one by one
+///             - the `didSet` observer is called for each one if the value is different that the default one
+///         - `attributesDidSet` is called once all attributes are set
+///     - the node is inserted into its parent node
+///     - the app runs and eventually the node gets removed
+///         - the node is removed from its parent node
+///         - `deinit`
 public protocol ImplementationNode {
     /// Creates a new implementation node for the given kind.
     init(kind: ImplementationKind, displayName: String)

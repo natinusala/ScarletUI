@@ -53,7 +53,7 @@ public enum ConditionalView<FirstContent, SecondContent>: View where FirstConten
         // If not, consider the view unchanged and
         // use our storage to know where to redirect the edge `make` call
         if let view = view {
-            output = ElementOutput(storage: view.storageValue)
+            output = ElementOutput(storage: view.storageValue, attributes: view.collectAttributes())
 
             // If the content storage belongs to a different type than the expected one,
             // discard the node (it changed from `first` to `second` or `second` to `first`)

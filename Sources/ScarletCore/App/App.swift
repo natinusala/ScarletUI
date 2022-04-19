@@ -61,7 +61,7 @@ public extension App {
         }
 
         // The app changed
-        let output = ElementOutput(storage: app)
+        let output = ElementOutput(storage: app, attributes: app.collectAttributes())
 
         // Re-evaluate body
         let body = app.body

@@ -75,8 +75,14 @@ public struct ElementOutput {
     /// Any value to store and pass to the next `make()` call.
     let storage: Any?
 
-    public init(storage: Any?) {
+    /// Attributes for this node.
+    /// Will be set to the first encountered
+    /// implementation node.
+    let attributes: [AttributeSetter]
+
+    public init(storage: Any?, attributes: [AttributeSetter]) {
         self.storage = storage
+        self.attributes = attributes
     }
 }
 
@@ -313,24 +319,26 @@ public class ElementNode {
             self.storage.value = node.storage
         }
 
-        // Implementation and attributes update
-        if let accessor = output.accessor {
-            attributes.append(contentsOf: accessor.collectAttributes())
+        // Implementation update
+        if let accessor = output.accessor, let implementation = self.implementation {
+            accessor.updateImplementation(implementation)
+        }
 
-            if let implementation = self.implementation {
-                accessor.updateImplementation(implementation)
+        // Attributes updates
+        let newAttributes = output.node?.attributes ?? []
+        attributes.append(contentsOf: newAttributes)
 
-                for attribute in attributes {
-                    attribute.set(on: implementation)
-                }
+        if let implementation = self.implementation {
+            for attribute in attributes {
+                attribute.set(on: implementation)
+            }
 
-                attributes = []
+            attributes = []
 
-                // Call `attributesDidSet()` only at first update
-                if self.implementationState == .creating {
-                    implementation.attributesDidSet()
-                    self.implementationState = .created
-                }
+            // Call `attributesDidSet()` only at first update
+            if self.implementationState == .creating {
+                implementation.attributesDidSet()
+                self.implementationState = .created
             }
         }
 

@@ -103,10 +103,12 @@ open class SceneImplementation: ImplementationNode, CustomStringConvertible {
             fatalError("Cannot add \(type(of: child)) as child of `SceneImplementation`")
         }
 
+        YGNodeInsertChild(self.ygNode, child.ygNode, UInt32(position))
         self.children.insert(child, at: position)
     }
 
     open func removeChild(at position: Int) {
+        YGNodeRemoveChild(self.ygNode, self.children[position].ygNode)
         self.children.remove(at: position)
     }
 

@@ -48,7 +48,7 @@ open class AppImplementation: ImplementationNode, CustomStringConvertible {
 
     /// Runs the app until closed by the user.
     func run() {
-        
+        self.printTree()
     }
 
     open func attributesDidSet() {

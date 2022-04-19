@@ -16,8 +16,8 @@
 
 import ScarletCore
 
-public struct Padding: ViewModifier {
-    @AttributeValue(\ViewImplementation.padding) var padding
+public struct Padding: AttributeViewModifier {
+    @Attribute(\ViewImplementation.padding) var padding
 
     public init(padding: EdgesValues) {
         self.padding = padding

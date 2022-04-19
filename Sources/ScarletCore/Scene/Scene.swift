@@ -59,7 +59,7 @@ public extension Scene {
         }
 
         // The scene changed
-        let output = ElementOutput(storage: scene)
+        let output = ElementOutput(storage: scene, attributes: scene.collectAttributes())
 
         // Re-evaluate body
         let body = scene.body

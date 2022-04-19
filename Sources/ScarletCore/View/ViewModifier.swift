@@ -58,7 +58,7 @@ public extension ViewModifier {
             return Self.output(node: nil, staticEdges: [bodyOutput], accessor: modifier.accessor)
         } else {
             // Modifier has changed
-            let output = ElementOutput(storage: modifier)
+            let output = ElementOutput(storage: modifier, attributes: modifier.collectAttributes())
             let bodyInput = MakeInput(storage: input.storage?.edges[0])
             let bodyOutput = Body.make(view: modifier.body(content: ViewModifierContent()), input: bodyInput)
 
@@ -158,7 +158,6 @@ extension ModifiedContent: View, Accessor where Content: View, Modifier: ViewMod
 
         let edges = [modifierOutput]
         return Self.output(node: nil, staticEdges: edges, accessor: view?.accessor)
-
     }
 
     /// Modified content has one edge: the modifier body.

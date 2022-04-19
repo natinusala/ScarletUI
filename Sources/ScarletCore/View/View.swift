@@ -57,7 +57,7 @@ public extension View {
         }
 
         // The view changed
-        let output = ElementOutput(storage: view)
+        let output = ElementOutput(storage: view, attributes: view.collectAttributes())
 
         // Re-evaluate body
         let body = view.body
@@ -92,7 +92,11 @@ public extension View where Body == Never {
     /// Default implementation of `make()` when the view has no body: return the view itself with
     /// no storage and no edges. Used for "leaves" of the view graph.
     static func make(view: Self?, input: MakeInput) -> MakeOutput {
-        return Self.output(node: nil, staticEdges: [], accessor: view?.accessor)
+        return Self.output(
+            node: ElementOutput(storage: nil, attributes: view?.collectAttributes() ?? []),
+            staticEdges: [],
+            accessor: view?.accessor
+        )
     }
 
     /// Default implementation for `staticEdgesCount()` when there is no body: no edges.

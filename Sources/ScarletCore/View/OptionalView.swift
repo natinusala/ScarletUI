@@ -41,7 +41,7 @@ extension Optional: View, Accessor where Wrapped: View {
         // If not, consider the view unchanged and
         // use our storage to know if `make` needs to be called on our content
         if let view = view {
-            output = ElementOutput(storage: view.storageValue)
+            output = ElementOutput(storage: view.storageValue, attributes: view.collectAttributes())
 
             switch view {
                 case .none:
