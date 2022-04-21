@@ -41,7 +41,14 @@ let package = Package(
         // on top of ScarletCore - also exposes ScarletCore for the DSL and custom views
         .target(
             name: "ScarletUI",
-            dependencies: ["ScarletCore", "ScarletNative", "Yoga", .product(name: "Backtrace", package: "swift-backtrace")]
+            dependencies: [
+                "ScarletCore",
+                "ScarletNative",
+                "Yoga",
+                "GLFW",
+                "Skia",
+                .product(name: "Backtrace", package: "swift-backtrace"),
+            ]
         ),
         // ScarletCore: core library containing the DSL and graph / state management code
         .target(
@@ -74,6 +81,8 @@ let package = Package(
             name: "Yoga",
             dependencies: ["CYoga"],
             path: "External/Yoga"
-        )
+        ),
+        .systemLibrary(name: "GLFW", path: "External/GLFW", pkgConfig: "glfw3"),
+        .systemLibrary(name: "Skia", path: "External/Skia", pkgConfig: "skia_loftwing"),
     ]
 )

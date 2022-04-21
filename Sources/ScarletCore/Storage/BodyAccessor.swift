@@ -15,7 +15,7 @@
 */
 
 struct BodyAccessor {
-    /// Makes the body of the given view, with state values injected beforehand.
+    /// Makes the body of the given view.
     static func makeBody<V: View>(of view: V, storage: StorageNode?) -> V.Body {
         return view.body
     }
