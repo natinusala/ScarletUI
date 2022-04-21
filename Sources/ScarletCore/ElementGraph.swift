@@ -78,9 +78,9 @@ public struct ElementOutput {
     /// Attributes for this node.
     /// Will be set to the first encountered
     /// implementation node.
-    let attributes: [AttributeSetter]
+    let attributes: AttributesStash
 
-    public init(storage: Any?, attributes: [AttributeSetter]) {
+    public init(storage: Any?, attributes: AttributesStash) {
         self.storage = storage
         self.attributes = attributes
     }
@@ -179,7 +179,7 @@ public class ElementNode {
         self.implementation = output.accessor?.makeImplementation()
         self.implementationState = .creating
 
-        self.update(with: output, attributes: [])
+        self.update(with: output, attributes: [:])
 
         self.attachImplementationToParent()
     }
@@ -199,7 +199,7 @@ public class ElementNode {
         self.implementation = output.accessor?.makeImplementation()
         self.implementationState = .creating
 
-        self.update(with: output, attributes: [])
+        self.update(with: output, attributes: [:])
 
         self.attachImplementationToParent()
     }
@@ -292,7 +292,7 @@ public class ElementNode {
     }
 
     /// Updates the node with the given view.
-    func update<V: View>(with view: V, attributes: [AttributeSetter]) {
+    func update<V: View>(with view: V, attributes: AttributesStash) {
         assert(
             V.self == self.type,
             "cannot update a graph node with a view of a different type"
@@ -305,7 +305,7 @@ public class ElementNode {
 
     /// Updates the node with the output of the given element.
     /// Can update the node data, its edges recursively or nothing at all.
-    func update(with output: MakeOutput, attributes: [AttributeSetter]) {
+    func update(with output: MakeOutput, attributes: AttributesStash) {
         assert(
             output.nodeType == self.type,
             "make() returned a node of the wrong type (expected \(self.type), got \(output.nodeType))"
@@ -325,15 +325,17 @@ public class ElementNode {
         }
 
         // Attributes updates
-        let newAttributes = output.node?.attributes ?? []
-        attributes.append(contentsOf: newAttributes)
+        let newAttributes = output.node?.attributes ?? [:]
+        newAttributes.forEach { attributes[$0] = $1 }
 
         if let implementation = self.implementation {
-            for attribute in attributes {
-                attribute.set(on: implementation)
-            }
+            attributes = attributes.filter {
+                let set = $1.set(on: implementation)
+                let propagate = $1.propagate
 
-            attributes = []
+                // Remove it from the stash if it's been set and if it's not propagated
+                return !set || propagate
+            }
 
             // Call `attributesDidSet()` only at first update
             if self.implementationState == .creating {
@@ -369,7 +371,7 @@ public class ElementNode {
     }
 
     /// Inserts a new edge at the given index.
-    private func insertEdge(_ edge: MakeOutput, at idx: Int, attributes: [AttributeSetter]) {
+    private func insertEdge(_ edge: MakeOutput, at idx: Int, attributes: AttributesStash) {
         guard self.storage.edges[idx] == nil else {
             fatalError("Tried to insert an edge on a non-empty storage node")
         }
@@ -398,7 +400,7 @@ public class ElementNode {
     }
 
     /// Updates edge at given position with a new edge.
-    private func updateEdge(at idx: Int, with newEdge: MakeOutput, attributes: [AttributeSetter]) {
+    private func updateEdge(at idx: Int, with newEdge: MakeOutput, attributes: AttributesStash) {
         guard let edge = self.edges[idx] else {
             fatalError("Cannot update an edge that doesn't exist")
         }

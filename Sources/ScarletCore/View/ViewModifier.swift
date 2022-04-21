@@ -82,7 +82,7 @@ public extension ViewModifier {
 
     func updateImplementation(_ implementation: any ImplementationNode) {}
 
-    func collectAttributes() -> [AttributeSetter] {
+    func collectAttributes() -> AttributesStash {
         return self.collectAttributesUsingMirror()
     }
 }

@@ -93,7 +93,7 @@ public extension View where Body == Never {
     /// no storage and no edges. Used for "leaves" of the view graph.
     static func make(view: Self?, input: MakeInput) -> MakeOutput {
         return Self.output(
-            node: ElementOutput(storage: nil, attributes: view?.collectAttributes() ?? []),
+            node: ElementOutput(storage: nil, attributes: view?.collectAttributes() ?? [:]),
             staticEdges: [],
             accessor: view?.accessor
         )
@@ -125,7 +125,7 @@ public extension View {
         Self.updateImplementation(implementation, with: self)
     }
 
-    func collectAttributes() -> [AttributeSetter] {
+    func collectAttributes() -> AttributesStash {
         return self.collectAttributesUsingMirror()
     }
 }
@@ -146,35 +146,5 @@ public extension View {
     /// Display name of the view, aka. its type stripped of any generic parameters.
     var displayName: String {
         return String(describing: Self.self).before(first: "<")
-    }
-}
-
-extension Never: View {
-    public typealias Implementation = Never
-
-    public var body: Never {
-        return fatalError()
-    }
-
-    public static func make(view: Self?, input: MakeInput) -> MakeOutput {
-        fatalError()
-    }
-
-    public static func staticEdgesCount() -> Int {
-        fatalError()
-    }
-
-    public static func updateImplementation(_ implementation: Never, with view: Never) {}
-
-    public func makeImplementation() -> ImplementationNode? {
-        fatalError()
-    }
-
-    public static func makeImplementation(of scene: Self) -> ImplementationNode? {}
-
-    public func updateImplementation(_ implementation: any ImplementationNode) {}
-
-    public func collectAttributes() -> [AttributeSetter] {
-        fatalError()
     }
 }

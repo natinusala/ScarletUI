@@ -20,7 +20,8 @@ import ScarletCore
 public struct Column<Content>: View where Content: View {
     public typealias Body = Never
 
-    @Attribute(\ViewImplementation.axis) var axis
+    @Attribute(\LayoutImplementationNode.axis, propagate: true)
+    var axis
 
     var content: Content
 
@@ -35,7 +36,7 @@ public struct Column<Content>: View where Content: View {
         let contentInput = MakeInput(storage: contentStorage)
 
         return Self.output(
-            node: nil,
+            node: ElementOutput(storage: nil, attributes: view?.collectAttributes() ?? [:]),
             staticEdges: [Content.make(view: view?.content, input: contentInput)],
             accessor: view?.accessor
         )

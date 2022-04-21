@@ -58,21 +58,3 @@ public protocol ImplementationAccessor {
     /// Updates the implementation node.
     func updateImplementation(_ implementation: any ImplementationNode)
 }
-
-extension Never: ImplementationNode {
-    public init(kind: ImplementationKind, displayName: String) {
-        fatalError()
-    }
-
-    public func insertChild(_ child: ImplementationNode, at position: Int) {
-        fatalError()
-    }
-
-    public func removeChild(at position: Int) {
-        fatalError()
-    }
-
-    public func attributesDidSet() {
-        fatalError()
-    }
-}

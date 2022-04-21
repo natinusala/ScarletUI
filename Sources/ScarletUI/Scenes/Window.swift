@@ -24,11 +24,17 @@ public struct Window<Content>: Scene where Content: View {
     public typealias Body = Never
     public typealias Implementation = WindowImplementation
 
-    @Attribute(\WindowImplementation.title) var title
-    @Attribute(\WindowImplementation.mode) var mode
-    @Attribute(\WindowImplementation.backend) var backend
+    @Attribute(\WindowImplementation.title)
+    var title
 
-    @Attribute(\SceneImplementation.axis) var axis
+    @Attribute(\WindowImplementation.mode)
+    var mode
+
+    @Attribute(\WindowImplementation.backend)
+    var backend
+
+    @Attribute(\LayoutImplementationNode.axis, propagate: true)
+    var axis
 
     let content: Content
 
@@ -52,7 +58,7 @@ public struct Window<Content>: Scene where Content: View {
         let contentInput = MakeInput(storage: contentStorage)
 
         return Self.output(
-            node: ElementOutput(storage: nil, attributes: scene?.collectAttributes() ?? []),
+            node: ElementOutput(storage: nil, attributes: scene?.collectAttributes() ?? [:]),
             staticEdges: [Content.make(view: scene?.content, input: contentInput)],
             accessor: scene?.accessor
         )

@@ -21,7 +21,8 @@ public struct Text: View {
     public typealias Body = Never
     public typealias Implementation = TextImplementation
 
-    @Attribute(\TextImplementation.text) var text
+    @Attribute(\TextImplementation.text)
+    var text
 
     public init(_ text: String) {
         self.text = text

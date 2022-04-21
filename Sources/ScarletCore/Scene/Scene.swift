@@ -117,7 +117,7 @@ public extension Scene {
         Self.updateImplementation(implementation, with: self)
     }
 
-    func collectAttributes() -> [AttributeSetter] {
+    func collectAttributes() -> AttributesStash {
         return self.collectAttributesUsingMirror()
     }
 }
@@ -132,5 +132,3 @@ extension Scene where Body == Never {
         fatalError()
     }
 }
-
-extension Never: Scene {}

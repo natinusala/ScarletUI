@@ -19,7 +19,7 @@ import Yoga
 import ScarletCore
 
 /// Implementation for all scenes.
-open class SceneImplementation: ImplementationNode, CustomStringConvertible {
+open class SceneImplementation: LayoutImplementationNode, CustomStringConvertible {
     /// Scene display name for debugging purposes.
     let displayName: String
 
@@ -30,7 +30,7 @@ open class SceneImplementation: ImplementationNode, CustomStringConvertible {
     let ygNode: YGNodeRef
 
     /// The node axis.
-    var axis: Axis {
+    public var axis: Axis {
         get {
             return YGNodeStyleGetFlexDirection(self.ygNode).axis
         }
@@ -122,7 +122,7 @@ open class SceneImplementation: ImplementationNode, CustomStringConvertible {
 
     public func printTree(indent: Int = 0) {
         let indentString = String(repeating: " ", count: indent)
-        print("\(indentString)- \(self.description) (\(Self.self))")
+        print("\(indentString)- \(self.description) (\(Self.self)) - axis: \(self.axis)")
 
         for child in self.children {
             child.printTree(indent: indent + 4)

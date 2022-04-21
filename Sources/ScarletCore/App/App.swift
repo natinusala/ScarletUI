@@ -122,7 +122,7 @@ public extension App {
         Self.updateImplementation(implementation, with: self)
     }
 
-    func collectAttributes() -> [AttributeSetter] {
+    func collectAttributes() -> AttributesStash {
         return self.collectAttributesUsingMirror()
     }
 }

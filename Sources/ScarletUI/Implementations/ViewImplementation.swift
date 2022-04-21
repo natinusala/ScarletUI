@@ -19,7 +19,7 @@ import Yoga
 import ScarletCore
 
 /// Implementation for all views.
-open class ViewImplementation: ImplementationNode, CustomStringConvertible {
+open class ViewImplementation: LayoutImplementationNode, CustomStringConvertible {
     /// View display name for debugging purposes.
     let displayName: String
 
@@ -30,7 +30,7 @@ open class ViewImplementation: ImplementationNode, CustomStringConvertible {
     let ygNode: YGNodeRef
 
     /// The node axis.
-    var axis: Axis {
+    public var axis: Axis {
         get {
             return YGNodeStyleGetFlexDirection(self.ygNode).axis
         }
@@ -176,7 +176,7 @@ open class ViewImplementation: ImplementationNode, CustomStringConvertible {
 
     public func printTree(indent: Int = 0) {
         let indentString = String(repeating: " ", count: indent)
-        print("\(indentString)- \(self.description) (\(Self.self))")
+        print("\(indentString)- \(self.description) (\(Self.self)) - axis: \(self.axis)")
 
         for child in self.children {
             child.printTree(indent: indent + 4)
@@ -191,50 +191,4 @@ open class ViewImplementation: ImplementationNode, CustomStringConvertible {
 public extension View {
     /// Default implementation for user views.
     typealias Implementation = ViewImplementation
-}
-
-/// The "axis", aka. the direction in which children are laid out.
-public enum Axis {
-    /// Column (vertical) axis.
-    case column
-
-    /// Reversed column (vertical) axis.
-    case columnReverse
-
-    /// Row (horizontal) axis.
-    case row
-
-    /// Reversed row (horizontal) axis.
-    case rowReverse
-
-    /// Associated Yoga flex direction.
-    var ygFlexDirection: YGFlexDirection {
-        switch self {
-            case .column:
-                return YGFlexDirectionColumn
-            case .columnReverse:
-                return YGFlexDirectionColumnReverse
-            case .row:
-                return YGFlexDirectionRow
-            case .rowReverse:
-                return YGFlexDirectionRowReverse
-        }
-    }
-}
-
-public extension YGFlexDirection {
-    var axis: Axis {
-        switch self {
-            case YGFlexDirectionColumn:
-                return .column
-            case YGFlexDirectionColumnReverse:
-                return .columnReverse
-            case YGFlexDirectionRow:
-                return .row
-            case YGFlexDirectionRowReverse:
-                return .rowReverse
-            default:
-                fatalError("Unknown `YGFlexDirection` \(self)")
-        }
-    }
 }
