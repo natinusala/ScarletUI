@@ -28,6 +28,13 @@ func anyEquals(lhs: Any, rhs: Any) -> Bool {
         return false
     }
 
+    // Consider closures as never equal
+    // XXX: This is a giant hack but we can't do better until Swift
+    // has some sort of a "callable" protocol
+    if String(describing: type(of: lhs)).contains("->") {
+        return false
+    }
+
     // `Equatable` conformance
     if let equatableResult = tryEquatable(lhs: lhs, rhs: rhs) {
         return equatableResult

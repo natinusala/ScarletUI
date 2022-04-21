@@ -59,6 +59,7 @@ public extension ViewModifier {
         } else {
             // Modifier has changed
             let output = ElementOutput(storage: modifier, attributes: modifier.collectAttributes())
+
             let bodyInput = MakeInput(storage: input.storage?.edges[0])
             let bodyOutput = Body.make(view: modifier.body(content: ViewModifierContent()), input: bodyInput)
 

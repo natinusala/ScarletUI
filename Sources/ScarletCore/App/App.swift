@@ -64,7 +64,7 @@ public extension App {
         let output = ElementOutput(storage: app, attributes: app.collectAttributes())
 
         // Re-evaluate body
-        let body = app.body
+        let body = app.body // TODO: Use BodyAccessor.makeBody(of: app, storage: input.storage)
         let bodyStorage = input.storage?.edges[0]
         let bodyInput = MakeInput(storage: bodyStorage)
         let bodyOutput = Body.make(scene: body, input: bodyInput)

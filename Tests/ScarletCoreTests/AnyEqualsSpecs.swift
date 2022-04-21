@@ -77,6 +77,8 @@ let anyEqualsSpecs: [(_: String, lhs: Any, rhs: Any, expected: Bool)] = [
     // Dicts
     ("nonequatable dicts", lhs: [10: NonEquatableEnum.int(4321)], rhs: [10: NonEquatableEnum.int(4321)], expected: true),
     ("nonequatable dicts", lhs: [10: NonEquatableEnum.int(4321)], rhs: [10: NonEquatableEnum.int(8874)], expected: false),
+    // Closures (will most likely never conform)
+    ("closures", lhs: {(param: Int) in return param + 10}, rhs: {(param: Int) in return param + 20}, expected: false),
 ]
 
 class AnyEqualsSpecs: QuickSpec {

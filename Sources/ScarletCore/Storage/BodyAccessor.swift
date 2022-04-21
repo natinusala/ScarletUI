@@ -14,34 +14,9 @@
    limitations under the License.
 */
 
-import ScarletUI
-
-@main
-struct ScarletUIDemo: App {
-    var body: some Scene {
-        Window(title: "ScarletUI Demo") {
-            Content()
-        }
-    }
-}
-
-struct Content: View {
-    var text = "Truc"
-
-    var body: some View {
-        Text("Lorem Ipsum")
-        Text("Je connais pas la suite")
-
-        Row {
-            Truc(text: text)
-        }
-    }
-}
-
-struct Truc: View {
-    let text: String
-
-    var body: some View {
-        Text(text)
+struct BodyAccessor {
+    /// Makes the body of the given view, with state values injected beforehand.
+    static func makeBody<V: View>(of view: V, storage: StorageNode?) -> V.Body {
+        return view.body
     }
 }

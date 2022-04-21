@@ -86,38 +86,6 @@ public struct ElementOutput {
     }
 }
 
-/// An element storage graph node.
-public class StorageNode {
-    /// Type of the element this storage node belongs to.
-    public var elementType: Any.Type
-
-    /// Node value.
-    public var value: Any?
-
-    /// Node edges.
-    public var edges: [StorageNode?]
-
-    /// Creates a new empty storage node for the given view.
-    init<V: View>(for view: V) {
-        self.elementType = V.self
-        self.value = nil
-        self.edges = [StorageNode?](repeating: nil, count: V.staticEdgesCount())
-    }
-
-    /// Creates a new empty storage node for the given app.
-    init<A: App>(for app: A) {
-        self.elementType = A.self
-        self.value = nil
-        self.edges = [StorageNode?](repeating: nil, count: A.staticEdgesCount())
-    }
-
-    init(elementType: Any.Type, value: Any?, edges: [StorageNode?]) {
-        self.elementType = elementType
-        self.value = value
-        self.edges = edges
-    }
-}
-
 /// A node of the element graph.
 public class ElementNode {
     /// The parent of this node.

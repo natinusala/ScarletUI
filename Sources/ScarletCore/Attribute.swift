@@ -27,7 +27,7 @@ public enum AttributeStorage<Value> {
 /// The value will only be written if it's different than the current value, which makes it
 /// possible to use with `didSet` observers.
 @propertyWrapper
-public struct Attribute<Implementation, Value>: AttributeSetter where Value: Equatable {
+public struct Attribute<Implementation, Value>: AttributeSetter {
     public typealias AttributeKeyPath = ReferenceWritableKeyPath<Implementation, Value>
 
     public var wrappedValue: Value {
@@ -81,7 +81,7 @@ public struct Attribute<Implementation, Value>: AttributeSetter where Value: Equ
             return false
         }
 
-        if implementation[keyPath: self.keyPath] != value {
+        if !anyEquals(lhs: implementation[keyPath: self.keyPath], rhs: value) {
             implementation[keyPath: self.keyPath] = value
         }
 
@@ -149,8 +149,11 @@ public extension AttributeViewModifier {
     /// Default implementation for `make()`: always return a node with our attributes and no storage.
     static func make(modifier: Self?, input: MakeInput) -> MakeOutput {
         let output = ElementOutput(storage: modifier, attributes: modifier?.collectAttributes() ?? [:])
+
+        let body = modifier?.body(content: ViewModifierContent()) // TODO: Use BodyAccessor.makeBody(of: modifier, storage: input.storage)
+
         let bodyInput = MakeInput(storage: input.storage?.edges[0])
-        let bodyOutput = Body.make(view: modifier?.body(content: ViewModifierContent()), input: bodyInput)
+        let bodyOutput = Body.make(view: body, input: bodyInput)
 
         return Self.output(node: output, staticEdges: [bodyOutput], accessor: modifier?.accessor)
     }

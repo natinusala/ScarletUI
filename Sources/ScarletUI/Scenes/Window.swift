@@ -79,6 +79,8 @@ public class WindowImplementation: SceneImplementation {
     var handle: NativeWindow?
 
     public override func attributesDidSet() {
+        super.attributesDidSet()
+
         do {
             // Create the native window
             let handle = try Context.shared.platform.createWindow(
