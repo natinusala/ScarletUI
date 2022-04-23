@@ -91,7 +91,7 @@ public struct Attribute<Implementation, Value>: AttributeSetter {
     /// If the element parameter is an optional value and `nil` means "attribute unset",
     /// use this convenience method to set the attribute value in one line instead of
     /// manually unwrapping the optional.
-    public mutating func setFromOptional(value: Value?) {
+    public mutating func setFromOptional(_ value: Value?) {
         if let value = value {
             self.wrappedValue = value
         }

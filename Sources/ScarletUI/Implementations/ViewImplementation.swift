@@ -170,6 +170,11 @@ open class ViewImplementation: LayoutImplementationNode, CustomStringConvertible
         self.children.remove(at: position)
     }
 
+    /// Runs the scene for one frame.
+    open func frame() {
+        
+    }
+
     open func attributesDidSet() {
         // Nothing by default
     }

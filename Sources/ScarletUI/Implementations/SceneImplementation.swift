@@ -83,6 +83,12 @@ open class SceneImplementation: LayoutImplementationNode, CustomStringConvertibl
         }
     }
 
+    /// Runs the scene for one frame.
+    /// Returns `true` if the scene should exit.
+    open func frame() -> Bool {
+        return false
+    }
+
     public required init(kind: ImplementationKind, displayName: String) {
         guard kind == .scene else {
             fatalError("Tried to create a `ViewImplementation` with kind \(kind)")

@@ -46,6 +46,7 @@ let package = Package(
                 "ScarletNative",
                 "Yoga",
                 "GLFW",
+                "Glad",
                 "Skia",
                 .product(name: "Backtrace", package: "swift-backtrace"),
             ]
@@ -58,7 +59,7 @@ let package = Package(
         // ScarletNative: native code companion to ScarletUI
         .target(
             name: "ScarletNative",
-            dependencies: []
+            dependencies: ["GLFW", "CGlad"]
         ),
         // ScarletUIDemo: simple ScarletUI demo app
         .executableTarget(
@@ -120,5 +121,14 @@ let package = Package(
         ),
         .systemLibrary(name: "GLFW", path: "External/GLFW", pkgConfig: "glfw3"),
         .systemLibrary(name: "Skia", path: "External/Skia", pkgConfig: "skia_loftwing"),
+        .target(
+            name: "CGlad",
+            path: "External/CGlad"
+        ),
+        .target(
+            name: "Glad",
+            dependencies: ["CGlad"],
+            path: "External/Glad"
+        ),
     ]
 )

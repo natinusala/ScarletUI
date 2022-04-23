@@ -39,7 +39,7 @@ public actor Logger {
     /// Logs a debug message. The first parameter is used to toggle debug logs for
     /// components of the library at compile time.
     /// Change the debug flags for components in `Debug.swift`.
-    public static func debug(_ dbg: Bool, _ message: @autoclosure () -> String) {
+    public static func debug(_ dbg: Bool = true, _ message: @autoclosure () -> String) {
         if dbg {
             print("\("[DEBUG]".green) \(message())")
         }

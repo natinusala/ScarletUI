@@ -25,12 +25,15 @@ protocol Platform {
     func poll()
 
     /// Creates, opens and makes current a new window.
-    func createWindow(title: String, mode: WindowMode, backend: GraphicsBackend) throws -> NativeWindow
+    func createWindow(title: String, mode: WindowMode, backend: GraphicsBackend, srgb: Bool) throws -> NativeWindow
 }
 
-/// Returns the current platform handle.
-func getCurrentPlatform() -> any Platform {
-    return DummyPlatform()
+fileprivate var currentPlatform: Platform?
+
+/// Creates and returns the current platform handle.
+func createPlatform() throws -> Platform? {
+    // TODO: only return GLFW if actually available
+    return try GLFWPlatform()
 }
 
 /// A native, platform-dependent window.

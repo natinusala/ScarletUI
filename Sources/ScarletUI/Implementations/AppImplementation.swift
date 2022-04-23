@@ -14,6 +14,8 @@
    limitations under the License.
 */
 
+import Foundation
+
 import Backtrace
 
 import ScarletCore
@@ -25,6 +27,9 @@ open class AppImplementation: ImplementationNode, CustomStringConvertible {
 
     /// Children of this app.
     var children: [SceneImplementation] = []
+
+    /// Run loop responsible for consuming and/or draining events.
+    let runLoop = RunLoop.main
 
     public required init(kind: ImplementationKind, displayName: String) {
         guard kind == .app else {
@@ -46,9 +51,59 @@ open class AppImplementation: ImplementationNode, CustomStringConvertible {
         self.children.remove(at: position)
     }
 
+    /// Runs the app for one frame.
+    /// Returns `true` if the app should exit.
+    func frame(context: Context) -> Bool {
+        // Poll events
+        context.platform.poll()
+
+        // Run the scene for one frame, if any
+        guard let scene = self.children[safe: 0] else {
+            return false
+        }
+
+        return scene.frame()
+    }
+
+    private let targetFrameTime = 0.016666666 // TODO: find a way for users to customize this somehow, put it in the scene?
+
     /// Runs the app until closed by the user.
     func run() {
-        self.printTree()
+        let context = Context.shared
+
+        while true {
+            // Run one frame
+            let (frameBegin, frameTime, exit) = stopwatch {
+                self.frame(context: context)
+            }
+
+            // If a target frame time is specified and we are below it, run the loop until next frame
+            // Otherwise run the loop for half a frame (arbitrary)
+            let runLoopUntil: Date
+            if targetFrameTime > 0 && frameTime < targetFrameTime {
+                runLoopUntil = frameBegin.advanced(by: targetFrameTime)
+            } else {
+                runLoopUntil = frameBegin.advanced(by: targetFrameTime / 2)
+            }
+
+            if !self.runLoop.run(mode: .default, before: runLoopUntil) {
+                Logger.warning("Run loop could not be started!")
+            }
+
+            // Exit if necessary
+            // TODO: Handle SIGINT here as well
+            if exit {
+                Logger.info("Exiting...")
+                break
+            }
+        }
+    }
+
+    /// Runs the specified closure and returns how long it took to run.
+    private func stopwatch<Result>(_ closure: () -> Result) -> (Date, TimeInterval, Result) {
+        let begin = Date()
+        let result = closure()
+        return (begin, begin.distance(to: Date()), result)
     }
 
     open func attributesDidSet() {

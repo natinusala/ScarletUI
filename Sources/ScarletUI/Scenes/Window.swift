@@ -33,6 +33,9 @@ public struct Window<Content>: Scene where Content: View {
     @Attribute(\WindowImplementation.backend)
     var backend
 
+    @Attribute(\WindowImplementation.srgb)
+    var srgb
+
     @Attribute(\LayoutImplementationNode.axis, propagate: true)
     var axis
 
@@ -42,13 +45,15 @@ public struct Window<Content>: Scene where Content: View {
         title: String? = nil,
         mode: WindowMode? = nil,
         backend: GraphicsBackend? = nil,
+        srgb: Bool? = nil,
         @ViewBuilder content: () -> Content
     ) {
         self.content = content()
 
-        self.$title.setFromOptional(value: title)
-        self.$mode.setFromOptional(value: mode)
-        self.$backend.setFromOptional(value: backend)
+        self.$title.setFromOptional(title)
+        self.$mode.setFromOptional(mode)
+        self.$backend.setFromOptional(backend)
+        self.$srgb.setFromOptional(srgb)
 
         self.axis = .column
     }
@@ -75,6 +80,9 @@ public class WindowImplementation: SceneImplementation {
     /// The window graphics backend.
     var backend = GraphicsBackend.getDefault()
 
+    /// Whether to use sRGB color space or not.
+    var srgb: Bool = true
+
     /// The native window handle.
     var handle: NativeWindow?
 
@@ -86,7 +94,8 @@ public class WindowImplementation: SceneImplementation {
             let handle = try Context.shared.platform.createWindow(
                 title: self.title,
                 mode: self.mode,
-                backend: self.backend
+                backend: self.backend,
+                srgb: self.srgb
             )
             self.handle = handle
 
@@ -98,6 +107,22 @@ public class WindowImplementation: SceneImplementation {
             Logger.error("Unable to create window: \(error)")
             exit(-1)
         }
+    }
+
+    override public func frame() -> Bool {
+        if let handle = self.handle {
+            // Draw every view
+            for view in self.children {
+                view.frame()
+            }
+
+            // Swap buffers
+            handle.swapBuffers()
+
+            return handle.shouldClose
+        }
+
+        return false
     }
 
     /// Called after the window gets resized by the user.

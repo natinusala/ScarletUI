@@ -14,14 +14,29 @@
    limitations under the License.
 */
 
+import Foundation
+
 /// App runtime "context", aka. shared state.
 class Context {
     /// Shared context instance.
     static let shared = Context()
 
-    let platform = getCurrentPlatform()
+    /// Current platform handle.
+    let platform: any Platform
 
     private init() {
+        do {
+            guard let platform = try createPlatform() else {
+                Logger.error("No compatible platform found, is your platform supported?")
+                exit(-1)
+            }
+
+            self.platform = platform
+        } catch {
+            Logger.error("Cannot initialize platform: \(error.qualifiedName)")
+            exit(-1)
+        }
+
         Logger.info("Using platform \(self.platform.name)")
     }
 }
