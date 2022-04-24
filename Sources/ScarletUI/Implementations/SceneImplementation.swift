@@ -27,7 +27,21 @@ open class SceneImplementation: LayoutImplementationNode, CustomStringConvertibl
     var children: [ViewImplementation] = []
 
     /// The scene Yoga node.
-    let ygNode: YGNodeRef
+    public let ygNode: YGNodeRef
+
+    /// The computed layout of the scene.
+    public var layout = Rect()
+
+    /// The parent app implementation.
+    var parent: AppImplementation?
+
+    public var layoutParent: LayoutImplementationNode? {
+        return self.parent as? LayoutImplementationNode
+    }
+
+    public var layoutChildren: [LayoutImplementationNode] {
+        return self.children.map { $0 as LayoutImplementationNode }
+    }
 
     /// The node axis.
     public var axis: Axis {
@@ -104,6 +118,12 @@ open class SceneImplementation: LayoutImplementationNode, CustomStringConvertibl
         YGNodeFree(self.ygNode)
     }
 
+    /// Called by the parent app when the scene is ready to be created.
+    /// This should be the time to initialize any native resources such as windows or graphics context.
+    open func create(platform: Platform) {
+        // Nothing by default
+    }
+
     open func insertChild(_ child: ImplementationNode, at position: Int) {
         guard let child = child as? ViewImplementation else {
             fatalError("Cannot add \(type(of: child)) as child of `SceneImplementation`")
@@ -111,6 +131,8 @@ open class SceneImplementation: LayoutImplementationNode, CustomStringConvertibl
 
         YGNodeInsertChild(self.ygNode, child.ygNode, UInt32(position))
         self.children.insert(child, at: position)
+
+        child.parent = self
     }
 
     open func removeChild(at position: Int) {

@@ -14,6 +14,7 @@
    limitations under the License.
 */
 
+import Skia
 import Glad
 import GLFW
 
@@ -51,6 +52,12 @@ class GLFWWindow: NativeWindow {
 
     let size: WindowSize
 
+    let context: GraphicsContext
+
+    var skContext: OpaquePointer {
+        return self.context.skContext
+    }
+
     init(title: String, mode: WindowMode, backend: GraphicsBackend, srgb: Bool) throws {
         // Setup hints
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3)
@@ -71,6 +78,10 @@ class GLFWWindow: NativeWindow {
         glfwWindowHint(GLFW_GREEN_BITS, GLFW_DONT_CARE)
         glfwWindowHint(GLFW_BLUE_BITS, GLFW_DONT_CARE)
         glfwWindowHint(GLFW_REFRESH_RATE, GLFW_DONT_CARE)
+
+        // Resize hints
+        // TODO: set to `true` or `false` depending on requested settings
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
         // Get monitor and mode
         let monitor = glfwGetPrimaryMonitor()
@@ -155,7 +166,13 @@ class GLFWWindow: NativeWindow {
 
         self.size = WindowSize(width: Float(actualWindowWidth), height: Float(actualWindowHeight))
 
-        // TODO: Initialize context
+        // Initialize context
+        self.context = try GraphicsContext(
+            width: self.size.width,
+            height: self.size.height,
+            backend: backend,
+            srgb: srgb
+        )
 
         // Finalize init
         glfwSwapInterval(1)
@@ -169,7 +186,7 @@ class GLFWWindow: NativeWindow {
     }
 
     func swapBuffers() {
-        // TODO: gr_direct_context_flush(self.skContext)
+        gr_direct_context_flush(self.skContext)
         glfwSwapBuffers(self.handle)
     }
 }
@@ -184,6 +201,6 @@ enum GLFWError: Error {
 
 #if DEBUG_GRAPHICS_BACKEND
 private func onGlDebugMessage(severity: GLenum, type: GLenum, id: GLuint, message: UnsafePointer<CChar>?) {
-    Logger.debug("OpenGL \(severity) \(id): \(message.str ?? "unspecified")")
+    Logger.debug(true, "OpenGL \(severity) \(id): \(message.str ?? "unspecified")")
 }
 #endif

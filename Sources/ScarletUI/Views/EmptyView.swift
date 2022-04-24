@@ -14,14 +14,7 @@
    limitations under the License.
 */
 
-import ScarletUI
-
-@main
-struct ScarletUIDemo: App {
-    var body: some Scene {
-        Window(title: "ScarletUI Demo") {
-            Rectangle(color: .blue)
-                .grow(1.0)
-        }
-    }
+/// A view with no body.
+public struct EmptyView: View {
+    public typealias Body = Never
 }

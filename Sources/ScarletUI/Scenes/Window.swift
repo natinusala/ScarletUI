@@ -86,12 +86,10 @@ public class WindowImplementation: SceneImplementation {
     /// The native window handle.
     var handle: NativeWindow?
 
-    public override func attributesDidSet() {
-        super.attributesDidSet()
-
+    public override func create(platform: Platform) {
         do {
             // Create the native window
-            let handle = try Context.shared.platform.createWindow(
+            let handle = try platform.createWindow(
                 title: self.title,
                 mode: self.mode,
                 backend: self.backend,
@@ -99,7 +97,7 @@ public class WindowImplementation: SceneImplementation {
             )
             self.handle = handle
 
-            Logger.info("Created a \(self.mode.name) \(self.backend.name) window (title: \"\(self.title)\", size: \(handle.size.width)x\(handle.size.height))")
+            Logger.info("Created new \(handle.size.width)x\(handle.size.height) window (mode: \(self.mode.name))")
 
             // Set the initial node dimensions
             self.onResize()
@@ -110,6 +108,8 @@ public class WindowImplementation: SceneImplementation {
     }
 
     override public func frame() -> Bool {
+        self.layoutIfNeeded()
+
         if let handle = self.handle {
             // Draw every view
             for view in self.children {

@@ -14,14 +14,23 @@
    limitations under the License.
 */
 
-import ScarletUI
+import ScarletCore
 
-@main
-struct ScarletUIDemo: App {
-    var body: some Scene {
-        Window(title: "ScarletUI Demo") {
-            Rectangle(color: .blue)
-                .grow(1.0)
-        }
+public struct ShrinkModifier: AttributeViewModifier {
+    @Attribute(\ViewImplementation.shrink)
+    var shrink
+
+    public init(_ shrink: Float) {
+        self.shrink = shrink
+    }
+}
+
+public extension View {
+    /// Sets the view shrink factor, aka. the percentage of space the view is allowed to
+    /// shrink for if there is not enough space for everyone.
+    ///
+    /// Opposite of grow.
+    func shrink(_ shrink: Float) -> some View {
+        self.modifier(ShrinkModifier(shrink))
     }
 }

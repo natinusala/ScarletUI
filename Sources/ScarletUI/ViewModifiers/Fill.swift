@@ -14,14 +14,24 @@
    limitations under the License.
 */
 
-import ScarletUI
+public struct FillModifier: AttributeViewModifier {
+    @Attribute(\ViewImplementation.fill)
+    var fill
 
-@main
-struct ScarletUIDemo: App {
-    var body: some Scene {
-        Window(title: "ScarletUI Demo") {
-            Rectangle(color: .blue)
-                .grow(1.0)
-        }
+    public init(_ fill: Fill) {
+        self.fill = fill
     }
+}
+
+public extension View {
+    /// Sets the view fill, aka. the color or gradient of the view's background
+    func fill(_ fill: Fill) -> some View {
+        self.modifier(FillModifier(fill))
+    }
+}
+
+/// A view fill color or gradient.
+public enum Fill {
+    case none
+    case color(Color)
 }

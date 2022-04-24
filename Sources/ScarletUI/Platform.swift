@@ -15,7 +15,7 @@
 */
 
 /// Allows interfacing with the platform the app is currently running on.
-protocol Platform {
+public protocol Platform {
     init() throws
 
     /// Human readable platform name.
@@ -37,7 +37,7 @@ func createPlatform() throws -> Platform? {
 }
 
 /// A native, platform-dependent window.
-protocol NativeWindow {
+public protocol NativeWindow {
     typealias WindowSize = (width: Float, height: Float)
 
     /// Should return true if the platform requested the window to close.
@@ -81,22 +81,3 @@ public enum WindowMode: Equatable {
     }
 }
 
-/// The graphics backend of an application.
-public enum GraphicsBackend {
-    /// OpenGL.
-    case gl
-
-    /// Selects the best available graphics API, or fatals if none was found.
-    public static func getDefault() -> GraphicsBackend {
-        // TODO: only return OpenGL if it's actually available
-        return .gl
-    }
-
-    /// Full, human-redable name.
-    var name: String {
-        switch self {
-            case .gl:
-                return "OpenGL"
-        }
-    }
-}

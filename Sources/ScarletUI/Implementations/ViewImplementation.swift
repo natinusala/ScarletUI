@@ -27,7 +27,37 @@ open class ViewImplementation: LayoutImplementationNode, CustomStringConvertible
     var children: [ViewImplementation] = []
 
     /// The view Yoga node.
-    let ygNode: YGNodeRef
+    public let ygNode: YGNodeRef
+
+    /// The computed layout of the view.
+    public var layout = Rect()
+
+    /// The parent scene or view implementation.
+    var parent: LayoutImplementationNode?
+
+    /// The view fill, aka. its background color or gradient.
+    var fill: Fill = .none
+
+    /// The view grow factor, aka. the percentage of remaining space to give this view.
+    var grow: Float {
+        get {
+            return YGNodeStyleGetFlexGrow(self.ygNode)
+        }
+        set {
+            YGNodeStyleSetFlexGrow(self.ygNode, newValue)
+        }
+    }
+
+    /// The view shrink factor, aka. the percentage of space the view is allowed to
+    /// shrink for if there is not enough space for everyone.
+    var shrink: Float {
+        get {
+            return YGNodeStyleGetFlexShrink(self.ygNode)
+        }
+        set {
+            YGNodeStyleSetFlexShrink(self.ygNode, newValue)
+        }
+    }
 
     /// The node axis.
     public var axis: Axis {
@@ -149,6 +179,9 @@ open class ViewImplementation: LayoutImplementationNode, CustomStringConvertible
         self.displayName = displayName
 
         self.ygNode = YGNodeNew()
+
+        // Set default layout values to make it so that views take
+        // all available space by default
         self.desiredSize = Size(width: .auto, height: .auto)
     }
 
@@ -163,6 +196,8 @@ open class ViewImplementation: LayoutImplementationNode, CustomStringConvertible
 
         YGNodeInsertChild(self.ygNode, child.ygNode, UInt32(position))
         self.children.insert(child, at: position)
+
+        child.parent = self
     }
 
     public func removeChild(at position: Int) {
@@ -172,7 +207,7 @@ open class ViewImplementation: LayoutImplementationNode, CustomStringConvertible
 
     /// Runs the scene for one frame.
     open func frame() {
-        
+        self.layoutIfNeeded()
     }
 
     open func attributesDidSet() {
@@ -190,6 +225,14 @@ open class ViewImplementation: LayoutImplementationNode, CustomStringConvertible
 
     public var description: String {
         return self.displayName
+    }
+
+    public var layoutParent: LayoutImplementationNode? {
+        return self.parent
+    }
+
+    public var layoutChildren: [LayoutImplementationNode] {
+        return self.children.map { $0 as LayoutImplementationNode }
     }
 }
 

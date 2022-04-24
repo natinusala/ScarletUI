@@ -14,14 +14,17 @@
    limitations under the License.
 */
 
-import ScarletUI
+/// A rectangle filled by a solid color.
+public struct Rectangle: View {
+    var color: Color
 
-@main
-struct ScarletUIDemo: App {
-    var body: some Scene {
-        Window(title: "ScarletUI Demo") {
-            Rectangle(color: .blue)
-                .grow(1.0)
-        }
+    public init(color: Color) {
+        self.color = color
+    }
+
+    public var body: some View {
+        EmptyView()
+            .fill(.color(color))
+            .grow(1.0)
     }
 }

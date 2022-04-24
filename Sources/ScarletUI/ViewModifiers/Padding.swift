@@ -16,11 +16,11 @@
 
 import ScarletCore
 
-public struct Padding: AttributeViewModifier {
+public struct PaddingModifier: AttributeViewModifier {
     @Attribute(\ViewImplementation.padding)
     var padding
 
-    public init(padding: EdgesValues) {
+    public init(_ padding: EdgesValues) {
         self.padding = padding
     }
 }
@@ -28,11 +28,11 @@ public struct Padding: AttributeViewModifier {
 public extension View {
     /// Sets the view padding, aka. the space between this view and its children
     func padding(_ padding: Value) -> some View {
-        self.modifier(Padding(padding: EdgesValues(top: padding, right: padding, bottom: padding, left: padding)))
+        self.modifier(PaddingModifier(EdgesValues(top: padding, right: padding, bottom: padding, left: padding)))
     }
 
     /// Sets the view padding, aka. the space between this view and its children
     func padding(top: Value, right: Value, bottom: Value, left: Value) -> some View {
-        self.modifier(Padding(padding: EdgesValues(top: top, right: right, bottom: bottom, left: left)))
+        self.modifier(PaddingModifier(EdgesValues(top: top, right: right, bottom: bottom, left: left)))
     }
 }

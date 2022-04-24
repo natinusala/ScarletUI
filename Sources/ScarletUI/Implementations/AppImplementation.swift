@@ -31,12 +31,30 @@ open class AppImplementation: ImplementationNode, CustomStringConvertible {
     /// Run loop responsible for consuming and/or draining events.
     let runLoop = RunLoop.main
 
+    /// Current platform handle
+    let platform: any Platform
+
     public required init(kind: ImplementationKind, displayName: String) {
         guard kind == .app else {
             fatalError("Tried to create a `ViewImplementation` with kind \(kind)")
         }
 
         self.displayName = displayName
+
+        // Init platform
+        do {
+            guard let platform = try createPlatform() else {
+                Logger.error("No compatible platform found, is your platform supported?")
+                exit(-1)
+            }
+
+            self.platform = platform
+        } catch {
+            Logger.error("Cannot initialize platform: \(error.qualifiedName)")
+            exit(-1)
+        }
+
+        Logger.info("Using platform \(self.platform.name)")
     }
 
     public func insertChild(_ child: ImplementationNode, at position: Int) {
@@ -45,6 +63,10 @@ open class AppImplementation: ImplementationNode, CustomStringConvertible {
         }
 
         self.children.insert(child, at: position)
+        child.parent = self
+
+        // Attributes are set, it's been added to the list, call `create(platform:)` on the child
+        child.create(platform: self.platform)
     }
 
     public func removeChild(at position: Int) {
@@ -53,9 +75,9 @@ open class AppImplementation: ImplementationNode, CustomStringConvertible {
 
     /// Runs the app for one frame.
     /// Returns `true` if the app should exit.
-    func frame(context: Context) -> Bool {
+    func frame() -> Bool {
         // Poll events
-        context.platform.poll()
+        self.platform.poll()
 
         // Run the scene for one frame, if any
         guard let scene = self.children[safe: 0] else {
@@ -69,12 +91,10 @@ open class AppImplementation: ImplementationNode, CustomStringConvertible {
 
     /// Runs the app until closed by the user.
     func run() {
-        let context = Context.shared
-
         while true {
             // Run one frame
             let (frameBegin, frameTime, exit) = stopwatch {
-                self.frame(context: context)
+                self.frame()
             }
 
             // If a target frame time is specified and we are below it, run the loop until next frame

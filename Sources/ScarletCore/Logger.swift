@@ -1,5 +1,5 @@
 /*
-    Copyright 2021 natinusala
+    Copyright 2022 natinusala
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ public actor Logger {
     /// Logs a debug message. The first parameter is used to toggle debug logs for
     /// components of the library at compile time.
     /// Change the debug flags for components in `Debug.swift`.
-    public static func debug(_ dbg: Bool = true, _ message: @autoclosure () -> String) {
+    public static func debug(_ dbg: Bool, _ message: @autoclosure () -> String) {
         if dbg {
             print("\("[DEBUG]".green) \(message())")
         }
