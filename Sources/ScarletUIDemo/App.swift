@@ -32,12 +32,25 @@ struct ScarletUIDemo: App {
                             Rectangle(color: .green)
                             Rectangle(color: .blue)
                         }
-                        .grow(1.0)
+                        .grow()
                     }
                 }
-                .grow(1.0)
+                .grow()
             }
             .height(100%)
         }
+    }
+}
+
+struct Grow: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .grow(1.0)
+    }
+}
+
+extension View {
+    func grow() -> some View {
+        return modifier(Grow())
     }
 }

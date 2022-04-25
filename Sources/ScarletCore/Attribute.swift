@@ -157,4 +157,9 @@ public extension AttributeViewModifier {
 
         return Self.output(node: output, staticEdges: [bodyOutput], accessor: modifier?.accessor)
     }
+
+    /// Body for attributes-only modifiers: return content itself, unmodified.
+    func body(content: Content) -> Content {
+        return content
+    }
 }

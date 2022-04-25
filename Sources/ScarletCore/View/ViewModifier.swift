@@ -88,13 +88,6 @@ public extension ViewModifier {
     }
 }
 
-public extension ViewModifier where Body == Content {
-    /// Body for attributes-only modifiers: return content itself, unmodified.
-    func body(content: Content) -> Content {
-        return content
-    }
-}
-
 /// Placeholder for view modifier content.
 public struct ViewModifierContent<Modifier>: View where Modifier: ViewModifier {
     public typealias Body = Never
