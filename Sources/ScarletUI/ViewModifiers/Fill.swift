@@ -24,9 +24,14 @@ public struct FillModifier: AttributeViewModifier {
 }
 
 public extension View {
-    /// Sets the view fill, aka. the color or gradient of the view's background
+    /// Sets the view fill, aka. the color or gradient of the view's background, to any fill variant.
     func fill(_ fill: Fill) -> some View {
         self.modifier(FillModifier(fill))
+    }
+
+    /// Sets the view fill to the given color.
+    func fill(color: Color) -> some View {
+        self.modifier(FillModifier(.color(color)))
     }
 }
 

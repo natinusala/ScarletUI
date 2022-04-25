@@ -21,36 +21,27 @@ struct ScarletUIDemo: App {
     var body: some Scene {
         Window(title: "ScarletUI Demo") {
             Row {
-                Group {
-                    Rectangle(color: .red)
-                    Rectangle(color: .green)
-                    Rectangle(color: .blue)
+                Colors()
+                    .grow(1.0)
 
-                    Column(reverse: true) {
-                        Group {
-                            Rectangle(color: .red)
-                            Rectangle(color: .green)
-                            Rectangle(color: .blue)
-                        }
-                        .grow()
-                    }
+                Column(reverse: true) {
+                    Colors()
+                        .grow(1.0)
                 }
-                .grow()
+                .grow(1.0)
             }
             .height(100%)
         }
     }
 }
 
-struct Grow: ViewModifier {
-    func body(content: Content) -> some View {
-        content
-            .grow(1.0)
-    }
-}
-
-extension View {
-    func grow() -> some View {
-        return modifier(Grow())
+struct Colors: View {
+    var body: some View {
+        Group {
+            Rectangle(color: .red)
+            Rectangle(color: .green)
+            Rectangle(color: .blue)
+        }
+        .grow(1.0)
     }
 }

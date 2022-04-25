@@ -24,7 +24,7 @@ public struct Rectangle: View {
 
     public var body: some View {
         EmptyView()
-            .fill(.color(color))
+            .fill(color: color)
             .grow(1.0)
     }
 }
