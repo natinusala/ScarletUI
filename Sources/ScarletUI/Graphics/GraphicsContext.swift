@@ -21,7 +21,7 @@ import Glad
 /// The canvas used everywhere by the app is a product of this context.
 /// This is different from the underlying backend context (OpenGL...).
 /// TODO: put stuff that needs teardown in a wrapper class for deinit
-struct GraphicsContext {
+public struct GraphicsContext {
     /// Skia context of this graphics context.
     let skContext: OpaquePointer
 

@@ -30,13 +30,28 @@ open class ViewImplementation: LayoutImplementationNode, CustomStringConvertible
     public let ygNode: YGNodeRef
 
     /// The computed layout of the view.
-    public var layout = Rect()
+    public var layout = Rect() {
+        didSet {
+            self.fillDirty = true
+        }
+    }
 
     /// The parent scene or view implementation.
     var parent: LayoutImplementationNode?
 
     /// The view fill, aka. its background color or gradient.
-    var fill: Fill = .none
+    var fill: Fill = .none {
+        didSet {
+            self.fillDirty = true
+        }
+    }
+
+    /// Is the fill paint dirty, aka. does it need to be
+    /// recreated at next frame?
+    var fillDirty = false
+
+    /// The paint used to draw the view fill.
+    var fillPaint: Paint? = nil
 
     /// The view grow factor, aka. the percentage of remaining space to give this view.
     var grow: Float {
@@ -126,20 +141,17 @@ open class ViewImplementation: LayoutImplementationNode, CustomStringConvertible
         }
     }
 
-    /// The desired size of the view.
+    /// The desired width of the view.
     /// Set to `auto` for all views by default.
     ///
-    /// The actual size after layout may or may not be the desired size,
-    /// however it cannot be less than the desired size.
-    var desiredSize: Size {
+    /// The actual width after layout may or may not be the desired width,
+    /// however it cannot be less than the desired width.
+    var desiredWidth: Value {
         get {
-            return Size(
-                width: .fromYGValue(YGNodeStyleGetWidth(self.ygNode)),
-                height: .fromYGValue(YGNodeStyleGetHeight(self.ygNode))
-            )
+            return .fromYGValue(YGNodeStyleGetWidth(self.ygNode))
         }
         set {
-            switch newValue.width {
+            switch newValue {
                 case let .dip(value):
                     YGNodeStyleSetWidth(self.ygNode, value)
                     YGNodeStyleSetMinWidth(self.ygNode, value)
@@ -153,8 +165,20 @@ open class ViewImplementation: LayoutImplementationNode, CustomStringConvertible
                     YGNodeStyleSetWidth(self.ygNode, YGUndefined)
                     YGNodeStyleSetMinWidth(self.ygNode, YGUndefined)
             }
+        }
+    }
 
-            switch newValue.height {
+    /// The desired height of the view.
+    /// Set to `auto` for all views by default.
+    ///
+    /// The actual height after layout may or may not be the desired height,
+    /// however it cannot be less than the desired height.
+    var desiredHeight: Value {
+        get {
+            return .fromYGValue(YGNodeStyleGetHeight(self.ygNode))
+        }
+        set {
+            switch newValue {
                 case let .dip(value):
                     YGNodeStyleSetHeight(self.ygNode, value)
                     YGNodeStyleSetMinHeight(self.ygNode, value)
@@ -168,6 +192,24 @@ open class ViewImplementation: LayoutImplementationNode, CustomStringConvertible
                     YGNodeStyleSetHeight(self.ygNode, YGUndefined)
                     YGNodeStyleSetMinHeight(self.ygNode, YGUndefined)
             }
+        }
+    }
+
+    /// The desired size of the view.
+    /// Set to `auto` for all views by default.
+    ///
+    /// The actual size after layout may or may not be the desired size,
+    /// however it cannot be less than the desired size.
+    var desiredSize: Size {
+        get {
+            return Size(
+                width: self.desiredWidth,
+                height: self.desiredHeight
+            )
+        }
+        set {
+            self.desiredWidth = newValue.width
+            self.desiredHeight = newValue.height
         }
     }
 
@@ -205,9 +247,34 @@ open class ViewImplementation: LayoutImplementationNode, CustomStringConvertible
         self.children.remove(at: position)
     }
 
-    /// Runs the scene for one frame.
-    open func frame() {
+    /// Runs the view for one frame.
+    open func frame(canvas: Canvas?) {
+        // Run layout
         self.layoutIfNeeded()
+
+        // Draw children
+        for child in self.children {
+            child.frame(canvas: canvas)
+        }
+
+        // Rebuild fill paint if needed
+        if self.fillDirty {
+            self.fillPaint = self.fill.createPaint(inside: self.layout)
+            self.fillDirty = false
+        }
+
+        // Draw the view
+        if let canvas = canvas, self.layout.width > 0 && self.layout.height > 0 {
+            self.draw(in: self.layout, canvas: canvas)
+        }
+    }
+
+    /// Draws the view on screen.
+    open func draw(in bounds: Rect, canvas: Canvas) {
+        // Draw fill
+        if let fillPaint = self.fillPaint {
+            canvas.drawRect(bounds, paint: fillPaint)
+        }
     }
 
     open func attributesDidSet() {

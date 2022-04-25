@@ -20,8 +20,24 @@ import ScarletUI
 struct ScarletUIDemo: App {
     var body: some Scene {
         Window(title: "ScarletUI Demo") {
-            Rectangle(color: .blue)
+            Row {
+                Group {
+                    Rectangle(color: .red)
+                    Rectangle(color: .green)
+                    Rectangle(color: .blue)
+
+                    Column(reverse: true) {
+                        Group {
+                            Rectangle(color: .red)
+                            Rectangle(color: .green)
+                            Rectangle(color: .blue)
+                        }
+                        .grow(1.0)
+                    }
+                }
                 .grow(1.0)
+            }
+            .height(100%)
         }
     }
 }

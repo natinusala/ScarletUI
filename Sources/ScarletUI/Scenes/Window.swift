@@ -86,6 +86,11 @@ public class WindowImplementation: SceneImplementation {
     /// The native window handle.
     var handle: NativeWindow?
 
+    /// The canvas used by all views to draw themselves.
+    var canvas: Canvas? {
+        return self.handle?.context.canvas
+    }
+
     public override func create(platform: Platform) {
         do {
             // Create the native window
@@ -113,7 +118,7 @@ public class WindowImplementation: SceneImplementation {
         if let handle = self.handle {
             // Draw every view
             for view in self.children {
-                view.frame()
+                view.frame(canvas: self.canvas)
             }
 
             // Swap buffers

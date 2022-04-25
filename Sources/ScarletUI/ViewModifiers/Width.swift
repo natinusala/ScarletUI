@@ -14,12 +14,18 @@
    limitations under the License.
 */
 
-/// A view with no body.
-///
-/// As this view does not have any content, it does not have
-/// any width or height in the container view or scene axis.
-/// Consequently, you have to use layout modifiers
-/// such as `grow`, `width` or `height` to give it the desired size.
-public struct EmptyView: View {
-    public typealias Body = Never
+public struct WidthModifier: AttributeViewModifier {
+    @Attribute(\ViewImplementation.desiredWidth)
+    var width
+
+    public init(width: Value) {
+        self.width = width
+    }
+}
+
+public extension View {
+    /// Sets the view desired width.
+    func width(_ width: Value) -> some View {
+        self.modifier(WidthModifier(width: width))
+    }
 }

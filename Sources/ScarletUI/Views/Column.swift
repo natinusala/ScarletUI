@@ -25,10 +25,14 @@ public struct Column<Content>: View where Content: View {
 
     var content: Content
 
-    public init(@ViewBuilder content: () -> Content) {
+    public init(reverse: Bool = false, @ViewBuilder content: () -> Content) {
         self.content = content()
 
-        self.axis = .column
+        if reverse {
+            self.axis = .columnReverse
+        } else {
+            self.axis = .column
+        }
     }
 
     public static func make(view: Self?, input: MakeInput) -> MakeOutput {

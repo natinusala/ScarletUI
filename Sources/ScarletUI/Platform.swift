@@ -46,8 +46,8 @@ public protocol NativeWindow {
     /// Window dimensions.
     var size: WindowSize { get }
 
-    /// Graphics canvas for this window.
-    // var canvas: Canvas { get }
+    /// Graphics context for this window.
+    var context: GraphicsContext { get }
 
     /// Swap graphic buffers ("flush" the canvas).
     func swapBuffers()
