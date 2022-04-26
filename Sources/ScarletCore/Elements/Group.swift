@@ -44,7 +44,7 @@ extension Group: View, Accessor where Content: View {
     }
 }
 
-// TODO: Is it needed? The attributes mechanism already does this implicitly by propagating attributes to every Group child:
-// Make an extension of `ModifiedContent` where `Content == Group` to change how modifiers are applied to groups once implementations are finished
+// TODO: Make an extension of `ModifiedContent` where `Content == Group` to change how modifiers are applied to groups once implementations are finished
 // The SwiftUI documentation states "The modifier applies to all members of the group — and not to the group itself.", so we need a criteria to
 // determine what a "member" is, and the presence of an implementation is a good candidate (Text is a member, Sidebar is a member, Optional is not)
+// Right now it already works for attributes due to how they are applied, but not for wrapper modifiers
