@@ -17,7 +17,7 @@
 /// A ScarletUI application.
 /// An app is made of one scene, and a scene is made of one or multiple
 /// views.
-public protocol App: Accessor {
+public protocol App: Accessor, Makeable {
     /// Initializer used for the framework to create the app on boot.
     init()
 
@@ -50,17 +50,24 @@ public extension App {
     static func make(app: Self?, input: MakeInput) -> MakeOutput {
         // If no app is specified, consider the app entirely unchanged,
         // including its body
-        guard let app = app else {
+        guard var app = app else {
+            print("App unspecified")
             return Self.output(node: nil, staticEdges: nil, accessor: nil)
+        }
+
+        if !input.preserveState {
+            input.storage?.setupState(on: &app)
         }
 
         // Get the previous app and compare it
         // Return an unchanged output of it's equal
         if let previous = input.storage?.value, anyEquals(lhs: app, rhs: previous) {
+            print("App unchanged")
             return Self.output(node: nil, staticEdges: nil, accessor: app.accessor)
         }
 
         // The app changed
+        print("App changed")
         let output = ElementOutput(storage: app, attributes: app.collectAttributes())
 
         // Re-evaluate body
@@ -124,5 +131,11 @@ public extension App {
 
     func collectAttributes() -> AttributesStash {
         return self.collectAttributesUsingMirror()
+    }
+}
+
+public extension App {
+    func make(input: MakeInput) -> MakeOutput {
+        return Self.make(app: self, input: input)
     }
 }

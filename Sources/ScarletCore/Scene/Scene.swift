@@ -15,7 +15,7 @@
 */
 
 /// A scene is the container for the app views, typically a desktop window.
-public protocol Scene: Accessor {
+public protocol Scene: Accessor, Makeable {
     /// The type of this scene's body.
     associatedtype Body: Scene
 
@@ -48,8 +48,12 @@ public extension Scene {
     static func make(scene: Self?, input: MakeInput) -> MakeOutput {
         // If no scene is specified, consider the scene entirely unchanged,
         // including its body
-        guard let scene = scene else {
+        guard var scene = scene else {
             return Self.output(node: nil, staticEdges: nil, accessor: nil)
+        }
+
+        if !input.preserveState {
+            input.storage?.setupState(on: &scene)
         }
 
         // Get the previous scene and compare it
@@ -130,5 +134,11 @@ public extension Scene {
 extension Scene where Body == Never {
     public var body: Never {
         fatalError()
+    }
+}
+
+public extension Scene {
+   func make(input: MakeInput) -> MakeOutput {
+        return Self.make(scene: self, input: input)
     }
 }

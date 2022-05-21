@@ -16,7 +16,7 @@
 
 /// A modifier takes a view and produces a new version of the view.
 /// Can be used to set attributes or wrap in more views.
-public protocol ViewModifier: Accessor {
+public protocol ViewModifier: Accessor, Makeable {
     /// Modifier content placeholder given to `body(content:)`.
     typealias Content = ViewModifierContent<Self>
 
@@ -39,18 +39,22 @@ public extension ViewModifier {
     static func make(modifier: Self?, input: MakeInput) -> MakeOutput {
         // First case: no modifier has been given, we assume it unchanged
         // but content may still have changed
-        guard let modifier = modifier else {
+        guard var modifier = modifier else {
             let bodyInput = MakeInput(storage: input.storage?.edges[0])
             let bodyOutput = Body.make(view: nil, input: bodyInput)
 
             return Self.output(node: nil, staticEdges: [bodyOutput], accessor: modifier?.accessor)
         }
 
+        if !input.preserveState {
+            input.storage?.setupState(on: &modifier)
+        }
+
         // Second case: a modifier has been given
         // Compare it with the previous one to see if it changed
         // If so, re-evaluate its body. Otherwise, its content may have changed
         // so do the same as above
-        if let storageValue = input.storage?.value, anyEquals(lhs: storageValue, rhs: modifier) {
+        if let previous = input.storage?.value, anyEquals(lhs: modifier, rhs: previous) {
             // Modifier has not changed
             let bodyInput = MakeInput(storage: input.storage?.edges[0])
             let bodyOutput = Body.make(view: nil, input: bodyInput)
@@ -126,7 +130,7 @@ public extension ViewModifier {
     }
 }
 
-extension ModifiedContent: View, Accessor where Content: View, Modifier: ViewModifier {
+extension ModifiedContent: View, Accessor, Makeable where Content: View, Modifier: ViewModifier {
     public typealias Body = Never
     public typealias Implementation = Never
 
@@ -179,5 +183,11 @@ extension MakeOutput {
         }
 
         return output
+    }
+}
+
+public extension ViewModifier {
+    func make(input: MakeInput) -> MakeOutput {
+        return Self.make(modifier: self, input: input)
     }
 }

@@ -148,7 +148,7 @@ public protocol AttributeViewModifier: ViewModifier {}
 public extension AttributeViewModifier {
     /// Default implementation for `make()`: always return a node with our attributes and no storage.
     static func make(modifier: Self?, input: MakeInput) -> MakeOutput {
-        let output = ElementOutput(storage: modifier, attributes: modifier?.collectAttributes() ?? [:])
+        let output = ElementOutput(storage: nil, attributes: modifier?.collectAttributes() ?? [:])
 
         let body = modifier?.body(content: ViewModifierContent()) // TODO: Use BodyAccessor.makeBody(of: modifier, storage: input.storage)
 

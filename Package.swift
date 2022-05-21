@@ -35,6 +35,8 @@ let package = Package(
         .package(url: "https://github.com/Quick/Nimble.git", .upToNextMajor(from: "9.2.1")),
         .package(url: "https://github.com/swift-server/swift-backtrace.git", .upToNextMajor(from: "1.3.1")),
         .package(url: "https://github.com/onevcat/Rainbow.git", .upToNextMajor(from: "4.0.0")),
+        .package(url: "https://github.com/wickwirew/Runtime", .upToNextMajor(from: "2.2.4")),
+        .package(url: "https://github.com/OpenCombine/OpenCombine.git", from: "0.13.0"),
     ],
     targets: [
         // ScarletUI: contains scenes, views, modifiers as well as the actual runtime
@@ -54,7 +56,11 @@ let package = Package(
         // ScarletCore: core library containing the DSL and graph / state management code
         .target(
             name: "ScarletCore",
-            dependencies: ["Rainbow"]
+            dependencies: [
+                "Rainbow",
+                "Runtime",
+                "OpenCombine",
+            ]
         ),
         // ScarletNative: native code companion to ScarletUI
         .target(

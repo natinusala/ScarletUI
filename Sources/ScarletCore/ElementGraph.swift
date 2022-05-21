@@ -14,6 +14,11 @@
    limitations under the License.
 */
 
+import Foundation
+
+import Runtime
+import OpenCombine
+
 /// Input for the `make()` function.
 public struct MakeInput {
     /// Any previously stored value, if any.
@@ -21,8 +26,14 @@ public struct MakeInput {
     /// created and there is no storage for it yet.
     public let storage: StorageNode?
 
-    public init(storage: StorageNode?) {
+    /// Should state be preserved on the element?
+    /// If set to `false`, the element state will be overwrote by
+    /// what's currently in state storage.
+    let preserveState: Bool
+
+    public init(storage: StorageNode?, preserveState: Bool = false) {
         self.storage = storage
+        self.preserveState = preserveState
     }
 }
 
@@ -103,10 +114,15 @@ public class ElementNode {
     /// Associated storage node for this element.
     let storage: StorageNode
 
+    /// Subscription for the storage node, fired whenever
+    /// a state value changes.
+    var storageSubscription: AnyCancellable?
+
     /// Edges for this element.
     var edges: [ElementNode?]
 
     /// Implementation of this element.
+    /// Public to allow the implementation to run the app node.
     public let implementation: ImplementationNode?
 
     /// Current state of the implementation node.
@@ -147,6 +163,8 @@ public class ElementNode {
         self.implementation = output.accessor?.makeImplementation()
         self.implementationState = .creating
 
+        self.subscribeToStateChanges()
+
         self.update(with: output, attributes: [:])
 
         self.attachImplementationToParent()
@@ -166,6 +184,8 @@ public class ElementNode {
 
         self.implementation = output.accessor?.makeImplementation()
         self.implementationState = .creating
+
+        self.subscribeToStateChanges()
 
         self.update(with: output, attributes: [:])
 
@@ -190,6 +210,27 @@ public class ElementNode {
         self.edges = edges
         self.implementation = implementation
         self.implementationState = implementationState
+
+        self.subscribeToStateChanges()
+    }
+
+    private func subscribeToStateChanges() {
+        self.storageSubscription = self.storage.statePublisher.sink { element in
+            if let makeable = element as? Makeable {
+                Logger.debug(debugState, "\(self.type) state value changed, re-evaluating body")
+
+                printState(of: element, at: "state change sink (new element)")
+
+                // Make the element preserving state - the version we get from the publisher
+                // already has the most up-to-date values vor every property
+                let input = MakeInput(storage: self.storage, preserveState: true)
+                let output = makeable.make(input: input)
+
+                self.update(with: output, attributes: [:])
+            } else {
+                fatalError("Cannot re-evaluate body of \(self.type): does not conform to `Makeable`")
+            }
+        }
     }
 
     /// Attaches this node's implementation node to the parent, if any.
@@ -268,6 +309,18 @@ public class ElementNode {
 
         let input = MakeInput(storage: self.storage)
         let output = V.make(view: view, input: input)
+        self.update(with: output, attributes: attributes)
+    }
+
+    /// Updates the node with the given app.
+    public func update<A: App>(with app: A, attributes: AttributesStash) {
+        assert(
+            A.self == self.type,
+            "cannot update a graph node with an app of a different type"
+        )
+
+        let input = MakeInput(storage: self.storage)
+        let output = A.make(app: app, input: input)
         self.update(with: output, attributes: attributes)
     }
 
@@ -436,4 +489,25 @@ public enum ImplementationNodeState {
 
     /// The node is fully created and all attributes are set.
     case created
+}
+
+/// Common protocol for all "makeable" elements.
+public protocol Makeable {
+    func make(input: MakeInput) -> MakeOutput
+}
+
+func printState(of element: @autoclosure () -> Any, at prefix: String) {
+    guard debugState else { return }
+
+    let element = element()
+    let type = Swift.type(of: element)
+
+    Logger.debug(debugState, "State of \(type) at \(prefix):")
+
+    let elementInfo = try? typeInfo(of: type)
+    for property in elementInfo?.properties ?? [] {
+        if let stateProperty = try? property.get(from: element) as? StateProperty {
+            Logger.debug(debugState, "      - \(property.name): \(stateProperty.anyValue) (initialized: \(stateProperty.location != nil))")
+        }
+    }
 }

@@ -16,7 +16,7 @@
 
 /// A view is the building block of an on-screen element. A scene is made
 /// of a views tree.
-public protocol View: Accessor {
+public protocol View: Accessor, Makeable {
     /// The type of this view's body.
     associatedtype Body: View
 
@@ -46,8 +46,12 @@ public extension View {
     static func make(view: Self?, input: MakeInput) -> MakeOutput {
         // If no view is specified, consider the view entirely unchanged,
         // including its body
-        guard let view = view else {
+        guard var view = view else {
             return Self.output(node: nil, staticEdges: nil, accessor: nil)
+        }
+
+        if !input.preserveState {
+            input.storage?.setupState(on: &view)
         }
 
         // Get the previous view and compare it
@@ -146,5 +150,11 @@ public extension View {
     /// Display name of the view, aka. its type stripped of any generic parameters.
     var displayName: String {
         return String(describing: Self.self).before(first: "<")
+    }
+}
+
+public extension View {
+    func make(input: MakeInput) -> MakeOutput {
+        return Self.make(view: self, input: input)
     }
 }

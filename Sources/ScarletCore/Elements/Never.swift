@@ -59,4 +59,8 @@ extension Never: View, Scene, ImplementationNode {
     public func attributesDidSet() {
         fatalError()
     }
+
+    public func make(input: MakeInput) -> MakeOutput {
+        fatalError()
+    }
 }

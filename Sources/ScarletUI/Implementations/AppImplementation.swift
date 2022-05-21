@@ -77,13 +77,17 @@ open class AppImplementation: ImplementationNode, CustomStringConvertible {
     /// Returns `true` if the app should exit.
     func frame() -> Bool {
         // Poll events
-        self.platform.poll()
+        self.platform.pollEvents()
 
         // Run the scene for one frame, if any
         guard let scene = self.children[safe: 0] else {
             return false
         }
 
+        // Poll inputs
+        scene.updateInputs()
+
+        // Run scene frame
         return scene.frame()
     }
 

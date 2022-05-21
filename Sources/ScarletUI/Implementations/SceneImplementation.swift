@@ -19,7 +19,7 @@ import Yoga
 import ScarletCore
 
 /// Implementation for all scenes.
-open class SceneImplementation: LayoutImplementationNode, CustomStringConvertible {
+open class SceneImplementation: LayoutImplementationNode, CustomStringConvertible, ViewGamepadButtonEvent {
     /// Scene display name for debugging purposes.
     let displayName: String
 
@@ -34,6 +34,9 @@ open class SceneImplementation: LayoutImplementationNode, CustomStringConvertibl
 
     /// The parent app implementation.
     var parent: AppImplementation?
+
+    /// The gamepad state of the previous frame.
+    var previousGamepadState = GamepadState.neutral
 
     public var layoutParent: LayoutImplementationNode? {
         return self.parent as? LayoutImplementationNode
@@ -101,6 +104,46 @@ open class SceneImplementation: LayoutImplementationNode, CustomStringConvertibl
     /// Returns `true` if the scene should exit.
     open func frame() -> Bool {
         return false
+    }
+
+    /// Polls and updates input state.
+    func updateInputs() {
+        // Poll inputs
+        let state = self.pollGamepad().toVirtual()
+
+        assert(
+            state.buttons.count == GamepadButton.allCases.count,
+            "Gamepad button count mismatch - returned \(state.buttons.count) but expected \(GamepadButton.allCases.count)"
+        )
+
+        // Compare state with previous frame
+        for (idx, (button, previous)) in zip(state.buttons, self.previousGamepadState.buttons).enumerated() {
+            switch (previous, button) {
+                case (false, true):
+                    self.pressGamepadButton(GamepadButton.allCases[idx])
+                case (true, false):
+                    self.releaseGamepadButton(GamepadButton.allCases[idx])
+                default:
+                    break
+            }
+        }
+
+        self.previousGamepadState = state
+    }
+
+    open func gamepadButtonDidPress(_ button: GamepadButton) -> Bool {
+        // Nothing by default
+        return false
+    }
+
+    open func gamepadButtonDidRelease(_ button: GamepadButton) -> Bool {
+        // Nothing by default
+        return false
+    }
+
+    /// Called every frame to poll inputs. Must be overridden by subclasses.
+    open func pollGamepad() -> GamepadState {
+        fatalError("Scene \(self) does not override` pollGamepad()`")
     }
 
     public required init(kind: ImplementationKind, displayName: String) {

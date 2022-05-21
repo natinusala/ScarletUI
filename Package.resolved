@@ -28,6 +28,15 @@
       }
     },
     {
+      "identity" : "opencombine",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/OpenCombine/OpenCombine.git",
+      "state" : {
+        "revision" : "9cf67e363738dbab61b47fb5eaed78d3db31e5ee",
+        "version" : "0.13.0"
+      }
+    },
+    {
       "identity" : "quick",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Quick/Quick.git",
@@ -43,6 +52,15 @@
       "state" : {
         "revision" : "e0dada9cd44e3fa7ec3b867e49a8ddbf543e3df3",
         "version" : "4.0.1"
+      }
+    },
+    {
+      "identity" : "runtime",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/wickwirew/Runtime",
+      "state" : {
+        "revision" : "dad03135d7701a4e7b3a4051e75d6b37bd8e178e",
+        "version" : "2.2.4"
       }
     },
     {

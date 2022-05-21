@@ -105,7 +105,7 @@ public class WindowImplementation: SceneImplementation {
             Logger.info("Created new \(handle.size.width)x\(handle.size.height) window (mode: \(self.mode.name))")
 
             // Set the initial node dimensions
-            self.onResize()
+            self.windowDidResize()
         } catch {
             Logger.error("Unable to create window: \(error)")
             exit(-1)
@@ -131,10 +131,18 @@ public class WindowImplementation: SceneImplementation {
     }
 
     /// Called after the window gets resized by the user.
-    func onResize() {
+    func windowDidResize() {
         if let handle = self.handle {
             self.desiredSize = Size(width: handle.size.width.dip, height: handle.size.height.dip)
         }
+    }
+
+    public override func pollGamepad() -> GamepadState {
+        if let handle = self.handle {
+            return handle.pollGamepad()
+        }
+
+        return .neutral
     }
 
     public override var description: String {

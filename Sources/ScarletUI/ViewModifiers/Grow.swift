@@ -33,4 +33,12 @@ public extension View {
     func grow(_ grow: Float) -> some View {
         self.modifier(GrowModifier(grow))
     }
+
+    /// Sets the view growth factor to 1 to make is take as much space as possible,
+    /// in the containing view axis.
+    ///
+    /// Opposite of shrink.
+    func grow() -> some View {
+        self.modifier(GrowModifier(1))
+    }
 }

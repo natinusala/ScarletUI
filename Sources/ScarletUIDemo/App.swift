@@ -18,30 +18,43 @@ import ScarletUI
 
 @main
 struct ScarletUIDemo: App {
-    var body: some Scene {
-        Window(title: "ScarletUI Demo") {
-            Row {
-                Colors()
-                    .grow(1.0)
+    @State private var column1Pos = 0
+    @State private var column2Pos = 0
 
-                Column(reverse: true) {
-                    Colors()
-                        .grow(1.0)
-                }
-                .grow(1.0)
+    var body: some Scene {
+        return Window(title: "ScarletUI Demo") {
+            Row {
+                RectangleStack(color: .green, position: column1Pos).grow()
+                RectangleStack(color: .blue, position: column2Pos).grow()
             }
             .height(100%)
+            .onGamepadButtonPress { button in
+                switch button {
+                    case .dpadLeft:
+                        column1Pos -= 1
+                    case .dpadRight:
+                        column1Pos += 1
+                    case .dpadUp:
+                        column2Pos -= 1
+                    case .dpadDown:
+                        column2Pos += 1
+                    default:
+                        break
+                }
+            }
         }
     }
 }
 
-struct Colors: View {
+struct RectangleStack: View {
+    let color: Color
+    let position: Int
+
     var body: some View {
-        Group {
-            Rectangle(color: .red)
-            Rectangle(color: .green)
-            Rectangle(color: .blue)
-        }
-        .grow(1.0)
+        Column {
+            Rectangle(color: position == 0 ? color : .black).grow()
+            Rectangle(color: position == 1 ? color : .black).grow()
+            Rectangle(color: position == 2 ? color : .black).grow()
+        }.grow()
     }
 }

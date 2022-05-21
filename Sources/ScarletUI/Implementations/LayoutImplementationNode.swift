@@ -38,7 +38,7 @@ public extension LayoutImplementationNode {
     /// Should be called every frame before drawing the node.
     func layoutIfNeeded() {
         if YGNodeIsDirty(self.ygNode) {
-            Logger.debug(true, "\(self) is dirty, calculating layout")
+            Logger.debug(debugLayout, "\(self) is dirty, calculating layout")
             self.calculateLayout()
         }
     }
@@ -49,7 +49,7 @@ public extension LayoutImplementationNode {
         if let parent = self.layoutParent {
             parent.calculateLayout()
         } else {
-            Logger.debug(true, "Calling `YGNodeCalculateLayout` on \(self)")
+            Logger.debug(debugLayout, "Calling `YGNodeCalculateLayout` on \(self)")
 
             // Use Yoga to calculate layout
             YGNodeCalculateLayout(self.ygNode, YGUndefined, YGUndefined, YGDirectionLTR)
@@ -68,7 +68,7 @@ public extension LayoutImplementationNode {
             height: YGNodeLayoutGetHeight(self.ygNode)
         )
 
-        Logger.debug(true, "New layout of \(self): \(self.layout)")
+        Logger.debug(debugLayout, "New layout of \(self): \(self.layout)")
 
         for child in self.layoutChildren {
             child.updateLayout(parentX: self.layout.x, parentY: self.layout.y)

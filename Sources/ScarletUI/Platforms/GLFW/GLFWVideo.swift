@@ -20,33 +20,6 @@ import GLFW
 
 import ScarletNative
 
-/// GLFW as a platform.
-class GLFWPlatform: Platform {
-    required init() throws {
-        // Set error callback
-        glfwSetErrorCallback {code, error in
-            Logger.error("GLFW error \(code): \(error.str ?? "unknown")")
-        }
-
-        // Init GLFW
-        if glfwInit() != GLFW_TRUE {
-            throw GLFWError.initFailed
-        }
-    }
-
-    func poll() {
-        glfwPollEvents()
-    }
-
-    func createWindow(title: String, mode: WindowMode, backend: GraphicsBackend, srgb: Bool) throws -> NativeWindow {
-        return try GLFWWindow(title: title, mode: mode, backend: backend, srgb: srgb)
-    }
-
-    var name: String {
-        return "GLFW"
-    }
-}
-
 class GLFWWindow: NativeWindow {
     let handle: OpaquePointer?
 
@@ -191,16 +164,8 @@ class GLFWWindow: NativeWindow {
     }
 }
 
-/// GLFW errors.
-enum GLFWError: Error {
-    case initFailed
-    case noPrimaryMonitor
-    case noVideoMode
-    case cannotCreateWindow
-}
-
 #if DEBUG_GRAPHICS_BACKEND
 private func onGlDebugMessage(severity: GLenum, type: GLenum, id: GLuint, message: UnsafePointer<CChar>?) {
-    Logger.debug(true, "OpenGL \(severity) \(id): \(message.str ?? "unspecified")")
+    Logger.debug(debugBackend, "OpenGL \(severity) \(id): \(message.str ?? "unspecified")")
 }
 #endif

@@ -19,7 +19,7 @@ import Yoga
 import ScarletCore
 
 /// Implementation for all views.
-open class ViewImplementation: LayoutImplementationNode, CustomStringConvertible {
+open class ViewImplementation: LayoutImplementationNode, CustomStringConvertible, ViewGamepadButtonEvent {
     /// View display name for debugging purposes.
     let displayName: String
 
@@ -52,6 +52,10 @@ open class ViewImplementation: LayoutImplementationNode, CustomStringConvertible
 
     /// The paint used to draw the view fill.
     var fillPaint: Paint? = nil
+
+    /// Called when a gamepad button is pressed.
+    /// The event will be consumed if set.
+    var gamepadButtonPressAction: ((GamepadButton) -> ())?
 
     /// The view grow factor, aka. the percentage of remaining space to give this view.
     var grow: Float {
@@ -269,6 +273,20 @@ open class ViewImplementation: LayoutImplementationNode, CustomStringConvertible
         }
     }
 
+    open func gamepadButtonDidPress(_ button: GamepadButton) -> Bool {
+        if let action = self.gamepadButtonPressAction {
+            action(button)
+            return true
+        }
+
+        return false
+    }
+
+    open func gamepadButtonDidRelease(_ button: GamepadButton) -> Bool {
+        // Nothing by default
+        return false
+    }
+
     /// Draws the view on screen.
     open func draw(in bounds: Rect, canvas: Canvas) {
         // Draw fill
@@ -306,4 +324,44 @@ open class ViewImplementation: LayoutImplementationNode, CustomStringConvertible
 public extension View {
     /// Default implementation for user views.
     typealias Implementation = ViewImplementation
+}
+
+/// Protocol for views with "button pressed" and "button released" events.
+protocol ViewGamepadButtonEvent {
+    /// The children array, used to propagate the event.
+    var children: [ViewImplementation] { get }
+
+    /// Called every time a gamepad button is pressed.
+    /// Must return `true` if the event was consumed, `false` if the event
+    /// needs to be propagated to the children views.
+    func gamepadButtonDidPress(_ button: GamepadButton) -> Bool
+
+    /// Called every time a gamepad button is released.
+    /// Must return `true` if the event was consumed, `false` if the event
+    /// needs to be propagated to the children views.
+    func gamepadButtonDidRelease(_ button: GamepadButton) -> Bool
+}
+
+extension ViewGamepadButtonEvent {
+    /// Must be called to start a "button pressed" event on the view.
+    func pressGamepadButton(_ button: GamepadButton) {
+        if self.gamepadButtonDidPress(button) {
+            return
+        }
+
+        for child in self.children {
+            child.pressGamepadButton(button)
+        }
+    }
+
+    /// Must be called to start a "button released" event on the view.
+    func releaseGamepadButton(_ button: GamepadButton) {
+        if self.gamepadButtonDidRelease(button) {
+            return
+        }
+
+        for child in self.children {
+            child.releaseGamepadButton(button)
+        }
+    }
 }
