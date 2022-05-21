@@ -22,10 +22,17 @@ struct ScarletUIDemo: App {
     @State private var column2Pos = 0
 
     var body: some Scene {
-        return Window(title: "ScarletUI Demo") {
+        Window(title: "ScarletUI Demo") {
             Row {
-                RectangleStack(color: .green, position: column1Pos).grow()
-                RectangleStack(color: .blue, position: column2Pos).grow()
+                RectangleStack(
+                    color: .green,
+                    position: column1Pos
+                ).grow()
+
+                RectangleStack(
+                    color: .blue,
+                    position: column2Pos
+                ).grow()
             }
             .height(100%)
             .onGamepadButtonPress { button in
@@ -52,9 +59,17 @@ struct RectangleStack: View {
 
     var body: some View {
         Column {
-            Rectangle(color: position == 0 ? color : .black).grow()
-            Rectangle(color: position == 1 ? color : .black).grow()
-            Rectangle(color: position == 2 ? color : .black).grow()
+            Rectangle(
+                color: position == 0 ? color : .black
+            ).grow()
+
+            Rectangle(
+                color: position == 1 ? color : .black
+            ).grow()
+
+            Rectangle(
+                color: position == 2 ? color : .black
+            ).grow()
         }.grow()
     }
 }
