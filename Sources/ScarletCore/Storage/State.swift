@@ -61,6 +61,8 @@ public struct State<Value>: StateProperty {
     }
 }
 
+extension State: Equatable where Value: Equatable {}
+
 /// Allows accessing a state propery value in a type-erased manner.
 protocol StateProperty {
     var anyValue: Any { get }
