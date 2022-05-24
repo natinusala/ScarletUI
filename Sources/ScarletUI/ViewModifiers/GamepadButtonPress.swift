@@ -21,7 +21,7 @@ public struct GamepadButtonPressModifier: AttributeViewModifier {
     @Attribute(\ViewImplementation.gamepadButtonPressAction)
     var action
 
-    public init(perform action: ((GamepadButton) -> ())?) {
+    public init(perform action: ((GamepadButton) -> Void)?) {
         self.action = action
     }
 }
@@ -29,7 +29,7 @@ public struct GamepadButtonPressModifier: AttributeViewModifier {
 public extension View {
     /// Adds an action to perform when a gamepad button is pressed while this view is on screen.
     /// Note: the action will be performed even if the view is out of sight.
-    func onGamepadButtonPress(perform action: @escaping (GamepadButton) -> ()) -> some View {
+    func onGamepadButtonPress(perform action: @escaping (GamepadButton) -> Void) -> some View {
         return modifier(GamepadButtonPressModifier(perform: action))
     }
 }

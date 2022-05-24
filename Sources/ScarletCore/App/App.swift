@@ -51,7 +51,6 @@ public extension App {
         // If no app is specified, consider the app entirely unchanged,
         // including its body
         guard var app = app else {
-            print("App unspecified")
             return Self.output(node: nil, staticEdges: nil, accessor: nil)
         }
 
@@ -62,12 +61,10 @@ public extension App {
         // Get the previous app and compare it
         // Return an unchanged output of it's equal
         if let previous = input.storage?.value, anyEquals(lhs: app, rhs: previous) {
-            print("App unchanged")
             return Self.output(node: nil, staticEdges: nil, accessor: app.accessor)
         }
 
         // The app changed
-        print("App changed")
         let output = ElementOutput(storage: app, attributes: app.collectAttributes())
 
         // Re-evaluate body

@@ -84,10 +84,11 @@ public class StorageNode {
                 try visitStateProperties(of: &element) { name, offset, property, _ in
                     Logger.debug(debugState, "Setting up location for state property \(name)")
 
-                    let location = StateLocation(
-                        offset: offset,
-                        storageNode: self
-                    )
+                    let setter: (Any) -> Void = { [offset, weak self] (value: Any) in
+                        self?.setStateProperty(at: offset, value: value)
+                    }
+
+                    let location = StorageLocation(setter: setter)
                     return property.withLocation(location)
                 }
             } catch {
@@ -99,26 +100,34 @@ public class StorageNode {
     }
 
     /// Sets a state property at the given offset and trigger a body update of the element.
-    func setStateProperty<Value>(offset: Int, property: State<Value>) {
+    func setStateProperty(at offset: Int, value: Any) {
         do {
-            if var value = self.value {
-                // Set property
+            if var element = self.value {
+                // Get property
                 let elementInfo = try typeInfo(of: self.elementType)
-                let stateProperty = elementInfo.properties[offset]
+                let statePropertyInfo = elementInfo.properties[offset]
 
-                Logger.debug(debugState, "Setting state property \(stateProperty.name) to \(property.value)")
+                guard var stateProperty = try statePropertyInfo.get(from: element) as? StateProperty else {
+                    fatalError("Property at offset \(offset) is not a state property")
+                }
 
-                try stateProperty.set(value: property, on: &value)
+                // Mutate it to change the value
+                stateProperty = stateProperty.withValue(value)
 
-                /// XXX: Swift optimizes out the `var value = self.value` copy
+                Logger.debug(debugState, "Setting state property \(statePropertyInfo.name) to \(element)")
+
+                // Emit a new version of our element with the state property changed
+                try statePropertyInfo.set(value: stateProperty, on: &element)
+
+                /// XXX: Swift optimizes out the `var element = self.value` copy
                 /// so `stateProperty.set(value:on:)` alters both our "copy" and `self.value`
                 self.value = nil
 
                 // Fire publisher
-                self.statePublisher.send(value)
+                self.statePublisher.send(element)
             }
         } catch {
-            fatalError("Cannot set property #\(offset) to \(property.value): \(error)")
+            fatalError("Cannot set property #\(offset) to \(value): \(error)")
         }
     }
 
@@ -137,5 +146,29 @@ public class StorageNode {
                 }
             }
         }
+    }
+}
+
+/// "Location" of a dynamic property, aka. the handle used by the
+/// wrapper to get the stored value and trigger a value update.
+///
+/// As we cannot compare closures, we redefine equality as identity
+/// for this class. As such, please only create one storage location
+/// per dynamic property (state, binding...) and keep it for all of its lifetime.
+public class StorageLocation: Equatable {
+    typealias Setter = (Any) -> Void
+
+    let setter: Setter
+
+    init(setter: @escaping Setter) {
+        self.setter = setter
+    }
+
+    func set(value: Any) {
+        self.setter(value)
+    }
+
+    public static func == (lhs: StorageLocation, rhs: StorageLocation) -> Bool {
+        return rhs === lhs
     }
 }

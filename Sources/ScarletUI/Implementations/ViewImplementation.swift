@@ -55,7 +55,7 @@ open class ViewImplementation: LayoutImplementationNode, CustomStringConvertible
 
     /// Called when a gamepad button is pressed.
     /// The event will be consumed if set.
-    var gamepadButtonPressAction: ((GamepadButton) -> ())?
+    var gamepadButtonPressAction: ((GamepadButton) -> Void)?
 
     /// The view grow factor, aka. the percentage of remaining space to give this view.
     var grow: Float {

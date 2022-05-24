@@ -21,7 +21,7 @@ public struct State<Value>: StateProperty {
     /// The state property value.
     public let value: Value
 
-    var location: StateLocation?
+    var location: StorageLocation?
 
     public init(wrappedValue: Value) {
         self.value = wrappedValue
@@ -36,7 +36,7 @@ public struct State<Value>: StateProperty {
                 fatalError("Tried to set value of uninitialized state property")
             }
 
-            location.setStateProperty(self, value: newValue)
+            location.set(value: newValue)
         }
     }
 
@@ -44,41 +44,31 @@ public struct State<Value>: StateProperty {
         return value
     }
 
-    /// Makes a copy of the state property with a different value.
-    /// Keeps location unchanged.
-    func withValue(_ value: Value) -> Self {
-        var state = State(wrappedValue: value)
-        state.location = self.location
-        return state
+    public func withValue(_ value: Any) -> Self {
+        if let value = value as? Value {
+            var copy = Self(wrappedValue: value)
+            copy.location = self.location
+            return copy
+        } else {
+            fatalError("Tried to set state property with value of type \(type(of: value)) (expected \(Value.self))")
+        }
     }
-}
 
-/// Allows accessing a state propery value in a type-erased manner.
-protocol StateProperty {
-    var anyValue: Any { get }
-    var location: StateLocation? { get set }
-}
-
-extension StateProperty {
-    func withLocation(_ location: StateLocation) -> StateProperty {
+    public func withLocation(_ location: StorageLocation) -> Self {
         var copy = self
         copy.location = location
         return copy
     }
 }
 
-/// "Location" of a state property, aka. the handle used by the
-/// wrapper to trigger a value update.
-struct StateLocation {
-    /// The state property offset inside the element.
-    let offset: Int
+/// Allows accessing a state propery value in a type-erased manner.
+protocol StateProperty {
+    var anyValue: Any { get }
+    var location: StorageLocation? { get set }
 
-    /// The storage node containing the element.
-    let storageNode: StorageNode
+    /// Returns a copy of the property with a new value set.
+    func withValue(_ value: Any) -> Self
 
-    func setStateProperty<Value>(_ stateProperty: State<Value>, value: Value) {
-        // Create a copy of the state property with the new value and store it
-        let newProperty = stateProperty.withValue(value)
-        self.storageNode.setStateProperty(offset: self.offset, property: newProperty)
-    }
+    /// Returns a copy of the property with a new location set.
+    func withLocation(_ location: StorageLocation) -> Self
 }
