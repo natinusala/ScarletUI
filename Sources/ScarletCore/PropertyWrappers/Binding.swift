@@ -14,6 +14,18 @@
    limitations under the License.
 */
 
-/// Set to `true` to enable state storage debug logging.
-let debugState = false
+// A property wrapper type that can read and write a value owned by a source of truth.
+@propertyWrapper
+public struct Binding<Value> {
+    let value: Value
+    let location: StorageLocation
 
+    public var wrappedValue: Value {
+        get {
+            return value
+        }
+        nonmutating set {
+            location.set(value: newValue)
+        }
+    }
+}

@@ -40,6 +40,14 @@ public struct State<Value>: StateProperty {
         }
     }
 
+    public var projectedValue: Binding<Value> {
+        guard let location = self.location else {
+            fatalError("Tried to project uninitialized state property")
+        }
+
+        return Binding<Value>(value: self.value, location: location)
+    }
+
     public var anyValue: Any {
         return value
     }
