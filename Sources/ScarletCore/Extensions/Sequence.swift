@@ -14,20 +14,6 @@
    limitations under the License.
 */
 
-extension Sequence {
-    /// Returns `true` if all elements of the sequence match the given predicate,
-    /// `false` otherwise.
-    func all(predicate: (Element) -> Bool) -> Bool {
-        for element in self {
-            if !predicate(element) {
-                return false
-            }
-        }
-
-        return true
-    }
-}
-
 extension Sequence where Element: AdditiveArithmetic {
     /// Makes the sum of all elements in the sequence.
     func sum() -> Element { reduce(.zero, +) }

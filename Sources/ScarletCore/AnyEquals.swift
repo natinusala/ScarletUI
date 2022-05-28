@@ -63,7 +63,7 @@ func anyEquals(lhs: Any, rhs: Any) -> Bool {
         return false
     }
 
-    return zip(lhsMirror.children, rhsMirror.children).all { (lhsChild, rhsChild) in
+    return zip(lhsMirror.children, rhsMirror.children).allSatisfy { (lhsChild, rhsChild) in
         anyEquals(lhs: lhsChild.value, rhs: rhsChild.value)
     }
 }
