@@ -18,58 +18,34 @@ import ScarletUI
 
 @main
 struct ScarletUIDemo: App {
-    @State private var column1Pos = 0
-    @State private var column2Pos = 0
+    @State private var colors: [Color] = []
 
     var body: some Scene {
         Window(title: "ScarletUI Demo") {
             Row {
-                RectangleStack(
-                    color: .green,
-                    position: column1Pos
-                ).grow()
-
-                RectangleStack(
-                    color: .blue,
-                    position: column2Pos
-                ).grow()
+                ForEach(Array(colors.enumerated()), id: \.offset) { _, color in
+                    Rectangle(color: color)
+                        .grow()
+                }
             }
             .height(100%)
             .onGamepadButtonPress { button in
                 switch button {
-                    case .dpadLeft:
-                        column1Pos -= 1
                     case .dpadRight:
-                        column1Pos += 1
-                    case .dpadUp:
-                        column2Pos -= 1
-                    case .dpadDown:
-                        column2Pos += 1
+                        let color = Color(
+                            UInt8.random(in: 0...255),
+                            UInt8.random(in: 0...255),
+                            UInt8.random(in: 0...255)
+                        )
+                        colors.append(color)
+                    case .dpadLeft:
+                        if !colors.isEmpty {
+                            colors.removeLast()
+                        }
                     default:
                         break
                 }
             }
         }
-    }
-}
-
-struct RectangleStack: View {
-    let color: Color
-    let position: Int
-
-    var body: some View {
-        Column {
-            Rectangle(
-                color: position == 0 ? color : .black
-            ).grow()
-
-            Rectangle(
-                color: position == 1 ? color : .black
-            ).grow()
-
-            Rectangle(
-                color: position == 2 ? color : .black
-            ).grow()
-        }.grow()
     }
 }
