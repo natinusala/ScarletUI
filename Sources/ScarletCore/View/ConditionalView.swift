@@ -58,7 +58,7 @@ public enum ConditionalView<FirstContent, SecondContent>: View where FirstConten
             // If the content storage belongs to a different type than the expected one,
             // discard the node (it changed from `first` to `second` or `second` to `first`)
             // TODO: if storage type is unused in the end, change that to use storage instead and remove storage type
-            var contentStorage = input.storage?.edges[0]
+            var contentStorage = input.storage?.edges.asStatic[0]
             if let storage = contentStorage, storage.elementType != view.contentType {
                 contentStorage = nil
             }
@@ -74,7 +74,7 @@ public enum ConditionalView<FirstContent, SecondContent>: View where FirstConten
         } else if let storage = input.storage, let storageValue = storage.value as? Storage {
             output = nil
 
-            let contentStorage = storage.edges[0]
+            let contentStorage = storage.edges.asStatic[0]
             let contentInput = MakeInput(storage: contentStorage)
 
             switch storageValue {

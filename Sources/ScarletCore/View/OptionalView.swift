@@ -47,7 +47,7 @@ extension Optional: View, Accessor, Makeable where Wrapped: View {
                 case .none:
                     edges = [nil]
                 case let .some(view):
-                    let wrappedInput = MakeInput(storage: input.storage?.edges[0])
+                    let wrappedInput = MakeInput(storage: input.storage?.edges.asStatic[0])
                     edges = [Wrapped.make(view: view, input: wrappedInput)]
             }
         } else if let storage = input.storage, let storageValue = storage.value as? Storage {
@@ -57,7 +57,7 @@ extension Optional: View, Accessor, Makeable where Wrapped: View {
                 case .none:
                     edges = [nil]
                 case .some:
-                    let wrappedInput = MakeInput(storage: storage.edges[0])
+                    let wrappedInput = MakeInput(storage: storage.edges.asStatic[0])
                     edges = [Wrapped.make(view: nil, input: wrappedInput)]
             }
         } else {

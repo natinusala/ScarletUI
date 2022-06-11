@@ -65,7 +65,7 @@ public extension View {
 
         // Re-evaluate body
         let body = BodyAccessor.makeBody(of: view, storage: input.storage)
-        let bodyStorage = input.storage?.edges[0]
+        let bodyStorage = input.storage?.edges.asStatic[0]
         let bodyInput = MakeInput(storage: bodyStorage)
         let bodyOutput = Body.make(view: body, input: bodyInput)
 
@@ -141,8 +141,18 @@ public extension View {
             nodeKind: .view,
             nodeType: Self.self,
             node: node,
-            staticEdges: staticEdges,
-            staticEdgesCount: Self.staticEdgesCount(),
+            edges: .static(staticEdges, count: Self.staticEdgesCount()),
+            accessor: accessor
+        )
+    }
+
+    /// Convenience function to create a `MakeOutput` from a `View` with less boilerplate.
+    static func output(node: ElementOutput?, operations: [DynamicOperation], accessor: Accessor?) -> MakeOutput {
+        return MakeOutput(
+            nodeKind: .view,
+            nodeType: Self.self,
+            node: node,
+            edges: .dynamic(operations: operations),
             accessor: accessor
         )
     }

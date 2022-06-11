@@ -40,7 +40,7 @@ public extension ViewModifier {
         // First case: no modifier has been given, we assume it unchanged
         // but content may still have changed
         guard var modifier = modifier else {
-            let bodyInput = MakeInput(storage: input.storage?.edges[0])
+            let bodyInput = MakeInput(storage: input.storage?.edges.asStatic[0])
             let bodyOutput = Body.make(view: nil, input: bodyInput)
 
             return Self.output(node: nil, staticEdges: [bodyOutput], accessor: modifier?.accessor)
@@ -56,7 +56,7 @@ public extension ViewModifier {
         // so do the same as above
         if let previous = input.storage?.value, anyEquals(lhs: modifier, rhs: previous) {
             // Modifier has not changed
-            let bodyInput = MakeInput(storage: input.storage?.edges[0])
+            let bodyInput = MakeInput(storage: input.storage?.edges.asStatic[0])
             let bodyOutput = Body.make(view: nil, input: bodyInput)
 
             return Self.output(node: nil, staticEdges: [bodyOutput], accessor: modifier.accessor)
@@ -64,7 +64,7 @@ public extension ViewModifier {
             // Modifier has changed
             let output = ElementOutput(storage: modifier, attributes: modifier.collectAttributes())
 
-            let bodyInput = MakeInput(storage: input.storage?.edges[0])
+            let bodyInput = MakeInput(storage: input.storage?.edges.asStatic[0])
             let bodyOutput = Body.make(view: modifier.body(content: ViewModifierContent()), input: bodyInput)
 
             return Self.output(node: output, staticEdges: [bodyOutput], accessor: modifier.accessor)
@@ -123,8 +123,7 @@ public extension ViewModifier {
             nodeKind: .viewModifier,
             nodeType: Self.self,
             node: node,
-            staticEdges: staticEdges,
-            staticEdgesCount: Self.staticEdgesCount(),
+            edges: .static(staticEdges, count: Self.staticEdgesCount()),
             accessor: accessor
         )
     }
@@ -136,22 +135,23 @@ extension ModifiedContent: View, Accessor, Makeable where Content: View, Modifie
 
     public static func make(view: Self?, input: MakeInput) -> MakeOutput {
         // Make our one edge: the modifier
-        let modifierStorage = input.storage?.edges[0]
+        let modifierStorage = input.storage?.edges.asStatic[0]
         let modifierInput = MakeInput(storage: modifierStorage)
         var modifierOutput = Modifier.make(modifier: view?.modifier, input: modifierInput)
 
         // Visit the output and find any `ViewModifierContent` - replace its empty edges list by
         // a new "content" node
         modifierOutput = modifierOutput.transform(storage: modifierStorage, predicate: { $0.nodeType == ViewModifierContent<Modifier>.self }) { output, storage in
-            var output = output
-
             // Content storage is storage of VMC edge 0
-            let contentInput = MakeInput(storage: storage?.edges[0])
+            let contentInput = MakeInput(storage: storage?.edges.asStatic[0])
             let contentOutput = Content.make(view: view?.content, input: contentInput)
 
-            output.staticEdges = [contentOutput]
-
-            return output
+            switch output.edges {
+                case .static(_, let count):
+                    return output.withEdges(.static([contentOutput], count: count))
+                case .dynamic:
+                    fatalError("Transformation function of dynamic edges not implemented")
+            }
         }
 
         let edges = [modifierOutput]
@@ -177,12 +177,19 @@ extension MakeOutput {
             return function(self, storage)
         }
 
-        var output = self
-        output.staticEdges = output.staticEdges?.enumerated().map { idx, edge in
-            return edge?.transform(storage: storage?.edges[idx], predicate: predicate, transform: function)
+        switch self.edges {
+            case .static(let staticEdges, let count):
+                return self.withEdges(
+                    .static(
+                        staticEdges?.enumerated().map { idx, edge in
+                            return edge?.transform(storage: storage?.edges.asStatic[idx], predicate: predicate, transform: function)
+                        },
+                        count: count
+                    )
+                )
+            case .dynamic:
+                fatalError("Transforming dynamic nodes not implemented")
         }
-
-        return output
     }
 }
 

@@ -152,7 +152,7 @@ public extension AttributeViewModifier {
 
         let body = modifier?.body(content: ViewModifierContent()) // TODO: Use BodyAccessor.makeBody(of: modifier, storage: input.storage)
 
-        let bodyInput = MakeInput(storage: input.storage?.edges[0])
+        let bodyInput = MakeInput(storage: input.storage?.edges.asStatic[0])
         let bodyOutput = Body.make(view: body, input: bodyInput)
 
         return Self.output(node: output, staticEdges: [bodyOutput], accessor: modifier?.accessor)

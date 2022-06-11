@@ -69,7 +69,7 @@ public extension App {
 
         // Re-evaluate body
         let body = app.body // TODO: Use BodyAccessor.makeBody(of: app, storage: input.storage)
-        let bodyStorage = input.storage?.edges[0]
+        let bodyStorage = input.storage?.edges.asStatic[0]
         let bodyInput = MakeInput(storage: bodyStorage)
         let bodyOutput = Body.make(scene: body, input: bodyInput)
 
@@ -87,8 +87,7 @@ public extension App {
             nodeKind: .app,
             nodeType: Self.self,
             node: node,
-            staticEdges: staticEdges,
-            staticEdgesCount: Self.staticEdgesCount(),
+            edges: .static(staticEdges, count: Self.staticEdgesCount()),
             accessor: accessor
         )
     }

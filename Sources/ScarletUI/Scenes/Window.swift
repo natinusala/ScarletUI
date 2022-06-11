@@ -59,7 +59,7 @@ public struct Window<Content>: Scene where Content: View {
     }
 
     public static func make(scene: Self?, input: MakeInput) -> MakeOutput {
-        let contentStorage = input.storage?.edges[0]
+        let contentStorage = input.storage?.edges.asStatic[0]
         let contentInput = MakeInput(storage: contentStorage)
 
         return Self.output(

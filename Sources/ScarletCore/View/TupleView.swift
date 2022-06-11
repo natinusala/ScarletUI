@@ -30,8 +30,8 @@ public struct TupleView2<C0, C1>: View where C0: View, C1: View {
 
     public static func make(view: Self?, input: MakeInput) -> MakeOutput {
         let edges = [
-            C0.make(view: view?.c0, input: MakeInput(storage: input.storage?.edges[0])),
-            C1.make(view: view?.c1, input: MakeInput(storage: input.storage?.edges[1])),
+            C0.make(view: view?.c0, input: MakeInput(storage: input.storage?.edges.asStatic[0])),
+            C1.make(view: view?.c1, input: MakeInput(storage: input.storage?.edges.asStatic[1])),
         ]
 
         return Self.output(node: nil, staticEdges: edges, accessor: view?.accessor)
@@ -58,9 +58,9 @@ public struct TupleView3<C0, C1, C2>: View where C0: View, C1: View, C2: View {
 
     public static func make(view: Self?, input: MakeInput) -> MakeOutput {
         let edges = [
-            C0.make(view: view?.c0, input: MakeInput(storage: input.storage?.edges[0])),
-            C1.make(view: view?.c1, input: MakeInput(storage: input.storage?.edges[1])),
-            C2.make(view: view?.c2, input: MakeInput(storage: input.storage?.edges[2])),
+            C0.make(view: view?.c0, input: MakeInput(storage: input.storage?.edges.asStatic[0])),
+            C1.make(view: view?.c1, input: MakeInput(storage: input.storage?.edges.asStatic[1])),
+            C2.make(view: view?.c2, input: MakeInput(storage: input.storage?.edges.asStatic[2])),
         ]
 
         return Self.output(node: nil, staticEdges: edges, accessor: view?.accessor)
@@ -89,10 +89,10 @@ public struct TupleView4<C0, C1, C2, C3>: View where C0: View, C1: View, C2: Vie
 
     public static func make(view: Self?, input: MakeInput) -> MakeOutput {
         let edges = [
-            C0.make(view: view?.c0, input: MakeInput(storage: input.storage?.edges[0])),
-            C1.make(view: view?.c1, input: MakeInput(storage: input.storage?.edges[1])),
-            C2.make(view: view?.c2, input: MakeInput(storage: input.storage?.edges[2])),
-            C3.make(view: view?.c3, input: MakeInput(storage: input.storage?.edges[3])),
+            C0.make(view: view?.c0, input: MakeInput(storage: input.storage?.edges.asStatic[0])),
+            C1.make(view: view?.c1, input: MakeInput(storage: input.storage?.edges.asStatic[1])),
+            C2.make(view: view?.c2, input: MakeInput(storage: input.storage?.edges.asStatic[2])),
+            C3.make(view: view?.c3, input: MakeInput(storage: input.storage?.edges.asStatic[3])),
         ]
 
         return Self.output(node: nil, staticEdges: edges, accessor: view?.accessor)
@@ -123,11 +123,11 @@ public struct TupleView5<C0, C1, C2, C3, C4>: View where C0: View, C1: View, C2:
 
     public static func make(view: Self?, input: MakeInput) -> MakeOutput {
         let edges = [
-            C0.make(view: view?.c0, input: MakeInput(storage: input.storage?.edges[0])),
-            C1.make(view: view?.c1, input: MakeInput(storage: input.storage?.edges[1])),
-            C2.make(view: view?.c2, input: MakeInput(storage: input.storage?.edges[2])),
-            C3.make(view: view?.c3, input: MakeInput(storage: input.storage?.edges[3])),
-            C4.make(view: view?.c4, input: MakeInput(storage: input.storage?.edges[4])),
+            C0.make(view: view?.c0, input: MakeInput(storage: input.storage?.edges.asStatic[0])),
+            C1.make(view: view?.c1, input: MakeInput(storage: input.storage?.edges.asStatic[1])),
+            C2.make(view: view?.c2, input: MakeInput(storage: input.storage?.edges.asStatic[2])),
+            C3.make(view: view?.c3, input: MakeInput(storage: input.storage?.edges.asStatic[3])),
+            C4.make(view: view?.c4, input: MakeInput(storage: input.storage?.edges.asStatic[4])),
         ]
 
         return Self.output(node: nil, staticEdges: edges, accessor: view?.accessor)
@@ -160,12 +160,12 @@ public struct TupleView6<C0, C1, C2, C3, C4, C5>: View where C0: View, C1: View,
 
     public static func make(view: Self?, input: MakeInput) -> MakeOutput {
         let edges = [
-            C0.make(view: view?.c0, input: MakeInput(storage: input.storage?.edges[0])),
-            C1.make(view: view?.c1, input: MakeInput(storage: input.storage?.edges[1])),
-            C2.make(view: view?.c2, input: MakeInput(storage: input.storage?.edges[2])),
-            C3.make(view: view?.c3, input: MakeInput(storage: input.storage?.edges[3])),
-            C4.make(view: view?.c4, input: MakeInput(storage: input.storage?.edges[4])),
-            C5.make(view: view?.c5, input: MakeInput(storage: input.storage?.edges[5])),
+            C0.make(view: view?.c0, input: MakeInput(storage: input.storage?.edges.asStatic[0])),
+            C1.make(view: view?.c1, input: MakeInput(storage: input.storage?.edges.asStatic[1])),
+            C2.make(view: view?.c2, input: MakeInput(storage: input.storage?.edges.asStatic[2])),
+            C3.make(view: view?.c3, input: MakeInput(storage: input.storage?.edges.asStatic[3])),
+            C4.make(view: view?.c4, input: MakeInput(storage: input.storage?.edges.asStatic[4])),
+            C5.make(view: view?.c5, input: MakeInput(storage: input.storage?.edges.asStatic[5])),
         ]
 
         return Self.output(node: nil, staticEdges: edges, accessor: view?.accessor)
