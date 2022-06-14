@@ -256,11 +256,6 @@ open class ViewImplementation: LayoutImplementationNode, CustomStringConvertible
         // Run layout
         self.layoutIfNeeded()
 
-        // Draw children
-        for child in self.children {
-            child.frame(canvas: canvas)
-        }
-
         // Rebuild fill paint if needed
         if self.fillDirty {
             self.fillPaint = self.fill.createPaint(inside: self.layout)
@@ -270,6 +265,11 @@ open class ViewImplementation: LayoutImplementationNode, CustomStringConvertible
         // Draw the view
         if let canvas = canvas, self.layout.width > 0 && self.layout.height > 0 {
             self.draw(in: self.layout, canvas: canvas)
+        }
+
+        // Draw children
+        for child in self.children {
+            child.frame(canvas: canvas)
         }
     }
 

@@ -116,6 +116,10 @@ public class WindowImplementation: SceneImplementation {
         self.layoutIfNeeded()
 
         if let handle = self.handle {
+            // Clear
+            let clearPaint = Paint(color: Color.black)
+            self.canvas?.drawPaint(clearPaint)
+
             // Draw every view
             for view in self.children {
                 view.frame(canvas: self.canvas)

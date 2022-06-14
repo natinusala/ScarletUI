@@ -15,11 +15,11 @@
 */
 
 /// A structure that computes views on demand from an underlying collection of identified data.
-public struct ForEach<Data, ID, Content>: View where Data: RandomAccessCollection, ID: Hashable, Content: View {
+public struct ForEach<Data, ID, Content>: View, DynamicViewContent where Data: RandomAccessCollection, Data.Index == Int, ID: Hashable, Content: View {
     struct Storage {
-        /// Position of each view. Missing entry means the view was not present.
+        /// The previous data as a list of identifiers.
         /// Used to detect insertions, removals and movements.
-        let positions: [ID: Int]
+        let identifiers: [ID]
     }
 
     public typealias Body = Never
@@ -38,47 +38,35 @@ public struct ForEach<Data, ID, Content>: View where Data: RandomAccessCollectio
         // If no view is specified, consider the view entirely unchanged,
         // including its body
         guard let view = view else {
-            return Self.output(node: nil, operations: [], accessor: nil)
+            return Self.output(node: nil, operations: [], accessor: nil, viewContent: nil)
         }
 
         // Iterate over all elements in the input collection, see their previous position and
         // make a list of operations out of that
-        let previousPositions = (input.storage?.value as? Storage)?.positions ?? [:]
-        var newPositions: [ID: Int] = [:]
-        var operations: [DynamicOperation] = []
-
-        for (index, element) in view.data.enumerated() {
-            let id = view.id(element)
-
-            if let _ = previousPositions[id] {
-                // We have the previous position: the view may have moved and may need to be updated
-                // TODO: Dynamic views update not implemented
-            } else {
-                // We don't have the previous position: the view needs to be inserted
-                let view = view.content(element)
-                let input = MakeInput(storage: nil)
-                let output = Content.make(view: view, input: input)
-                operations.append(.insert(output, at: index, identifiedBy: id))
-            }
-
-            // Add the new position to the new storage
-            newPositions[id] = index
-        }
-
-        // Remove every remaining view that is not present in the input collection
-        for (id, _) in previousPositions {
-            if !newPositions.contains(id) {
-                fatalError("Dynamic views removal unimplemented")
-            }
-        }
+        let previousIdentifiers = (input.storage?.value as? Storage)?.identifiers ?? []
+        let newIdentifiers = view.data.map { view.id($0) }
+        let operations = newIdentifiers.difference(from: previousIdentifiers).asDynamicOperations()
 
         // Finalize
-        let output = ElementOutput(storage: Storage(positions: newPositions), attributes: view.collectAttributes())
-        return self.output(node: output, operations: operations, accessor: view.accessor)
+        let output = ElementOutput(storage: Storage(identifiers: newIdentifiers), attributes: view.collectAttributes())
+        return self.output(node: output, operations: operations, accessor: view.accessor, viewContent: view)
     }
 
     static public func staticEdgesCount() -> Int {
         fatalError("`ForEach` edges are dynamic")
+    }
+
+    public func count() -> Int {
+        return data.count
+    }
+
+    public func make(at position: Int, identifiedBy id: AnyHashable, input: MakeInput) -> MakeOutput {
+        let input = MakeInput(storage: input.storage?.edges.dynamicAt(id: id))
+        return Content.make(view: self.content(self.data[position]), input: input)
+    }
+
+    public var dynamicViewContent: DynamicViewContent? {
+        return self
     }
 }
 
@@ -97,5 +85,22 @@ public extension ForEach where Data.Element: Identifiable, Data.Element.ID == ID
         self.data = data
         self.content = content
         self.id = { $0.id }
+    }
+}
+
+private extension CollectionDifference where ChangeElement: Hashable {
+    func asDynamicOperations() -> [DynamicOperation] {
+        var operations: [DynamicOperation] = []
+
+        for change in self {
+            switch change {
+            case .insert(let offset, let element, _):
+                operations.append(.insert(id: element, at: offset))
+            case .remove(let offset, let element, _):
+                operations.append(.remove(id: element, at: offset))
+            }
+        }
+
+        return operations
     }
 }

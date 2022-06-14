@@ -16,29 +16,29 @@
 
 /// An ARGB color.
 public struct Color: CustomStringConvertible, Equatable {
-    public static let white = Color(255, 255, 255)
-    public static let black = Color(0, 0, 0)
-    public static let red = Color(255, 0, 0)
-    public static let green = Color(0, 255, 0)
-    public static let blue = Color(0, 0, 255)
-    public static let yellow = Color(255, 255, 0)
-    public static let orange = Color(255, 165, 0)
+    public static let white = Color(r: 255, g: 255, b: 255)
+    public static let black = Color(r: 0, g: 0, b: 0)
+    public static let red = Color(r: 255, g: 0, b: 0)
+    public static let green = Color(r: 0, g: 255, b: 0)
+    public static let blue = Color(r: 0, g: 0, b: 255)
+    public static let yellow = Color(r: 255, g: 255, b: 0)
+    public static let orange = Color(r: 255, g: 165, b: 0)
 
     /// ARGB value.
     public let value: UInt32
 
     /// Creates a color with given RGB values. Alpha will be set to 255 (fully opaque).
-    public init(_ red: UInt8, _ green: UInt8, _ blue: UInt8) {
-        self.init(255, red, green, blue)
+    public init(r: UInt8, g: UInt8, b: UInt8) {
+        self.init(a: 255, r: r, g: g, b: b)
     }
 
     /// Creates a color with given ARGB values. Assumes given value are all
     /// between 0 and 255.
-    public init(_ alpha: UInt8, _ red: UInt8, _ green: UInt8, _ blue: UInt8) {
-        self.value = (UInt32(alpha) << 24) |
-            (UInt32(red) << 16) |
-            (UInt32(green) << 8) |
-            (UInt32(blue) << 0)
+    public init(a: UInt8, r: UInt8, g: UInt8, b: UInt8) {
+        self.value = (UInt32(a) << 24) |
+            (UInt32(r) << 16) |
+            (UInt32(g) << 8) |
+            (UInt32(b) << 0)
     }
 
     /// Creates a color with given ARGB UInt32 value.

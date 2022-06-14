@@ -147,12 +147,12 @@ public extension View {
     }
 
     /// Convenience function to create a `MakeOutput` from a `View` with less boilerplate.
-    static func output(node: ElementOutput?, operations: [DynamicOperation], accessor: Accessor?) -> MakeOutput {
+    static func output(node: ElementOutput?, operations: [DynamicOperation], accessor: Accessor?, viewContent: DynamicViewContent?) -> MakeOutput {
         return MakeOutput(
             nodeKind: .view,
             nodeType: Self.self,
             node: node,
-            edges: .dynamic(operations: operations),
+            edges: .dynamic(operations: operations, viewContent: viewContent),
             accessor: accessor
         )
     }

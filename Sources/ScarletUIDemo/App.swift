@@ -19,35 +19,42 @@ import ScarletUI
 @main
 struct ScarletUIDemo: App {
     @State private var colors: [Color] = []
+    @State private var colorHeight = 100
 
     var body: some Scene {
         Window(title: "ScarletUI Demo") {
             Rectangle(color: .black)
                 .grow()
+
             Row {
                 ForEach(Array(colors.enumerated()), id: \.offset) { _, color in
                     Rectangle(color: color)
-                        .grow()
+                        .width(100)
+                        .height(colorHeight)
                 }
             }
-            .grow()
             .onGamepadButtonPress { button in
                 switch button {
                     case .dpadRight:
                         let color = Color(
-                            UInt8.random(in: 0...255),
-                            UInt8.random(in: 0...255),
-                            UInt8.random(in: 0...255)
+                            r: UInt8.random(in: 0...255),
+                            g: UInt8.random(in: 0...255),
+                            b: UInt8.random(in: 0...255)
                         )
                         colors.append(color)
                     case .dpadLeft:
                         if !colors.isEmpty {
                             colors.removeLast()
                         }
+                    case .dpadUp:
+                        colorHeight += 10
+                    case .dpadDown:
+                        colorHeight -= 10
                     default:
                         break
                 }
             }
+
             Rectangle(color: .black)
                 .grow()
         }

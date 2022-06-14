@@ -39,17 +39,11 @@ public struct MakeInput {
 
 /// An operation to make on a list of dynamic elements.
 public enum DynamicOperation {
-    /// Insert the element at the given index.
-    case insert(_ element: MakeOutput, at: Int, identifiedBy: AnyHashable)
+    /// Insert an element at the given index.
+    case insert(id: AnyHashable, at: Int)
 
-    /// Remove view at given index.
-    case remove(at: Int)
-
-    /// Update view at given index.
-    case update(_ index: Int, with: MakeOutput)
-
-    /// Move view at given the index to a new position.
-    case move(_ index: Int, to: Int)
+    /// Remove element at given index.
+    case remove(id: AnyHashable, at: Int)
 }
 
 /// Output of the `make()` function.
@@ -63,7 +57,7 @@ public struct MakeOutput {
         /// Operations to perform on the edges in case they are dynamic.
         /// Operations are applied in order, which is important to keep in mind
         /// to avoid trashing the list after insertions, removals and movements.
-        case `dynamic`(operations: [DynamicOperation])
+        case `dynamic`(operations: [DynamicOperation], viewContent: DynamicViewContent?)
     }
 
     /// The node kind.
@@ -415,20 +409,25 @@ public class ElementNode {
                             self.staticInsertEdge(newEdge, at: idx, attributes: attributes)
                         case (.some, .none):
                             // Remove the old edge
-                            self.removeEdge(at: idx)
+                            self.staticRemoveEdge(at: idx)
                         case (.some, .some(let newEdge)):
                             // Update the edge
                             self.staticUpdateEdge(at: idx, with: newEdge, attributes: attributes)
                     }
                 }
-            case .dynamic(let operations):
+            case .dynamic(let operations, let viewContent):
+                guard let viewContent = viewContent else {
+                    // No view content provided: assume there is nothing to do
+                    return
+                }
+
                 // Dynamic update: apply every operation in order
                 for operation in operations {
                     switch operation {
-                        case .insert(let element, let position, let id):
-                            self.dynamicInsertEdge(element, at: position, identifiedBy: id, attributes: attributes)
-                        default:
-                            fatalError("Unimplemented dynamic operation \(operation)")
+                        case .insert(let id, let position):
+                            self.dynamicInsertEdge(at: position, identifiedBy: id, attributes: attributes, using: viewContent)
+                        case .remove(let id, let position):
+                            self.dynamicRemoveEdge(at: position, identifiedBy: id)
                     }
                 }
         }
@@ -451,13 +450,16 @@ public class ElementNode {
     }
 
     /// Inserts a new edge at the given index. Dynamic variant.
-    private func dynamicInsertEdge(_ edge: MakeOutput, at idx: Int, identifiedBy id: AnyHashable, attributes: AttributesStash) {
+    private func dynamicInsertEdge(at idx: Int, identifiedBy id: AnyHashable, attributes: AttributesStash, using viewContent: DynamicViewContent) {
         guard self.storage.edges.dynamicAt(id: id) == nil else {
             fatalError("Tried to insert an edge on a non-empty storage node")
         }
 
-        self.edges.insert(nil, at: idx)
+        // Immediately get the edge output and insert it
+        let input = MakeInput(storage: self.storage)
+        let edge = viewContent.make(at: idx, identifiedBy: id, input: input)
 
+        self.edges.insert(nil, at: idx)
         self.insertEdge(
             edge,
             at: idx,
@@ -522,25 +524,28 @@ public class ElementNode {
         if edge.type == newEdge.nodeType {
             edge.update(with: newEdge, attributes: attributes)
         } else {
-            self.removeEdge(at: idx)
+            self.staticRemoveEdge(at: idx)
             self.staticInsertEdge(newEdge, at: idx, attributes: attributes)
         }
     }
 
-    /// Removes edge at given position.
-    private func removeEdge(at idx: Int) {
+    /// Removes edge at given position. Static version.
+    private func staticRemoveEdge(at idx: Int) {
         // Detach implementation nodes
         self.edges[idx]?.detachImplementationFromParent()
 
         // Remove edge and discard storage
         self.edges[idx] = nil
+        self.storage.edges.staticSet(edge: nil, at: idx)
+    }
+    /// Removes edge at given position. Dynamic version.
+    private func dynamicRemoveEdge(at position: Int, identifiedBy id: AnyHashable) {
+        // Detach implementation nodes
+        self.edges[position]?.detachImplementationFromParent()
 
-        switch self.storage.edges {
-            case .static:
-                self.storage.edges.staticSet(edge: nil, at: idx)
-            case .dynamic:
-                fatalError("Dynamic edges discard unimplemented")
-        }
+        // Remove edge and discard storage
+        self.edges[position] = nil
+        self.storage.edges.dynamicSet(edge: nil, for: id)
     }
 
     func printGraph(indent: Int = 0) {

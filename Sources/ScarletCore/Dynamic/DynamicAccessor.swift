@@ -16,10 +16,10 @@
 
 /// Represents a view that can generate dynamic views from an underlying collection of identified data.
 /// This protocol is aimed to be used in parents with static edges, and cannot be used for recycling purposes.
-protocol DynamicViewContent {
+public protocol DynamicViewContent {
     /// Returns the count of dynamic views in the collection.
     func count() -> Int
 
     /// Makes the dynamic view at given index in the collection.
-    func make(at: Int) -> MakeOutput
+    func make(at: Int, identifiedBy: AnyHashable, input: MakeInput) -> MakeOutput
 }

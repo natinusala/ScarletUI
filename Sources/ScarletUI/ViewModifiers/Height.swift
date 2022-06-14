@@ -28,4 +28,14 @@ public extension View {
     func height(_ height: Value) -> some View {
         self.modifier(HeightModifier(height: height))
     }
+
+    /// Sets the view desired height.
+    func height(_ height: Float) -> some View {
+        self.modifier(HeightModifier(height: .dip(value: height)))
+    }
+
+    /// Sets the view desired height.
+    func height(_ height: Int) -> some View {
+        self.modifier(HeightModifier(height: .dip(value: Float(height))))
+    }
 }
