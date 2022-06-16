@@ -36,12 +36,7 @@ struct ScarletUIDemo: App {
             .onGamepadButtonPress { button in
                 switch button {
                     case .dpadRight:
-                        let color = Color(
-                            r: UInt8.random(in: 0...255),
-                            g: UInt8.random(in: 0...255),
-                            b: UInt8.random(in: 0...255)
-                        )
-                        colors.append(color)
+                        colors.append(Color.random)
                     case .dpadLeft:
                         if !colors.isEmpty {
                             colors.removeLast()

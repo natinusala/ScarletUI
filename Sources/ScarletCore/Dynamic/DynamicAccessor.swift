@@ -21,5 +21,7 @@ public protocol DynamicViewContent {
     func count() -> Int
 
     /// Makes the dynamic view at given index in the collection.
+    /// Warning: given storage is the storage of the container view (the view
+    /// conforming to this protocol), and not the storage of the generated view!
     func make(at: Int, identifiedBy: AnyHashable, input: MakeInput) -> MakeOutput
 }

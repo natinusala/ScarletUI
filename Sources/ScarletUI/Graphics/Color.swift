@@ -58,4 +58,13 @@ public struct Color: CustomStringConvertible, Equatable {
     public static func == (lhs: Color, rhs: Color) -> Bool {
         return lhs.value == rhs.value
     }
+
+    /// Makes a random color with full opacity.
+    public static var random: Self {
+        return Color(
+            r: UInt8.random(in: 0...255),
+            g: UInt8.random(in: 0...255),
+            b: UInt8.random(in: 0...255)
+        )
+    }
 }
