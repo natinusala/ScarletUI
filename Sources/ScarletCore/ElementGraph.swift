@@ -87,6 +87,9 @@ public class ElementNode {
     /// a state value changes.
     var storageSubscription: AnyCancellable?
 
+    /// The edges adapter for this node.
+    let edgesAdapter: any EdgesAdapter
+
     /// Edges for this element.
     var edges: [Edge]
 
@@ -129,6 +132,8 @@ public class ElementNode {
         let input = MakeInput(storage: self.storage)
         let output = V.make(view: view, input: input)
 
+        self.edgesAdapter = makeEdgesAdapter(for: output)
+
         self.implementation = output.accessor?.makeImplementation()
         self.implementationState = .creating
 
@@ -151,6 +156,8 @@ public class ElementNode {
         let input = MakeInput(storage: self.storage)
         let output = A.make(app: app, input: input)
 
+        self.edgesAdapter = makeEdgesAdapter(for: output)
+
         self.implementation = output.accessor?.makeImplementation()
         self.implementationState = .creating
 
@@ -169,7 +176,8 @@ public class ElementNode {
         storage: StorageNode,
         edges: [Edge],
         implementation: ImplementationNode?,
-        implementationState: ImplementationNodeState
+        implementationState: ImplementationNodeState,
+        edgesAdapter: any EdgesAdapter
     ) {
         self.parent = parent
         self.position = position
@@ -179,6 +187,7 @@ public class ElementNode {
         self.edges = edges
         self.implementation = implementation
         self.implementationState = implementationState
+        self.edgesAdapter = edgesAdapter
 
         self.subscribeToStateChanges()
     }
@@ -204,7 +213,7 @@ public class ElementNode {
 
     /// Attaches this node's implementation node to the parent, if any.
     /// Must be called when creating a new element node, after fully populating its edges.
-    private func attachImplementationToParent() {
+    func attachImplementationToParent() {
         if let implementation = self.implementation, let parent = self.parent {
             parent.attachImplementation(
                 implementation,
@@ -236,7 +245,7 @@ public class ElementNode {
     }
 
     /// Traverses the graph, finds and detaches every implementation node.
-    private func detachImplementationFromParent() {
+    func detachImplementationFromParent() {
         if let implementation = self.implementation, let parent = self.parent {
             parent.detachImplementation(
                 implementation,
@@ -335,96 +344,16 @@ public class ElementNode {
         }
 
         // Edges update
-        switch output.edges {
-            case .static(let staticEdges, _):
-                // Static update: update every edge one by one
-                guard let staticEdges = staticEdges else { return }
-
-                assert(
-                    staticEdges.count == self.edges.count,
-                    "`\(output.nodeType).make()` returned the wrong number of static edges (expected \(self.edges.count), got \(staticEdges.count))"
-                )
-
-                for idx in 0..<self.edges.count {
-                    switch (self.edges[idx].node, staticEdges[idx]) {
-                        case (.none, .none):
-                            // Nothing to do
-                            break
-                        case (.none, .some(let newEdge)):
-                            // Create a new edge
-                            self.staticInsertEdge(newEdge, at: idx, attributes: attributes)
-                        case (.some, .none):
-                            // Remove the old edge
-                            self.staticRemoveEdge(at: idx)
-                        case (.some, .some(let newEdge)):
-                            // Update the edge
-                            self.staticUpdateEdge(at: idx, with: newEdge, attributes: attributes)
-                    }
-                }
-            case .dynamic(let operations, let viewContent):
-                guard let viewContent = viewContent else {
-                    // No view content provided: assume there is nothing to do
-                    return
-                }
-
-                // Dynamic update: apply every operation in order
-                for operation in operations {
-                    switch operation {
-                        case .insert(let id, let position):
-                            self.dynamicInsertEdge(at: position, identifiedBy: id, attributes: attributes, using: viewContent)
-                        case .remove(let id, let position):
-                            self.dynamicRemoveEdge(at: position, identifiedBy: id)
-                    }
-                }
-
-                // Update all edges
-                for (position, edge) in self.edges.enumerated() {
-                    guard case .dynamic(let edge) = edge else {
-                        fatalError("Tried to dynamically update a static node")
-                    }
-
-                    if let node = edge.node {
-                        // If the node already exists, update it
-                        let input = MakeInput(storage: self.storage)
-                        let output = viewContent.make(at: position, identifiedBy: edge.id, input: input)
-
-                        node.update(with: output, attributes: attributes)
-                    } else {
-                        // Otherwise, create it
-                        let input = MakeInput(storage: nil)
-                        let output = viewContent.make(at: position, identifiedBy: edge.id, input: input)
-
-                        // Create storage
-                        let (storageEdges, elementNodeEdges) = self.prepareEdgesForEdge(output)
-                        let edgeStorage = StorageNode(
-                            elementType: output.nodeType,
-                            value: output.node?.storage,
-                            edges: storageEdges
-                        )
-                        self.storage.edges.dynamicSet(edge: edgeStorage, for: edge.id)
-
-                        // Create and insert the edge node
-                        let edgeNode = ElementNode(
-                            parent: self,
-                            position: position,
-                            kind: output.nodeKind,
-                            type: output.nodeType,
-                            storage: edgeStorage,
-                            edges: elementNodeEdges,
-                            implementation: output.accessor?.makeImplementation(),
-                            implementationState: .creating
-                        )
-
-                        edge.node = edgeNode
-                        edge.node?.update(with: output, attributes: attributes)
-                        edge.node?.attachImplementationToParent()
-                    }
-                }
-        }
+        self.edgesAdapter.updateEdges(
+            output.edges,
+            of: output,
+            in: self,
+            attributes: attributes
+        )
     }
 
     /// Creates both storage node edges and element node edges for a given edge to insert.
-    private func prepareEdgesForEdge(_ edge: MakeOutput) -> (StorageNode.Edges, [Edge]) {
+    func prepareEdgesForEdge(_ edge: MakeOutput) -> (StorageNode.Edges, [Edge]) {
         let storageEdges: StorageNode.Edges
         let elementNodeEdges: [Edge]
         switch edge.edges {
@@ -437,90 +366,6 @@ public class ElementNode {
         }
 
         return (storageEdges, elementNodeEdges)
-    }
-
-    /// Inserts a new edge at the given index. Static variant.
-    private func staticInsertEdge(_ edge: MakeOutput, at idx: Int, attributes: AttributesStash) {
-        guard self.storage.edges.staticAt(idx) == nil else {
-            fatalError("Tried to insert an edge on a non-empty storage node")
-        }
-
-        // Prepare the edge storage and node depending on its type
-        let (storageEdges, elementNodeEdges) = self.prepareEdgesForEdge(edge)
-
-        // Create the storage node
-        let edgeStorage = StorageNode(
-            elementType: edge.nodeType,
-            value: edge.node?.storage,
-            edges: storageEdges
-        )
-        self.storage.edges.staticSet(edge: edgeStorage, at: idx)
-
-        // Create and insert the edge node
-        let edgeNode = ElementNode(
-            parent: self,
-            position: idx,
-            kind: edge.nodeKind,
-            type: edge.nodeType,
-            storage: edgeStorage,
-            edges: elementNodeEdges,
-            implementation: edge.accessor?.makeImplementation(),
-            implementationState: .creating
-        )
-
-        self.edges[idx] = .static(edgeNode)
-        self.edges[idx].node?.update(with: edge, attributes: attributes)
-        self.edges[idx].node?.attachImplementationToParent()
-    }
-
-    /// Inserts a new edge at the given index. Dynamic variant.
-    private func dynamicInsertEdge(at idx: Int, identifiedBy id: AnyHashable, attributes: AttributesStash, using viewContent: DynamicViewContent) {
-        guard self.storage.edges.dynamicAt(id: id) == nil else {
-            fatalError("Tried to insert an edge on a non-empty storage node")
-        }
-
-        // Insert a stale edge to have it be created later
-        let dynamicEdge = DynamicEdge(id: id)
-        self.edges.insert(.dynamic(dynamicEdge), at: idx)
-
-        // After all dynamic edges are inserted, an update pass is made to all edges
-        // including this one, which will make and insert it "for real"
-    }
-
-    /// Updates edge at given position with a new edge.
-    private func staticUpdateEdge(at idx: Int, with newEdge: MakeOutput, attributes: AttributesStash) {
-        guard let edge = self.edges[idx].node else {
-            fatalError("Cannot update an edge that doesn't exist")
-        }
-
-        // If the type is the same, simply update the edge
-        // otherwise remove the old one and put the new one in place
-        if edge.type == newEdge.nodeType {
-            edge.update(with: newEdge, attributes: attributes)
-        } else {
-            self.staticRemoveEdge(at: idx)
-            self.staticInsertEdge(newEdge, at: idx, attributes: attributes)
-        }
-    }
-
-    /// Removes edge at given position. Static version.
-    private func staticRemoveEdge(at idx: Int) {
-        // Detach implementation nodes
-        self.edges[idx].node?.detachImplementationFromParent()
-
-        // Remove edge and discard storage
-        self.edges[idx] = .static(nil)
-        self.storage.edges.staticSet(edge: nil, at: idx)
-    }
-
-    /// Removes edge at given position. Dynamic version.
-    private func dynamicRemoveEdge(at position: Int, identifiedBy id: AnyHashable) {
-        // Detach implementation nodes
-        self.edges[position].node?.detachImplementationFromParent()
-
-        // Remove edge and discard storage
-        self.edges.remove(at: position)
-        self.storage.edges.dynamicSet(edge: nil, for: id)
     }
 
     func printGraph(indent: Int = 0) {
