@@ -117,14 +117,14 @@ public class StorageNode {
     init<V: View>(for view: V) {
         self.elementType = V.self
         self.value = nil
-        self.edges = .static([StorageNode?](repeating: nil, count: V.staticEdgesCount()))
+        self.edges = .static([StorageNode?](repeating: nil, count: V.staticEdgesCount))
     }
 
     /// Creates a new empty storage node for the given app.
     init<A: App>(for app: A) {
         self.elementType = A.self
         self.value = nil
-        self.edges = .static([StorageNode?](repeating: nil, count: A.staticEdgesCount()))
+        self.edges = .static([StorageNode?](repeating: nil, count: A.staticEdgesCount))
     }
 
     init(elementType: Any.Type, value: Any?, edges: Edges) {

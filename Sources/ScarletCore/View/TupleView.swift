@@ -37,7 +37,7 @@ public struct TupleView2<C0, C1>: View where C0: View, C1: View {
         return Self.output(node: nil, staticEdges: edges, accessor: view?.accessor)
     }
 
-    public static func staticEdgesCount() -> Int {
+    public static var staticEdgesCount: Int {
         return 2
     }
 }
@@ -66,7 +66,7 @@ public struct TupleView3<C0, C1, C2>: View where C0: View, C1: View, C2: View {
         return Self.output(node: nil, staticEdges: edges, accessor: view?.accessor)
     }
 
-    public static func staticEdgesCount() -> Int {
+    public static var staticEdgesCount: Int {
         return 3
     }
 }
@@ -98,7 +98,7 @@ public struct TupleView4<C0, C1, C2, C3>: View where C0: View, C1: View, C2: Vie
         return Self.output(node: nil, staticEdges: edges, accessor: view?.accessor)
     }
 
-    public static func staticEdgesCount() -> Int {
+    public static var staticEdgesCount: Int {
         return 4
     }
 }
@@ -133,7 +133,7 @@ public struct TupleView5<C0, C1, C2, C3, C4>: View where C0: View, C1: View, C2:
         return Self.output(node: nil, staticEdges: edges, accessor: view?.accessor)
     }
 
-    public static func staticEdgesCount() -> Int {
+    public static var staticEdgesCount: Int {
         return 5
     }
 }
@@ -171,7 +171,7 @@ public struct TupleView6<C0, C1, C2, C3, C4, C5>: View where C0: View, C1: View,
         return Self.output(node: nil, staticEdges: edges, accessor: view?.accessor)
     }
 
-    public static func staticEdgesCount() -> Int {
+    public static var staticEdgesCount: Int {
         return 6
     }
 }

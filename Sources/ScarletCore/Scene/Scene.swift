@@ -29,7 +29,7 @@ public protocol Scene: Accessor, Makeable {
 
     /// The number of static edges of a scene.
     /// Must be constant.
-    static func staticEdgesCount() -> Int
+    static var staticEdgesCount: Int { get }
 
     /// The type of this scene's implementation.
     /// Set to `Never` if there is none.
@@ -75,7 +75,7 @@ public extension Scene {
     }
 
     /// A scene has one edge: its body.
-    static func staticEdgesCount() -> Int {
+    static var staticEdgesCount: Int {
         return 1
     }
 
@@ -85,7 +85,7 @@ public extension Scene {
             nodeKind: .scene,
             nodeType: Self.self,
             node: node,
-            edges: .static(staticEdges, count: Self.staticEdgesCount()),
+            edges: .static(staticEdges, count: Self.staticEdgesCount),
             accessor: accessor
         )
     }

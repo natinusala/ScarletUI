@@ -31,7 +31,7 @@ public protocol ViewModifier: Accessor, Makeable {
 
     /// The number of static edges of this modifier.
     /// Must be constant.
-    static func staticEdgesCount() -> Int
+    static var staticEdgesCount: Int { get }
 }
 
 public extension ViewModifier {
@@ -73,7 +73,7 @@ public extension ViewModifier {
 
     /// Default implementation for `staticEdgesCount()` when there is a body: return one edge,
     /// the body.
-    static func staticEdgesCount() -> Int {
+    static var staticEdgesCount: Int {
         return 1
     }
 
@@ -104,7 +104,7 @@ public struct ViewModifierContent<Modifier>: View where Modifier: ViewModifier {
     }
 
     /// View modifier content has one edge, the modified content.
-    public static func staticEdgesCount() -> Int {
+    public static var staticEdgesCount: Int {
         return 1
     }
 }
@@ -123,7 +123,7 @@ public extension ViewModifier {
             nodeKind: .viewModifier,
             nodeType: Self.self,
             node: node,
-            edges: .static(staticEdges, count: Self.staticEdgesCount()),
+            edges: .static(staticEdges, count: Self.staticEdgesCount),
             accessor: accessor
         )
     }
@@ -159,7 +159,7 @@ extension ModifiedContent: View, Accessor, Makeable where Content: View, Modifie
     }
 
     /// Modified content has one edge: the modifier body.
-    public static func staticEdgesCount() -> Int {
+    public static var staticEdgesCount: Int {
         return 1
     }
 }

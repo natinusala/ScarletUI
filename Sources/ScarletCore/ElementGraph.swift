@@ -127,7 +127,7 @@ public class ElementNode {
         self.kind = .view
         self.type = V.self
         self.storage = StorageNode(for: view)
-        self.edges = [Edge](repeating: .static(nil), count: V.staticEdgesCount())
+        self.edges = [Edge](repeating: .static(nil), count: V.staticEdgesCount)
 
         let input = MakeInput(storage: self.storage)
         let output = V.make(view: view, input: input)
@@ -151,7 +151,7 @@ public class ElementNode {
         self.kind = .app
         self.type = A.self
         self.storage = StorageNode(for: app)
-        self.edges = [Edge](repeating: .static(nil), count: A.staticEdgesCount())
+        self.edges = [Edge](repeating: .static(nil), count: A.staticEdgesCount)
 
         let input = MakeInput(storage: self.storage)
         let output = A.make(app: app, input: input)

@@ -46,7 +46,7 @@ public struct Column<Content>: View where Content: View {
         )
     }
 
-    public static func staticEdgesCount() -> Int {
+    public static var staticEdgesCount: Int {
         return 1
     }
 }

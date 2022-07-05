@@ -34,7 +34,7 @@ public protocol App: Accessor, Makeable {
 
     /// The number of static edges of an app.
     /// Must be constant.
-    static func staticEdgesCount() -> Int
+    static var staticEdgesCount: Int { get }
 
     /// The type of this app's implementation.
     /// Set to `Never` if there is none.
@@ -77,7 +77,7 @@ public extension App {
     }
 
     /// An app has one edge: its body.
-    static func staticEdgesCount() -> Int {
+    static var staticEdgesCount: Int {
         return 1
     }
 
@@ -87,7 +87,7 @@ public extension App {
             nodeKind: .app,
             nodeType: Self.self,
             node: node,
-            edges: .static(staticEdges, count: Self.staticEdgesCount()),
+            edges: .static(staticEdges, count: Self.staticEdgesCount),
             accessor: accessor
         )
     }

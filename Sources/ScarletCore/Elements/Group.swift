@@ -39,7 +39,7 @@ extension Group: View, Accessor, Makeable where Content: View {
         )
     }
 
-    public static func staticEdgesCount() -> Int {
+    public static var staticEdgesCount: Int {
         return 1
     }
 }

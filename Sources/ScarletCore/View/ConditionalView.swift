@@ -91,7 +91,7 @@ public enum ConditionalView<FirstContent, SecondContent>: View where FirstConten
     }
 
     /// Conditionals have one edge: its content, either first or second.
-    public static func staticEdgesCount() -> Int {
+    public static var staticEdgesCount: Int {
         return 1
     }
 }

@@ -68,7 +68,7 @@ extension Optional: View, Accessor, Makeable where Wrapped: View {
     }
 
     /// Optional views have one edge, the wrapped view (or `nil`).
-    public static func staticEdgesCount() -> Int {
+    public static var staticEdgesCount: Int {
         return 1
     }
 }

@@ -52,7 +52,7 @@ public struct ForEach<Data, ID, Content>: View, DynamicViewContent where Data: R
         return self.output(node: output, operations: operations, accessor: view.accessor, viewContent: view)
     }
 
-    static public func staticEdgesCount() -> Int {
+    public static var staticEdgesCount: Int {
         fatalError("`ForEach` edges are dynamic")
     }
 

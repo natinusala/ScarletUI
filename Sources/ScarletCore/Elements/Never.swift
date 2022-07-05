@@ -26,7 +26,7 @@ extension Never: View, Scene, ImplementationNode {
         fatalError()
     }
 
-    public static func staticEdgesCount() -> Int {
+    public static var staticEdgesCount: Int {
         fatalError()
     }
 

@@ -30,7 +30,7 @@ public protocol View: Accessor, Makeable {
 
     /// The number of static edges of a view.
     /// Must be constant.
-    static func staticEdgesCount() -> Int
+    static var staticEdgesCount: Int { get }
 
     /// The type of this view's implementation.
     /// Set to `Never` if there is none.
@@ -74,7 +74,7 @@ public extension View {
 
     /// Default implementation for `staticEdgesCount()` when there is a body: return one edge,
     /// the body.
-    static func staticEdgesCount() -> Int {
+    static var staticEdgesCount: Int {
         return 1
     }
 
@@ -104,7 +104,7 @@ public extension View where Body == Never {
     }
 
     /// Default implementation for `staticEdgesCount()` when there is no body: no edges.
-    static func staticEdgesCount() -> Int {
+    static var staticEdgesCount: Int {
         return 0
     }
 
@@ -141,7 +141,7 @@ public extension View {
             nodeKind: .view,
             nodeType: Self.self,
             node: node,
-            edges: .static(staticEdges, count: Self.staticEdgesCount()),
+            edges: .static(staticEdges, count: Self.staticEdgesCount),
             accessor: accessor
         )
     }
