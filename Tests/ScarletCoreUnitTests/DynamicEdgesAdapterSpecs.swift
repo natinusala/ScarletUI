@@ -15,29 +15,26 @@
 */
 
 import Quick
-import Backtrace
+import Nimble
 
-// Add every test target here
-@testable import ScarletCoreUnitTests
+@testable import ScarletCore
 
-// Add every spec file here
-let specs: [QuickSpec.Type] = [
-    // ScarletCoreUnitTests
-    TryEquatableSpecs.self,
-    AnyEqualsSpecs.self,
-    DynamicEdgesAdapterSpecs.self,
-]
+class DynamicEdgesAdapterSpecs: QuickSpec {
+    override func spec() {
+        describe("a dynamic view update operation") {
+            context("when no view content is provided") {
+                it("does nothing") {
 
-@main
-struct Main {
-    public static func main() {
-        Backtrace.install()
+                }
+            }
+        }
 
-        var specs = specs
-        #if ENABLE_FUZZER
-            specs.append(BodyNodeFuzzerTests.self)
-        #endif
+        describe("a dynamic view insertion operation") {
+            
+        }
 
-        QCKMain(specs)
+        describe("a dynamic view removal operation") {
+            
+        }
     }
 }

@@ -74,7 +74,7 @@ let package = Package(
         ),
         // Test targets
         .testTarget(
-            name: "ScarletCoreTests",
+            name: "ScarletCoreUnitTests",
             dependencies: ["ScarletCore", "Nimble", "Quick", .product(name: "Backtrace", package: "swift-backtrace")]
         ),
         // Embedded native libraries
