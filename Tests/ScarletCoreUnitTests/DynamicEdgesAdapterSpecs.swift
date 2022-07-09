@@ -17,6 +17,8 @@
 import Quick
 import Nimble
 
+import ScarletCoreFixtures
+
 @testable import ScarletCore
 
 class DynamicEdgesAdapterSpecs: QuickSpec {
@@ -24,17 +26,60 @@ class DynamicEdgesAdapterSpecs: QuickSpec {
         describe("a dynamic view update operation") {
             context("when no view content is provided") {
                 it("does nothing") {
+                    let adapter = DynamicEdgesAdapter()
+                    let output = MakeOutput(
+                        nodeKind: .view,
+                        nodeType: EmptyView.self,
+                        node: nil,
+                        edges: .dynamic(operations: [], viewContent: nil),
+                        accessor: nil
+                    )
+                    let node = ElementNode.dynamicEmpty(adapter: adapter)
+
+                    expect(node.edges.count).to(equal(0))
+
+                    adapter.updateEdges(output.edges, of: output, in: node, attributes: [:])
+
+                    expect(node.edges.count).to(equal(0))
+                }
+            }
+
+            context("when there are no operations to apply") {
+                it("updates everything") {
+                    
+                }
+            }
+
+            context("when an insertion is made") {
+                it("inserts the node") {
+
+                }
+
+                it("updates everything") {
+
+                }
+            }
+
+            context("when a removal is made") {
+                it("removes the node") {
+
+                }
+
+                it("updates everything") {
+
+                }
+            }
+
+            context("when mixed operations are made") {
+                it("applies operations") {
+
+                }
+
+                it("updates everything") {
 
                 }
             }
         }
 
-        describe("a dynamic view insertion operation") {
-            
-        }
-
-        describe("a dynamic view removal operation") {
-            
-        }
     }
 }

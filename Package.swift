@@ -31,12 +31,18 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/Quick/Quick.git", .upToNextMajor(from: "4.0.0")),
-        .package(url: "https://github.com/Quick/Nimble.git", .upToNextMajor(from: "9.2.1")),
-        .package(url: "https://github.com/swift-server/swift-backtrace.git", .upToNextMajor(from: "1.3.1")),
+        // Core dependencies
         .package(url: "https://github.com/onevcat/Rainbow.git", .upToNextMajor(from: "4.0.0")),
         .package(url: "https://github.com/wickwirew/Runtime", .upToNextMajor(from: "2.2.4")),
         .package(url: "https://github.com/OpenCombine/OpenCombine.git", from: "0.13.0"),
+
+        // Linux compat
+        .package(url: "https://github.com/swift-server/swift-backtrace.git", .upToNextMajor(from: "1.3.1")),
+
+        // Testing
+        .package(url: "https://github.com/Quick/Quick.git", .upToNextMajor(from: "4.0.0")),
+        .package(url: "https://github.com/Quick/Nimble.git", .upToNextMajor(from: "9.2.1")),
+        .package(url: "https://github.com/natinusala/mockolo", branch: "7fef60ed2b85bb020ea4a4f6acb6c7830f5bdd09"),
     ],
     targets: [
         // ScarletUI: contains scenes, views, modifiers as well as the actual runtime
@@ -75,7 +81,23 @@ let package = Package(
         // Test targets
         .testTarget(
             name: "ScarletCoreUnitTests",
-            dependencies: ["ScarletCore", "Nimble", "Quick", .product(name: "Backtrace", package: "swift-backtrace")]
+            dependencies: [
+                "ScarletCore",
+                "ScarletCoreFixtures",
+                "Quick",
+                "Nimble",
+                .product(name: "Backtrace", package: "swift-backtrace"),
+            ],
+            plugins: [
+                .plugin(name: "MockoloPlugin", package: "mockolo"),
+            ]
+        ),
+        .target(
+            name: "ScarletCoreFixtures",
+            dependencies: [
+                "ScarletCore",
+            ],
+            path: "Tests/ScarletCoreFixtures"
         ),
         // Embedded native libraries
         .target(

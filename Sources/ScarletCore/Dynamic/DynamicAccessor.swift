@@ -16,6 +16,7 @@
 
 /// Represents a view that can generate dynamic views from an underlying collection of identified data.
 /// This protocol is aimed to be used in parents with static edges, and cannot be used for recycling purposes.
+/// @mockable
 public protocol DynamicViewContent {
     /// Returns the count of dynamic views in the collection.
     func count() -> Int

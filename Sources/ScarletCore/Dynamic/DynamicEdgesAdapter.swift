@@ -14,7 +14,7 @@
    limitations under the License.
 */
 
-// Standard dynamic edges adapter that consumes all views and adds them as
+/// Standard dynamic edges adapter that consumes all views and adds them as
 /// edges, without any recycling mechanism.
 struct DynamicEdgesAdapter: EdgesAdapter {
     func updateEdges(_ edges: MakeOutput.Edges, of output: MakeOutput, in node: ElementNode, attributes: AttributesStash) {
