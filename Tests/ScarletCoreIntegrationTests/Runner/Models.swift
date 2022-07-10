@@ -14,25 +14,39 @@
    limitations under the License.
 */
 
+@testable import ScarletCore
+
 struct Specs {
     let cases: [Case]
 }
 
-struct Case {
-    let description: String
-    let action: Action
-    let expectations: [Expectations]
+typealias UpdateAction = (ElementNode) -> ()
+
+extension TestView {
+    func update(action: @escaping () -> Self) -> UpdateAction {
+        return { node in
+            let newView = action()
+            node.update(with: newView, attributes: [:])
+        }
+    }
 }
 
-enum Action {
-    /// Update the view with the given view.
-    case updateWith(view: Any)
+struct Case {
+    let description: String
+    let action: UpdateAction
+    let expectations: [Expectations]
 }
 
 extension TestView {
     /// Creates a test case updating the view with a new version of itself.
-    func when(updatingWith: Self, _ description: String, @ExpectationsBuilder expectations: () -> [Expectations]) -> Case {
-        return Case(description: description, action: .updateWith(view: updatingWith), expectations: expectations())
+    func when(_ description: String, @ExpectationsBuilder expectations: () -> (UpdateAction, [Expectations])) -> Case {
+        let (action, expectations) = expectations()
+
+        return Case(
+            description: description,
+            action: action,
+            expectations: expectations
+        )
     }
 }
 
@@ -69,7 +83,7 @@ struct SpecsBuilder {
 
 @resultBuilder
 struct ExpectationsBuilder {
-    static func buildBlock(_ expectations: Expectations...) -> [Expectations] {
-        return expectations
+    static func buildBlock(_ action: @escaping UpdateAction, _ expectations: Expectations...) -> (UpdateAction, [Expectations]) {
+        return (action, expectations)
     }
 }

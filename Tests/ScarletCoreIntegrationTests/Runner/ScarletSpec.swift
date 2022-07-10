@@ -30,7 +30,7 @@ class ScarletSpec<Definition: SpecDefinition>: QuickSpec {
     var view: Definition.Tested!
     var node: ElementNode!
 
-    var bodyAccessor: BodyAccessorMock!
+    var bodyAccessor: MockBodyAccessor!
 
     override func spec() {
         beforeEach {
@@ -46,7 +46,7 @@ class ScarletSpec<Definition: SpecDefinition>: QuickSpec {
             self.view = installedView
 
             // Reset dependencies - do it after building the node to reset call counts
-            self.bodyAccessor = BodyAccessorMock(wrapping: DefaultBodyAccessor())
+            self.bodyAccessor = MockBodyAccessor(wrapping: DefaultBodyAccessor())
             Dependencies.bodyAccessor = self.bodyAccessor
         }
 
@@ -60,22 +60,17 @@ class ScarletSpec<Definition: SpecDefinition>: QuickSpec {
                 context("when \(testCase.description)") {
                     for expectation in testCase.expectations {
                         it("then \(expectation.description)") {
-                            self.runCase(testCase, expectation: expectation)
+                            self.runCase(action: testCase.action, expectation: expectation)
                         }
                     }
-                    
                 }
             }
         }
     }
 
-    private func runCase(_ testCase: Case, expectation: Expectations) {
+    private func runCase(action: UpdateAction, expectation: Expectations) {
         // Execute the action
-        switch testCase.action {
-        case .updateWith(let update):
-            let view = update as! Definition.Tested
-            self.node.update(with: view, attributes: [:])
-        }
+        action(self.node)
 
         // Make the result object and run the expectations closure
         let result = UpdateResult(

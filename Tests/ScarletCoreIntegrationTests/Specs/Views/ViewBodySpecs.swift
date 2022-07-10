@@ -39,7 +39,11 @@ class ViewBodySpecsDefinition: SpecDefinition {
         }
 
         func spec() -> Specs {
-            when(updatingWith: Tested(variable: true, anotherVariable: false), "the view input does not change") {
+            when("the view input does not change") {
+                update {
+                    Tested(variable: true, anotherVariable: false)
+                }
+
                 then("body is not called") { result in
                     expect(result.bodyCalled(of: Tested.self)).to(beFalse())
                 }
@@ -49,7 +53,11 @@ class ViewBodySpecsDefinition: SpecDefinition {
                 }
             }
 
-            when(updatingWith: Tested(variable: false, anotherVariable: true), "the view input changes") {
+            when("the view input changes") {
+                update {
+                    Tested(variable: false, anotherVariable: true)
+                }
+
                 then("body is called") { result in
                     expect(result.bodyCalled(of: Tested.self)).to(beTrue())
                 }

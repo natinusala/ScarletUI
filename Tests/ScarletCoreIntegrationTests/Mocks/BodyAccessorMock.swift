@@ -16,7 +16,7 @@
 
 @testable import ScarletCore
 
-class BodyAccessorMock: BodyAccessor {
+class MockBodyAccessor: BodyAccessor {
     var bodyCalls: [ObjectIdentifier: Int] = [:]
 
     let wrapped: BodyAccessor
