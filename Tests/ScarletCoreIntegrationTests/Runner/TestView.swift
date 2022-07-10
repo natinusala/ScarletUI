@@ -15,26 +15,12 @@
 */
 
 import Quick
-import Backtrace
+import Nimble
 
-// Add every test target here
-@testable import ScarletCoreUnitTests
-@testable import ScarletCoreIntegrationTests
+@testable import ScarletCore
 
-// Add every spec file here
-let specs: [QuickSpec.Type] = [
-    // ScarletCoreUnitTests
-    TryEquatableSpecs.self,
-    AnyEqualsSpecs.self,
-    // ScarletCoreIntegrationTests
-    ViewSpecs.self,
-]
-
-// XXX: A main struct will be required as long as top-level code
-// detection isn't fixed for `XCTMain.swift`
-@main
-struct Main {
-    static func main() {
-        QCKMain(specs)
-    }
+/// A view with a test spec.
+/// TODO: add an implementation type to test it
+protocol TestView: View where Implementation == Never {
+    @SpecsBuilder func spec() -> Specs
 }

@@ -14,9 +14,25 @@
    limitations under the License.
 */
 
-struct BodyAccessor {
+/// @mockable
+protocol BodyAccessor {
     /// Makes the body of the given view.
-    static func makeBody<V: View>(of view: V, storage: StorageNode?) -> V.Body {
+    func makeBody<V: View>(of view: V, storage: StorageNode?) -> V.Body
+}
+
+struct DefaultBodyAccessor: BodyAccessor {
+    func makeBody<V: View>(of view: V, storage: StorageNode?) -> V.Body {
         return view.body
+    }
+}
+
+private struct BodyAccessorDependency: Dependency {
+    static let defaultValue: BodyAccessor = DefaultBodyAccessor()
+}
+
+extension Dependencies {
+    static var bodyAccessor: any BodyAccessor {
+        get { Dependencies[BodyAccessorDependency.self] }
+        set { Dependencies[BodyAccessorDependency.self] = newValue }
     }
 }

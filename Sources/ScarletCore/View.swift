@@ -64,7 +64,7 @@ public extension View {
         let output = ElementOutput(storage: view, attributes: view.collectAttributes())
 
         // Re-evaluate body
-        let body = BodyAccessor.makeBody(of: view, storage: input.storage)
+        let body = Dependencies.bodyAccessor.makeBody(of: view, storage: input.storage)
         let bodyStorage = input.storage?.edges.asStatic[0]
         let bodyInput = MakeInput(storage: bodyStorage)
         let bodyOutput = Body.make(view: body, input: bodyInput)

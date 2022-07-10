@@ -19,11 +19,11 @@
       }
     },
     {
-      "identity" : "mockolo",
+      "identity" : "mockolo-linux",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/natinusala/mockolo",
+      "location" : "https://github.com/natinusala/mockolo-linux",
       "state" : {
-        "revision" : "7fef60ed2b85bb020ea4a4f6acb6c7830f5bdd09"
+        "revision" : "6475f3c86034d9f18b9886c01ccd1bf3d2d96e7d"
       }
     },
     {

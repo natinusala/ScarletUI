@@ -42,7 +42,7 @@ let package = Package(
         // Testing
         .package(url: "https://github.com/Quick/Quick.git", .upToNextMajor(from: "4.0.0")),
         .package(url: "https://github.com/Quick/Nimble.git", .upToNextMajor(from: "9.2.1")),
-        .package(url: "https://github.com/natinusala/mockolo", branch: "7fef60ed2b85bb020ea4a4f6acb6c7830f5bdd09"),
+        .package(url: "https://github.com/natinusala/mockolo-linux", branch: "6475f3c86034d9f18b9886c01ccd1bf3d2d96e7d"),
     ],
     targets: [
         // ScarletUI: contains scenes, views, modifiers as well as the actual runtime
@@ -83,7 +83,6 @@ let package = Package(
             name: "ScarletCoreUnitTests",
             dependencies: [
                 "ScarletCore",
-                "ScarletCoreFixtures",
                 "Quick",
                 "Nimble",
                 .product(name: "Backtrace", package: "swift-backtrace"),
@@ -92,12 +91,17 @@ let package = Package(
                 .plugin(name: "MockoloPlugin", package: "mockolo"),
             ]
         ),
-        .target(
-            name: "ScarletCoreFixtures",
+        .testTarget(
+            name: "ScarletCoreIntegrationTests",
             dependencies: [
                 "ScarletCore",
+                "Quick",
+                "Nimble",
+                .product(name: "Backtrace", package: "swift-backtrace"),
             ],
-            path: "Tests/ScarletCoreFixtures"
+            plugins: [
+                .plugin(name: "MockoloPlugin", package: "mockolo"),
+            ]
         ),
         // Embedded native libraries
         .target(
