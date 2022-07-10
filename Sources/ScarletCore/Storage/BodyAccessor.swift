@@ -14,7 +14,6 @@
    limitations under the License.
 */
 
-/// @mockable
 protocol BodyAccessor {
     /// Makes the body of the given view.
     func makeBody<V: View>(of view: V, storage: StorageNode?) -> V.Body

@@ -76,7 +76,7 @@ class ScarletSpec<Definition: SpecDefinition>: QuickSpec {
 
         // Make the result object and run the expectations closure
         let result = UpdateResult(
-            bodyCalled: self.bodyAccessor.makeBodyCallCount != 0
+            bodyCalls: self.bodyAccessor.bodyCalls
         )
 
         testCase.expectations.closure(result)

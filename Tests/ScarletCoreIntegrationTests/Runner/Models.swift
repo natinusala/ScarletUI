@@ -45,7 +45,11 @@ struct Expectations {
 /// The result of an update operation. Passed to the test specs to assert
 /// that everything went as expected.
 struct UpdateResult {
-    let bodyCalled: Bool
+    let bodyCalls: [ObjectIdentifier: Int]
+
+    func bodyCalled<T>(of: T.Type) -> Bool {
+        return (bodyCalls[ObjectIdentifier(T.self)] ?? 0) != 0
+    }
 }
 
 
