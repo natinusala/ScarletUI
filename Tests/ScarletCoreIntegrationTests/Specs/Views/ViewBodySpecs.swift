@@ -18,18 +18,24 @@ import Nimble
 
 @testable import ScarletCore
 
-class ViewSpecsDefinition: SpecDefinition {
+class ViewBodySpecsDefinition: SpecDefinition {
     static let describing = "view updates"
     static let testing = Tested(variable: true, anotherVariable: false)
+
+    struct NestedView: View {
+        let value: Bool
+
+        var body: some View {
+            EmptyView()
+        }
+    }
 
     struct Tested: TestView {
         let variable: Bool
         let anotherVariable: Bool
 
-        @State private var stateVariable = false
-
         var body: some View {
-            EmptyView()
+            NestedView(value: variable)
         }
 
         func spec() -> Specs {
@@ -37,15 +43,25 @@ class ViewSpecsDefinition: SpecDefinition {
                 then("body is not called") { result in
                     expect(result.bodyCalled(of: Tested.self)).to(beFalse())
                 }
+
+                then("nested body is not called") { result in
+                    expect(result.bodyCalled(of: NestedView.self)).to(beFalse())
+                }
             }
 
             when(updatingWith: Tested(variable: false, anotherVariable: true), "the view input changes") {
                 then("body is called") { result in
                     expect(result.bodyCalled(of: Tested.self)).to(beTrue())
                 }
+
+                then("nested body is called") { result in
+                    expect(result.bodyCalled(of: NestedView.self)).to(beTrue())
+                }
             }
         }
     }
 }
 
-typealias ViewSpecs = ScarletSpec<ViewSpecsDefinition>
+// TODO: test case: view with no input body is never called (EmptyViewBodySpecs)
+
+typealias ViewBodySpecs = ScarletSpec<ViewBodySpecsDefinition>

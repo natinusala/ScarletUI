@@ -58,15 +58,18 @@ class ScarletSpec<Definition: SpecDefinition>: QuickSpec {
 
             for testCase in specs.cases {
                 context("when \(testCase.description)") {
-                    it("then \(testCase.expectations.description)") {
-                        self.runCase(testCase)
+                    for expectation in testCase.expectations {
+                        it("then \(expectation.description)") {
+                            self.runCase(testCase, expectation: expectation)
+                        }
                     }
+                    
                 }
             }
         }
     }
 
-    private func runCase(_ testCase: Case) {
+    private func runCase(_ testCase: Case, expectation: Expectations) {
         // Execute the action
         switch testCase.action {
         case .updateWith(let update):
@@ -79,6 +82,6 @@ class ScarletSpec<Definition: SpecDefinition>: QuickSpec {
             bodyCalls: self.bodyAccessor.bodyCalls
         )
 
-        testCase.expectations.closure(result)
+        expectation.closure(result)
     }
 }

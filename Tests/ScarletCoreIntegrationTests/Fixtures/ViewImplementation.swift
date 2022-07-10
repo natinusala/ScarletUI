@@ -14,27 +14,8 @@
    limitations under the License.
 */
 
-import Quick
-import Backtrace
+@testable import ScarletCore
 
-// Add every test target here
-@testable import ScarletCoreUnitTests
-@testable import ScarletCoreIntegrationTests
-
-// Add every spec file here
-let specs: [QuickSpec.Type] = [
-    // ScarletCoreUnitTests
-    TryEquatableSpecs.self,
-    AnyEqualsSpecs.self,
-    // ScarletCoreIntegrationTests
-    ViewBodySpecs.self,
-]
-
-// XXX: A main struct will be required as long as top-level code
-// detection isn't fixed for `XCTMain.swift`
-@main
-struct Main {
-    static func main() {
-        QCKMain(specs)
-    }
+extension View {
+    public typealias Implementation = Never // TODO: add an implementation type to test it
 }

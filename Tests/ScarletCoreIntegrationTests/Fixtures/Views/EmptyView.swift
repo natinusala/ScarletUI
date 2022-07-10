@@ -18,5 +18,4 @@
 
 public struct EmptyView: View {
     public typealias Body = Never
-    public typealias Implementation = Never
 }

@@ -21,7 +21,7 @@ struct Specs {
 struct Case {
     let description: String
     let action: Action
-    let expectations: Expectations
+    let expectations: [Expectations]
 }
 
 enum Action {
@@ -31,7 +31,7 @@ enum Action {
 
 extension TestView {
     /// Creates a test case updating the view with a new version of itself.
-    func when(updatingWith: Self, _ description: String, expectations: () -> Expectations) -> Case {
+    func when(updatingWith: Self, _ description: String, @ExpectationsBuilder expectations: () -> [Expectations]) -> Case {
         return Case(description: description, action: .updateWith(view: updatingWith), expectations: expectations())
     }
 }
@@ -64,5 +64,12 @@ extension TestView {
 struct SpecsBuilder {
     static func buildBlock(_ cases: Case...) -> Specs {
         return Specs(cases: cases)
+    }
+}
+
+@resultBuilder
+struct ExpectationsBuilder {
+    static func buildBlock(_ expectations: Expectations...) -> [Expectations] {
+        return expectations
     }
 }
