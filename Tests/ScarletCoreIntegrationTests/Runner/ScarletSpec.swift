@@ -30,7 +30,7 @@ class ScarletSpec<Definition: SpecDefinition>: QuickSpec {
     var view: Definition.Tested!
     var node: ElementNode!
 
-    var bodyAccessor: MockBodyAccessor!
+    var bodyAccessor: BodyAccessorMock!
 
     override func spec() {
         beforeEach {
@@ -46,7 +46,7 @@ class ScarletSpec<Definition: SpecDefinition>: QuickSpec {
             self.view = installedView
 
             // Reset dependencies - do it after building the node to reset call counts
-            self.bodyAccessor = MockBodyAccessor(wrapping: DefaultBodyAccessor())
+            self.bodyAccessor = BodyAccessorMock(wrapping: DefaultBodyAccessor())
             Dependencies.bodyAccessor = self.bodyAccessor
         }
 
@@ -78,5 +78,19 @@ class ScarletSpec<Definition: SpecDefinition>: QuickSpec {
         )
 
         expectation.closure(result)
+    }
+}
+
+extension BodyAccessorMock {
+    /// Body calls count by view type identifier.
+    var bodyCalls: [ObjectIdentifier: Int] {
+        var bodyCalls: [ObjectIdentifier: Int] = [:]
+
+        for (view, _) in self.makeBodyArgValues {
+            let identifier = ObjectIdentifier(type(of: view))
+            bodyCalls[identifier] = (bodyCalls[identifier] ?? 0) + 1
+        }
+
+        return bodyCalls
     }
 }
