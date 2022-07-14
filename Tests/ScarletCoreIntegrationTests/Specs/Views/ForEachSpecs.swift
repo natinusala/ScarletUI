@@ -65,6 +65,10 @@ class ForEachSpecsDefinition: SpecDefinition {
                     Tested(views: [0, 1, 2, 3, 4])
                 }
 
+                then("no element views body is called") { result in
+                    expect(result.bodyCalls(of: NestedView.self)).to(equal(0))
+                }
+
                 then("implementation is untouched") { result in
                     expect(result.implementation).to(equal(
                         ViewImpl("Tested") {
