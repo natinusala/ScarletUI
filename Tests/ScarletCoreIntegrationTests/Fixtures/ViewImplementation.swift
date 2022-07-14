@@ -16,6 +16,80 @@
 
 @testable import ScarletCore
 
+public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
+    let kind: ImplementationKind
+    let displayName: String
+    var attributes = Attributes()
+    var children: [ViewImpl] = []
+
+    public static func == (lhs: ViewImpl, rhs: ViewImpl) -> Bool {
+        return lhs.kind == rhs.kind
+            && lhs.displayName == rhs.displayName 
+            && lhs.attributes == rhs.attributes 
+            && lhs.children == rhs.children
+    }
+
+    struct Attributes: Equatable {
+        var id: String = ""
+    }
+
+    /// Initializer used to create the expected implementation tree.
+    convenience init(
+        _ displayName: String,
+        id: String = "",
+        @ViewImplChildrenBuilder children: () -> [ViewImpl] = { [] }
+    ) {
+        self.init(kind: .view, displayName: displayName)
+
+        self.attributes.id = id
+
+        self.children = children()
+    }
+
+    /// Initializer used by ScarletCore.
+    public required init(kind: ImplementationKind, displayName: String) {
+        self.kind = kind
+        self.displayName = displayName
+    }
+
+    public func attributesDidSet() {}
+
+    public func insertChild(_ child: ScarletCore.ImplementationNode, at position: Int) {
+        self.children.insert(child as! ViewImpl, at: position)
+    }
+
+    public func removeChild(at position: Int) {
+        self.children.remove(at: position)
+    }
+
+    public var description: String {
+        let children: String
+        if self.children.isEmpty {
+            children = ""
+        } else {
+            children = """
+            {
+                \(self.children.map { "\($0)" }.joined(separator: " "))
+            }
+            """
+        }
+        return """
+        ViewImpl("\(self.displayName)", \(self.attributes)) \(children)
+        """
+    }
+}
+
 extension View {
-    public typealias Implementation = Never // TODO: add an implementation type to test it
+    public typealias Implementation = ViewImpl
+}
+
+@resultBuilder
+struct ViewImplChildrenBuilder {
+    static func buildBlock(_ children: ViewImpl...) -> [ViewImpl] {
+        return children
+    }
+
+    static func buildBlock() -> [ViewImpl] {
+        return []
+    }
 }

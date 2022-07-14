@@ -20,7 +20,6 @@ import Nimble
 @testable import ScarletCore
 
 /// A view with a test spec.
-/// TODO: add an implementation type to test it
-protocol TestView: View where Implementation == Never {
+protocol TestView: View {
     @SpecsBuilder func spec() -> Specs
 }

@@ -18,8 +18,8 @@ import Nimble
 
 @testable import ScarletCore
 
-class ViewBodySpecsDefinition: SpecDefinition {
-    static let describing = "view updates"
+class ViewSpecsDefinition: SpecDefinition {
+    static let describing = "a view with inputs"
     static let testing = Tested(variable: true, anotherVariable: false)
 
     struct NestedView: View {
@@ -39,8 +39,22 @@ class ViewBodySpecsDefinition: SpecDefinition {
         }
 
         func spec() -> Specs {
+            when("the view is created") {
+                create()
+
+                then("implementation is created") { result in
+                    expect(result.implementation).to(equal(
+                        ViewImpl("Tested") {
+                            ViewImpl("NestedView") {
+                                ViewImpl("EmptyView")
+                            }
+                        }
+                    ))
+                }
+            }
+
             when("the view input does not change") {
-                update {
+                updateWith {
                     Tested(variable: true, anotherVariable: false)
                 }
 
@@ -51,10 +65,20 @@ class ViewBodySpecsDefinition: SpecDefinition {
                 then("nested body is not called") { result in
                     expect(result.bodyCalled(of: NestedView.self)).to(beFalse())
                 }
+
+                then("implementation is untouched") { result in
+                    expect(result.implementation).to(equal(
+                        ViewImpl("Tested") {
+                            ViewImpl("NestedView") {
+                                ViewImpl("EmptyView")
+                            }
+                        }
+                    ))
+                }
             }
 
             when("the view input changes") {
-                update {
+                updateWith {
                     Tested(variable: false, anotherVariable: true)
                 }
 
@@ -65,11 +89,19 @@ class ViewBodySpecsDefinition: SpecDefinition {
                 then("nested body is called") { result in
                     expect(result.bodyCalled(of: NestedView.self)).to(beTrue())
                 }
+
+                then("implementation is updated") { result in
+                    expect(result.implementation).to(equal(
+                        ViewImpl("Tested") {
+                            ViewImpl("NestedView") {
+                                ViewImpl("EmptyView")
+                            }
+                        }
+                    ))
+                }
             }
         }
     }
 }
 
-// TODO: test case: view with no input body is never called (EmptyViewBodySpecs)
-
-typealias ViewBodySpecs = ScarletSpec<ViewBodySpecsDefinition>
+typealias ViewSpecs = ScarletSpec<ViewSpecsDefinition>

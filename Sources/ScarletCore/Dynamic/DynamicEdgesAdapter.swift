@@ -99,7 +99,7 @@ struct DynamicEdgesAdapter: EdgesAdapter {
     /// Inserts a new edge at the given index. Dynamic variant.
     private func insertEdge(at idx: Int, identifiedBy id: AnyHashable, in node: ElementNode, using viewContent: DynamicViewContent, attributes: AttributesStash) {
         guard node.storage.edges.dynamicAt(id: id) == nil else {
-            fatalError("Tried to insert an edge on a non-empty storage node")
+            fatalError("Tried to insert an edge on a non-empty storage node - are the dynamic views identifiers truly unique?")
         }
 
         // Insert a stale edge to have it be created later

@@ -23,11 +23,15 @@ struct Specs {
 typealias UpdateAction = (ElementNode) -> ()
 
 extension TestView {
-    func update(action: @escaping () -> Self) -> UpdateAction {
+    func updateWith(action: @escaping () -> Self) -> UpdateAction {
         return { node in
             let newView = action()
             node.update(with: newView, attributes: [:])
         }
+    }
+
+    func create() -> UpdateAction {
+        return { _ in }
     }
 }
 
@@ -60,9 +64,14 @@ struct Expectations {
 /// that everything went as expected.
 struct UpdateResult {
     let bodyCalls: [ObjectIdentifier: Int]
+    let implementation: ViewImpl?
 
     func bodyCalled<T>(of: T.Type) -> Bool {
         return (bodyCalls[ObjectIdentifier(T.self)] ?? 0) != 0
+    }
+
+    func bodyCalls<T>(of: T.Type) -> Int {
+        return bodyCalls[ObjectIdentifier(T.self)] ?? 0
     }
 }
 

@@ -14,7 +14,7 @@
    limitations under the License.
 */
 
-// TODO: use a visitor pattern to merge all structs into one
+// TODO: use a variadic builder (`View...`) to merge all TupleViewX into one
 
 public struct TupleView2<C0, C1>: View where C0: View, C1: View {
     public typealias Body = Never
