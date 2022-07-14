@@ -50,11 +50,11 @@ class ForEachSpecsDefinition: SpecDefinition {
                 then("implementation is created") { result in
                     expect(result.implementation).to(equal(
                         ViewImpl("Tested") {
-                            ViewImpl("NestedView", id: "0") { ViewImpl("EmptyView") }
-                            ViewImpl("NestedView", id: "1") { ViewImpl("EmptyView") }
-                            ViewImpl("NestedView", id: "2") { ViewImpl("EmptyView") }
-                            ViewImpl("NestedView", id: "3") { ViewImpl("EmptyView") }
-                            ViewImpl("NestedView", id: "4") { ViewImpl("EmptyView") }
+                            ViewImpl("NestedView", id: "0").anyChildren()
+                            ViewImpl("NestedView", id: "1").anyChildren()
+                            ViewImpl("NestedView", id: "2").anyChildren()
+                            ViewImpl("NestedView", id: "3").anyChildren()
+                            ViewImpl("NestedView", id: "4").anyChildren()
                         }
                     ))
                 }
@@ -68,11 +68,11 @@ class ForEachSpecsDefinition: SpecDefinition {
                 then("implementation is untouched") { result in
                     expect(result.implementation).to(equal(
                         ViewImpl("Tested") {
-                            ViewImpl("NestedView", id: "0") { ViewImpl("EmptyView") }
-                            ViewImpl("NestedView", id: "1") { ViewImpl("EmptyView") }
-                            ViewImpl("NestedView", id: "2") { ViewImpl("EmptyView") }
-                            ViewImpl("NestedView", id: "3") { ViewImpl("EmptyView") }
-                            ViewImpl("NestedView", id: "4") { ViewImpl("EmptyView") }
+                            ViewImpl("NestedView", id: "0").anyChildren()
+                            ViewImpl("NestedView", id: "1").anyChildren()
+                            ViewImpl("NestedView", id: "2").anyChildren()
+                            ViewImpl("NestedView", id: "3").anyChildren()
+                            ViewImpl("NestedView", id: "4").anyChildren()
                         }
                     ))
                 }
@@ -90,16 +90,16 @@ class ForEachSpecsDefinition: SpecDefinition {
                 then("implementations are inserted") { result in
                     expect(result.implementation).to(equal(
                         ViewImpl("Tested") {
-                            ViewImpl("NestedView", id: "0") { ViewImpl("EmptyView") }
-                            ViewImpl("NestedView", id: "1") { ViewImpl("EmptyView") }
-                            ViewImpl("NestedView", id: "2") { ViewImpl("EmptyView") }
-                            ViewImpl("NestedView", id: "3") { ViewImpl("EmptyView") }
-                            ViewImpl("NestedView", id: "4") { ViewImpl("EmptyView") }
-                            ViewImpl("NestedView", id: "5") { ViewImpl("EmptyView") }
-                            ViewImpl("NestedView", id: "6") { ViewImpl("EmptyView") }
-                            ViewImpl("NestedView", id: "7") { ViewImpl("EmptyView") }
-                            ViewImpl("NestedView", id: "8") { ViewImpl("EmptyView") }
-                            ViewImpl("NestedView", id: "9") { ViewImpl("EmptyView") }
+                            ViewImpl("NestedView", id: "0").anyChildren()
+                            ViewImpl("NestedView", id: "1").anyChildren()
+                            ViewImpl("NestedView", id: "2").anyChildren()
+                            ViewImpl("NestedView", id: "3").anyChildren()
+                            ViewImpl("NestedView", id: "4").anyChildren()
+                            ViewImpl("NestedView", id: "5").anyChildren()
+                            ViewImpl("NestedView", id: "6").anyChildren()
+                            ViewImpl("NestedView", id: "7").anyChildren()
+                            ViewImpl("NestedView", id: "8").anyChildren()
+                            ViewImpl("NestedView", id: "9").anyChildren()
                         }
                     ))
                 }
@@ -133,11 +133,11 @@ class ForEachSpecsDefinition: SpecDefinition {
                 then("implementations are reordered") { result in
                     expect(result.implementation).to(equal(
                         ViewImpl("Tested") {
-                            ViewImpl("NestedView", id: "0") { ViewImpl("EmptyView") }
-                            ViewImpl("NestedView", id: "3") { ViewImpl("EmptyView") }
-                            ViewImpl("NestedView", id: "2") { ViewImpl("EmptyView") }
-                            ViewImpl("NestedView", id: "4") { ViewImpl("EmptyView") }
-                            ViewImpl("NestedView", id: "1") { ViewImpl("EmptyView") }
+                            ViewImpl("NestedView", id: "0").anyChildren()
+                            ViewImpl("NestedView", id: "3").anyChildren()
+                            ViewImpl("NestedView", id: "2").anyChildren()
+                            ViewImpl("NestedView", id: "4").anyChildren()
+                            ViewImpl("NestedView", id: "1").anyChildren()
                         }
                     ))
                 }
@@ -155,11 +155,11 @@ class ForEachSpecsDefinition: SpecDefinition {
                 then("implementations are updated") { result in
                     expect(result.implementation).to(equal(
                         ViewImpl("Tested") {
-                            ViewImpl("NestedView", id: "somePrefix0") { ViewImpl("EmptyView") }
-                            ViewImpl("NestedView", id: "somePrefix1") { ViewImpl("EmptyView") }
-                            ViewImpl("NestedView", id: "somePrefix2") { ViewImpl("EmptyView") }
-                            ViewImpl("NestedView", id: "somePrefix3") { ViewImpl("EmptyView") }
-                            ViewImpl("NestedView", id: "somePrefix4") { ViewImpl("EmptyView") }
+                            ViewImpl("NestedView", id: "somePrefix0").anyChildren()
+                            ViewImpl("NestedView", id: "somePrefix1").anyChildren()
+                            ViewImpl("NestedView", id: "somePrefix2").anyChildren()
+                            ViewImpl("NestedView", id: "somePrefix3").anyChildren()
+                            ViewImpl("NestedView", id: "somePrefix4").anyChildren()
                         }
                     ))
                 }
@@ -177,11 +177,11 @@ class ForEachSpecsDefinition: SpecDefinition {
                 then("implementations are updated") { result in
                     expect(result.implementation).to(equal(
                         ViewImpl("Tested") {
-                            ViewImpl("NestedView", id: "somePrefix0") { ViewImpl("EmptyView") }
-                            ViewImpl("NestedView", id: "somePrefix4") { ViewImpl("EmptyView") }
-                            ViewImpl("NestedView", id: "somePrefix3") { ViewImpl("EmptyView") }
-                            ViewImpl("NestedView", id: "somePrefix2") { ViewImpl("EmptyView") }
-                            ViewImpl("NestedView", id: "somePrefix1") { ViewImpl("EmptyView") }
+                            ViewImpl("NestedView", id: "somePrefix0").anyChildren()
+                            ViewImpl("NestedView", id: "somePrefix4").anyChildren()
+                            ViewImpl("NestedView", id: "somePrefix3").anyChildren()
+                            ViewImpl("NestedView", id: "somePrefix2").anyChildren()
+                            ViewImpl("NestedView", id: "somePrefix1").anyChildren()
                         }
                     ))
                 }

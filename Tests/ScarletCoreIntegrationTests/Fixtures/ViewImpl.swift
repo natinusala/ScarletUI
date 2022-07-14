@@ -22,11 +22,15 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
     var attributes = Attributes()
     var children: [ViewImpl] = []
 
+    private var ignoreChildren = false
+
     public static func == (lhs: ViewImpl, rhs: ViewImpl) -> Bool {
+        let childrenEqual = lhs.ignoreChildren || rhs.ignoreChildren || lhs.children == rhs.children
+
         return lhs.kind == rhs.kind
             && lhs.displayName == rhs.displayName 
             && lhs.attributes == rhs.attributes 
-            && lhs.children == rhs.children
+            && childrenEqual
     }
 
     struct Attributes: Equatable {
@@ -50,6 +54,11 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
     public required init(kind: ImplementationKind, displayName: String) {
         self.kind = kind
         self.displayName = displayName
+    }
+
+    public func anyChildren() -> ViewImpl {
+        self.ignoreChildren = true
+        return self
     }
 
     public func attributesDidSet() {}
