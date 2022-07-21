@@ -18,7 +18,7 @@
 /// Each view type has a static edges layout, edges are simply flipped on and off in their "slot"
 /// but they are never added or removed.
 struct StaticEdgesAdapter: EdgesAdapter {
-    func updateEdges(_ edges: MakeOutput.Edges, of output: MakeOutput, in node: ElementNode, attributes: AttributesStash, transaction: Transaction) {
+    func updateEdges(_ edges: MakeOutput.Edges, of output: MakeOutput, in node: ElementNode, attributes: AttributesStash) {
         guard case .static(let staticEdges, _) = edges else {
             fatalError("Called` updateEdges(for:)` on `StaticEdgesAdapter` with non-static edges")
         }
@@ -38,19 +38,19 @@ struct StaticEdgesAdapter: EdgesAdapter {
                     break
                 case (.none, .some(let newEdge)):
                     // Create a new edge
-                    self.insertEdge(newEdge, at: idx, in: node, attributes: attributes, transaction: transaction)
-                case (.some, .none):
+                    self.insertEdge(newEdge, at: idx, in: node, attributes: attributes)
+                case (.some, .none(let implementationPosition)):
                     // Remove the old edge
-                    self.removeEdge(at: idx, in: node, transaction: transaction)
+                    self.removeEdge(at: idx, in: node, implementationPosition: implementationPosition)
                 case (.some, .some(let newEdge)):
                     // Update the edge
-                    self.updateEdge(at: idx, with: newEdge, in: node, attributes: attributes, transaction: transaction)
+                    self.updateEdge(at: idx, with: newEdge, in: node, attributes: attributes)
             }
         }
     }
 
      /// Inserts a new edge at the given index. Static variant.
-    private func insertEdge(_ edge: MakeOutput, at idx: Int, in node: ElementNode, attributes: AttributesStash, transaction: Transaction) {
+    private func insertEdge(_ edge: MakeOutput, at idx: Int, in node: ElementNode, attributes: AttributesStash) {
         guard node.storage.edges.staticAt(idx) == nil else {
             fatalError("Tried to insert an edge on a non-empty storage node")
         }
@@ -81,12 +81,10 @@ struct StaticEdgesAdapter: EdgesAdapter {
         node.edges[idx] = .static(edgeNode)
         node.edges[idx].node?.update(with: edge, attributes: attributes)
         node.edges[idx].node?.attachImplementationToParent()
-
-        transaction.removalOffset += 1
     }
 
     /// Updates edge at given position with a new edge.
-    private func updateEdge(at idx: Int, with newEdge: MakeOutput, in node: ElementNode, attributes: AttributesStash, transaction: Transaction) {
+    private func updateEdge(at idx: Int, with newEdge: MakeOutput, in node: ElementNode, attributes: AttributesStash) {
         guard let edge = node.edges[idx].node else {
             fatalError("Cannot update an edge that doesn't exist")
         }
@@ -96,20 +94,18 @@ struct StaticEdgesAdapter: EdgesAdapter {
         if edge.type == newEdge.nodeType {
             edge.update(with: newEdge, attributes: attributes)
         } else {
-            self.removeEdge(at: idx, in: node, transaction: transaction)
-            self.insertEdge(newEdge, at: idx, in: node, attributes: attributes, transaction: transaction)
+            self.removeEdge(at: idx, in: node, implementationPosition: nil)
+            self.insertEdge(newEdge, at: idx, in: node, attributes: attributes)
         }
     }
 
     /// Removes edge at given position. Static version.
-    private func removeEdge(at idx: Int, in node: ElementNode, transaction: Transaction) {
+    private func removeEdge(at idx: Int, in node: ElementNode, implementationPosition: Int?) {
         // Detach implementation nodes
-        node.edges[idx].node?.detachImplementationFromParent(offset: transaction.removalOffset)
+        node.edges[idx].node?.detachImplementationFromParent(implementationPosition: implementationPosition)
 
         // Remove edge and discard storage
         node.edges[idx] = .static(nil)
         node.storage.edges.staticSet(edge: nil, at: idx)
-
-        transaction.removalOffset -= 1
     }
 }

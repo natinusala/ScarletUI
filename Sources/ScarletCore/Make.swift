@@ -59,11 +59,34 @@ public enum DynamicOperation {
 
 /// Output of the `make()` function.
 public struct MakeOutput {
+    public enum StaticEdge {
+        case some(_ output: MakeOutput)
+        case none(_ implementationPosition: Int)
+
+        var implementationPosition: Int {
+            switch self {
+                case .some(let output):
+                    return output.implementationPosition
+                case .none(let implementationPosition):
+                    return implementationPosition
+            }
+        }
+
+        var implementationCount: Int {
+            switch self {
+                case .some(let output):
+                    return output.implementationCount
+                case .none:
+                    return 0
+            }
+        }
+    }
+
     public enum Edges {
         /// Static edges. Must always have the same count.
         /// Edges can be `nil` if the node children did not change, but
         /// `count` must always be specified.
-        case `static`(_: [MakeOutput?]?, count: Int)
+        case `static`(_: [StaticEdge]?, count: Int)
 
         /// Operations to perform on the edges in case they are dynamic.
         /// Operations are applied in order, which is important to keep in mind

@@ -76,7 +76,7 @@ public extension View {
 
         return Self.output(
             node: output,
-            staticEdges: [bodyOutput],
+            staticEdges: [.some(bodyOutput)],
             implementationPosition: input.implementationPosition,
             implementationCount: Self.substantial ? 1 : bodyOutput.implementationCount,
             accessor: view.accessor
@@ -151,7 +151,7 @@ public extension View {
     /// Convenience function to create a `MakeOutput` from a `View` with less boilerplate.
     static func output(
         node: ElementOutput?,
-        staticEdges: [MakeOutput?]?,
+        staticEdges: [MakeOutput.StaticEdge]?,
         implementationPosition: Int,
         implementationCount: Int,
         accessor: Accessor?

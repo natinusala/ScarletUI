@@ -35,7 +35,7 @@ extension Optional: View, Accessor, Makeable, Implementable where Wrapped: View 
 
     public static func make(view: Self?, input: MakeInput) -> MakeOutput {
         let output: ElementOutput?
-        let edges: [MakeOutput?]
+        let edges: [MakeOutput.StaticEdge]
         let implementationCount: Int
 
         // If we have a view, evaluate it normally
@@ -46,12 +46,12 @@ extension Optional: View, Accessor, Makeable, Implementable where Wrapped: View 
 
             switch view {
                 case .none:
-                    edges = [nil]
+                    edges = [.none(input.implementationPosition)]
                     implementationCount = 0
                 case let .some(view):
                     let wrappedInput = MakeInput(storage: input.storage?.edges.asStatic[0], implementationPosition: input.implementationPosition)
                     let wrappedOutput = Wrapped.make(view: view, input: wrappedInput)
-                    edges = [wrappedOutput]
+                    edges = [.some(wrappedOutput)]
                     implementationCount = wrappedOutput.implementationCount
             }
         } else if let storage = input.storage, let storageValue = storage.value as? Storage {
@@ -59,12 +59,12 @@ extension Optional: View, Accessor, Makeable, Implementable where Wrapped: View 
 
             switch storageValue {
                 case .none:
-                    edges = [nil]
+                    edges = [.none(input.implementationPosition)]
                     implementationCount = 0
                 case .some:
                     let wrappedInput = MakeInput(storage: storage.edges.asStatic[0], implementationPosition: input.implementationPosition)
                     let wrappedOutput = Wrapped.make(view: nil, input: wrappedInput)
-                    edges = [wrappedOutput]
+                    edges = [.some(wrappedOutput)]
                     implementationCount = wrappedOutput.implementationCount
             }
         } else {

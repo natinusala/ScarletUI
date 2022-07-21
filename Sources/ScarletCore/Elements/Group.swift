@@ -35,7 +35,7 @@ extension Group: View, Accessor, Makeable, Implementable where Content: View {
 
         return Self.output(
             node: nil,
-            staticEdges: [contentOutput],
+            staticEdges: [.some(contentOutput)],
             implementationPosition: input.implementationPosition,
             implementationCount: contentOutput.implementationCount,
             accessor: view?.accessor

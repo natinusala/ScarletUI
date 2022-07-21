@@ -65,7 +65,7 @@ public struct Window<Content>: Scene where Content: View {
 
         return Self.output(
             node: ElementOutput(storage: nil, attributes: scene?.collectAttributes() ?? [:]),
-            staticEdges: [contentOutput],
+            staticEdges: [.some(contentOutput)],
             implementationPosition: input.implementationPosition,
             implementationCount: contentOutput.implementationCount,
             accessor: scene?.accessor

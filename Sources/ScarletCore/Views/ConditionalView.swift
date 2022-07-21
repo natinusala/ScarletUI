@@ -47,7 +47,7 @@ public enum ConditionalView<FirstContent, SecondContent>: View where FirstConten
 
     public static func make(view: Self?, input: MakeInput) -> MakeOutput {
         let output: ElementOutput?
-        let edges: [MakeOutput]
+        let edges: [MakeOutput.StaticEdge]
         let implementationCount: Int
 
         // If we have a view, evaluate it normally
@@ -69,11 +69,11 @@ public enum ConditionalView<FirstContent, SecondContent>: View where FirstConten
                 case let .first(first):
                     let output = FirstContent.make(view: first, input: input)
                     implementationCount = output.implementationCount
-                    edges = [output]
+                    edges = [.some(output)]
                 case let .second(second):
                     let output = SecondContent.make(view: second, input: input)
                     implementationCount = output.implementationCount
-                    edges = [output]
+                    edges = [.some(output)]
             }
         } else if let storage = input.storage, let storageValue = storage.value as? Storage {
             output = nil
@@ -85,11 +85,11 @@ public enum ConditionalView<FirstContent, SecondContent>: View where FirstConten
                 case .first:
                     let output = FirstContent.make(view: nil, input: input)
                     implementationCount = output.implementationCount
-                    edges = [output]
+                    edges = [.some(output)]
                 case .second:
                     let output = SecondContent.make(view: nil, input: input)
                     implementationCount = output.implementationCount
-                    edges = [output]
+                    edges = [.some(output)]
             }
         } else {
             fatalError("Cannot make a `ConditionalView` without a view or a storage node")

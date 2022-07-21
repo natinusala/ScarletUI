@@ -157,7 +157,7 @@ public extension AttributeViewModifier {
 
         return Self.output(
             node: output,
-            staticEdges: [bodyOutput],
+            staticEdges: [.some(bodyOutput)],
             implementationPosition: input.implementationPosition,
             implementationCount: bodyOutput.implementationCount,
             accessor: modifier?.accessor

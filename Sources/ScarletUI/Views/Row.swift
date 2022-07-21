@@ -42,7 +42,7 @@ public struct Row<Content>: View where Content: View {
 
         return Self.output(
             node: ElementOutput(storage: nil, attributes: view?.collectAttributes() ?? [:]),
-            staticEdges: [contentOutput],
+            staticEdges: [.some(contentOutput)],
             implementationPosition: input.implementationPosition,
             implementationCount: contentOutput.implementationCount,
             accessor: view?.accessor

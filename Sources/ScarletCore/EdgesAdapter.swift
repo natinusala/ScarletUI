@@ -17,7 +17,7 @@
 /// The "edges adapter", tied to an element node, is responsible for taking an element output
 /// and apply edges insertions, deletions and updates as well as attach and detach implementation nodes.
 protocol EdgesAdapter {
-    func updateEdges(_ edges: MakeOutput.Edges, of output: MakeOutput, in node: ElementNode, attributes: AttributesStash, transaction: Transaction)
+    func updateEdges(_ edges: MakeOutput.Edges, of output: MakeOutput, in node: ElementNode, attributes: AttributesStash)
 }
 
 /// Creates an edges adapter for the element node to be created by the given output.

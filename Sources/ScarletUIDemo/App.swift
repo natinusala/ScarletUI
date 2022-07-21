@@ -30,13 +30,17 @@ struct ScarletUIDemo: App {
                         Rectangle(color: .green)
                     }
 
+                    if count == 0 {
+                        Rectangle(color: .green)
+                    }
+
                     Rectangle(color: .red)
                 }.grow()
 
                 Group {
                     Rectangle(color: .blue)
 
-                    if count == 0 {
+                    if count == 1 {
                         Rectangle(color: .green)
                     }
 

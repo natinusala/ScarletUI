@@ -223,7 +223,7 @@ public class ElementNode {
         inner(attaching: implementation, at: self.implementationPosition, to: parent)
     }
 
-    func detachImplementationFromParent(offset: Int) {
+    func detachImplementationFromParent(implementationPosition: Int?) {
         func inner(detaching position: Int, to parentNode: ElementNode) {
             if let parentImplementation = parentNode.implementation {
                 Logger.debug(debugImplementation, "Removing node at position \(position) from \(parentImplementation.displayName)")
@@ -234,7 +234,12 @@ public class ElementNode {
         }
 
         guard let parent = self.parent else { return }
-        inner(detaching: self.implementationPosition + offset, to: parent)
+
+        if let implementationPosition = implementationPosition {
+            self.implementationPosition = implementationPosition
+        }
+
+        inner(detaching: self.implementationPosition, to: parent)
     }
 
     /// Updates the node with the given view.
@@ -270,9 +275,6 @@ public class ElementNode {
         )
 
         var attributes = attributes // make mutable
-
-        // Create a transaction
-        let transaction = Transaction()
 
         // Update state
         self.implementationPosition = output.implementationPosition
@@ -315,8 +317,7 @@ public class ElementNode {
             output.edges,
             of: output,
             in: self,
-            attributes: attributes,
-            transaction: transaction
+            attributes: attributes
         )
     }
 
@@ -395,11 +396,4 @@ func printState(of element: @autoclosure () -> Any, at prefix: String) {
             Logger.debug(debugState, "      - \(property.name): \(stateProperty.anyValue) (initialized: \(stateProperty.location != nil))")
         }
     }
-}
-
-/// An update transaction of an element node.
-class Transaction {
-    /// Offset for removals, used to adjust removal positions after inserting
-    /// or removing other edges that move elements around.
-    var removalOffset = 0
 }

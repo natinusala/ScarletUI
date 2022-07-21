@@ -45,7 +45,7 @@ public extension ViewModifier {
 
             return Self.output(
                 node: nil,
-                staticEdges: [bodyOutput],
+                staticEdges: [.some(bodyOutput)],
                 implementationPosition: input.implementationPosition,
                 implementationCount: bodyOutput.implementationCount,
                 accessor: modifier?.accessor
@@ -67,7 +67,7 @@ public extension ViewModifier {
 
             return Self.output(
                 node: nil,
-                staticEdges: [bodyOutput],
+                staticEdges: [.some(bodyOutput)],
                 implementationPosition: input.implementationPosition,
                 implementationCount: bodyOutput.implementationCount,
                 accessor: modifier.accessor
@@ -81,7 +81,7 @@ public extension ViewModifier {
 
             return Self.output(
                 node: output,
-                staticEdges: [bodyOutput],
+                staticEdges: [.some(bodyOutput)],
                 implementationPosition: input.implementationPosition,
                 implementationCount: bodyOutput.implementationCount,
                 accessor: modifier.accessor
@@ -145,7 +145,7 @@ public extension ViewModifier {
     /// Convenience function to create a `MakeOutput` from a `ViewModifier` with less boilerplate.
     static func output(
         node: ElementOutput?,
-        staticEdges: [MakeOutput?]?,
+        staticEdges: [MakeOutput.StaticEdge]?,
         implementationPosition: Int,
         implementationCount: Int,
         accessor: Accessor?
@@ -190,13 +190,13 @@ extension ModifiedContent: View, Accessor, Makeable, Implementable where Content
             // Replace VMC edges by the content output
             switch vmcOutput.edges {
                 case .static(_, let count):
-                    return vmcOutput.withEdges(.static([contentOutput], count: count), implementationCount: contentOutput.implementationCount)
+                    return vmcOutput.withEdges(.static([.some(contentOutput)], count: count), implementationCount: contentOutput.implementationCount)
                 case .dynamic:
                     fatalError("Transformation function of dynamic edges not implemented")
             }
         }
 
-        let edges = [modifierOutput]
+        let edges: [MakeOutput.StaticEdge] = [.some(modifierOutput)]
         let implementationCount = modifierOutput.implementationCount
         return Self.output(
             node: nil,
@@ -228,8 +228,13 @@ extension MakeOutput {
 
         switch self.edges {
             case .static(let staticEdges, let count):
-                let edges = staticEdges?.enumerated().map { idx, edge in
-                    return edge?.transform(storage: storage?.edges.asStatic[idx], predicate: predicate, transform: function)
+                let edges: [MakeOutput.StaticEdge]? = staticEdges?.enumerated().map { idx, edge in
+                    switch edge {
+                        case .some(let output):
+                            return .some(output.transform(storage: storage?.edges.asStatic[idx], predicate: predicate, transform: function))
+                        case .none(let implementationPosition):
+                            return .none(implementationPosition)
+                    }
                 }
 
                 return self.withEdges(
@@ -237,7 +242,7 @@ extension MakeOutput {
                         edges,
                         count: count
                     ),
-                    implementationCount: edges?.map { $0?.implementationCount ?? 0 }.sum() ?? storage.implementationCount
+                    implementationCount: edges?.map { $0.implementationCount }.sum() ?? storage.implementationCount
                 )
             case .dynamic:
                 fatalError("Transforming dynamic nodes is not implemented")
