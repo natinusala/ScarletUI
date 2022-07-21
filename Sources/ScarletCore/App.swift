@@ -17,7 +17,7 @@
 /// A ScarletUI application.
 /// An app is made of one scene, and a scene is made of one or multiple
 /// views.
-public protocol App: Accessor, Makeable {
+public protocol App: Accessor, Makeable, Implementable {
     /// Initializer used for the framework to create the app on boot.
     init()
 
@@ -35,13 +35,6 @@ public protocol App: Accessor, Makeable {
     /// The number of static edges of an app.
     /// Must be constant.
     static var staticEdgesCount: Int { get }
-
-    /// The type of this app's implementation.
-    /// Set to `Never` if there is none.
-    associatedtype Implementation: ImplementationNode
-
-    /// Updates an implementation node with the given app.
-    static func updateImplementation(_ implementation: Implementation, with app: Self)
 }
 
 public extension App {
@@ -51,7 +44,13 @@ public extension App {
         // If no app is specified, consider the app entirely unchanged,
         // including its body
         guard var app = app else {
-            return Self.output(node: nil, staticEdges: nil, accessor: nil)
+            return Self.output(
+                node: nil,
+                staticEdges: nil,
+                implementationPosition: input.implementationPosition,
+                implementationCount: input.storage.implementationCount,
+                accessor: nil
+            )
         }
 
         if !input.preserveState {
@@ -61,7 +60,13 @@ public extension App {
         // Get the previous app and compare it
         // Return an unchanged output of it's equal
         if let previous = input.storage?.value, anyEquals(lhs: app, rhs: previous) {
-            return Self.output(node: nil, staticEdges: nil, accessor: app.accessor)
+            return Self.output(
+                node: nil,
+                staticEdges: nil,
+                implementationPosition: input.implementationPosition,
+                implementationCount: input.storage.implementationCount,
+                accessor: app.accessor
+            )
         }
 
         // The app changed
@@ -70,10 +75,16 @@ public extension App {
         // Re-evaluate body
         let body = app.body // TODO: Use BodyAccessor.makeBody(of: app, storage: input.storage)
         let bodyStorage = input.storage?.edges.asStatic[0]
-        let bodyInput = MakeInput(storage: bodyStorage)
+        let bodyInput = MakeInput(storage: bodyStorage, implementationPosition: Self.substantial ? 0 : input.implementationPosition)
         let bodyOutput = Body.make(scene: body, input: bodyInput)
 
-        return Self.output(node: output, staticEdges: [bodyOutput], accessor: app.accessor)
+        return Self.output(
+            node: output,
+            staticEdges: [bodyOutput],
+            implementationPosition: input.implementationPosition,
+            implementationCount: Self.substantial ? 1 : bodyOutput.implementationCount,
+            accessor: app.accessor
+        )
     }
 
     /// An app has one edge: its body.
@@ -82,11 +93,21 @@ public extension App {
     }
 
     /// Convenience function to create a `MakeOutput` from an `App` with less boilerplate.
-    static func output(node: ElementOutput?, staticEdges: [MakeOutput?]?, accessor: Accessor?) -> MakeOutput {
+    static func output(
+        node: ElementOutput?,
+        staticEdges: [MakeOutput?]?,
+        implementationPosition: Int,
+        implementationCount: Int,
+        accessor: Accessor?
+    ) -> MakeOutput {
+        Logger.debug(debugImplementationVerbose, "\(Self.self) output returned implementationCount: \(implementationCount)")
+
         return MakeOutput(
             nodeKind: .app,
             nodeType: Self.self,
             node: node,
+            implementationPosition: implementationPosition,
+            implementationCount: implementationCount,
             edges: .static(staticEdges, count: Self.staticEdgesCount),
             accessor: accessor
         )

@@ -48,6 +48,7 @@ public enum ConditionalView<FirstContent, SecondContent>: View where FirstConten
     public static func make(view: Self?, input: MakeInput) -> MakeOutput {
         let output: ElementOutput?
         let edges: [MakeOutput]
+        let implementationCount: Int
 
         // If we have a view, evaluate it normally
         // If not, consider the view unchanged and
@@ -57,37 +58,50 @@ public enum ConditionalView<FirstContent, SecondContent>: View where FirstConten
 
             // If the content storage belongs to a different type than the expected one,
             // discard the node (it changed from `first` to `second` or `second` to `first`)
-            // TODO: if storage type is unused in the end, change that to use storage instead and remove storage type
             var contentStorage = input.storage?.edges.asStatic[0]
             if let storage = contentStorage, storage.elementType != view.contentType {
                 contentStorage = nil
             }
 
-            let contentInput = MakeInput(storage: contentStorage)
+            let input = MakeInput(storage: contentStorage, implementationPosition: input.implementationPosition)
 
             switch view {
                 case let .first(first):
-                    edges = [FirstContent.make(view: first, input: contentInput)]
+                    let output = FirstContent.make(view: first, input: input)
+                    implementationCount = output.implementationCount
+                    edges = [output]
                 case let .second(second):
-                    edges = [SecondContent.make(view: second, input: contentInput)]
+                    let output = SecondContent.make(view: second, input: input)
+                    implementationCount = output.implementationCount
+                    edges = [output]
             }
         } else if let storage = input.storage, let storageValue = storage.value as? Storage {
             output = nil
 
             let contentStorage = storage.edges.asStatic[0]
-            let contentInput = MakeInput(storage: contentStorage)
+            let input = MakeInput(storage: contentStorage, implementationPosition: input.implementationPosition)
 
             switch storageValue {
                 case .first:
-                    edges = [FirstContent.make(view: nil, input: contentInput)]
+                    let output = FirstContent.make(view: nil, input: input)
+                    implementationCount = output.implementationCount
+                    edges = [output]
                 case .second:
-                    edges = [SecondContent.make(view: nil, input: contentInput)]
+                    let output = SecondContent.make(view: nil, input: input)
+                    implementationCount = output.implementationCount
+                    edges = [output]
             }
         } else {
             fatalError("Cannot make a `ConditionalView` without a view or a storage node")
         }
 
-        return Self.output(node: output, staticEdges: edges, accessor: view?.accessor)
+        return Self.output(
+            node: output,
+            staticEdges: edges,
+            implementationPosition: input.implementationPosition,
+            implementationCount: implementationCount,
+            accessor: view?.accessor
+        )
     }
 
     /// Conditionals have one edge: its content, either first or second.

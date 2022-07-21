@@ -71,9 +71,6 @@ public class ElementNode {
     /// The parent of this node.
     var parent: ElementNode?
 
-    /// Position of this node in the parent's edges list.
-    var position: Int
-
     /// Kind of the element.
     var kind: ElementKind
 
@@ -82,6 +79,10 @@ public class ElementNode {
 
     /// Associated storage node for this element.
     let storage: StorageNode
+
+    /// Position of the implementation node in the parent's implementation node.
+    /// See ``MakeOutput.implementationPosition``.
+    var implementationPosition: Int = 0
 
     /// Subscription for the storage node, fired whenever
     /// a state value changes.
@@ -121,15 +122,14 @@ public class ElementNode {
     }
 
     /// Creates a new node for the given view, making it in the process.
-    public init<V: View>(parent: ElementNode?, position: Int, making view: V) {
+    public init<V: View>(parent: ElementNode?, making view: V, implementationPosition: Int = 0) {
         self.parent = parent
-        self.position = position
         self.kind = .view
         self.type = V.self
         self.storage = StorageNode(for: view)
         self.edges = [Edge](repeating: .static(nil), count: V.staticEdgesCount)
 
-        let input = MakeInput(storage: self.storage)
+        let input = MakeInput(storage: self.storage, implementationPosition: implementationPosition)
         let output = V.make(view: view, input: input)
 
         self.edgesAdapter = makeEdgesAdapter(for: output)
@@ -145,15 +145,14 @@ public class ElementNode {
     }
 
     /// Creates a new node for the given app, making it in the process.
-    public init<A: App>(parent: ElementNode?, position: Int, making app: A) {
+    public init<A: App>(parent: ElementNode?, making app: A, implementationPosition: Int = 0) {
         self.parent = parent
-        self.position = position
         self.kind = .app
         self.type = A.self
         self.storage = StorageNode(for: app)
         self.edges = [Edge](repeating: .static(nil), count: A.staticEdgesCount)
 
-        let input = MakeInput(storage: self.storage)
+        let input = MakeInput(storage: self.storage, implementationPosition: implementationPosition)
         let output = A.make(app: app, input: input)
 
         self.edgesAdapter = makeEdgesAdapter(for: output)
@@ -170,7 +169,6 @@ public class ElementNode {
 
     init(
         parent: ElementNode?,
-        position: Int,
         kind: ElementKind,
         type: Any.Type,
         storage: StorageNode,
@@ -180,7 +178,6 @@ public class ElementNode {
         edgesAdapter: any EdgesAdapter
     ) {
         self.parent = parent
-        self.position = position
         self.kind = kind
         self.type = type
         self.storage = storage
@@ -200,8 +197,8 @@ public class ElementNode {
                 printState(of: element, at: "state change sink (new element)")
 
                 // Make the element preserving state - the version we get from the publisher
-                // already has the most up-to-date values vor every property
-                let input = MakeInput(storage: self.storage, preserveState: true)
+                // already has the most up-to-date values for every property
+                let input = MakeInput(storage: self.storage, implementationPosition: self.implementationPosition, preserveState: true)
                 let output = makeable.make(input: input)
 
                 self.update(with: output, attributes: [:])
@@ -211,71 +208,33 @@ public class ElementNode {
         }
     }
 
-    /// Attaches this node's implementation node to the parent, if any.
-    /// Must be called when creating a new element node, after fully populating its edges.
     func attachImplementationToParent() {
-        if let implementation = self.implementation, let parent = self.parent {
-            parent.attachImplementation(
-                implementation,
-                edgePosition: self.position,
-                translatedPosition: 0
-            )
+        func inner(attaching implementation: ImplementationNode, at position: Int, to parentNode: ElementNode) {
+            if let parentImplementation = parentNode.implementation {
+                Logger.debug(debugImplementation, "Inserting node \(implementation.displayName) at position \(position) into \(parentImplementation.displayName)")
+                parentImplementation.insertChild(implementation, at: position)
+            } else if let parent = parentNode.parent {
+                inner(attaching: implementation, at: position, to: parent)
+            }
         }
+
+        guard let implementation = self.implementation else { return }
+        guard let parent = self.parent else { return }
+        inner(attaching: implementation, at: self.implementationPosition, to: parent)
     }
 
-    /// Attaches the given implementation to this node's implementation, or
-    /// goes up the graph to find the first parent with an implementation node.
-    /// The end result is an `insertChild` call on the implementation node with the correct position.
-    func attachImplementation(_ implementation: ImplementationNode, edgePosition: Int, translatedPosition: Int) {
-        // Translate position: add the sum of implementations count for all edges up until this one
-        // `TP = TP + I[0] + I[1] + ... + I[edgePosition - 1]` where I[X] is the count of implementations for edge X
-        let translatedPosition = translatedPosition + Array(0..<edgePosition).map { self.edges[$0].node?.implementationsCount ?? 0 }.sum()
-
-        // If we have an implementation node, insert it directly
-        // Otherwise pass it to the parent
-        if let parentImplementation = self.implementation {
-            parentImplementation.insertChild(implementation, at: translatedPosition)
-        } else {
-            self.parent?.attachImplementation(
-                implementation,
-                edgePosition: self.position,
-                translatedPosition: translatedPosition
-            )
-        }
-    }
-
-    /// Traverses the graph, finds and detaches every implementation node.
-    func detachImplementationFromParent() {
-        if let implementation = self.implementation, let parent = self.parent {
-            parent.detachImplementation(
-                implementation,
-                edgePosition: self.position,
-                translatedPosition: 0
-            )
+    func detachImplementationFromParent(offset: Int) {
+        func inner(detaching position: Int, to parentNode: ElementNode) {
+            if let parentImplementation = parentNode.implementation {
+                Logger.debug(debugImplementation, "Removing node at position \(position) from \(parentImplementation.displayName)")
+                parentImplementation.removeChild(at: position)
+            } else if let parent = parentNode.parent {
+                inner(detaching: position, to: parent)
+            }
         }
 
-        self.edges.forEach { $0.node?.detachImplementationFromParent() }
-    }
-
-    /// Detaches the given implementation to this node's implementation, or
-    /// goes up the graph to find the first parent with an implementation node.
-    /// The end result is a `removeChild` call on the implementation node with the correct position.
-    func detachImplementation(_ implementation: ImplementationNode, edgePosition: Int, translatedPosition: Int) {
-        // Translate position: add the sum of implementations count for all edges up until this one
-        // `TP = TP + I[0] + I[1] + ... + I[edgePosition - 1]` where I[X] is the count of implementations for edge X
-        let translatedPosition = translatedPosition + Array(0..<edgePosition).map { self.edges[$0].node?.implementationsCount ?? 0 }.sum()
-
-        // If we have an implementation node, insert it directly
-        // Otherwise pass it to the parent
-        if let parentImplementation = self.implementation {
-            parentImplementation.removeChild(at: translatedPosition)
-        } else {
-            self.parent?.detachImplementation(
-                implementation,
-                edgePosition: self.position,
-                translatedPosition: translatedPosition
-            )
-        }
+        guard let parent = self.parent else { return }
+        inner(detaching: self.implementationPosition + offset, to: parent)
     }
 
     /// Updates the node with the given view.
@@ -285,7 +244,7 @@ public class ElementNode {
             "cannot update a graph node with a view of a different type"
         )
 
-        let input = MakeInput(storage: self.storage)
+        let input = MakeInput(storage: self.storage, implementationPosition: self.implementationPosition)
         let output = V.make(view: view, input: input)
         self.update(with: output, attributes: attributes)
     }
@@ -297,7 +256,7 @@ public class ElementNode {
             "cannot update a graph node with an app of a different type"
         )
 
-        let input = MakeInput(storage: self.storage)
+        let input = MakeInput(storage: self.storage, implementationPosition: self.implementationPosition)
         let output = A.make(app: app, input: input)
         self.update(with: output, attributes: attributes)
     }
@@ -311,6 +270,14 @@ public class ElementNode {
         )
 
         var attributes = attributes // make mutable
+
+        // Create a transaction
+        let transaction = Transaction()
+
+        // Update state
+        self.implementationPosition = output.implementationPosition
+        self.storage.implementationCount = output.implementationCount
+        Logger.debug(debugImplementationVerbose, "Setting \(self.type) implementation position to \(self.implementationPosition)")
 
         // Node update
         if let node = output.node {
@@ -348,7 +315,8 @@ public class ElementNode {
             output.edges,
             of: output,
             in: self,
-            attributes: attributes
+            attributes: attributes,
+            transaction: transaction
         )
     }
 
@@ -427,4 +395,11 @@ func printState(of element: @autoclosure () -> Any, at prefix: String) {
             Logger.debug(debugState, "      - \(property.name): \(stateProperty.anyValue) (initialized: \(stateProperty.location != nil))")
         }
     }
+}
+
+/// An update transaction of an element node.
+class Transaction {
+    /// Offset for removals, used to adjust removal positions after inserting
+    /// or removing other edges that move elements around.
+    var removalOffset = 0
 }

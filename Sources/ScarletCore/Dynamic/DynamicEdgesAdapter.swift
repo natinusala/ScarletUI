@@ -17,7 +17,7 @@
 /// Standard dynamic edges adapter that consumes all views and adds them as
 /// edges, without any recycling mechanism.
 struct DynamicEdgesAdapter: EdgesAdapter {
-    func updateEdges(_ edges: MakeOutput.Edges, of output: MakeOutput, in node: ElementNode, attributes: AttributesStash) {
+    func updateEdges(_ edges: MakeOutput.Edges, of output: MakeOutput, in node: ElementNode, attributes: AttributesStash, transaction: Transaction) {
        guard case .dynamic(let operations, let viewContent) = edges else {
            fatalError("Called` updateEdges(for:)` on `DynamicEdgesAdapter` with non-dynamic edges")
        }
@@ -45,15 +45,17 @@ struct DynamicEdgesAdapter: EdgesAdapter {
                 fatalError("Tried to dynamically update a static node")
             }
 
+            fatalError("DynamicEdgesAdapter unimplemented (missing implementationPosition)")
+
             if let previousNode = edge.node {
                 // If the node already exists, update it
-                let input = MakeInput(storage: node.storage)
+                let input = MakeInput(storage: node.storage, implementationPosition: 0) // TODO: wire implementationPosition properly here somehow
                 let output = viewContent.make(at: position, identifiedBy: edge.id, input: input)
 
                 previousNode.update(with: output, attributes: attributes)
             } else {
                 // Otherwise, create it
-                let input = MakeInput(storage: nil)
+                let input = MakeInput(storage: nil, implementationPosition: 0) // TODO: wire implementationPosition properly here somehow
                 let output = viewContent.make(at: position, identifiedBy: edge.id, input: input)
 
                 // Create storage
@@ -68,7 +70,6 @@ struct DynamicEdgesAdapter: EdgesAdapter {
                 // Create and insert the edge node
                 let edgeNode = ElementNode(
                     parent: node,
-                    position: position,
                     kind: output.nodeKind,
                     type: output.nodeType,
                     storage: edgeStorage,
@@ -88,7 +89,7 @@ struct DynamicEdgesAdapter: EdgesAdapter {
      /// Removes edge at given position. Dynamic version.
     private func removeEdge(at position: Int, identifiedBy id: AnyHashable, in node: ElementNode) {
         // Detach implementation nodes
-        node.edges[position].node?.detachImplementationFromParent()
+        node.edges[position].node?.detachImplementationFromParent(offset: 0) // TODO: wire offset
 
         // Remove edge and discard storage
         node.edges.remove(at: position)

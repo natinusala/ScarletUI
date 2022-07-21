@@ -15,7 +15,7 @@
 */
 
 /// An optional view.
-extension Optional: View, Accessor, Makeable where Wrapped: View {
+extension Optional: View, Accessor, Makeable, Implementable where Wrapped: View {
     enum Storage {
         case none
         case some
@@ -36,19 +36,23 @@ extension Optional: View, Accessor, Makeable where Wrapped: View {
     public static func make(view: Self?, input: MakeInput) -> MakeOutput {
         let output: ElementOutput?
         let edges: [MakeOutput?]
+        let implementationCount: Int
 
         // If we have a view, evaluate it normally
         // If not, consider the view unchanged and
-        // use our storage to know if `make` needs to be called on our content
+        // use our storage to know if `make()` needs to be called on our content
         if let view = view {
             output = ElementOutput(storage: view.storageValue, attributes: view.collectAttributes())
 
             switch view {
                 case .none:
                     edges = [nil]
+                    implementationCount = 0
                 case let .some(view):
-                    let wrappedInput = MakeInput(storage: input.storage?.edges.asStatic[0])
-                    edges = [Wrapped.make(view: view, input: wrappedInput)]
+                    let wrappedInput = MakeInput(storage: input.storage?.edges.asStatic[0], implementationPosition: input.implementationPosition)
+                    let wrappedOutput = Wrapped.make(view: view, input: wrappedInput)
+                    edges = [wrappedOutput]
+                    implementationCount = wrappedOutput.implementationCount
             }
         } else if let storage = input.storage, let storageValue = storage.value as? Storage {
             output = nil
@@ -56,15 +60,24 @@ extension Optional: View, Accessor, Makeable where Wrapped: View {
             switch storageValue {
                 case .none:
                     edges = [nil]
+                    implementationCount = 0
                 case .some:
-                    let wrappedInput = MakeInput(storage: storage.edges.asStatic[0])
-                    edges = [Wrapped.make(view: nil, input: wrappedInput)]
+                    let wrappedInput = MakeInput(storage: storage.edges.asStatic[0], implementationPosition: input.implementationPosition)
+                    let wrappedOutput = Wrapped.make(view: nil, input: wrappedInput)
+                    edges = [wrappedOutput]
+                    implementationCount = wrappedOutput.implementationCount
             }
         } else {
             fatalError("Cannot make an `Optional` view without a view or a storage node")
         }
 
-        return Self.output(node: output, staticEdges: edges, accessor: view?.accessor)
+        return Self.output(
+            node: output,
+            staticEdges: edges,
+            implementationPosition: input.implementationPosition,
+            implementationCount: implementationCount,
+            accessor: view?.accessor
+        )
     }
 
     /// Optional views have one edge, the wrapped view (or `nil`).

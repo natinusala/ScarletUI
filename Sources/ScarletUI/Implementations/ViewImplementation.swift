@@ -21,7 +21,7 @@ import ScarletCore
 /// Implementation for all views.
 open class ViewImplementation: LayoutImplementationNode, CustomStringConvertible, ViewGamepadButtonEvent {
     /// View display name for debugging purposes.
-    let displayName: String
+    public let displayName: String
 
     /// Children of this view.
     var children: [ViewImplementation] = []

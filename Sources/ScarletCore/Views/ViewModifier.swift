@@ -40,10 +40,16 @@ public extension ViewModifier {
         // First case: no modifier has been given, we assume it unchanged
         // but content may still have changed
         guard var modifier = modifier else {
-            let bodyInput = MakeInput(storage: input.storage?.edges.asStatic[0])
+            let bodyInput = MakeInput(storage: input.storage?.edges.asStatic[0], implementationPosition: input.implementationPosition)
             let bodyOutput = Body.make(view: nil, input: bodyInput)
 
-            return Self.output(node: nil, staticEdges: [bodyOutput], accessor: modifier?.accessor)
+            return Self.output(
+                node: nil,
+                staticEdges: [bodyOutput],
+                implementationPosition: input.implementationPosition,
+                implementationCount: bodyOutput.implementationCount,
+                accessor: modifier?.accessor
+            )
         }
 
         if !input.preserveState {
@@ -56,18 +62,30 @@ public extension ViewModifier {
         // so do the same as above
         if let previous = input.storage?.value, anyEquals(lhs: modifier, rhs: previous) {
             // Modifier has not changed
-            let bodyInput = MakeInput(storage: input.storage?.edges.asStatic[0])
+            let bodyInput = MakeInput(storage: input.storage?.edges.asStatic[0], implementationPosition: input.implementationPosition)
             let bodyOutput = Body.make(view: nil, input: bodyInput)
 
-            return Self.output(node: nil, staticEdges: [bodyOutput], accessor: modifier.accessor)
+            return Self.output(
+                node: nil,
+                staticEdges: [bodyOutput],
+                implementationPosition: input.implementationPosition,
+                implementationCount: bodyOutput.implementationCount,
+                accessor: modifier.accessor
+            )
         } else {
             // Modifier has changed
             let output = ElementOutput(storage: modifier, attributes: modifier.collectAttributes())
 
-            let bodyInput = MakeInput(storage: input.storage?.edges.asStatic[0])
+            let bodyInput = MakeInput(storage: input.storage?.edges.asStatic[0], implementationPosition: input.implementationPosition)
             let bodyOutput = Body.make(view: modifier.body(content: ViewModifierContent()), input: bodyInput)
 
-            return Self.output(node: output, staticEdges: [bodyOutput], accessor: modifier.accessor)
+            return Self.output(
+                node: output,
+                staticEdges: [bodyOutput],
+                implementationPosition: input.implementationPosition,
+                implementationCount: bodyOutput.implementationCount,
+                accessor: modifier.accessor
+            )
         }
     }
 
@@ -97,10 +115,17 @@ public struct ViewModifierContent<Modifier>: View where Modifier: ViewModifier {
     public typealias Body = Never
     public typealias Implementation = Never
 
-    public static func make(view: ViewModifierContent, input: MakeInput) -> MakeOutput {
-        /// Return an empty list for static edges. ModifiedContent will then go through this
+    public static func make(view: Self?, input: MakeInput) -> MakeOutput {
+        /// Returns an empty static edges list. ModifiedContent will then go through this
         /// result and replace the empty list by the modified content node.
-        return Self.output(node: nil, staticEdges: [], accessor: nil)
+        /// Implementation position stays the same. Implementation count will be overwritten by ``ModifiedContent``.
+        return Self.output(
+            node: nil,
+            staticEdges: [],
+            implementationPosition: input.implementationPosition,
+            implementationCount: 0,
+            accessor: nil
+        )
     }
 
     /// View modifier content has one edge, the modified content.
@@ -118,44 +143,68 @@ public extension View {
 
 public extension ViewModifier {
     /// Convenience function to create a `MakeOutput` from a `ViewModifier` with less boilerplate.
-    static func output(node: ElementOutput?, staticEdges: [MakeOutput?]?, accessor: Accessor?) -> MakeOutput {
+    static func output(
+        node: ElementOutput?,
+        staticEdges: [MakeOutput?]?,
+        implementationPosition: Int,
+        implementationCount: Int,
+        accessor: Accessor?
+    ) -> MakeOutput {
+        Logger.debug(debugImplementationVerbose, "\(Self.self) output returned implementationCount: \(implementationCount)")
+
         return MakeOutput(
             nodeKind: .viewModifier,
             nodeType: Self.self,
             node: node,
+            implementationPosition: implementationPosition,
+            implementationCount: implementationCount,
             edges: .static(staticEdges, count: Self.staticEdgesCount),
             accessor: accessor
         )
     }
 }
 
-extension ModifiedContent: View, Accessor, Makeable where Content: View, Modifier: ViewModifier {
+extension ModifiedContent: View, Accessor, Makeable, Implementable where Content: View, Modifier: ViewModifier {
     public typealias Body = Never
     public typealias Implementation = Never
 
     public static func make(view: Self?, input: MakeInput) -> MakeOutput {
         // Make our one edge: the modifier
         let modifierStorage = input.storage?.edges.asStatic[0]
-        let modifierInput = MakeInput(storage: modifierStorage)
+        let modifierInput = MakeInput(storage: modifierStorage, implementationPosition: input.implementationPosition)
         var modifierOutput = Modifier.make(modifier: view?.modifier, input: modifierInput)
 
         // Visit the output and find any `ViewModifierContent` - replace its empty edges list by
         // a new "content" node
-        modifierOutput = modifierOutput.transform(storage: modifierStorage, predicate: { $0.nodeType == ViewModifierContent<Modifier>.self }) { output, storage in
-            // Content storage is storage of VMC edge 0
-            let contentInput = MakeInput(storage: storage?.edges.asStatic[0])
+        modifierOutput = modifierOutput.transform(storage: modifierStorage, predicate: { $0.nodeType == ViewModifierContent<Modifier>.self }) { (vmcOutput, vmcStorage) in
+            // Content is VMC edge 0
+            // Content storage is VMC edge 0 storage
+            // Implementation position is given by the modifier to VMC, keep it the same and pass it to content
+            let contentInput = MakeInput(
+                storage: vmcStorage?.edges.asStatic[0],
+                implementationPosition: vmcOutput.implementationPosition
+            )
+
             let contentOutput = Content.make(view: view?.content, input: contentInput)
 
-            switch output.edges {
+            // Replace VMC edges by the content output
+            switch vmcOutput.edges {
                 case .static(_, let count):
-                    return output.withEdges(.static([contentOutput], count: count))
+                    return vmcOutput.withEdges(.static([contentOutput], count: count), implementationCount: contentOutput.implementationCount)
                 case .dynamic:
                     fatalError("Transformation function of dynamic edges not implemented")
             }
         }
 
         let edges = [modifierOutput]
-        return Self.output(node: nil, staticEdges: edges, accessor: view?.accessor)
+        let implementationCount = modifierOutput.implementationCount
+        return Self.output(
+            node: nil,
+            staticEdges: edges,
+            implementationPosition: input.implementationPosition,
+            implementationCount: implementationCount,
+            accessor: view?.accessor
+        )
     }
 
     /// Modified content has one edge: the modifier body.
@@ -179,16 +228,19 @@ extension MakeOutput {
 
         switch self.edges {
             case .static(let staticEdges, let count):
+                let edges = staticEdges?.enumerated().map { idx, edge in
+                    return edge?.transform(storage: storage?.edges.asStatic[idx], predicate: predicate, transform: function)
+                }
+
                 return self.withEdges(
                     .static(
-                        staticEdges?.enumerated().map { idx, edge in
-                            return edge?.transform(storage: storage?.edges.asStatic[idx], predicate: predicate, transform: function)
-                        },
+                        edges,
                         count: count
-                    )
+                    ),
+                    implementationCount: edges?.map { $0?.implementationCount ?? 0 }.sum() ?? storage.implementationCount
                 )
             case .dynamic:
-                fatalError("Transforming dynamic nodes not implemented")
+                fatalError("Transforming dynamic nodes is not implemented")
         }
     }
 }

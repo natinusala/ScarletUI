@@ -113,6 +113,10 @@ public class StorageNode {
     /// Node edges.
     public var edges: Edges
 
+    /// Previous value for implementation count.
+    /// See ``MakeOutput.implementationPosition``.
+    var implementationCount = 0
+
     /// Creates a new empty storage node for the given view.
     init<V: View>(for view: V) {
         self.elementType = V.self
@@ -242,5 +246,15 @@ public class StorageLocation: Equatable {
 
     public static func == (lhs: StorageLocation, rhs: StorageLocation) -> Bool {
         return rhs === lhs
+    }
+}
+
+extension Optional where Wrapped == StorageNode {
+    var implementationCount: Int {
+        guard case .some(let node) = self else {
+            fatalError("Requested implementation count of a `nil` storage node")
+        }
+
+        return node.implementationCount
     }
 }

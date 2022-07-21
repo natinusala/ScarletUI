@@ -17,3 +17,8 @@
 /// Set to `true` to enable state storage debug logging.
 let debugState = false
 
+/// Set to `true` to enable implementation nodes debug logging.
+let debugImplementation = true
+
+/// Set to `true` to enable even more implementation nodes debug logging.
+let debugImplementationVerbose = false

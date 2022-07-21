@@ -31,8 +31,19 @@ public struct MakeInput {
     /// what's currently in state storage.
     let preserveState: Bool
 
-    public init(storage: StorageNode?, preserveState: Bool = false) {
+    /// Implementation position determined by the parent.
+    /// See ``MakeOutput.implementationPosition``.
+    /// The parent should always give 0 if it's substantial to reset the position of its children
+    /// relative to itself (as it becomes the new root).
+    public let implementationPosition: Int
+
+    public init(
+        storage: StorageNode?,
+        implementationPosition: Int,
+        preserveState: Bool = false
+    ) {
         self.storage = storage
+        self.implementationPosition = implementationPosition
         self.preserveState = preserveState
     }
 }
@@ -71,6 +82,24 @@ public struct MakeOutput {
     /// or the node did not change.
     let node: ElementOutput?
 
+    /// Position of the node inside its parent implementation node.
+    ///
+    /// If the node does not have an implementation node, the position must represent the
+    /// baseline for the position of all of its children.
+    ///
+    /// If the node didn't change and the count is the same, return the same position as given in input.
+    ///
+    /// General flow is:
+    /// 1. parent node gives the implementation position in the child input
+    /// 2. child knows its position, makes itself recursively starting from there
+    /// 3. parent gets the child output back, containing the implementation count
+    /// 4. parent increments the next child position by the returned count, then makes the next child following the same principle
+    public let implementationPosition: Int
+
+    /// Number of implementation nodes in this node and all of its children.
+    /// Will offset the next childrens' position by this amount.
+    public let implementationCount: Int
+
     /// The resulting edges.
     let edges: Edges
 
@@ -82,22 +111,28 @@ public struct MakeOutput {
         nodeKind: ElementKind,
         nodeType: Any.Type,
         node: ElementOutput?,
+        implementationPosition: Int,
+        implementationCount: Int,
         edges: Edges,
         accessor: Accessor?
     ) {
         self.nodeKind = nodeKind
         self.nodeType = nodeType
         self.node = node
+        self.implementationPosition = implementationPosition
+        self.implementationCount = implementationCount
         self.edges = edges
         self.accessor = accessor
     }
 
     /// Makes a copy of that output with the edges replaced.
-    public func withEdges(_ edges: Edges) -> MakeOutput {
+    public func withEdges(_ edges: Edges, implementationCount: Int) -> MakeOutput {
         return MakeOutput(
             nodeKind: self.nodeKind,
             nodeType: self.nodeType,
             node: self.node,
+            implementationPosition: self.implementationPosition,
+            implementationCount: implementationCount,
             edges: edges,
             accessor: self.accessor
         )

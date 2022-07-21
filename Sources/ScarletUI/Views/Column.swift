@@ -37,11 +37,14 @@ public struct Column<Content>: View where Content: View {
 
     public static func make(view: Self?, input: MakeInput) -> MakeOutput {
         let contentStorage = input.storage?.edges.asStatic[0]
-        let contentInput = MakeInput(storage: contentStorage)
+        let contentInput = MakeInput(storage: contentStorage, implementationPosition: input.implementationPosition)
+        let contentOutput = Content.make(view: view?.content, input: contentInput)
 
         return Self.output(
             node: ElementOutput(storage: nil, attributes: view?.collectAttributes() ?? [:]),
-            staticEdges: [Content.make(view: view?.content, input: contentInput)],
+            staticEdges: [contentOutput],
+            implementationPosition: input.implementationPosition,
+            implementationCount: contentOutput.implementationCount,
             accessor: view?.accessor
         )
     }

@@ -15,7 +15,7 @@
 */
 
 /// A scene is the container for the app views, typically a desktop window.
-public protocol Scene: Accessor, Makeable {
+public protocol Scene: Accessor, Makeable, Implementable {
     /// The type of this scene's body.
     associatedtype Body: Scene
 
@@ -30,16 +30,6 @@ public protocol Scene: Accessor, Makeable {
     /// The number of static edges of a scene.
     /// Must be constant.
     static var staticEdgesCount: Int { get }
-
-    /// The type of this scene's implementation.
-    /// Set to `Never` if there is none.
-    associatedtype Implementation: ImplementationNode
-
-    /// Creates the implementation node for a scene.
-    static func makeImplementation(of scene: Self) -> ImplementationNode?
-
-    /// Updates an implementation node with the given scene.
-    static func updateImplementation(_ implementation: Implementation, with scene: Self)
 }
 
 public extension Scene {
@@ -49,7 +39,13 @@ public extension Scene {
         // If no scene is specified, consider the scene entirely unchanged,
         // including its body
         guard var scene = scene else {
-            return Self.output(node: nil, staticEdges: nil, accessor: nil)
+            return Self.output(
+                node: nil,
+                staticEdges: nil,
+                implementationPosition: input.implementationPosition,
+                implementationCount: input.storage.implementationCount,
+                accessor: nil
+            )
         }
 
         if !input.preserveState {
@@ -59,7 +55,13 @@ public extension Scene {
         // Get the previous scene and compare it
         // Return an unchanged output of it's equal
         if let previous = input.storage?.value, anyEquals(lhs: scene, rhs: previous) {
-            return Self.output(node: nil, staticEdges: nil, accessor: scene.accessor)
+            return Self.output(
+                node: nil,
+                staticEdges: nil,
+                implementationPosition: input.implementationPosition,
+                implementationCount: input.storage.implementationCount,
+                accessor: scene.accessor
+            )
         }
 
         // The scene changed
@@ -68,10 +70,16 @@ public extension Scene {
         // Re-evaluate body
         let body = scene.body // TODO: use BodyAccessor.makeBody(of: scene, storage: input.storage)
         let bodyStorage = input.storage?.edges.asStatic[0]
-        let bodyInput = MakeInput(storage: bodyStorage)
+        let bodyInput = MakeInput(storage: bodyStorage, implementationPosition: Self.substantial ? 0 : input.implementationPosition)
         let bodyOutput = Body.make(scene: body, input: bodyInput)
 
-        return Self.output(node: output, staticEdges: [bodyOutput], accessor: scene.accessor)
+        return Self.output(
+            node: output,
+            staticEdges: [bodyOutput],
+            implementationPosition: input.implementationPosition,
+            implementationCount: Self.substantial ? 1 : bodyOutput.implementationCount,
+            accessor: scene.accessor
+        )
     }
 
     /// A scene has one edge: its body.
@@ -80,11 +88,21 @@ public extension Scene {
     }
 
     /// Convenience function to create a `MakeOutput` from a `Scene` with less boilerplate.
-    static func output(node: ElementOutput?, staticEdges: [MakeOutput?]?, accessor: Accessor?) -> MakeOutput {
+    static func output(
+        node: ElementOutput?,
+        staticEdges: [MakeOutput?]?,
+        implementationPosition: Int,
+        implementationCount: Int,
+        accessor: Accessor?
+    ) -> MakeOutput {
+        Logger.debug(debugImplementationVerbose, "\(Self.self) output returned implementationCount: \(implementationCount)")
+
         return MakeOutput(
             nodeKind: .scene,
             nodeType: Self.self,
             node: node,
+            implementationPosition: implementationPosition,
+            implementationCount: implementationCount,
             edges: .static(staticEdges, count: Self.staticEdgesCount),
             accessor: accessor
         )

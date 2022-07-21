@@ -18,43 +18,82 @@ import ScarletUI
 
 @main
 struct ScarletUIDemo: App {
-    @State private var colors: [Color] = []
-    @State private var colorHeight = 100
+    @State private var count = 0
 
     var body: some Scene {
         Window(title: "ScarletUI Demo") {
-            Rectangle(color: .black)
-                .grow()
-
             Row {
-                ForEach(Array(colors.enumerated()), id: \.offset) { _, color in
-                    Rectangle(color: color)
-                        .width(100)
-                        .height(colorHeight)
-                }
-            }
-            .onGamepadButtonPress { button in
-                switch button {
-                    case .dpadRight:
-                        colors.append(Color.random)
-                    case .dpadLeft:
-                        if !colors.isEmpty {
-                            colors.removeLast()
-                        }
-                    case .dpadUp:
-                        colorHeight += 10
-                    case .dpadDown:
-                        colorHeight -= 10
-                    default:
-                        break
-                }
-            }
+                Group {
+                    Rectangle(color: .blue)
 
-            Rectangle(color: .black)
-                .grow()
+                    if count == 0 {
+                        Rectangle(color: .green)
+                    }
+
+                    Rectangle(color: .red)
+                }.grow()
+
+                Group {
+                    Rectangle(color: .blue)
+
+                    if count == 0 {
+                        Rectangle(color: .green)
+                    }
+
+                    Rectangle(color: .red)
+                }.grow()
+            }
+            .grow()
+            .onGamepadButtonPress { button in
+                if button == .dpadRight {
+                    self.count += 1
+                } else if button == .dpadLeft {
+                    self.count -= 1
+                }
+            }
         }
     }
 }
+
+// @main
+// struct ScarletUIDemo: App {
+//     @State private var colors: [Color] = []
+//     @State private var colorHeight = 100
+
+//     var body: some Scene {
+//         Window(title: "ScarletUI Demo") {
+//             Rectangle(color: .black)
+//                 .grow()
+
+//             Row {
+//                 ForEach(Array(colors.enumerated()), id: \.offset) { _, color in
+//                     Rectangle(color: color)
+//                         .width(100)
+//                         .height(colorHeight)
+//                 }
+//             }
+//             .onGamepadButtonPress { button in
+//                 switch button {
+//                     case .dpadRight:
+//                         colors.append(Color.random)
+//                     case .dpadLeft:
+//                         if !colors.isEmpty {
+//                             colors.removeLast()
+//                         }
+//                     case .dpadUp:
+//                         colorHeight += 10
+//                     case .dpadDown:
+//                         colorHeight -= 10
+//                     default:
+//                         break
+//                 }
+//             }
+
+//             Rectangle(color: .black)
+//                 .grow()
+//         }
+//     }
+// }
 
 // /*
 //    Copyright 2022 natinusala

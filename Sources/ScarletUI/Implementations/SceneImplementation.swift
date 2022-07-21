@@ -21,7 +21,7 @@ import ScarletCore
 /// Implementation for all scenes.
 open class SceneImplementation: LayoutImplementationNode, CustomStringConvertible, ViewGamepadButtonEvent {
     /// Scene display name for debugging purposes.
-    let displayName: String
+    public let displayName: String
 
     /// Children of this scene.
     var children: [ViewImplementation] = []

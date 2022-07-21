@@ -19,7 +19,7 @@ public struct Group<Content> {
     let content: Content
 }
 
-extension Group: View, Accessor, Makeable where Content: View {
+extension Group: View, Accessor, Makeable, Implementable where Content: View {
     public typealias Body = Never
     public typealias Implementation = Never
 
@@ -30,11 +30,14 @@ extension Group: View, Accessor, Makeable where Content: View {
     public static func make(view: Self?, input: MakeInput) -> MakeOutput {
         let contentStorage = input.storage?.edges.asStatic[0]
 
-        let contentInput = MakeInput(storage: contentStorage)
+        let contentInput = MakeInput(storage: contentStorage, implementationPosition: input.implementationPosition)
+        let contentOutput = Content.make(view: view?.content, input: contentInput)
 
         return Self.output(
             node: nil,
-            staticEdges: [Content.make(view: view?.content, input: contentInput)],
+            staticEdges: [contentOutput],
+            implementationPosition: input.implementationPosition,
+            implementationCount: contentOutput.implementationCount,
             accessor: view?.accessor
         )
     }

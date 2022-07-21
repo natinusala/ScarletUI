@@ -152,10 +152,16 @@ public extension AttributeViewModifier {
 
         let body = modifier?.body(content: ViewModifierContent()) // TODO: Use BodyAccessor.makeBody(of: modifier, storage: input.storage)
 
-        let bodyInput = MakeInput(storage: input.storage?.edges.asStatic[0])
+        let bodyInput = MakeInput(storage: input.storage?.edges.asStatic[0], implementationPosition: input.implementationPosition)
         let bodyOutput = Body.make(view: body, input: bodyInput)
 
-        return Self.output(node: output, staticEdges: [bodyOutput], accessor: modifier?.accessor)
+        return Self.output(
+            node: output,
+            staticEdges: [bodyOutput],
+            implementationPosition: input.implementationPosition,
+            implementationCount: bodyOutput.implementationCount,
+            accessor: modifier?.accessor
+        )
     }
 
     /// Body for attributes-only modifiers: return content itself, unmodified.

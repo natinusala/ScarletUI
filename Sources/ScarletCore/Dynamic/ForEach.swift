@@ -49,7 +49,12 @@ public struct ForEach<Data, ID, Content>: View, DynamicViewContent where Data: R
 
         // Finalize
         let output = ElementOutput(storage: Storage(identifiers: newIdentifiers), attributes: view.collectAttributes())
-        return self.output(node: output, operations: operations, accessor: view.accessor, viewContent: view)
+        return self.output(
+            node: output,
+            operations: operations,
+            accessor: view.accessor,
+            viewContent: view
+        )
     }
 
     public static var staticEdgesCount: Int {
@@ -61,8 +66,9 @@ public struct ForEach<Data, ID, Content>: View, DynamicViewContent where Data: R
     }
 
     public func make(at position: Int, identifiedBy id: AnyHashable, input: MakeInput) -> MakeOutput {
-        let input = MakeInput(storage: input.storage?.edges.dynamicAt(id: id))
-        return Content.make(view: self.content(self.data[position]), input: input)
+        fatalError("`ForEach` make uninmplemented (missing implementationPosition)")
+        // let input = MakeInput(storage: input.storage?.edges.dynamicAt(id: id), implementationPosition: 0)
+        // return Content.make(view: self.content(self.data[position]), input: input)
     }
 
     public var dynamicViewContent: DynamicViewContent? {

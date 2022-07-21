@@ -23,7 +23,7 @@ import ScarletCore
 /// Implementation for all apps.
 open class AppImplementation: ImplementationNode, CustomStringConvertible {
     /// App display name for debugging purposes.
-    let displayName: String
+    public let displayName: String
 
     /// Children of this app.
     var children: [SceneImplementation] = []
@@ -158,8 +158,12 @@ public extension App {
         Backtrace.install()
 
         let app = Self.init()
-        let root = ElementGraph(parent: nil, position: 0, making: app)
+        let root = ElementGraph(parent: nil, making: app)
 
-        (root.implementation as! AppImplementation).run()
+        guard let implementation = root.implementation as? AppImplementation else {
+            fatalError("No implementation found for app node")
+        }
+
+        implementation.run()
     }
 }

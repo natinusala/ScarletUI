@@ -14,6 +14,22 @@
    limitations under the License.
 */
 
+/// An element that has an associated implementation.
+public protocol Implementable {
+    /// The type of this view's implementation.
+    /// Set to `Never` if there is none.
+    associatedtype Implementation: ImplementationNode
+
+    /// Updates an implementation node with the given view.
+    static func updateImplementation(_ implementation: Implementation, with view: Self)
+}
+
+public extension Implementable {
+    static var substantial: Bool {
+        return Self.Implementation.self != Never.self
+    }
+}
+
 /// The implementation holds the element layout (size, position), attributes as well as all the
 /// necessary functions to draw it onscreen.
 ///
@@ -30,6 +46,8 @@
 ///         - the node is removed from its parent node
 ///         - `deinit`
 public protocol ImplementationNode {
+    var displayName: String { get }
+
     /// Creates a new implementation node for the given kind.
     init(kind: ImplementationKind, displayName: String)
 

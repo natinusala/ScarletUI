@@ -16,7 +16,7 @@
 
 /// A view is the building block of an on-screen element. A scene is made
 /// of a views tree.
-public protocol View: Accessor, Makeable {
+public protocol View: Accessor, Makeable, Implementable {
     /// The type of this view's body.
     associatedtype Body: View
 
@@ -31,13 +31,6 @@ public protocol View: Accessor, Makeable {
     /// The number of static edges of a view.
     /// Must be constant.
     static var staticEdgesCount: Int { get }
-
-    /// The type of this view's implementation.
-    /// Set to `Never` if there is none.
-    associatedtype Implementation: ImplementationNode
-
-    /// Updates an implementation node with the given view.
-    static func updateImplementation(_ implementation: Implementation, with view: Self)
 }
 
 public extension View {
@@ -47,7 +40,13 @@ public extension View {
         // If no view is specified, consider the view entirely unchanged,
         // including its body
         guard var view = view else {
-            return Self.output(node: nil, staticEdges: nil, accessor: nil)
+            return Self.output(
+                node: nil,
+                staticEdges: nil,
+                implementationPosition: input.implementationPosition,
+                implementationCount: input.storage.implementationCount,
+                accessor: nil
+            )
         }
 
         if !input.preserveState {
@@ -57,7 +56,13 @@ public extension View {
         // Get the previous view and compare it
         // Return an unchanged output of it's equal
         if let previous = input.storage?.value, anyEquals(lhs: view, rhs: previous) {
-            return Self.output(node: nil, staticEdges: nil, accessor: view.accessor)
+            return Self.output(
+                node: nil,
+                staticEdges: nil,
+                implementationPosition: input.implementationPosition,
+                implementationCount: input.storage.implementationCount,
+                accessor: view.accessor
+            )
         }
 
         // The view changed
@@ -66,10 +71,16 @@ public extension View {
         // Re-evaluate body
         let body = Dependencies.bodyAccessor.makeBody(of: view, storage: input.storage)
         let bodyStorage = input.storage?.edges.asStatic[0]
-        let bodyInput = MakeInput(storage: bodyStorage)
+        let bodyInput = MakeInput(storage: bodyStorage, implementationPosition: Self.substantial ? 0 : input.implementationPosition)
         let bodyOutput = Body.make(view: body, input: bodyInput)
 
-        return Self.output(node: output, staticEdges: [bodyOutput], accessor: view.accessor)
+        return Self.output(
+            node: output,
+            staticEdges: [bodyOutput],
+            implementationPosition: input.implementationPosition,
+            implementationCount: Self.substantial ? 1 : bodyOutput.implementationCount,
+            accessor: view.accessor
+        )
     }
 
     /// Default implementation for `staticEdgesCount()` when there is a body: return one edge,
@@ -99,6 +110,8 @@ public extension View where Body == Never {
         return Self.output(
             node: ElementOutput(storage: nil, attributes: view?.collectAttributes() ?? [:]),
             staticEdges: [],
+            implementationPosition: input.implementationPosition,
+            implementationCount: Self.substantial ? 1 : 0,
             accessor: view?.accessor
         )
     }
@@ -136,25 +149,46 @@ public extension View {
 
 public extension View {
     /// Convenience function to create a `MakeOutput` from a `View` with less boilerplate.
-    static func output(node: ElementOutput?, staticEdges: [MakeOutput?]?, accessor: Accessor?) -> MakeOutput {
+    static func output(
+        node: ElementOutput?,
+        staticEdges: [MakeOutput?]?,
+        implementationPosition: Int,
+        implementationCount: Int,
+        accessor: Accessor?
+    ) -> MakeOutput {
+        Logger.debug(debugImplementationVerbose, "\(Self.self) output returned implementationCount: \(implementationCount)")
+
         return MakeOutput(
             nodeKind: .view,
             nodeType: Self.self,
             node: node,
+            implementationPosition: implementationPosition,
+            implementationCount: implementationCount,
             edges: .static(staticEdges, count: Self.staticEdgesCount),
             accessor: accessor
         )
     }
 
     /// Convenience function to create a `MakeOutput` from a `View` with less boilerplate.
-    static func output(node: ElementOutput?, operations: [DynamicOperation], accessor: Accessor?, viewContent: DynamicViewContent?) -> MakeOutput {
-        return MakeOutput(
-            nodeKind: .view,
-            nodeType: Self.self,
-            node: node,
-            edges: .dynamic(operations: operations, viewContent: viewContent),
-            accessor: accessor
-        )
+    static func output(
+        node: ElementOutput?,
+        operations: [DynamicOperation],
+        accessor: Accessor?,
+        viewContent: DynamicViewContent?
+    ) -> MakeOutput {
+        fatalError("Dynamic output not implemented")
+
+        // Logger.debug(debugImplementationVerbose, "\(Self.self) output returned implementationCount: \(implementationCount)")
+
+        // return MakeOutput(
+        //     nodeKind: .view,
+        //     nodeType: Self.self,
+        //     node: node,
+        //     implementationPosition: implementationPosition,
+        //     implementationCount: implementationCount,
+        //     edges: .dynamic(operations: operations, viewContent: viewContent),
+        //     accessor: accessor
+        // )
     }
 
     /// Display name of the view, aka. its type stripped of any generic parameters.
