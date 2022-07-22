@@ -18,8 +18,8 @@ import Nimble
 
 @testable import ScarletCore
 
-class ViewSpecsDefinition: SpecDefinition {
-    static let describing = "a view with inputs"
+class ViewSpecDefinition: SpecDefinition {
+    static let describing = "a view with input"
     static let testing = Tested(variable: true, anotherVariable: false)
 
     struct NestedView: View {
@@ -104,4 +104,4 @@ class ViewSpecsDefinition: SpecDefinition {
     }
 }
 
-typealias ViewSpecs = ScarletSpec<ViewSpecsDefinition>
+typealias ViewSpec = ScarletSpec<ViewSpecDefinition>

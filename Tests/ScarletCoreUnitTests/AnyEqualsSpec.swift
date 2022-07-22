@@ -78,7 +78,7 @@ let anyEqualsSpecs: [(_: String, lhs: Any, rhs: Any, expected: Bool)] = [
     ("closures", lhs: {(param: Int) in return param + 10}, rhs: {(param: Int) in return param + 20}, expected: false),
 ]
 
-class AnyEqualsSpecs: QuickSpec {
+class AnyEqualsSpec: QuickSpec {
     override func spec() {
         describe("`anyEquals`") {
             for (description, lhs, rhs, expected) in anyEqualsSpecs {

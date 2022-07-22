@@ -36,7 +36,7 @@ class ScarletSpec<Definition: SpecDefinition>: QuickSpec {
         beforeEach {
             // Rebuild the node from scratch to start each test case from a clean state
             let view: Definition.Tested = Definition.testing
-            self.node = ElementNode(parent: nil, position: 0, making: view)
+            self.node = ElementNode(parent: nil, making: view)
 
             // Get a handle to the view from node storage once everything is installed
             guard let installedView = self.node.storage.value as? Definition.Tested else {

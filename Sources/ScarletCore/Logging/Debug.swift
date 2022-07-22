@@ -18,7 +18,7 @@
 let debugState = false
 
 /// Set to `true` to enable implementation nodes debug logging.
-let debugImplementation = true
+let debugImplementation = false
 
 /// Set to `true` to enable even more implementation nodes debug logging.
 let debugImplementationVerbose = false

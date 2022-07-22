@@ -60,7 +60,7 @@ let tryEquatableSpecs: [(_: String, lhs: Any, rhs: Any, expected: Bool?)] = [
     ("nil optionals", lhs: Int?.none as Any, rhs: Int?.none as Any, expected: true),
 ]
 
-class TryEquatableSpecs: QuickSpec {
+class TryEquatableSpec: QuickSpec {
     override func spec() {
         describe("`tryEquatable`") {
             for (description, lhs, rhs, expected) in tryEquatableSpecs {

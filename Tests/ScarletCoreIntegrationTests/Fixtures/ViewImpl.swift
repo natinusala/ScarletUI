@@ -18,7 +18,7 @@
 
 public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
     let kind: ImplementationKind
-    let displayName: String
+    public let displayName: String
     var attributes = Attributes()
     var children: [ViewImpl] = []
 

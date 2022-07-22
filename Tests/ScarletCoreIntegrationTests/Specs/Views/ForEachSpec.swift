@@ -18,7 +18,7 @@ import Nimble
 
 @testable import ScarletCore
 
-class ForEachSpecsDefinition: SpecDefinition {
+class ForEachSpecDefinition: SpecDefinition {
     static let describing = "a ForEach view"
     static let testing = Tested(views: [0, 1, 2, 3, 4])
 
@@ -194,4 +194,4 @@ class ForEachSpecsDefinition: SpecDefinition {
     }
 }
 
-typealias ForEachSpecs = ScarletSpec<ForEachSpecsDefinition>
+typealias ForEachSpec = ScarletSpec<ForEachSpecDefinition>

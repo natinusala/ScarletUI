@@ -24,12 +24,13 @@ import Backtrace
 // Add every spec file here
 let specs: [QuickSpec.Type] = [
     // ScarletCoreUnitTests
-    TryEquatableSpecs.self,
-    AnyEqualsSpecs.self,
+    TryEquatableSpec.self,
+    AnyEqualsSpec.self,
     // ScarletCoreIntegrationTests
-    ViewSpecs.self,
-    EmptyViewSpecs.self,
-    ForEachSpecs.self,
+    ViewSpec.self,
+    EmptyViewSpec.self,
+    TupleViewSpec.self,
+    // ForEachSpecs.self,
 ]
 
 // XXX: A main struct will be required as long as top-level code
