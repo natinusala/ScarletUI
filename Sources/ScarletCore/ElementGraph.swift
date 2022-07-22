@@ -98,6 +98,18 @@ public class ElementNode {
     /// Public to allow the implementation to run the app node.
     public let implementation: ImplementationNode?
 
+    var parentImplementation: ImplementationNode? {
+        if let parent = self.parent {
+            if let implementation = parent.implementation {
+                return implementation
+            } else {
+                return parent.parentImplementation
+            }
+        }
+
+        return nil
+    }
+
     /// Current state of the implementation node.
     var implementationState: ImplementationNodeState
 
@@ -224,22 +236,28 @@ public class ElementNode {
     }
 
     func detachImplementationFromParent(implementationPosition: Int?) {
-        func inner(detaching position: Int, to parentNode: ElementNode) {
-            if let parentImplementation = parentNode.implementation {
+        // Step 1: find the parent implementation node by traversing upwards
+        guard let parentImplementation = self.parentImplementation else { return }
+        let implementationPosition = implementationPosition ?? 0
+
+        // Step 2: traverse the tree downwards and remove every found implementation node
+        // as every deletion offsets the position of the next node by 1, we can remove all nodes
+        // in the same position as the one we're removing
+        func inner(node: ElementNode) {
+            if node.implementation != nil {
+                let position = implementationPosition
                 Logger.debug(debugImplementation, "Removing node at position \(position) from \(parentImplementation.displayName)")
                 parentImplementation.removeChild(at: position)
-            } else if let parent = parentNode.parent {
-                inner(detaching: position, to: parent)
+            } else {
+                for edge in node.edges {
+                    if let node = edge.node {
+                        inner(node: node)
+                    }
+                }
             }
         }
 
-        guard let parent = self.parent else { return }
-
-        if let implementationPosition = implementationPosition {
-            self.implementationPosition = implementationPosition
-        }
-
-        inner(detaching: self.implementationPosition, to: parent)
+        inner(node: self)
     }
 
     /// Updates the node with the given view.

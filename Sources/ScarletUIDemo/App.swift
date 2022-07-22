@@ -23,29 +23,15 @@ struct ScarletUIDemo: App {
     var body: some Scene {
         Window(title: "ScarletUI Demo") {
             Row {
-                Group {
-                    Rectangle(color: .blue)
-
-                    if count == 0 {
-                        Rectangle(color: .green)
-                    }
-
-                    if count == 0 {
-                        Rectangle(color: .green)
-                    }
-
-                    Rectangle(color: .red)
-                }.grow()
-
-                Group {
-                    Rectangle(color: .blue)
-
-                    if count == 1 {
-                        Rectangle(color: .green)
-                    }
-
-                    Rectangle(color: .red)
-                }.grow()
+                if count == 0 {
+                    Rectangle(color: .orange).grow()
+                    Rectangle(color: .black).grow()
+                    Rectangle(color: .yellow).grow()
+                } else {
+                    Rectangle(color: .blue).grow()
+                    Rectangle(color: .red).grow()
+                    Rectangle(color: .white).grow()
+                }
             }
             .grow()
             .onGamepadButtonPress { button in
