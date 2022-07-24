@@ -28,14 +28,14 @@ struct Row<Content>: View where Content: View {
 
     static func make(view: Self?, input: MakeInput) -> MakeOutput {
         let contentStorage = input.storage?.edges.asStatic[0]
-        let contentInput = MakeInput(storage: contentStorage, implementationPosition: input.implementationPosition)
+        let contentInput = MakeInput(storage: contentStorage, implementationPosition: Self.substantial ? 0 : input.implementationPosition)
         let contentOutput = Content.make(view: view?.content, input: contentInput)
 
         return Self.output(
             node: ElementOutput(storage: nil, attributes: view?.collectAttributes() ?? [:]),
             staticEdges: [.some(contentOutput)],
             implementationPosition: input.implementationPosition,
-            implementationCount: contentOutput.implementationCount,
+            implementationCount: Self.substantial ? 1 : contentOutput.implementationCount,
             accessor: view?.accessor
         )
     }

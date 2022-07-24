@@ -49,9 +49,36 @@ class TupleViewSpecDefinition: SpecDefinition {
                 then("implementation is created") { result in
                     expect(result.implementation).to(equal(
                         ViewImpl("Tested") {
-                            ViewImpl("EmptyView", id: "id0")
-                            ViewImpl("EmptyView", id: "id1")
-                            ViewImpl("EmptyView", id: "id2")
+                            ViewImpl("Row") {
+                                ViewImpl("Rectangle") {
+                                    ViewImpl("EmptyView", fill: .black, grow: 1.0)
+                                }
+
+                                ViewImpl("Column") {
+                                    ViewImpl("Rectangle") {
+                                        ViewImpl("EmptyView", fill: .red, grow: 1.0)
+                                    }
+                                    ViewImpl("Rectangle") {
+                                        ViewImpl("EmptyView", fill: .green, grow: 1.0)
+                                    }
+                                    ViewImpl("Rectangle") {
+                                        ViewImpl("EmptyView", fill: .blue, grow: 1.0)
+                                    }
+                                }
+
+                                ViewImpl("Column") {
+                                    ViewImpl("Rectangle") {
+                                        ViewImpl("EmptyView", fill: .orange, grow: 1.0)
+                                    }
+                                    ViewImpl("Rectangle") {
+                                        ViewImpl("EmptyView", fill: .yellow, grow: 1.0)
+                                    }
+                                }
+
+                                ViewImpl("Rectangle") {
+                                    ViewImpl("EmptyView", fill: .black, grow: 1.0)
+                                }
+                            }
                         }
                     ))
                 }

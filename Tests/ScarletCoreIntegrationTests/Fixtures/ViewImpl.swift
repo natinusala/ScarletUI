@@ -42,12 +42,16 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
     /// Initializer used to create the expected implementation tree.
     convenience init(
         _ displayName: String,
-        id: String = "",
+        id: String? = nil,
+        fill: Color? = nil,
+        grow: Float? = nil,
         @ViewImplChildrenBuilder children: () -> [ViewImpl] = { [] }
     ) {
         self.init(kind: .view, displayName: displayName)
 
         self.attributes.id = id
+        self.attributes.fill = fill
+        self.attributes.grow = grow
 
         self.children = children()
     }
