@@ -24,9 +24,22 @@ class TupleViewSpecDefinition: SpecDefinition {
 
     struct Tested: TestView {
         var body: some View {
-            EmptyView().id("id0")
-            EmptyView().id("id1")
-            EmptyView().id("id2")
+            Row {
+                Rectangle(color: .black)
+
+                Column {
+                    Rectangle(color: .red)
+                    Rectangle(color: .green)
+                    Rectangle(color: .blue)
+                }
+
+                Column {
+                    Rectangle(color: .orange)
+                    Rectangle(color: .yellow)
+                }
+
+                Rectangle(color: .black)
+            }
         }
 
         func spec() -> Specs {

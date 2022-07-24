@@ -17,6 +17,12 @@
 @testable import ScarletCore
 
 public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
+    struct Attributes: Equatable {
+        var id: String?
+        var fill: Color?
+        var grow: Float?
+    }
+
     let kind: ImplementationKind
     public let displayName: String
     var attributes = Attributes()
@@ -28,13 +34,9 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
         let childrenEqual = lhs.ignoreChildren || rhs.ignoreChildren || lhs.children == rhs.children
 
         return lhs.kind == rhs.kind
-            && lhs.displayName == rhs.displayName 
-            && lhs.attributes == rhs.attributes 
+            && lhs.displayName == rhs.displayName
+            && lhs.attributes == rhs.attributes
             && childrenEqual
-    }
-
-    struct Attributes: Equatable {
-        var id: String = ""
     }
 
     /// Initializer used to create the expected implementation tree.

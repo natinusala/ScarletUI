@@ -16,6 +16,13 @@
 
 import ScarletCore
 
-struct EmptyView: View {
-    typealias Body = Never
+/// A rectangle filled by a solid color.
+struct Rectangle: View {
+    let color: Color
+
+    public var body: some View {
+        EmptyView()
+            .fill(color: color)
+            .grow(1.0)
+    }
 }

@@ -14,8 +14,13 @@
    limitations under the License.
 */
 
-import ScarletCore
-
-struct EmptyView: View {
-    typealias Body = Never
+enum Color {
+    case red
+    case green
+    case blue
+    case white
+    case black
+    case purple
+    case orange
+    case yellow
 }

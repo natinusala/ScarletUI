@@ -24,11 +24,11 @@ import Backtrace
 // Add every spec file here
 let specs: [QuickSpec.Type] = [
     // ScarletCoreUnitTests
-    TryEquatableSpec.self,
-    AnyEqualsSpec.self,
+    // TryEquatableSpec.self,
+    // AnyEqualsSpec.self,
     // ScarletCoreIntegrationTests
-    ViewSpec.self,
-    EmptyViewSpec.self,
+    // ViewSpec.self,
+    // EmptyViewSpec.self,
     TupleViewSpec.self,
     // ForEachSpecs.self,
 ]
@@ -38,6 +38,7 @@ let specs: [QuickSpec.Type] = [
 @main
 struct Main {
     static func main() {
+        Backtrace.install()
         QCKMain(specs)
     }
 }

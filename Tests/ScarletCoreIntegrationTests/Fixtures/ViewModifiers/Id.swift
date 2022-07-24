@@ -14,19 +14,19 @@
    limitations under the License.
 */
 
-@testable import ScarletCore
+import ScarletCore
 
 struct IdModifier: AttributeViewModifier {
     @Attribute(\ViewImpl.attributes.id)
     var id
 
-    public init(_ id: String) {
+    init(_ id: String?) {
         self.id = id
     }
 }
 
 extension View {
-    func id(_ id: String) -> some View {
+    func id(_ id: String?) -> some View {
         self.modifier(IdModifier(id))
     }
 }

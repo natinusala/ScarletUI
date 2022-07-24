@@ -16,7 +16,7 @@
 
 /// A rectangle filled by a solid color.
 public struct Rectangle: View {
-    var color: Color
+    let color: Color
 
     public init(color: Color) {
         self.color = color

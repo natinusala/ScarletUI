@@ -16,6 +16,17 @@
 
 import ScarletCore
 
-struct EmptyView: View {
-    typealias Body = Never
+struct FillModifier: AttributeViewModifier {
+    @Attribute(\ViewImpl.attributes.fill)
+    var fill
+
+    init(_ fill: Color?) {
+        self.fill = fill
+    }
+}
+
+extension View {
+    func fill(color: Color) -> some View {
+        self.modifier(FillModifier(color))
+    }
 }

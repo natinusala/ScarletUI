@@ -16,6 +16,17 @@
 
 import ScarletCore
 
-struct EmptyView: View {
-    typealias Body = Never
+struct GrowModifier: AttributeViewModifier {
+    @Attribute(\ViewImpl.attributes.grow)
+    var grow
+
+    init(_ grow: Float?) {
+        self.grow = grow
+    }
+}
+
+extension View {
+    func grow(_ grow: Float?) -> some View {
+        self.modifier(GrowModifier(grow))
+    }
 }
