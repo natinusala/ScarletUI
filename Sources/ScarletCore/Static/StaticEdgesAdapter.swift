@@ -94,7 +94,7 @@ struct StaticEdgesAdapter: EdgesAdapter {
         if edge.type == newEdge.nodeType {
             edge.update(with: newEdge, attributes: attributes)
         } else {
-            self.removeEdge(at: idx, in: node, implementationPosition: nil)
+            self.removeEdge(at: idx, in: node, implementationPosition: newEdge.implementationPosition)
             self.insertEdge(newEdge, at: idx, in: node, attributes: attributes)
         }
     }

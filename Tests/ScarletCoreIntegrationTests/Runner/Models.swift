@@ -66,15 +66,16 @@ struct UpdateResult {
     let bodyCalls: [ObjectIdentifier: Int]
     let implementation: ViewImpl?
 
+    /// Only works after an update (is always empty after a creation).
     func bodyCalled<T>(of: T.Type) -> Bool {
         return (bodyCalls[ObjectIdentifier(T.self)] ?? 0) != 0
     }
 
+    /// Only works after an update (is always empty after a creation).
     func bodyCalls<T>(of: T.Type) -> Int {
         return bodyCalls[ObjectIdentifier(T.self)] ?? 0
     }
 }
-
 
 extension TestView {
     /// Defines what must happen after the view is updated.
