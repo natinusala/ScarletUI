@@ -18,34 +18,14 @@ import Nimble
 
 @testable import ScarletCore
 
-class ConditionalViewSpecDefinition: SpecDefinition {
-    static let describing = "a view with conditionals"
+class BalancedConditionalViewSpecDefinition: SpecDefinition {
+    static let describing = "a view with balanced conditionals"
     static let testing = Tested(first: true)
 
     struct Tested: TestView {
         let first: Bool
 
         var body: some View {
-            // Unbalanced
-            if first {
-                Rectangle(color: .white)
-                Rectangle(color: .black)
-            } else {
-                EmptyView().id("some_view")
-            }
-
-            if first {
-                Rectangle(color: .red)
-                Rectangle(color: .green)
-                Rectangle(color: .blue)
-            } else {
-                Row {
-                    Rectangle(color: .white)
-                    Rectangle(color: .black)
-                }
-            }
-
-            // Balanced
             if first {
                 Rectangle(color: .white)
                 Rectangle(color: .black)
@@ -64,13 +44,6 @@ class ConditionalViewSpecDefinition: SpecDefinition {
                         ViewImpl("Tested") {
                             ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .white, grow: 1.0) }
                             ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .black, grow: 1.0) }
-
-                            ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .red, grow: 1.0) }
-                            ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .green, grow: 1.0) }
-                            ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .blue, grow: 1.0) }
-
-                            ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .white, grow: 1.0) }
-                            ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .black, grow: 1.0) }
                         }
                     ))
                 }
@@ -84,13 +57,6 @@ class ConditionalViewSpecDefinition: SpecDefinition {
                 then("implementation is updated") { result in
                     expect(result.implementation).to(equal(
                         ViewImpl("Tested") {
-                            ViewImpl("EmptyView", id: "some_view")
-
-                            ViewImpl("Row") {
-                                ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .white, grow: 1.0) }
-                                ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .black, grow: 1.0) }
-                            }
-
                             ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .yellow, grow: 1.0) }
                             ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .blue, grow: 1.0) }
                         }
@@ -107,4 +73,4 @@ class ConditionalViewSpecDefinition: SpecDefinition {
 // - yolo nested conditionals
 // - consecutive conditional insertions
 
-typealias ConditionalViewSpec = ScarletSpec<ConditionalViewSpecDefinition>
+typealias BalancedConditionalViewSpec = ScarletSpec<BalancedConditionalViewSpecDefinition>
