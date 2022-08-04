@@ -20,7 +20,6 @@ import Nimble
 
 class ForEachSpecDefinition: SpecDefinition {
     static let describing = "a ForEach view"
-    static let testing = Tested(views: [0, 1, 2, 3, 4])
 
     // Necessary to assert body calls (`EmptyView` and `ModifiedContent` don't have a body)
     struct NestedView: View {
@@ -43,9 +42,11 @@ class ForEachSpecDefinition: SpecDefinition {
             }
         }
 
-        func spec() -> Specs {
+        static func spec() -> Specs {
             when("the view is created") {
-                create()
+                given {
+                    Tested(views: [0, 1, 2, 3, 4])
+                }
 
                 then("implementation is created") { result in
                     expect(result.implementation).to(equal(
@@ -61,7 +62,8 @@ class ForEachSpecDefinition: SpecDefinition {
             }
 
             when("the view input does not change") {
-                updateWith {
+                given {
+                    Tested(views: [0, 1, 2, 3, 4])
                     Tested(views: [0, 1, 2, 3, 4])
                 }
 
@@ -83,8 +85,9 @@ class ForEachSpecDefinition: SpecDefinition {
             }
 
             when("views are inserted") {
-                updateWith {
-                    Tested(views: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+                given {
+                     Tested(views: [0, 1, 2, 3, 4])
+                     Tested(views: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
                 }
 
                 then("inserted views' body is called") { result in
@@ -110,7 +113,8 @@ class ForEachSpecDefinition: SpecDefinition {
             }
 
             when("views are removed") {
-                updateWith {
+                given { 
+                    Tested(views: [0, 1, 2, 3, 4])
                     Tested(views: [])
                 }
 
@@ -126,7 +130,8 @@ class ForEachSpecDefinition: SpecDefinition {
             }
 
             when("views are reordered") {
-                updateWith {
+                given {
+                    Tested(views: [0, 1, 2, 3, 4])
                     Tested(views: [0, 3, 2, 4, 1])
                 }
 
@@ -148,7 +153,8 @@ class ForEachSpecDefinition: SpecDefinition {
             }
 
             when("generated views change without reordering") {
-                updateWith {
+                given {
+                    Tested(views: [0, 1, 2, 3, 4])
                     Tested(views: [0, 1, 2, 3, 4], idPrefix: "somePrefix")
                 }
 
@@ -170,7 +176,8 @@ class ForEachSpecDefinition: SpecDefinition {
             }
 
             when("generated views change with reordering") {
-                updateWith {
+                given {
+                    Tested(views: [0, 1, 2, 3, 4]) 
                     Tested(views: [0, 4, 3, 2, 1], idPrefix: "somePrefix")
                 }
 

@@ -20,7 +20,6 @@ import Nimble
 
 class TupleViewSpecDefinition: SpecDefinition {
     static let describing = "a view with multiple children"
-    static let testing = Tested()
 
     struct Tested: TestView {
         var body: some View {
@@ -42,9 +41,11 @@ class TupleViewSpecDefinition: SpecDefinition {
             }
         }
 
-        func spec() -> Specs {
+        static func spec() -> Specs {
             when("the view is created") {
-                create()
+                given {
+                    Tested()
+                }
 
                 then("implementation is created") { result in
                     expect(result.implementation).to(equal(

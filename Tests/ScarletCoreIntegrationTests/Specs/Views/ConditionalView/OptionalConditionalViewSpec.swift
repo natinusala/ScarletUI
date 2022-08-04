@@ -18,26 +18,34 @@ import Nimble
 
 @testable import ScarletCore
 
-class BalancedConditionalViewSpecDefinition: SpecDefinition {
-    static let describing = "a view with balanced conditionals"
+class OptionalConditionalViewSpecDefinition: SpecDefinition {
+    static let describing = "a view with conditionals containing optionals"
 
     struct Tested: TestView {
         let first: Bool
+        let optional: Bool
 
         var body: some View {
             if first {
                 Rectangle(color: .white)
+
+                if optional {
+                    Rectangle(color: .red)
+                    Rectangle(color: .green)
+                    Rectangle(color: .blue)
+                }
+
                 Rectangle(color: .black)
             } else {
+                Rectangle(color: .orange)
                 Rectangle(color: .yellow)
-                Rectangle(color: .blue)
             }
         }
 
         static func spec() -> Specs {
             when("the view is created") {
                 given {
-                    Tested(first: true)
+                    Tested(first: true, optional: false)
                 }
 
                 then("implementation is created") { result in
@@ -52,15 +60,36 @@ class BalancedConditionalViewSpecDefinition: SpecDefinition {
 
             when("switching from first to second") {
                 given {
-                    Tested(first: true)
-                    Tested(first: false)
+                    Tested(first: true, optional: false)
+                    Tested(first: false, optional: false)
                 }
 
                 then("implementation is updated") { result in
                     expect(result.implementation).to(equal(
                         ViewImpl("Tested") {
+                            ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .orange, grow: 1.0) }
                             ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .yellow, grow: 1.0) }
+                        }
+                    ))
+                }
+            }
+
+            when("inserting optional") {
+                given {
+                    Tested(first: true, optional: false)
+                    Tested(first: true, optional: true)
+                }
+
+                then("implementation is updated") { result in
+                    expect(result.implementation).to(equal(
+                        ViewImpl("Tested") {
+                            ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .white, grow: 1.0) }
+
+                            ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .red, grow: 1.0) }
+                            ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .green, grow: 1.0) }
                             ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .blue, grow: 1.0) }
+
+                            ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .black, grow: 1.0) }
                         }
                     ))
                 }
@@ -69,10 +98,6 @@ class BalancedConditionalViewSpecDefinition: SpecDefinition {
     }
 }
 
-// TODO:
-// - an optional on one side (both ways)
-// - one of the sides is empty (both ways, both sides are empty so 4 tests)
-// - yolo nested conditionals
-// - consecutive conditional insertions
+//TODO: add a way to change the starting point (`startingWith {}`) to test optional insertion (true -> false) + first to second with the optional on
 
-typealias BalancedConditionalViewSpec = ScarletSpec<BalancedConditionalViewSpecDefinition>
+typealias OptionalConditionalViewSpec = ScarletSpec<OptionalConditionalViewSpecDefinition>

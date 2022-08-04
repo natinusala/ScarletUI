@@ -21,5 +21,5 @@ import Nimble
 
 /// A view with a test spec.
 protocol TestView: View {
-    @SpecsBuilder func spec() -> Specs
+    @SpecsBuilder static func spec() -> Specs
 }

@@ -23,7 +23,6 @@ protocol SpecDefinition {
     associatedtype Tested: TestView
 
     static var describing: String { get }
-    static var testing: Tested { get }
 }
 
 class ScarletSpec<Definition: SpecDefinition>: QuickSpec {
@@ -33,34 +32,20 @@ class ScarletSpec<Definition: SpecDefinition>: QuickSpec {
     var bodyAccessor: BodyAccessorMock!
 
     override func spec() {
-        beforeEach {
-            // Rebuild the node from scratch to start each test case from a clean state
-            let view: Definition.Tested = Definition.testing
-            self.node = ElementNode(parent: nil, making: view)
-
-            // Get a handle to the view from node storage once everything is installed
-            guard let installedView = self.node.storage.value as? Definition.Tested else {
-                fatalError("View was not installed")
-            }
-
-            self.view = installedView
-
-            // Reset dependencies - do it after building the node to reset call counts
-            self.bodyAccessor = BodyAccessorMock(wrapping: DefaultBodyAccessor())
-            Dependencies.bodyAccessor = self.bodyAccessor
-        }
-
         // We can build specs from `Definition.testing.spec()` directly as
         // the definition itself doesn't alter the view, running the cases inside
         // the `it` closure will
         describe(Definition.describing) {
-            let specs = Definition.testing.spec()
+            let specs = Definition.Tested.spec()
 
             for testCase in specs.cases {
                 context("when \(testCase.description)") {
                     for expectation in testCase.expectations {
                         it("then \(expectation.description)") {
-                            self.runCase(action: testCase.action, expectation: expectation)
+                            let initialSteps = testCase.initialSteps()
+
+                            self.setupCase(with: initialSteps.initialView)
+                            self.runCase(actions: initialSteps.updateActions, expectation: expectation)
                         }
                     }
                 }
@@ -68,9 +53,9 @@ class ScarletSpec<Definition: SpecDefinition>: QuickSpec {
         }
     }
 
-    private func runCase(action: UpdateAction, expectation: Expectations) {
-        // Execute the action
-        action(self.node)
+    private func runCase(actions: [UpdateAction], expectation: Expectations) {
+        // Execute the actions if any
+        actions.forEach { $0(node) }
 
         // Make the result object and run the expectations closure
         let result = UpdateResult(
@@ -79,6 +64,22 @@ class ScarletSpec<Definition: SpecDefinition>: QuickSpec {
         )
 
         expectation.closure(result)
+    }
+
+    private func setupCase(with node: ElementNode) {
+        // Rebuild the node from scratch to start each test case from a clean state
+        self.node = node
+
+        // Get a handle to the view from node storage once everything is installed
+        guard let installedView = self.node.storage.value as? Definition.Tested else {
+            fatalError("View was not installed")
+        }
+
+        self.view = installedView
+
+        // Reset dependencies - do it after building the node to reset call counts
+        self.bodyAccessor = BodyAccessorMock(wrapping: DefaultBodyAccessor())
+        Dependencies.bodyAccessor = self.bodyAccessor
     }
 }
 

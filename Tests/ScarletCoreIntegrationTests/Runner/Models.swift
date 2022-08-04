@@ -22,33 +22,25 @@ struct Specs {
 
 typealias UpdateAction = (ElementNode) -> ()
 
-extension TestView {
-    func updateWith(action: @escaping () -> Self) -> UpdateAction {
-        return { node in
-            let newView = action()
-            node.update(with: newView, attributes: [:])
-        }
-    }
-
-    func create() -> UpdateAction {
-        return { _ in }
-    }
+struct InitialSteps {
+    let initialView: ElementNode
+    let updateActions: [UpdateAction]
 }
 
 struct Case {
+    let initialSteps: () -> InitialSteps
     let description: String
-    let action: UpdateAction
     let expectations: [Expectations]
 }
 
 extension TestView {
     /// Creates a test case updating the view with a new version of itself.
-    func when(_ description: String, @ExpectationsBuilder expectations: () -> (UpdateAction, [Expectations])) -> Case {
-        let (action, expectations) = expectations()
+    static func when(_ description: String, @ExpectationsBuilder expectations: () -> ((() -> InitialSteps), [Expectations])) -> Case {
+        let (initialSteps, expectations) = expectations()
 
         return Case(
+            initialSteps: initialSteps,
             description: description,
-            action: action,
             expectations: expectations
         )
     }
@@ -79,7 +71,7 @@ struct UpdateResult {
 
 extension TestView {
     /// Defines what must happen after the view is updated.
-    func then(_ description: String, expectations: @escaping (UpdateResult) -> Void) -> Expectations {
+    static func then(_ description: String, expectations: @escaping (UpdateResult) -> Void) -> Expectations {
         return Expectations(description: description, closure: expectations)
     }
 }
@@ -93,7 +85,36 @@ struct SpecsBuilder {
 
 @resultBuilder
 struct ExpectationsBuilder {
-    static func buildBlock(_ action: @escaping UpdateAction, _ expectations: Expectations...) -> (UpdateAction, [Expectations]) {
-        return (action, expectations)
+    /// Build a block with a starting view, an action then a list of expectations.
+    static func buildBlock(_ initial: @escaping (() -> InitialSteps), _ expectations: Expectations...) -> ((() -> InitialSteps), [Expectations]) {
+        return (initial, expectations)
+    }
+}
+
+extension TestView {
+    static func given(@InitialBuilder _ initial: @escaping () -> (Self, [Self])) -> (() -> InitialSteps) {
+        return {
+            let (initialView, updates) = initial()
+
+            return InitialSteps(
+                initialView: ElementNode(parent: nil, making: initialView),
+                updateActions: updates.map { newValue in
+                    return { element in
+                        element.update(with: newValue, attributes: [:])
+                    }
+                }
+            )
+        }
+    }
+}
+
+@resultBuilder
+struct InitialBuilder {
+    static func buildBlock<V>(_ initial: V, _ values: V...) -> (V, [V]) {
+        return (initial, values)
+    }
+
+    static func buildBlock<V>(_ initial: V) -> (V, [V]) {
+        return (initial, [])
     }
 }

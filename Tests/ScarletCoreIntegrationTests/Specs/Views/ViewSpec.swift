@@ -20,7 +20,6 @@ import Nimble
 
 class ViewSpecDefinition: SpecDefinition {
     static let describing = "a view with input"
-    static let testing = Tested(variable: true, anotherVariable: false)
 
     struct NestedView: View {
         let value: Bool
@@ -38,9 +37,11 @@ class ViewSpecDefinition: SpecDefinition {
             NestedView(value: variable)
         }
 
-        func spec() -> Specs {
+        static func spec() -> Specs {
             when("the view is created") {
-                create()
+                given {
+                    Tested(variable: true, anotherVariable: false)
+                }
 
                 then("implementation is created") { result in
                     expect(result.implementation).to(equal(
@@ -54,7 +55,8 @@ class ViewSpecDefinition: SpecDefinition {
             }
 
             when("the view input does not change") {
-                updateWith {
+                given {
+                    Tested(variable: true, anotherVariable: false)
                     Tested(variable: true, anotherVariable: false)
                 }
 
@@ -78,7 +80,8 @@ class ViewSpecDefinition: SpecDefinition {
             }
 
             when("the view input changes") {
-                updateWith {
+                given { 
+                    Tested(variable: true, anotherVariable: false)
                     Tested(variable: false, anotherVariable: true)
                 }
 

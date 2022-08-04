@@ -20,16 +20,15 @@ import Nimble
 
 class EmptyViewSpecDefinition: SpecDefinition {
     static let describing = "an empty view"
-    static let testing = Tested()
 
     struct Tested: TestView {
         var body: some View {
             EmptyView()
         }
 
-        func spec() -> Specs {
+        static func spec() -> Specs {
             when("the view is created") {
-                create()
+                given { Tested() }
 
                 then("implementation is created") { result in
                     expect(result.implementation).to(equal(
@@ -41,7 +40,8 @@ class EmptyViewSpecDefinition: SpecDefinition {
             }
 
             when("the view is updated") {
-                updateWith {
+                given {
+                    Tested()
                     Tested()
                 }
 

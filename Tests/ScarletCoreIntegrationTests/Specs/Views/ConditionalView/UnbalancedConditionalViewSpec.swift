@@ -20,7 +20,6 @@ import Nimble
 
 class UnbalancedConditionalViewSpecDefinition: SpecDefinition {
     static let describing = "a view with unbalanced conditionals"
-    static let testing = Tested(first: true)
 
     struct Tested: TestView {
         let first: Bool
@@ -46,9 +45,11 @@ class UnbalancedConditionalViewSpecDefinition: SpecDefinition {
             }
         }
 
-        func spec() -> Specs {
+        static func spec() -> Specs {
             when("the view is created") {
-                create()
+                given {
+                    Tested(first: true)
+                }
 
                 then("implementation is created") { result in
                     expect(result.implementation).to(equal(
@@ -65,7 +66,8 @@ class UnbalancedConditionalViewSpecDefinition: SpecDefinition {
             }
 
             when("switching from first to second") {
-                updateWith {
+                given {
+                    Tested(first: true)
                     Tested(first: false)
                 }
 
