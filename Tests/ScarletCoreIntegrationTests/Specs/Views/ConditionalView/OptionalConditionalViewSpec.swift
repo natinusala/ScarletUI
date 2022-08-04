@@ -43,7 +43,7 @@ class OptionalConditionalViewSpecDefinition: SpecDefinition {
         }
 
         static func spec() -> Specs {
-            when("the view is created") {
+            when("the view is created without the optional") {
                 given {
                     Tested(first: true, optional: false)
                 }
@@ -58,10 +58,46 @@ class OptionalConditionalViewSpecDefinition: SpecDefinition {
                 }
             }
 
-            when("switching from first to second") {
+            when("the view is created with the optional") {
+                given {
+                    Tested(first: true, optional: true)
+                }
+
+                then("implementation is created") { result in
+                    expect(result.implementation).to(equal(
+                        ViewImpl("Tested") {
+                            ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .white, grow: 1.0) }
+
+                            ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .red, grow: 1.0) }
+                            ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .green, grow: 1.0) }
+                            ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .blue, grow: 1.0) }
+
+                            ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .black, grow: 1.0) }
+                        }
+                    ))
+                }
+            }
+
+            when("switching from first to second without optional") {
                 given {
                     Tested(first: true, optional: false)
                     Tested(first: false, optional: false)
+                }
+
+                then("implementation is updated") { result in
+                    expect(result.implementation).to(equal(
+                        ViewImpl("Tested") {
+                            ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .orange, grow: 1.0) }
+                            ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .yellow, grow: 1.0) }
+                        }
+                    ))
+                }
+            }
+
+            when("switching from first to second with optional") {
+                given {
+                    Tested(first: true, optional: true)
+                    Tested(first: false, optional: true)
                 }
 
                 then("implementation is updated") { result in
@@ -94,10 +130,26 @@ class OptionalConditionalViewSpecDefinition: SpecDefinition {
                     ))
                 }
             }
+
+            when("removing optional") {
+                given {
+                    Tested(first: true, optional: true)
+                    Tested(first: true, optional: false)
+                }
+
+                then("implementation is updated") { result in
+                    expect(result.implementation).to(equal(
+                        ViewImpl("Tested") {
+                            ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .white, grow: 1.0) }
+                            ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .black, grow: 1.0) }
+                        }
+                    ))
+                }
+            }
         }
     }
 }
 
-//TODO: add a way to change the starting point (`startingWith {}`) to test optional insertion (true -> false) + first to second with the optional on
+//TODO: add a way to change the starting point (`startingWith {}`) to test optional removal (true -> false) + first to second with the optional on
 
 typealias OptionalConditionalViewSpec = ScarletSpec<OptionalConditionalViewSpecDefinition>
