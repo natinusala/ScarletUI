@@ -88,9 +88,4 @@ class UnbalancedConditionalViewSpecDefinition: SpecDefinition {
     }
 }
 
-// TODO:
-// - one of the sides is empty (both ways, both sides are empty so 4 tests)
-// - yolo nested conditionals
-// - consecutive conditional insertions
-
 typealias UnbalancedConditionalViewSpec = ScarletSpec<UnbalancedConditionalViewSpecDefinition>

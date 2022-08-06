@@ -18,49 +18,65 @@ import Nimble
 
 @testable import ScarletCore
 
-class BalancedConditionalViewSpecDefinition: SpecDefinition {
-    static let describing = "a view with balanced conditionals"
+class NestedConditionalViewSpecDefinition: SpecDefinition {
+    static var describing = "a view with nested conditionals"
 
     struct Tested: TestView {
-        let first: Bool
+        let value: Int
 
         var body: some View {
-            if first {
-                Rectangle(color: .white)
-                Rectangle(color: .black)
-            } else {
-                Rectangle(color: .yellow)
-                Rectangle(color: .blue)
+            Row {
+                if value > 20 {
+                    Text("Value is > 20")
+
+                    if value > 30 {
+                        Text("Value is > 30")
+                    } else if value > 25 {
+                        Text("Value is > 25")
+                    }
+                } else if value > 10 {
+                    Text("Value is > 10")
+
+                    if value > 15 {
+                        Text("Value is > 15")
+                    }
+                } else {
+                    Text("Value is unknown")
+                }
             }
         }
 
         static func spec() -> Specs {
             when("the view is created") {
                 given {
-                    Tested(first: true)
+                    Tested(value: 16)
                 }
 
                 then("implementation is created") { result in
                     expect(result.implementation).to(equal(
                         ViewImpl("Tested") {
-                            ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .white, grow: 1.0) }
-                            ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .black, grow: 1.0) }
+                            ViewImpl("Row") {
+                                TextImpl(text: "Value is > 10")
+                                TextImpl(text: "Value is > 15")
+                            }
                         }
                     ))
                 }
             }
 
-            when("switching from first to second") {
+            when("the view is updated") {
                 given {
-                    Tested(first: true)
-                    Tested(first: false)
+                    Tested(value: 16)
+                    Tested(value: 35)
                 }
 
                 then("implementation is updated") { result in
                     expect(result.implementation).to(equal(
                         ViewImpl("Tested") {
-                            ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .yellow, grow: 1.0) }
-                            ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .blue, grow: 1.0) }
+                            ViewImpl("Row") {
+                                TextImpl(text: "Value is > 20")
+                                TextImpl(text: "Value is > 30")
+                            }
                         }
                     ))
                 }
@@ -69,8 +85,4 @@ class BalancedConditionalViewSpecDefinition: SpecDefinition {
     }
 }
 
-// TODO:
-// - yolo nested conditionals
-// - consecutive conditional insertions
-
-typealias BalancedConditionalViewSpec = ScarletSpec<BalancedConditionalViewSpecDefinition>
+typealias NestedConditionalViewSpec = ScarletSpec<NestedConditionalViewSpecDefinition>

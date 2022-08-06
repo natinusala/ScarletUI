@@ -33,7 +33,8 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
     public static func == (lhs: ViewImpl, rhs: ViewImpl) -> Bool {
         let childrenEqual = lhs.ignoreChildren || rhs.ignoreChildren || lhs.children == rhs.children
 
-        return lhs.kind == rhs.kind
+        return type(of: lhs) == type(of: rhs)
+            && lhs.kind == rhs.kind
             && lhs.displayName == rhs.displayName
             && lhs.attributes == rhs.attributes
             && childrenEqual

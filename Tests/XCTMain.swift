@@ -35,6 +35,7 @@ let specs: [QuickSpec.Type] = [
     UnbalancedConditionalViewSpec.self,
     OptionalConditionalViewSpec.self,
     EmptyConditionalViewSpec.self,
+    NestedConditionalViewSpec.self,
     // ForEachSpecs.self,
 ]
 

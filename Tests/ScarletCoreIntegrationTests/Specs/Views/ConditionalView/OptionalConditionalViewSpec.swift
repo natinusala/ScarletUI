@@ -150,6 +150,4 @@ class OptionalConditionalViewSpecDefinition: SpecDefinition {
     }
 }
 
-//TODO: add a way to change the starting point (`startingWith {}`) to test optional removal (true -> false) + first to second with the optional on
-
 typealias OptionalConditionalViewSpec = ScarletSpec<OptionalConditionalViewSpecDefinition>
