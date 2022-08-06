@@ -89,7 +89,6 @@ class UnbalancedConditionalViewSpecDefinition: SpecDefinition {
 }
 
 // TODO:
-// - an optional on one side (both ways)
 // - one of the sides is empty (both ways, both sides are empty so 4 tests)
 // - yolo nested conditionals
 // - consecutive conditional insertions
