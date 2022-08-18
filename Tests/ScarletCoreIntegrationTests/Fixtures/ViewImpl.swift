@@ -90,7 +90,7 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
             """
         }
         return """
-        ViewImpl("\(self.displayName)", \(self.attributes)) \(children)
+        \(Self.self)("\(self.displayName)", \(self.attributes)) \(children)
         """
     }
 }

@@ -41,4 +41,20 @@ class ImageImpl: ViewImpl {
         self.source = source
         super.init(kind: .view, displayName: "Image")
     }
+
+    override var description: String {
+        let children: String
+        if self.children.isEmpty {
+            children = ""
+        } else {
+            children = """
+            {
+                \(self.children.map { "\($0)" }.joined(separator: " "))
+            }
+            """
+        }
+        return """
+        ImageImpl(source: "\(self.source)", \(self.attributes)) \(children)
+        """
+    }
 }

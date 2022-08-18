@@ -45,15 +45,6 @@
       }
     },
     {
-      "identity" : "quick",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Quick/Quick.git",
-      "state" : {
-        "revision" : "bd86ca0141e3cfb333546de5a11ede63f0c4a0e6",
-        "version" : "4.0.0"
-      }
-    },
-    {
       "identity" : "rainbow",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/onevcat/Rainbow.git",

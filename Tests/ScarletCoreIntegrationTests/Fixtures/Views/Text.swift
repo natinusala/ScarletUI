@@ -41,4 +41,20 @@ class TextImpl: ViewImpl {
         self.text = text
         super.init(kind: .view, displayName: "Text")
     }
+
+    override var description: String {
+        let children: String
+        if self.children.isEmpty {
+            children = ""
+        } else {
+            children = """
+            {
+                \(self.children.map { "\($0)" }.joined(separator: " "))
+            }
+            """
+        }
+        return """
+        TextImpl(text: "\(self.text)", \(self.attributes)) \(children)
+        """
+    }
 }

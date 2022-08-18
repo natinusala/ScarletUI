@@ -69,8 +69,4 @@ class BalancedConditionalViewSpecDefinition: SpecDefinition {
     }
 }
 
-// TODO:
-// - yolo nested conditionals
-// - consecutive conditional insertions
-
 typealias BalancedConditionalViewSpec = ScarletSpec<BalancedConditionalViewSpecDefinition>
