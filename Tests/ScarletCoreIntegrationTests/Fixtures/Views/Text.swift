@@ -42,6 +42,11 @@ class TextImpl: ViewImpl {
         super.init(kind: .view, displayName: "Text")
     }
 
+    override open func equals(to other: ViewImpl) -> Bool {
+        guard let other = other as? TextImpl else { return false }
+        return self.text == other.text
+    }
+
     override var description: String {
         let children: String
         if self.children.isEmpty {

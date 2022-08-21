@@ -42,6 +42,11 @@ class ImageImpl: ViewImpl {
         super.init(kind: .view, displayName: "Image")
     }
 
+    override open func equals(to other: ViewImpl) -> Bool {
+        guard let other = other as? ImageImpl else { return false }
+        return self.source == other.source
+    }
+
     override var description: String {
         let children: String
         if self.children.isEmpty {

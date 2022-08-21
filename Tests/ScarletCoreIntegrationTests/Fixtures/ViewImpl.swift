@@ -37,7 +37,13 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
             && lhs.kind == rhs.kind
             && lhs.displayName == rhs.displayName
             && lhs.attributes == rhs.attributes
+            && lhs.equals(to: rhs)
             && childrenEqual
+    }
+
+    /// Used by custom implementations to compare their custom attributes.
+    open func equals(to other: ViewImpl) -> Bool {
+        return true
     }
 
     /// Initializer used to create the expected implementation tree.

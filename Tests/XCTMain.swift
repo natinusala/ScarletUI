@@ -40,6 +40,7 @@ let specs: [QuickSpec.Type] = [
     ConsecutiveConditionalViewSpecSpec.QuickSpec.self,
     ConditionalViewContentUpdateSpec.QuickSpec.self,
     OptionalViewContentUpdateSpec.QuickSpec.self,
+    OptionalViewToggleSpec.QuickSpec.self,
     // ForEachSpecs.self,
 ]
 
