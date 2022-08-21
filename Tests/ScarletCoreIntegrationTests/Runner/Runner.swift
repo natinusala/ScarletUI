@@ -19,24 +19,26 @@ import Nimble
 
 @testable import ScarletCore
 
-protocol SpecDefinition {
+protocol ScarletSpec {
     associatedtype Tested: TestView
 
     static var describing: String { get }
+
+    typealias QuickSpec = ScarletSpecRunner<Self>
 }
 
-class ScarletSpec<Definition: SpecDefinition>: QuickSpec {
-    var view: Definition.Tested!
+class ScarletSpecRunner<Spec: ScarletSpec>: QuickSpec {
+    var view: Spec.Tested!
     var node: ElementNode!
 
     var bodyAccessor: BodyAccessorMock!
 
     override func spec() {
-        // We can build specs from `Definition.testing.spec()` directly as
-        // the definition itself doesn't alter the view, running the cases inside
+        // We can build specs from `Spec.testing.spec()` directly as
+        // the spec itself doesn't alter the view, running the cases inside
         // the `it` closure will
-        describe(Definition.describing) {
-            let specs = Definition.Tested.spec()
+        describe(Spec.describing) {
+            let specs = Spec.Tested.spec()
 
             for testCase in specs.cases {
                 context("when \(testCase.description)") {
@@ -71,7 +73,7 @@ class ScarletSpec<Definition: SpecDefinition>: QuickSpec {
         self.node = node
 
         // Get a handle to the view from node storage once everything is installed
-        guard let installedView = self.node.storage.value as? Definition.Tested else {
+        guard let installedView = self.node.storage.value as? Spec.Tested else {
             fatalError("View was not installed")
         }
 

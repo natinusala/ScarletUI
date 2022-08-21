@@ -18,7 +18,7 @@ import Nimble
 
 @testable import ScarletCore
 
-class OptionalConditionalViewSpecDefinition: SpecDefinition {
+class OptionalConditionalViewSpecSpec: ScarletSpec {
     static let describing = "a view with conditionals containing optionals"
 
     struct Tested: TestView {
@@ -149,5 +149,3 @@ class OptionalConditionalViewSpecDefinition: SpecDefinition {
         }
     }
 }
-
-typealias OptionalConditionalViewSpec = ScarletSpec<OptionalConditionalViewSpecDefinition>

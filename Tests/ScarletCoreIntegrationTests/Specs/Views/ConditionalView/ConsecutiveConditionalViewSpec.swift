@@ -19,7 +19,7 @@ import Nimble
 @testable import ScarletCore
 
 // Ported from a fuzzer generayed test case
-class ConsecutiveConditionalViewSpecDefinition: SpecDefinition {
+class ConsecutiveConditionalViewSpecSpec: ScarletSpec {
     static let describing = "a view with two consecutive conditionals"
 
     struct Picture: View {
@@ -214,5 +214,3 @@ class ConsecutiveConditionalViewSpecDefinition: SpecDefinition {
         }
     }
 }
-
-typealias ConsecutiveConditionalViewSpec = ScarletSpec<ConsecutiveConditionalViewSpecDefinition>

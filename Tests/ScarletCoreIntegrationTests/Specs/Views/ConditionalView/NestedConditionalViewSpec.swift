@@ -18,7 +18,7 @@ import Nimble
 
 @testable import ScarletCore
 
-class NestedConditionalViewSpecDefinition: SpecDefinition {
+class NestedConditionalViewSpecSpec: ScarletSpec {
     static var describing = "a view with nested conditionals"
 
     struct Tested: TestView {
@@ -84,5 +84,3 @@ class NestedConditionalViewSpecDefinition: SpecDefinition {
         }
     }
 }
-
-typealias NestedConditionalViewSpec = ScarletSpec<NestedConditionalViewSpecDefinition>

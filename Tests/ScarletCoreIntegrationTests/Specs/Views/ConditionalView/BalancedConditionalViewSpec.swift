@@ -18,7 +18,7 @@ import Nimble
 
 @testable import ScarletCore
 
-class BalancedConditionalViewSpecDefinition: SpecDefinition {
+class BalancedConditionalViewSpecSpec: ScarletSpec {
     static let describing = "a view with balanced conditionals"
 
     struct Tested: TestView {
@@ -68,5 +68,3 @@ class BalancedConditionalViewSpecDefinition: SpecDefinition {
         }
     }
 }
-
-typealias BalancedConditionalViewSpec = ScarletSpec<BalancedConditionalViewSpecDefinition>

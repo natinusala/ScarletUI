@@ -18,7 +18,7 @@ import Nimble
 
 @testable import ScarletCore
 
-class EmptyViewSpecDefinition: SpecDefinition {
+class EmptyViewSpecSpec: ScarletSpec {
     static let describing = "an empty view"
 
     struct Tested: TestView {
@@ -60,5 +60,3 @@ class EmptyViewSpecDefinition: SpecDefinition {
         }
     }
 }
-
-typealias EmptyViewSpec = ScarletSpec<EmptyViewSpecDefinition>

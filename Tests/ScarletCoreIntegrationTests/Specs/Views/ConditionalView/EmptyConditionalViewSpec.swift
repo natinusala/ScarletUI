@@ -18,7 +18,7 @@ import Nimble
 
 @testable import ScarletCore
 
-class EmptyConditionalViewSpecDefinition: SpecDefinition {
+class EmptyConditionalViewSpecSpec: ScarletSpec {
     static let describing = "a view with empty conditionals"
 
     struct Tested: TestView {
@@ -176,5 +176,3 @@ class EmptyConditionalViewSpecDefinition: SpecDefinition {
         }
     }
 }
-
-typealias EmptyConditionalViewSpec = ScarletSpec<EmptyConditionalViewSpecDefinition>

@@ -18,7 +18,7 @@ import Nimble
 
 @testable import ScarletCore
 
-class UpdateOptionalViewSpecDefinition: SpecDefinition {
+class OptionalViewContentUpdateSpec: ScarletSpec {
     static let describing = "a view with an optional which content gets updated"
 
     struct Tested: TestView {
@@ -92,5 +92,3 @@ class UpdateOptionalViewSpecDefinition: SpecDefinition {
         }
     }
 }
-
-typealias UpdateOptionalViewSpec = ScarletSpec<UpdateOptionalViewSpecDefinition>

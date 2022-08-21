@@ -18,7 +18,7 @@ import Nimble
 
 @testable import ScarletCore
 
-class UpdateConditionalViewSpecDefinition: SpecDefinition {
+class ConditionalViewContentUpdateSpec: ScarletSpec {
     static let describing = "a view with a conditional which content gets updated"
 
     struct Tested: TestView {
@@ -139,5 +139,3 @@ class UpdateConditionalViewSpecDefinition: SpecDefinition {
         }
     }
 }
-
-typealias UpdateConditionalViewSpec = ScarletSpec<UpdateConditionalViewSpecDefinition>

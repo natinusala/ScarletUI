@@ -18,7 +18,7 @@ import Nimble
 
 @testable import ScarletCore
 
-class ForEachSpecDefinition: SpecDefinition {
+class ForEachSpecSpec: ScarletSpec {
     static let describing = "a ForEach view"
 
     // Necessary to assert body calls (`EmptyView` and `ModifiedContent` don't have a body)
@@ -200,5 +200,3 @@ class ForEachSpecDefinition: SpecDefinition {
         }
     }
 }
-
-typealias ForEachSpec = ScarletSpec<ForEachSpecDefinition>

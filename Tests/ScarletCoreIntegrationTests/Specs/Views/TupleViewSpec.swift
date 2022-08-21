@@ -18,7 +18,7 @@ import Nimble
 
 @testable import ScarletCore
 
-class TupleViewSpecDefinition: SpecDefinition {
+class TupleViewSpecSpec: ScarletSpec {
     static let describing = "a view with multiple children"
 
     struct Tested: TestView {
@@ -87,5 +87,3 @@ class TupleViewSpecDefinition: SpecDefinition {
         }
     }
 }
-
-typealias TupleViewSpec = ScarletSpec<TupleViewSpecDefinition>
