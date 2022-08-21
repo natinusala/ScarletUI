@@ -18,9 +18,7 @@ import Nimble
 
 @testable import ScarletCore
 
-// TODO: do the same test for conditional (both first and second)
-
-class UpdateOptionalSpecDefinition: SpecDefinition {
+class UpdateOptionalViewSpecDefinition: SpecDefinition {
     static let describing = "a view with an optional which content gets updated"
 
     struct Tested: TestView {
@@ -95,4 +93,4 @@ class UpdateOptionalSpecDefinition: SpecDefinition {
     }
 }
 
-typealias UpdateOptionalSpec = ScarletSpec<UpdateOptionalSpecDefinition>
+typealias UpdateOptionalViewSpec = ScarletSpec<UpdateOptionalViewSpecDefinition>

@@ -38,7 +38,8 @@ let specs: [QuickSpec.Type] = [
     NestedConditionalViewSpec.self,
     TopLevelNestedConditionalViewSpec.self,
     ConsecutiveConditionalViewSpec.self,
-    UpdateOptionalSpec.self,
+    UpdateConditionalViewSpec.self,
+    UpdateOptionalViewSpec.self,
     // ForEachSpecs.self,
 ]
 
