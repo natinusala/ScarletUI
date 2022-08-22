@@ -43,6 +43,7 @@ let specs: [QuickSpec.Type] = [
     OptionalViewToggleSpec.QuickSpec.self,
     NestedOptionalViewSpec.QuickSpec.self,
     NestedOptionalViewContentUpdateSpec.QuickSpec.self,
+    ComplexViewSpec.QuickSpec.self,
     // ForEachSpecs.self,
 ]
 
