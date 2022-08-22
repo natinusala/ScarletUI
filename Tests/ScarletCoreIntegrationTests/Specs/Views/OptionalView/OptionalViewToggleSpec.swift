@@ -27,8 +27,6 @@ class OptionalViewToggleSpec: ScarletSpec {
         var body: some View {
             if flip {
                 Text("Flipped!")
-            } else {
-                Text("Not flipped :(")
             }
         }
 
@@ -54,9 +52,7 @@ class OptionalViewToggleSpec: ScarletSpec {
 
                 then("implementation is created") { result in
                     expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            TextImpl(text: "Not flipped :(")
-                        }
+                        ViewImpl("Tested")
                     ))
                 }
             }
@@ -69,9 +65,7 @@ class OptionalViewToggleSpec: ScarletSpec {
 
                 then("implementation is updated") { result in
                     expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            TextImpl(text: "Not flipped :(")
-                        }
+                        ViewImpl("Tested")
                     ))
                 }
             }
