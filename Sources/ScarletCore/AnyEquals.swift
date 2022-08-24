@@ -1,7 +1,6 @@
 
 /*
    Copyright 2022 natinusala
-   Copyright 2020 Matthew Johnson
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -16,13 +15,19 @@
    limitations under the License.
 */
 
+import Foundation
+
 /// Performs an equality check on two type-erased values.
 /// This method tries its best to use the correct method with the info available at runtime
 /// by testing the following methods in order:
 ///     1. `Equatable` conformance
-///     2. `AnyClass` conformance (compare references)
-///     3. Recursive field by field comparison using a `Mirror`
+///     2. `memcmp`` if type is POD
+///     3. `AnyClass` conformance (compare references)
+///     4. Recursive field by field comparison using a `Mirror`
 func anyEquals(lhs: Any, rhs: Any) -> Bool {
+    var lhs = lhs
+    var rhs = rhs
+
     // Type check
     if type(of: lhs) != type(of: rhs) {
         return false
@@ -38,6 +43,11 @@ func anyEquals(lhs: Any, rhs: Any) -> Bool {
     // `Equatable` conformance
     if let equatableResult = tryEquatable(lhs: lhs, rhs: rhs) {
         return equatableResult
+    }
+
+    // `IsPodable` conformance
+    if let podResult = tryPod(lhs: &lhs, rhs: &rhs) {
+        return podResult
     }
 
     // `AnyClass` conformance
@@ -79,5 +89,33 @@ extension Equatable {
     func equals(other: Any) -> Bool {
         guard let other = other as? Self else { return false }
         return self == other
+    }
+}
+
+/// Implements the ``isPod()`` method.
+public protocol IsPodable {
+    /// Returns `true` if the object is a "Plain Old Data" object.
+    func isPod() -> Bool
+
+    /// Returns the memory size of the type.
+    func size() -> Int
+}
+
+/// Tries to compare `lhs` and `rhs` using `memcmp` if type is POD.
+func tryPod(lhs: inout Any, rhs: inout Any) -> Bool? {
+    guard let pod = lhs as? IsPodable, pod.isPod() else {
+        return nil
+    }
+
+    return memcmp(&lhs, &rhs, pod.size()) == 0
+}
+
+public extension IsPodable {
+    func isPod() -> Bool {
+        return _isPOD(Self.self)
+    }
+
+    func size() -> Int {
+        return MemoryLayout<Self>.size
     }
 }

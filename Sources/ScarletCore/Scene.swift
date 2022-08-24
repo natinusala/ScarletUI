@@ -15,7 +15,7 @@
 */
 
 /// A scene is the container for the app views, typically a desktop window.
-public protocol Scene: Accessor, Makeable, Implementable {
+public protocol Scene: Accessor, Makeable, Implementable, IsPodable {
     /// The type of this scene's body.
     associatedtype Body: Scene
 

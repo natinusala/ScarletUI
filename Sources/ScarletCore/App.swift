@@ -17,7 +17,7 @@
 /// A ScarletUI application.
 /// An app is made of one scene, and a scene is made of one or multiple
 /// views.
-public protocol App: Accessor, Makeable, Implementable {
+public protocol App: Accessor, Makeable, Implementable, IsPodable {
     /// Initializer used for the framework to create the app on boot.
     init()
 

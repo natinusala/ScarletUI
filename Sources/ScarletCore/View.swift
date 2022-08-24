@@ -16,7 +16,7 @@
 
 /// A view is the building block of an on-screen element. A scene is made
 /// of a views tree.
-public protocol View: Accessor, Makeable, Implementable {
+public protocol View: Accessor, Makeable, Implementable, IsPodable {
     /// The type of this view's body.
     associatedtype Body: View
 

@@ -16,7 +16,7 @@
 
 /// A modifier takes a view and produces a new version of the view.
 /// Can be used to set attributes or wrap in more views.
-public protocol ViewModifier: Accessor, Makeable {
+public protocol ViewModifier: Accessor, Makeable, IsPodable {
     /// Modifier content placeholder given to `body(content:)`.
     typealias Content = ViewModifierContent<Self>
 
@@ -164,7 +164,7 @@ public extension ViewModifier {
     }
 }
 
-extension ModifiedContent: View, Accessor, Makeable, Implementable where Content: View, Modifier: ViewModifier {
+extension ModifiedContent: View, Accessor, Makeable, Implementable, IsPodable where Content: View, Modifier: ViewModifier {
     public typealias Body = Never
     public typealias Implementation = Never
 

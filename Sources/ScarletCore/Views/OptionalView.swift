@@ -15,7 +15,7 @@
 */
 
 /// An optional view.
-extension Optional: View, Accessor, Makeable, Implementable where Wrapped: View {
+extension Optional: View, Accessor, Makeable, Implementable, IsPodable where Wrapped: View {
     enum Storage {
         case none
         case some

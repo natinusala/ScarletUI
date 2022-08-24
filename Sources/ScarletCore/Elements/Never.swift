@@ -15,7 +15,7 @@
    limitations under the License.
 */
 
-extension Never: View, Scene, ImplementationNode {
+extension Never: View, Scene, ImplementationNode, IsPodable {
     public typealias Implementation = Never
 
     public var body: Never {
