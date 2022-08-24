@@ -90,8 +90,15 @@ extension BodyAccessorMock {
     var bodyCalls: [ObjectIdentifier: Int] {
         var bodyCalls: [ObjectIdentifier: Int] = [:]
 
+        // Views recording
         for (view, _) in self.makeBodyArgValues {
             let identifier = ObjectIdentifier(type(of: view))
+            bodyCalls[identifier] = (bodyCalls[identifier] ?? 0) + 1
+        }
+
+        // View modifiers recording
+        for (viewModifier, _) in self.makeBodyOfArgValues {
+            let identifier = ObjectIdentifier(type(of: viewModifier))
             bodyCalls[identifier] = (bodyCalls[identifier] ?? 0) + 1
         }
 

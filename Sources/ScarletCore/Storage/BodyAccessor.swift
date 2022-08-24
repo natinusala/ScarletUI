@@ -14,15 +14,22 @@
    limitations under the License.
 */
 
-/// @mockable(history: makeBody = true)
+/// @mockable(history: makeBody = true; makeBodyOf = true)
 protocol BodyAccessor {
     /// Makes the body of the given view.
     func makeBody<V: View>(of view: V, storage: StorageNode?) -> V.Body
+
+    /// Makes the body of the given view modifier.
+    func makeBody<VM: ViewModifier>(of modifier: VM, storage: StorageNode?) -> VM.Body
 }
 
 struct DefaultBodyAccessor: BodyAccessor {
     func makeBody<V: View>(of view: V, storage: StorageNode?) -> V.Body {
         return view.body
+    }
+
+    func makeBody<VM: ViewModifier>(of modifier: VM, storage: StorageNode?) -> VM.Body {
+        return modifier.body(content: ViewModifierContent())
     }
 }
 

@@ -42,7 +42,7 @@ let package = Package(
         // Testing
         .package(url: "https://github.com/Quick/Quick.git", .upToNextMajor(from: "4.0.0")),
         .package(url: "https://github.com/Quick/Nimble.git", .upToNextMajor(from: "9.2.1")),
-        .package(url: "https://github.com/natinusala/mockolo-linux", branch: "6475f3c86034d9f18b9886c01ccd1bf3d2d96e7d")
+        .package(url: "https://github.com/natinusala/mockolo-linux", branch: "fb627cfd1b1f8058ab5cae1ced30c2419cc6a0eb")
     ],
     targets: [
         // ScarletUI: contains scenes, views, modifiers as well as the actual runtime

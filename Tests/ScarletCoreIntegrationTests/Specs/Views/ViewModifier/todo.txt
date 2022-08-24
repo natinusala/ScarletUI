@@ -1,0 +1,10 @@
+- content modifié = uniquement body de content appelé
+- modifier modifié = uniquement body du modifier appelé
+- les 2 modifiés = les 2 appelés
+- rien modifié = rien appelé
+
+- plusieurs modifiers
+- plusieurs vues imbriquées modifiées (modifier -> vue -> modifier -> vue)
+
+- plusieurs VMC (modifier avec plusieurs fois content dedans)
+- modifier appliqué sur plusieurs vues avec Group

@@ -77,7 +77,8 @@ public extension ViewModifier {
             let output = ElementOutput(storage: modifier, attributes: modifier.collectAttributes())
 
             let bodyInput = MakeInput(storage: input.storage?.edges.asStatic[0], implementationPosition: input.implementationPosition)
-            let bodyOutput = Body.make(view: modifier.body(content: ViewModifierContent()), input: bodyInput)
+            let body = Dependencies.bodyAccessor.makeBody(of: modifier, storage: bodyInput.storage)
+            let bodyOutput = Body.make(view: body, input: bodyInput)
 
             return Self.output(
                 node: output,
