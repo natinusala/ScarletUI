@@ -1,10 +1,13 @@
-- content modifié = uniquement body de content appelé
-- modifier modifié = uniquement body du modifier appelé
-- les 2 modifiés = les 2 appelés
-- rien modifié = rien appelé
-
 - plusieurs modifiers
 - plusieurs vues imbriquées modifiées (modifier -> vue -> modifier -> vue)
 
+- state change dans un modifier
+- state change dans un modifier qui réordonne content dans son body
+- state change dans la vue modifiée
+
 - plusieurs VMC (modifier avec plusieurs fois content dedans)
 - modifier appliqué sur plusieurs vues avec Group
+
+- un modifier avec un body avec des ifs pour voir que le contenu change / le content est déplacé par exemple
+
+- un modifier dans le body d'un modifier

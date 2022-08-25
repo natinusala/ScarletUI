@@ -150,7 +150,7 @@ public extension AttributeViewModifier {
     static func make(modifier: Self?, input: MakeInput) -> MakeOutput {
         let output = ElementOutput(storage: nil, attributes: modifier?.collectAttributes() ?? [:])
 
-        let body = modifier?.body(content: ViewModifierContent()) // TODO: Use BodyAccessor.makeBody(of: modifier, storage: input.storage)
+        let body = modifier.map { Dependencies.bodyAccessor.makeBody(of: $0, storage: input.storage) }
 
         let bodyInput = MakeInput(storage: input.storage?.edges.asStatic[0], implementationPosition: input.implementationPosition)
         let bodyOutput = Body.make(view: body, input: bodyInput)

@@ -117,9 +117,9 @@ public struct ViewModifierContent<Modifier>: View where Modifier: ViewModifier {
     public typealias Implementation = Never
 
     public static func make(view: Self?, input: MakeInput) -> MakeOutput {
-        /// Returns an empty static edges list. ModifiedContent will then go through this
+        /// Returns an empty static edges list. ``ModifiedContent`` will then go through this
         /// result and replace the empty list by the modified content node.
-        /// Implementation position stays the same. Implementation count will be overwritten by ``ModifiedContent``.
+        /// Implementation position stays the same.
         return Self.output(
             node: nil,
             staticEdges: [],
@@ -132,36 +132,6 @@ public struct ViewModifierContent<Modifier>: View where Modifier: ViewModifier {
     /// View modifier content has one edge, the modified content.
     public static var staticEdgesCount: Int {
         return 1
-    }
-}
-
-public extension View {
-    /// Returns a modified version of the view with the given modifier applied.
-    func modifier<Modifier>(_ modifier: Modifier) -> some View where Modifier: ViewModifier {
-        return ModifiedContent<Modifier, Self>(modifier: modifier, content: self)
-    }
-}
-
-public extension ViewModifier {
-    /// Convenience function to create a `MakeOutput` from a `ViewModifier` with less boilerplate.
-    static func output(
-        node: ElementOutput?,
-        staticEdges: [MakeOutput.StaticEdge]?,
-        implementationPosition: Int,
-        implementationCount: Int,
-        accessor: Accessor?
-    ) -> MakeOutput {
-        Logger.debug(debugImplementationVerbose, "\(Self.self) output returned implementationCount: \(implementationCount)")
-
-        return MakeOutput(
-            nodeKind: .viewModifier,
-            nodeType: Self.self,
-            node: node,
-            implementationPosition: implementationPosition,
-            implementationCount: implementationCount,
-            edges: .static(staticEdges, count: Self.staticEdgesCount),
-            accessor: accessor
-        )
     }
 }
 
@@ -254,5 +224,35 @@ extension MakeOutput {
 public extension ViewModifier {
     func make(input: MakeInput) -> MakeOutput {
         return Self.make(modifier: self, input: input)
+    }
+}
+
+public extension View {
+    /// Returns a modified version of the view with the given modifier applied.
+    func modifier<Modifier>(_ modifier: Modifier) -> some View where Modifier: ViewModifier {
+        return ModifiedContent<Modifier, Self>(modifier: modifier, content: self)
+    }
+}
+
+public extension ViewModifier {
+    /// Convenience function to create a `MakeOutput` from a `ViewModifier` with less boilerplate.
+    static func output(
+        node: ElementOutput?,
+        staticEdges: [MakeOutput.StaticEdge]?,
+        implementationPosition: Int,
+        implementationCount: Int,
+        accessor: Accessor?
+    ) -> MakeOutput {
+        Logger.debug(debugImplementationVerbose, "\(Self.self) output returned implementationCount: \(implementationCount)")
+
+        return MakeOutput(
+            nodeKind: .viewModifier,
+            nodeType: Self.self,
+            node: node,
+            implementationPosition: implementationPosition,
+            implementationCount: implementationCount,
+            edges: .static(staticEdges, count: Self.staticEdgesCount),
+            accessor: accessor
+        )
     }
 }
