@@ -19,6 +19,39 @@ public protocol Makeable {
     func make(input: MakeInput) -> MakeOutput
 }
 
+
+/// Context given when making an element.
+public struct MakeContext {
+    /// Each `ModifiedContent` pushes the context for its VMCs to this stack. The context is then
+    /// picked up by the VMC nodes to make their edge (the "content").
+    let vmcContextStack: [ViewModifierContentContext]
+
+    /// Returns an initial empty context.
+    public static func root() -> Self {
+        return Self(
+            vmcContextStack: []
+        )
+    }
+
+    func pushingVMCContext(context: ViewModifierContentContext) -> Self {
+        return Self(
+            vmcContextStack: self.vmcContextStack + [context]
+        )
+    }
+
+    func poppingVMCContext() -> (ViewModifierContentContext, Self) {
+        guard let vmcContext = self.vmcContextStack.last else {
+            fatalError("Cannot pop `ViewModifierContentContext` stack: the stack is empty")
+        }
+
+        return (
+            vmcContext, Self(
+                vmcContextStack: self.vmcContextStack.dropLast()
+            )
+        )
+    }
+}
+
 /// Input for the `make()` function.
 public struct MakeInput {
     /// Any previously stored value, if any.
@@ -37,13 +70,18 @@ public struct MakeInput {
     /// relative to itself (as it becomes the new root).
     public let implementationPosition: Int
 
+    /// Current context.
+    public let context: MakeContext
+
     public init(
         storage: StorageNode?,
         implementationPosition: Int,
+        context: MakeContext,
         preserveState: Bool = false
     ) {
         self.storage = storage
         self.implementationPosition = implementationPosition
+        self.context = context
         self.preserveState = preserveState
     }
 }
@@ -130,7 +168,12 @@ public struct MakeOutput {
     /// Can be `nil` if there is no node of if the node did not change.
     let accessor: Accessor?
 
+    /// Context used to make this element. Must give the input
+    /// context without mutating it.
+    public let context: MakeContext
+
     public init(
+        from input: MakeInput,
         nodeKind: ElementKind,
         nodeType: Any.Type,
         node: ElementOutput?,
@@ -146,18 +189,6 @@ public struct MakeOutput {
         self.implementationCount = implementationCount
         self.edges = edges
         self.accessor = accessor
-    }
-
-    /// Makes a copy of that output with the edges replaced.
-    public func withEdges(_ edges: Edges, implementationCount: Int) -> MakeOutput {
-        return MakeOutput(
-            nodeKind: self.nodeKind,
-            nodeType: self.nodeType,
-            node: self.node,
-            implementationPosition: self.implementationPosition,
-            implementationCount: implementationCount,
-            edges: edges,
-            accessor: self.accessor
-        )
+        self.context = input.context
     }
 }

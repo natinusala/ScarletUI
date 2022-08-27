@@ -38,7 +38,7 @@ public struct ForEach<Data, ID, Content>: View, DynamicViewContent where Data: R
         // If no view is specified, consider the view entirely unchanged,
         // including its body
         guard let view = view else {
-            return Self.output(node: nil, operations: [], accessor: nil, viewContent: nil)
+            return Self.output(from: input, node: nil, operations: [], accessor: nil, viewContent: nil)
         }
 
         // Iterate over all elements in the input collection, see their previous position and
@@ -50,6 +50,7 @@ public struct ForEach<Data, ID, Content>: View, DynamicViewContent where Data: R
         // Finalize
         let output = ElementOutput(storage: Storage(identifiers: newIdentifiers), attributes: view.collectAttributes())
         return self.output(
+            from: input,
             node: output,
             operations: operations,
             accessor: view.accessor,

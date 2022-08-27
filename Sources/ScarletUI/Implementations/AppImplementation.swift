@@ -158,7 +158,7 @@ public extension App {
         Backtrace.install()
 
         let app = Self.init()
-        let root = ElementGraph(parent: nil, making: app)
+        let root = ElementGraph(parent: nil, making: app, context: .root())
 
         guard let implementation = root.implementation as? AppImplementation else {
             fatalError("No implementation found for app node")

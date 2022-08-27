@@ -45,6 +45,7 @@ public extension App {
         // including its body
         guard var app = app else {
             return Self.output(
+                from: input,
                 node: nil,
                 staticEdges: nil,
                 implementationPosition: input.implementationPosition,
@@ -61,6 +62,7 @@ public extension App {
         // Return an unchanged output of it's equal
         if let previous = input.storage?.value, anyEquals(lhs: app, rhs: previous) {
             return Self.output(
+                from: input,
                 node: nil,
                 staticEdges: nil,
                 implementationPosition: input.implementationPosition,
@@ -75,10 +77,11 @@ public extension App {
         // Re-evaluate body
         let body = app.body // TODO: Use BodyAccessor.makeBody(of: app, storage: input.storage)
         let bodyStorage = input.storage?.edges.asStatic[0]
-        let bodyInput = MakeInput(storage: bodyStorage, implementationPosition: Self.substantial ? 0 : input.implementationPosition)
+        let bodyInput = MakeInput(storage: bodyStorage, implementationPosition: Self.substantial ? 0 : input.implementationPosition, context: input.context)
         let bodyOutput = Body.make(scene: body, input: bodyInput)
 
         return Self.output(
+            from: input,
             node: output,
             staticEdges: [.some(bodyOutput)],
             implementationPosition: input.implementationPosition,
@@ -94,6 +97,7 @@ public extension App {
 
     /// Convenience function to create a `MakeOutput` from an `App` with less boilerplate.
     static func output(
+        from input: MakeInput,
         node: ElementOutput?,
         staticEdges: [MakeOutput.StaticEdge]?,
         implementationPosition: Int,
@@ -103,6 +107,7 @@ public extension App {
         Logger.debug(debugImplementationVerbose, "\(Self.self) output returned implementationCount: \(implementationCount)")
 
         return MakeOutput(
+            from: input,
             nodeKind: .app,
             nodeType: Self.self,
             node: node,

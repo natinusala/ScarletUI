@@ -152,10 +152,11 @@ public extension AttributeViewModifier {
 
         let body = modifier.map { Dependencies.bodyAccessor.makeBody(of: $0, storage: input.storage) }
 
-        let bodyInput = MakeInput(storage: input.storage?.edges.asStatic[0], implementationPosition: input.implementationPosition)
+        let bodyInput = MakeInput(storage: input.storage?.edges.asStatic[0], implementationPosition: input.implementationPosition, context: input.context)
         let bodyOutput = Body.make(view: body, input: bodyInput)
 
         return Self.output(
+            from: input,
             node: output,
             staticEdges: [.some(bodyOutput)],
             implementationPosition: input.implementationPosition,

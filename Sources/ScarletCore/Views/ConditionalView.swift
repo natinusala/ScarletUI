@@ -63,7 +63,7 @@ public enum ConditionalView<FirstContent, SecondContent>: View where FirstConten
                 contentStorage = nil
             }
 
-            let input = MakeInput(storage: contentStorage, implementationPosition: input.implementationPosition)
+            let input = MakeInput(storage: contentStorage, implementationPosition: input.implementationPosition, context: input.context)
 
             switch view {
                 case let .first(first):
@@ -79,7 +79,7 @@ public enum ConditionalView<FirstContent, SecondContent>: View where FirstConten
             output = nil
 
             let contentStorage = storage.edges.asStatic[0]
-            let input = MakeInput(storage: contentStorage, implementationPosition: input.implementationPosition)
+            let input = MakeInput(storage: contentStorage, implementationPosition: input.implementationPosition, context: input.context)
 
             switch storageValue {
                 case .first:
@@ -96,6 +96,7 @@ public enum ConditionalView<FirstContent, SecondContent>: View where FirstConten
         }
 
         return Self.output(
+            from: input,
             node: output,
             staticEdges: edges,
             implementationPosition: input.implementationPosition,

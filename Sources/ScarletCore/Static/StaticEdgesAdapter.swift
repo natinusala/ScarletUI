@@ -75,7 +75,8 @@ struct StaticEdgesAdapter: EdgesAdapter {
             edges: elementNodeEdges,
             implementation: edge.accessor?.makeImplementation(),
             implementationState: .creating,
-            edgesAdapter: makeEdgesAdapter(for: edge)
+            edgesAdapter: makeEdgesAdapter(for: edge),
+            context: edge.context
         )
 
         node.edges[idx] = .static(edgeNode)

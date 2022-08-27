@@ -60,10 +60,11 @@ public struct Window<Content>: Scene where Content: View {
 
     public static func make(scene: Self?, input: MakeInput) -> MakeOutput {
         let contentStorage = input.storage?.edges.asStatic[0]
-        let contentInput = MakeInput(storage: contentStorage, implementationPosition: input.implementationPosition)
+        let contentInput = MakeInput(storage: contentStorage, implementationPosition: input.implementationPosition, context: input.context)
         let contentOutput = Content.make(view: scene?.content, input: contentInput)
 
         return Self.output(
+            from: input,
             node: ElementOutput(storage: nil, attributes: scene?.collectAttributes() ?? [:]),
             staticEdges: [.some(contentOutput)],
             implementationPosition: input.implementationPosition,

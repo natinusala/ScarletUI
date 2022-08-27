@@ -16,6 +16,8 @@
 
 import ScarletCore
 
+// TODO: make a `ContainerView` for code common to `Column`, `Root` and `Node`
+
 /// A view that arranges its children in a column.
 public struct Column<Content>: View where Content: View {
     public typealias Body = Never
@@ -37,10 +39,11 @@ public struct Column<Content>: View where Content: View {
 
     public static func make(view: Self?, input: MakeInput) -> MakeOutput {
         let contentStorage = input.storage?.edges.asStatic[0]
-        let contentInput = MakeInput(storage: contentStorage, implementationPosition: Self.substantial ? 0 : input.implementationPosition)
+        let contentInput = MakeInput(storage: contentStorage, implementationPosition: Self.substantial ? 0 : input.implementationPosition, context: input.context)
         let contentOutput = Content.make(view: view?.content, input: contentInput)
 
         return Self.output(
+            from: input,
             node: ElementOutput(storage: nil, attributes: view?.collectAttributes() ?? [:]),
             staticEdges: [.some(contentOutput)],
             implementationPosition: input.implementationPosition,

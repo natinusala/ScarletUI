@@ -41,6 +41,7 @@ public extension View {
         // including its body
         guard var view = view else {
             return Self.output(
+                from: input,
                 node: nil,
                 staticEdges: nil,
                 implementationPosition: input.implementationPosition,
@@ -57,6 +58,7 @@ public extension View {
         // Return an unchanged output of it's equal
         if let previous = input.storage?.value, anyEquals(lhs: view, rhs: previous) {
             return Self.output(
+                from: input,
                 node: nil,
                 staticEdges: nil,
                 implementationPosition: input.implementationPosition,
@@ -71,10 +73,11 @@ public extension View {
         // Re-evaluate body
         let body = Dependencies.bodyAccessor.makeBody(of: view, storage: input.storage)
         let bodyStorage = input.storage?.edges.asStatic[0]
-        let bodyInput = MakeInput(storage: bodyStorage, implementationPosition: Self.substantial ? 0 : input.implementationPosition)
+        let bodyInput = MakeInput(storage: bodyStorage, implementationPosition: Self.substantial ? 0 : input.implementationPosition, context: input.context)
         let bodyOutput = Body.make(view: body, input: bodyInput)
 
         return Self.output(
+            from: input,
             node: output,
             staticEdges: [.some(bodyOutput)],
             implementationPosition: input.implementationPosition,
@@ -108,6 +111,7 @@ public extension View where Body == Never {
     /// no storage and no edges. Used for "leaves" of the view graph.
     static func make(view: Self?, input: MakeInput) -> MakeOutput {
         return Self.output(
+            from: input,
             node: ElementOutput(storage: nil, attributes: view?.collectAttributes() ?? [:]),
             staticEdges: [],
             implementationPosition: input.implementationPosition,
@@ -150,6 +154,7 @@ public extension View {
 public extension View {
     /// Convenience function to create a `MakeOutput` from a `View` with less boilerplate.
     static func output(
+        from input: MakeInput,
         node: ElementOutput?,
         staticEdges: [MakeOutput.StaticEdge]?,
         implementationPosition: Int,
@@ -159,6 +164,7 @@ public extension View {
         Logger.debug(debugImplementationVerbose, "\(Self.self) output returned implementationCount: \(implementationCount)")
 
         return MakeOutput(
+            from: input,
             nodeKind: .view,
             nodeType: Self.self,
             node: node,
@@ -171,6 +177,7 @@ public extension View {
 
     /// Convenience function to create a `MakeOutput` from a `View` with less boilerplate.
     static func output(
+        from input: MakeInput,
         node: ElementOutput?,
         operations: [DynamicOperation],
         accessor: Accessor?,
@@ -181,6 +188,7 @@ public extension View {
         // Logger.debug(debugImplementationVerbose, "\(Self.self) output returned implementationCount: \(implementationCount)")
 
         // return MakeOutput(
+        //     from: input,
         //     nodeKind: .view,
         //     nodeType: Self.self,
         //     node: node,

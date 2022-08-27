@@ -30,10 +30,11 @@ extension Group: View, Accessor, Makeable, Implementable, IsPodable where Conten
     public static func make(view: Self?, input: MakeInput) -> MakeOutput {
         let contentStorage = input.storage?.edges.asStatic[0]
 
-        let contentInput = MakeInput(storage: contentStorage, implementationPosition: input.implementationPosition)
+        let contentInput = MakeInput(storage: contentStorage, implementationPosition: input.implementationPosition, context: input.context)
         let contentOutput = Content.make(view: view?.content, input: contentInput)
 
         return Self.output(
+            from: input,
             node: nil,
             staticEdges: [.some(contentOutput)],
             implementationPosition: input.implementationPosition,

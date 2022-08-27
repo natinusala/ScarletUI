@@ -19,14 +19,6 @@
       }
     },
     {
-      "identity" : "mockolo-linux",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/natinusala/mockolo-linux",
-      "state" : {
-        "revision" : "fb627cfd1b1f8058ab5cae1ced30c2419cc6a0eb"
-      }
-    },
-    {
       "identity" : "nimble",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Quick/Nimble.git",
@@ -85,7 +77,7 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-syntax.git",
       "state" : {
-        "branch" : "swift-5.7-DEVELOPMENT-SNAPSHOT-2022-06-26-a",
+        "branch" : "swift-5.7-DEVELOPMENT-SNAPSHOT-2022-08-02-a",
         "revision" : "bf8db8de043a376c59288a3cf0a882b61ca18194"
       }
     },

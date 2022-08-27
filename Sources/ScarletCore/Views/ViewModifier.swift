@@ -40,10 +40,11 @@ public extension ViewModifier {
         // First case: no modifier has been given, we assume it unchanged
         // but content may still have changed
         guard var modifier = modifier else {
-            let bodyInput = MakeInput(storage: input.storage?.edges.asStatic[0], implementationPosition: input.implementationPosition)
+            let bodyInput = MakeInput(storage: input.storage?.edges.asStatic[0], implementationPosition: input.implementationPosition, context: input.context)
             let bodyOutput = Body.make(view: nil, input: bodyInput)
 
             return Self.output(
+                from: input,
                 node: nil,
                 staticEdges: [.some(bodyOutput)],
                 implementationPosition: input.implementationPosition,
@@ -62,10 +63,11 @@ public extension ViewModifier {
         // so do the same as above
         if let previous = input.storage?.value, anyEquals(lhs: modifier, rhs: previous) {
             // Modifier has not changed
-            let bodyInput = MakeInput(storage: input.storage?.edges.asStatic[0], implementationPosition: input.implementationPosition)
+            let bodyInput = MakeInput(storage: input.storage?.edges.asStatic[0], implementationPosition: input.implementationPosition, context: input.context)
             let bodyOutput = Body.make(view: nil, input: bodyInput)
 
             return Self.output(
+                from: input,
                 node: nil,
                 staticEdges: [.some(bodyOutput)],
                 implementationPosition: input.implementationPosition,
@@ -76,11 +78,12 @@ public extension ViewModifier {
             // Modifier has changed
             let output = ElementOutput(storage: modifier, attributes: modifier.collectAttributes())
 
-            let bodyInput = MakeInput(storage: input.storage?.edges.asStatic[0], implementationPosition: input.implementationPosition)
+            let bodyInput = MakeInput(storage: input.storage?.edges.asStatic[0], implementationPosition: input.implementationPosition, context: input.context)
             let body = Dependencies.bodyAccessor.makeBody(of: modifier, storage: bodyInput.storage)
             let bodyOutput = Body.make(view: body, input: bodyInput)
 
             return Self.output(
+                from: input,
                 node: output,
                 staticEdges: [.some(bodyOutput)],
                 implementationPosition: input.implementationPosition,
@@ -111,21 +114,50 @@ public extension ViewModifier {
     }
 }
 
+/// Context to make the VMC edge (the "content"), given by the associated `ModifiedContent`
+/// since it owns the content to make. Stored in a stack inside ``MakeContext``.
+struct ViewModifierContentContext {
+    let content: (any Makeable)?
+}
+
 /// Placeholder for view modifier content.
 public struct ViewModifierContent<Modifier>: View where Modifier: ViewModifier {
     public typealias Body = Never
     public typealias Implementation = Never
 
     public static func make(view: Self?, input: MakeInput) -> MakeOutput {
-        /// Returns an empty static edges list. ``ModifiedContent`` will then go through this
-        /// result and replace the empty list by the modified content node.
-        /// Implementation position stays the same.
-        return Self.output(
-            node: nil,
-            staticEdges: [],
+        // Make our edge: the actual modified content from the given VMC context
+        let (vmcContext, contentContext) = input.context.poppingVMCContext()
+
+        guard let content = vmcContext.content else {
+            // We don't have a content node, consider ourselves unchanged
+            return Self.output(
+                from: input,
+                node: nil,
+                staticEdges: nil,
+                implementationPosition: input.implementationPosition,
+                implementationCount: input.storage.implementationCount,
+                accessor: nil
+            )
+        }
+
+        // We have a content node, make it
+        let contentStorage = input.storage?.edges.asStatic[0]
+        let contentInput = MakeInput(
+            storage: contentStorage,
             implementationPosition: input.implementationPosition,
-            implementationCount: 0,
-            accessor: nil
+            context: contentContext
+        )
+
+        let contentOutput = content.make(input: contentInput)
+
+        return Self.output(
+            from: input,
+            node: nil,
+            staticEdges: [.some(contentOutput)],
+            implementationPosition: input.implementationPosition,
+            implementationCount: contentOutput.implementationCount,
+            accessor: view?.accessor
         )
     }
 
@@ -140,40 +172,23 @@ extension ModifiedContent: View, Accessor, Makeable, Implementable, IsPodable wh
     public typealias Implementation = Never
 
     public static func make(view: Self?, input: MakeInput) -> MakeOutput {
+        // Prepare context for our VMCs
+        let vmcContext = ViewModifierContentContext(
+            content: view?.content
+        )
+
         // Make our one edge: the modifier
         let modifierStorage = input.storage?.edges.asStatic[0]
-        let modifierInput = MakeInput(storage: modifierStorage, implementationPosition: input.implementationPosition)
-        var modifierOutput = Modifier.make(modifier: view?.modifier, input: modifierInput)
+        let modifierContext = input.context.pushingVMCContext(context: vmcContext)
+        let modifierInput = MakeInput(storage: modifierStorage, implementationPosition: input.implementationPosition, context: modifierContext)
+        let modifierOutput = Modifier.make(modifier: view?.modifier, input: modifierInput)
 
-        // Visit the output and find any `ViewModifierContent` - replace its empty edges list by
-        // a new "content" node
-        modifierOutput = modifierOutput.transform(storage: modifierStorage, predicate: { $0.nodeType == ViewModifierContent<Modifier>.self }) { (vmcOutput, vmcStorage) in
-            // Content is VMC edge 0
-            // Content storage is VMC edge 0 storage
-            // Implementation position is given by the modifier to VMC, keep it the same and pass it to content
-            let contentInput = MakeInput(
-                storage: vmcStorage?.edges.asStatic[0],
-                implementationPosition: vmcOutput.implementationPosition
-            )
-
-            let contentOutput = Content.make(view: view?.content, input: contentInput)
-
-            // Replace VMC edges by the content output
-            switch vmcOutput.edges {
-                case .static(_, let count):
-                    return vmcOutput.withEdges(.static([.some(contentOutput)], count: count), implementationCount: contentOutput.implementationCount)
-                case .dynamic:
-                    fatalError("Transformation function of dynamic edges not implemented")
-            }
-        }
-
-        let edges: [MakeOutput.StaticEdge] = [.some(modifierOutput)]
-        let implementationCount = modifierOutput.implementationCount
         return Self.output(
+            from: input,
             node: nil,
-            staticEdges: edges,
+            staticEdges: [.some(modifierOutput)],
             implementationPosition: input.implementationPosition,
-            implementationCount: implementationCount,
+            implementationCount: modifierOutput.implementationCount,
             accessor: view?.accessor
         )
     }
@@ -181,43 +196,6 @@ extension ModifiedContent: View, Accessor, Makeable, Implementable, IsPodable wh
     /// Modified content has one edge: the modifier body.
     public static var staticEdgesCount: Int {
         return 1
-    }
-}
-
-extension MakeOutput {
-    /// Runs the predicate on every node down the graph. If it ever returns `true`, runs the transformation function and returns the resulting
-    /// output node, stopping the recursion there.
-    /// Storage nodes are visited the same way as output nodes to give every output node its storage node.
-    func transform(
-        storage: StorageNode?,
-        predicate: (MakeOutput) -> Bool,
-        transform function: (MakeOutput, StorageNode?) -> MakeOutput
-    ) -> MakeOutput {
-        if predicate(self) {
-            return function(self, storage)
-        }
-
-        switch self.edges {
-            case .static(let staticEdges, let count):
-                let edges: [MakeOutput.StaticEdge]? = staticEdges?.enumerated().map { idx, edge in
-                    switch edge {
-                        case .some(let output):
-                            return .some(output.transform(storage: storage?.edges.asStatic[idx], predicate: predicate, transform: function))
-                        case .none(let implementationPosition):
-                            return .none(implementationPosition)
-                    }
-                }
-
-                return self.withEdges(
-                    .static(
-                        edges,
-                        count: count
-                    ),
-                    implementationCount: edges?.map { $0.implementationCount }.sum() ?? storage.implementationCount
-                )
-            case .dynamic:
-                fatalError("Transforming dynamic nodes is not implemented")
-        }
     }
 }
 
@@ -237,6 +215,7 @@ public extension View {
 public extension ViewModifier {
     /// Convenience function to create a `MakeOutput` from a `ViewModifier` with less boilerplate.
     static func output(
+        from input: MakeInput,
         node: ElementOutput?,
         staticEdges: [MakeOutput.StaticEdge]?,
         implementationPosition: Int,
@@ -246,6 +225,7 @@ public extension ViewModifier {
         Logger.debug(debugImplementationVerbose, "\(Self.self) output returned implementationCount: \(implementationCount)")
 
         return MakeOutput(
+            from: input,
             nodeKind: .viewModifier,
             nodeType: Self.self,
             node: node,

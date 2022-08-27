@@ -49,7 +49,7 @@ extension Optional: View, Accessor, Makeable, Implementable, IsPodable where Wra
                     edges = [.none(input.implementationPosition)]
                     implementationCount = 0
                 case let .some(view):
-                    let wrappedInput = MakeInput(storage: input.storage?.edges.asStatic[0], implementationPosition: input.implementationPosition)
+                    let wrappedInput = MakeInput(storage: input.storage?.edges.asStatic[0], implementationPosition: input.implementationPosition, context: input.context)
                     let wrappedOutput = Wrapped.make(view: view, input: wrappedInput)
                     edges = [.some(wrappedOutput)]
                     implementationCount = wrappedOutput.implementationCount
@@ -62,7 +62,7 @@ extension Optional: View, Accessor, Makeable, Implementable, IsPodable where Wra
                     edges = [.none(input.implementationPosition)]
                     implementationCount = 0
                 case .some:
-                    let wrappedInput = MakeInput(storage: storage.edges.asStatic[0], implementationPosition: input.implementationPosition)
+                    let wrappedInput = MakeInput(storage: storage.edges.asStatic[0], implementationPosition: input.implementationPosition, context: input.context)
                     let wrappedOutput = Wrapped.make(view: nil, input: wrappedInput)
                     edges = [.some(wrappedOutput)]
                     implementationCount = wrappedOutput.implementationCount
@@ -72,6 +72,7 @@ extension Optional: View, Accessor, Makeable, Implementable, IsPodable where Wra
         }
 
         return Self.output(
+            from: input,
             node: output,
             staticEdges: edges,
             implementationPosition: input.implementationPosition,

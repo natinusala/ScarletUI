@@ -49,13 +49,13 @@ struct DynamicEdgesAdapter: EdgesAdapter {
 
             if let previousNode = edge.node {
                 // If the node already exists, update it
-                let input = MakeInput(storage: node.storage, implementationPosition: 0) // TODO: wire implementationPosition properly here somehow
+                let input = MakeInput(storage: node.storage, implementationPosition: 0, context: output.context) // TODO: wire implementationPosition properly here somehow
                 let output = viewContent.make(at: position, identifiedBy: edge.id, input: input)
 
                 previousNode.update(with: output, attributes: attributes)
             } else {
                 // Otherwise, create it
-                let input = MakeInput(storage: nil, implementationPosition: 0) // TODO: wire implementationPosition properly here somehow
+                let input = MakeInput(storage: nil, implementationPosition: 0, context: output.context) // TODO: wire implementationPosition properly here somehow
                 let output = viewContent.make(at: position, identifiedBy: edge.id, input: input)
 
                 // Create storage
@@ -76,7 +76,8 @@ struct DynamicEdgesAdapter: EdgesAdapter {
                     edges: elementNodeEdges,
                     implementation: output.accessor?.makeImplementation(),
                     implementationState: .creating,
-                    edgesAdapter: makeEdgesAdapter(for: output)
+                    edgesAdapter: makeEdgesAdapter(for: output),
+                    context: output.context
                 )
 
                 edge.node = edgeNode

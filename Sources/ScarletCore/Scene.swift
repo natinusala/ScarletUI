@@ -40,6 +40,7 @@ public extension Scene {
         // including its body
         guard var scene = scene else {
             return Self.output(
+                from: input,
                 node: nil,
                 staticEdges: nil,
                 implementationPosition: input.implementationPosition,
@@ -56,6 +57,7 @@ public extension Scene {
         // Return an unchanged output of it's equal
         if let previous = input.storage?.value, anyEquals(lhs: scene, rhs: previous) {
             return Self.output(
+                from: input,
                 node: nil,
                 staticEdges: nil,
                 implementationPosition: input.implementationPosition,
@@ -70,10 +72,11 @@ public extension Scene {
         // Re-evaluate body
         let body = scene.body // TODO: use BodyAccessor.makeBody(of: scene, storage: input.storage)
         let bodyStorage = input.storage?.edges.asStatic[0]
-        let bodyInput = MakeInput(storage: bodyStorage, implementationPosition: Self.substantial ? 0 : input.implementationPosition)
+        let bodyInput = MakeInput(storage: bodyStorage, implementationPosition: Self.substantial ? 0 : input.implementationPosition, context: input.context)
         let bodyOutput = Body.make(scene: body, input: bodyInput)
 
         return Self.output(
+            from: input,
             node: output,
             staticEdges: [.some(bodyOutput)],
             implementationPosition: input.implementationPosition,
@@ -89,6 +92,7 @@ public extension Scene {
 
     /// Convenience function to create a `MakeOutput` from a `Scene` with less boilerplate.
     static func output(
+        from input: MakeInput,
         node: ElementOutput?,
         staticEdges: [MakeOutput.StaticEdge]?,
         implementationPosition: Int,
@@ -98,6 +102,7 @@ public extension Scene {
         Logger.debug(debugImplementationVerbose, "\(Self.self) output returned implementationCount: \(implementationCount)")
 
         return MakeOutput(
+            from: input,
             nodeKind: .scene,
             nodeType: Self.self,
             node: node,

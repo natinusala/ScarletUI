@@ -97,10 +97,10 @@ extension TestView {
             let (initialView, updates) = initial()
 
             return InitialSteps(
-                initialView: ElementNode(parent: nil, making: initialView),
+                initialView: ElementNode(parent: nil, making: initialView, context: .root()),
                 updateActions: updates.map { newValue in
                     return { element in
-                        element.update(with: newValue, attributes: [:])
+                        element.update(making: newValue, attributes: [:])
                     }
                 }
             )

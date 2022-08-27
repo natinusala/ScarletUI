@@ -98,6 +98,9 @@ public class ElementNode {
     /// Public to allow the implementation to run the app node.
     public let implementation: ImplementationNode?
 
+    /// Context used to make this element.
+    var context: MakeContext
+
     var parentImplementation: ImplementationNode? {
         if let parent = self.parent {
             if let implementation = parent.implementation {
@@ -134,14 +137,15 @@ public class ElementNode {
     }
 
     /// Creates a new node for the given view, making it in the process.
-    public init<V: View>(parent: ElementNode?, making view: V, implementationPosition: Int = 0) {
+    public init<V: View>(parent: ElementNode?, making view: V, implementationPosition: Int = 0, context: MakeContext) {
         self.parent = parent
         self.kind = .view
         self.type = V.self
         self.storage = StorageNode(for: view)
         self.edges = [Edge](repeating: .static(nil), count: V.staticEdgesCount)
+        self.context = context
 
-        let input = MakeInput(storage: self.storage, implementationPosition: implementationPosition)
+        let input = MakeInput(storage: self.storage, implementationPosition: implementationPosition, context: context)
         let output = V.make(view: view, input: input)
 
         self.edgesAdapter = makeEdgesAdapter(for: output)
@@ -157,14 +161,15 @@ public class ElementNode {
     }
 
     /// Creates a new node for the given app, making it in the process.
-    public init<A: App>(parent: ElementNode?, making app: A, implementationPosition: Int = 0) {
+    public init<A: App>(parent: ElementNode?, making app: A, implementationPosition: Int = 0, context: MakeContext) {
         self.parent = parent
         self.kind = .app
         self.type = A.self
         self.storage = StorageNode(for: app)
         self.edges = [Edge](repeating: .static(nil), count: A.staticEdgesCount)
+        self.context = context
 
-        let input = MakeInput(storage: self.storage, implementationPosition: implementationPosition)
+        let input = MakeInput(storage: self.storage, implementationPosition: implementationPosition, context: context)
         let output = A.make(app: app, input: input)
 
         self.edgesAdapter = makeEdgesAdapter(for: output)
@@ -187,7 +192,8 @@ public class ElementNode {
         edges: [Edge],
         implementation: ImplementationNode?,
         implementationState: ImplementationNodeState,
-        edgesAdapter: any EdgesAdapter
+        edgesAdapter: any EdgesAdapter,
+        context: MakeContext
     ) {
         self.parent = parent
         self.kind = kind
@@ -197,6 +203,7 @@ public class ElementNode {
         self.implementation = implementation
         self.implementationState = implementationState
         self.edgesAdapter = edgesAdapter
+        self.context = context
 
         self.subscribeToStateChanges()
     }
@@ -210,7 +217,7 @@ public class ElementNode {
 
                 // Make the element preserving state - the version we get from the publisher
                 // already has the most up-to-date values for every property
-                let input = MakeInput(storage: self.storage, implementationPosition: self.implementationPosition, preserveState: true)
+                let input = MakeInput(storage: self.storage, implementationPosition: self.implementationPosition, context: self.context, preserveState: true)
                 let output = makeable.make(input: input)
 
                 self.update(with: output, attributes: [:])
@@ -261,25 +268,25 @@ public class ElementNode {
     }
 
     /// Updates the node with the given view.
-    func update<V: View>(with view: V, attributes: AttributesStash) {
+    func update<V: View>(making view: V, attributes: AttributesStash) {
         assert(
             V.self == self.type,
             "cannot update a graph node with a view of a different type"
         )
 
-        let input = MakeInput(storage: self.storage, implementationPosition: self.implementationPosition)
+        let input = MakeInput(storage: self.storage, implementationPosition: self.implementationPosition, context: self.context)
         let output = V.make(view: view, input: input)
         self.update(with: output, attributes: attributes)
     }
 
     /// Updates the node with the given app.
-    public func update<A: App>(with app: A, attributes: AttributesStash) {
+    public func update<A: App>(making app: A, attributes: AttributesStash) {
         assert(
             A.self == self.type,
             "cannot update a graph node with an app of a different type"
         )
 
-        let input = MakeInput(storage: self.storage, implementationPosition: self.implementationPosition)
+        let input = MakeInput(storage: self.storage, implementationPosition: self.implementationPosition, context: self.context)
         let output = A.make(app: app, input: input)
         self.update(with: output, attributes: attributes)
     }
@@ -297,6 +304,7 @@ public class ElementNode {
         // Update state
         self.implementationPosition = output.implementationPosition
         self.storage.implementationCount = output.implementationCount
+        self.context = output.context
         Logger.debug(debugImplementationVerbose, "Setting \(self.type) implementation position to \(self.implementationPosition)")
 
         // Node update
