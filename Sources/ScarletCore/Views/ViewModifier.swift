@@ -117,6 +117,7 @@ public extension ViewModifier {
 /// Context to make the VMC edge (the "content"), given by the associated `ModifiedContent`
 /// since it owns the content to make. Stored in a stack inside ``MakeContext``.
 struct ViewModifierContentContext {
+    // TODO: If the dynamic dispatch here is too slow, use a closure instead with a static dispatch `Content.make()` inside (assuming closures are any faster than dynamic dispatch calls)
     let content: (any Makeable)?
 }
 
