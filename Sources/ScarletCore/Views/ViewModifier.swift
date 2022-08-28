@@ -130,7 +130,7 @@ public struct ViewModifierContent<Modifier>: View where Modifier: ViewModifier {
         let (vmcContext, contentContext) = input.context.poppingVMCContext()
 
         guard let content = vmcContext.content else {
-            // We don't have a content node, consider ourselves unchanged
+            // We don't have a content node, consider ourself unchanged
             return Self.output(
                 from: input,
                 node: nil,
@@ -209,6 +209,12 @@ public extension View {
     /// Returns a modified version of the view with the given modifier applied.
     func modifier<Modifier>(_ modifier: Modifier) -> some View where Modifier: ViewModifier {
         return ModifiedContent<Modifier, Self>(modifier: modifier, content: self)
+    }
+}
+
+public extension ViewModifier where Body == Never {
+    func body(content: Content) -> Body {
+        fatalError()
     }
 }
 

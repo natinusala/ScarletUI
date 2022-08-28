@@ -146,27 +146,47 @@ public extension AttributeAccessor {
 public protocol AttributeViewModifier: ViewModifier {}
 
 public extension AttributeViewModifier {
-    /// Default implementation for `make()`: always return a node with our attributes and no storage.
+    /// Default implementation for `make()`: shortcut the usual modifier pattern and directly act
+    /// as the VMC (except that we collect attributes).
     static func make(modifier: Self?, input: MakeInput) -> MakeOutput {
-        let output = ElementOutput(storage: nil, attributes: modifier?.collectAttributes() ?? [:])
+        let output = modifier.map { ElementOutput(storage: input.storage, attributes: $0.collectAttributes()) } 
 
-        let body = modifier.map { Dependencies.bodyAccessor.makeBody(of: $0, storage: input.storage) }
+        // Make our edge: the actual modified content from the given VMC context
+        let (vmcContext, contentContext) = input.context.poppingVMCContext()
 
-        let bodyInput = MakeInput(storage: input.storage?.edges.asStatic[0], implementationPosition: input.implementationPosition, context: input.context)
-        let bodyOutput = Body.make(view: body, input: bodyInput)
+        guard let content = vmcContext.content else {
+            // We don't have a content node, consider ourself unchanged
+            return Self.output(
+                from: input,
+                node: output,
+                staticEdges: nil,
+                implementationPosition: input.implementationPosition,
+                implementationCount: input.storage.implementationCount,
+                accessor: nil
+            )
+        }
+
+        // We have a content node, make it
+        let contentStorage = input.storage?.edges.asStatic[0]
+        let contentInput = MakeInput(
+            storage: contentStorage,
+            implementationPosition: input.implementationPosition,
+            context: contentContext
+        )
+
+        let contentOutput = content.make(input: contentInput)
 
         return Self.output(
             from: input,
             node: output,
-            staticEdges: [.some(bodyOutput)],
+            staticEdges: [.some(contentOutput)],
             implementationPosition: input.implementationPosition,
-            implementationCount: bodyOutput.implementationCount,
+            implementationCount: contentOutput.implementationCount,
             accessor: modifier?.accessor
         )
     }
 
-    /// Body for attributes-only modifiers: return content itself, unmodified.
-    func body(content: Content) -> Content {
-        return content
+    func body(content: Content) -> Never {
+        fatalError()
     }
 }
