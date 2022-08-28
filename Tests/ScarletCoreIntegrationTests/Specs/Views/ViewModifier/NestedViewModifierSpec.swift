@@ -30,21 +30,29 @@ class NestedViewModifierSpec: ScarletSpec {
     }
 
     struct Tested: TestView {
+        let modifiedColor: String
+        let someModifierText: String
+        let anotherModifierIcon: String
+
+        let changeToken: Int
+
         var body: some View {
-            Modified(color: "yellow")
-                .someModifier(text: "some modifier")
-                .anotherModifier(icon: "info")
+            Modified(color: modifiedColor)
+                .someModifier(text: someModifierText)
+                .anotherModifier(icon: anotherModifierIcon)
         }
 
         static func spec() -> Specs {
             when("the view is created") {
                 given {
-                    Tested()
+                    Tested(modifiedColor: "yellow", someModifierText: "some modifier", anotherModifierIcon: "info", changeToken: 0)
                 }
 
                 then("implementation is created") { result in
                     expect(result.implementation).to(equal(
                         ViewImpl("Tested") {
+                            TextImpl(text: "Wrapping starts")
+
                             ViewImpl("Row") {
                                 TextImpl(text: "some modifier")
 
@@ -54,8 +62,182 @@ class NestedViewModifierSpec: ScarletSpec {
                             }
 
                             ImageImpl(source: "icon-info.png")
+
+                            TextImpl(text: "Wrapping ends")
                         }
                     ))
+                }
+            }
+
+            when("nothing changes") {
+                given {
+                    Tested(modifiedColor: "yellow", someModifierText: "some modifier", anotherModifierIcon: "info", changeToken: 0)
+                    Tested(modifiedColor: "yellow", someModifierText: "some modifier", anotherModifierIcon: "info", changeToken: 1)
+                }
+
+                then("implementation is untouched") { result in
+                    expect(result.implementation).to(equal(
+                        ViewImpl("Tested") {
+                            TextImpl(text: "Wrapping starts")
+
+                            ViewImpl("Row") {
+                                TextImpl(text: "some modifier")
+
+                                ViewImpl("Modified") {
+                                    TextImpl(text: "yellow")
+                                }
+                            }
+
+                            ImageImpl(source: "icon-info.png")
+
+                            TextImpl(text: "Wrapping ends")
+                        }
+                    ))
+                }
+
+                then("tested view body is called") { result in
+                    expect(result.bodyCalled(of: Tested.self)).to(beTrue())
+                }
+
+                then("modified view body is not called") { result in
+                    expect(result.bodyCalled(of: Modified.self)).to(beFalse())
+                }
+
+                then("modifier 1 body is not called") { result in
+                    expect(result.bodyCalled(of: SomeModifier.self)).to(beFalse())
+                }
+
+                then("modifier 2 body is not called") { result in
+                    expect(result.bodyCalled(of: AnotherModifier.self)).to(beFalse())
+                }
+            }
+
+            when("modified view is modified") {
+                given {
+                    Tested(modifiedColor: "yellow", someModifierText: "some modifier", anotherModifierIcon: "info", changeToken: 0)
+                    Tested(modifiedColor: "orange", someModifierText: "some modifier", anotherModifierIcon: "info", changeToken: 0)
+                }
+
+                then("implementation is updated") { result in
+                    expect(result.implementation).to(equal(
+                        ViewImpl("Tested") {
+                            TextImpl(text: "Wrapping starts")
+
+                            ViewImpl("Row") {
+                                TextImpl(text: "some modifier")
+
+                                ViewImpl("Modified") {
+                                    TextImpl(text: "orange")
+                                }
+                            }
+
+                            ImageImpl(source: "icon-info.png")
+
+                            TextImpl(text: "Wrapping ends")
+                        }
+                    ))
+                }
+
+                then("tested view body is called") { result in
+                    expect(result.bodyCalled(of: Tested.self)).to(beTrue())
+                }
+
+                then("modified view body is called") { result in
+                    expect(result.bodyCalled(of: Modified.self)).to(beTrue())
+                }
+
+                then("modifier 1 body is not called") { result in
+                    expect(result.bodyCalled(of: SomeModifier.self)).to(beFalse())
+                }
+
+                then("modifier 2 body is not called") { result in
+                    expect(result.bodyCalled(of: AnotherModifier.self)).to(beFalse())
+                }
+            }
+
+            when("modifier 1 is modified") {
+                given {
+                    Tested(modifiedColor: "yellow", someModifierText: "some modifier", anotherModifierIcon: "info", changeToken: 0)
+                    Tested(modifiedColor: "yellow", someModifierText: "some changed modifier", anotherModifierIcon: "info", changeToken: 0)
+                }
+
+                then("implementation is updated") { result in
+                    expect(result.implementation).to(equal(
+                        ViewImpl("Tested") {
+                            TextImpl(text: "Wrapping starts")
+
+                            ViewImpl("Row") {
+                                TextImpl(text: "some changed modifier")
+
+                                ViewImpl("Modified") {
+                                    TextImpl(text: "yellow")
+                                }
+                            }
+
+                            ImageImpl(source: "icon-info.png")
+
+                            TextImpl(text: "Wrapping ends")
+                        }
+                    ))
+                }
+
+                then("tested view body is called") { result in
+                    expect(result.bodyCalled(of: Tested.self)).to(beTrue())
+                }
+
+                then("modified view body is not called") { result in
+                    expect(result.bodyCalled(of: Modified.self)).to(beFalse())
+                }
+
+                then("modifier 1 body is called") { result in
+                    expect(result.bodyCalled(of: SomeModifier.self)).to(beTrue())
+                }
+
+                then("modifier 2 body is not called") { result in
+                    expect(result.bodyCalled(of: AnotherModifier.self)).to(beFalse())
+                }
+            }
+
+            when("modifier 2 is modified") {
+                given {
+                    Tested(modifiedColor: "yellow", someModifierText: "some modifier", anotherModifierIcon: "info", changeToken: 0)
+                    Tested(modifiedColor: "yellow", someModifierText: "some changed modifier", anotherModifierIcon: "info", changeToken: 0)
+                }
+
+                then("implementation is updated") { result in
+                    expect(result.implementation).to(equal(
+                        ViewImpl("Tested") {
+                            TextImpl(text: "Wrapping starts")
+
+                            ViewImpl("Row") {
+                                TextImpl(text: "some changed modifier")
+
+                                ViewImpl("Modified") {
+                                    TextImpl(text: "yellow")
+                                }
+                            }
+
+                            ImageImpl(source: "icon-info.png")
+
+                            TextImpl(text: "Wrapping ends")
+                        }
+                    ))
+                }
+
+                then("tested view body is called") { result in
+                    expect(result.bodyCalled(of: Tested.self)).to(beTrue())
+                }
+
+                then("modified view body is not called") { result in
+                    expect(result.bodyCalled(of: Modified.self)).to(beFalse())
+                }
+
+                then("modifier 1 body is called") { result in
+                    expect(result.bodyCalled(of: SomeModifier.self)).to(beTrue())
+                }
+
+                then("modifier 2 body is not called") { result in
+                    expect(result.bodyCalled(of: AnotherModifier.self)).to(beFalse())
                 }
             }
         }
@@ -84,9 +266,13 @@ private struct AnotherModifier: ViewModifier {
     let icon: String
 
     func body(content: Content) -> some View {
+        Text("Wrapping starts")
+
         content
 
         Image(source: "icon-\(icon).png")
+
+        Text("Wrapping ends")
     }
 }
 
