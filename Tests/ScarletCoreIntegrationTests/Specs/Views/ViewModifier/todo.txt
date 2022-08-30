@@ -1,5 +1,3 @@
-- plusieurs vues imbriquées modifiées (modifier -> vue -> modifier -> vue)
-
 - state change dans un modifier
 - state change dans un modifier qui réordonne content dans son body
 - state change dans la vue modifiée

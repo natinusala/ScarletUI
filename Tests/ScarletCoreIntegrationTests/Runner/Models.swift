@@ -20,7 +20,9 @@ struct Specs {
     let cases: [Case]
 }
 
-typealias UpdateAction = (ElementNode) -> ()
+protocol UpdateAction {
+    func run(on node: ElementNode)
+}
 
 struct InitialSteps {
     let initialView: ElementNode
@@ -92,29 +94,31 @@ struct ExpectationsBuilder {
 }
 
 extension TestView {
-    static func given(@InitialBuilder _ initial: @escaping () -> (Self, [Self])) -> (() -> InitialSteps) {
+    static func given(@InitialBuilder _ initial: @escaping () -> (Self, [UpdateAction])) -> (() -> InitialSteps) {
         return {
             let (initialView, updates) = initial()
 
             return InitialSteps(
                 initialView: ElementNode(parent: nil, making: initialView, context: .root()),
-                updateActions: updates.map { newValue in
-                    return { element in
-                        element.update(making: newValue, attributes: [:])
-                    }
-                }
+                updateActions: updates
             )
         }
     }
 }
 
+extension TestView {
+    func run(on node: ElementNode) {
+        node.update(making: self, attributes: [:])
+    }
+}
+
 @resultBuilder
 struct InitialBuilder {
-    static func buildBlock<V>(_ initial: V, _ values: V...) -> (V, [V]) {
-        return (initial, values)
+    static func buildBlock<V>(_ initial: V, _ actions: UpdateAction...) -> (V, [UpdateAction]) {
+        return (initial, actions)
     }
 
-    static func buildBlock<V>(_ initial: V) -> (V, [V]) {
+    static func buildBlock<V>(_ initial: V) -> (V, [UpdateAction]) {
         return (initial, [])
     }
 }

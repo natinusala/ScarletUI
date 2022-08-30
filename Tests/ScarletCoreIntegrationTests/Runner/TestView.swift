@@ -20,6 +20,6 @@ import Nimble
 @testable import ScarletCore
 
 /// A view with a test spec.
-protocol TestView: View {
+protocol TestView: View, UpdateAction {
     @SpecsBuilder static func spec() -> Specs
 }

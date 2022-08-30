@@ -324,7 +324,7 @@ public class ElementNode {
 
         if let implementation = self.implementation {
             attributes = attributes.filter {
-                let set = $1.set(on: implementation)
+                let set = $1.set(on: implementation, from: self)
                 let propagate = $1.propagate
 
                 // Remove it from the stash if it's been set and if it's not propagated

@@ -57,7 +57,7 @@ class ScarletSpecRunner<Spec: ScarletSpec>: QuickSpec {
 
     private func runCase(actions: [UpdateAction], expectation: Expectations) {
         // Execute the actions if any
-        actions.forEach { $0(node) }
+        actions.forEach { $0.run(on: node) }
 
         // Make the result object and run the expectations closure
         let result = UpdateResult(
