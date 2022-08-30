@@ -45,6 +45,7 @@ let specs: [QuickSpec.Type] = [
     NestedOptionalViewContentUpdateSpec.QuickSpec.self,
     ComplexViewSpec.QuickSpec.self,
     ViewModifierBodySpec.QuickSpec.self,
+    MultipleViewModifierSpec.QuickSpec.self,
     NestedViewModifierSpec.QuickSpec.self,
     // ForEachSpecs.self,
 ]
