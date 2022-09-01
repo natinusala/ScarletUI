@@ -16,7 +16,7 @@
 
 /// A modifier takes a view and produces a new version of the view.
 /// Can be used to set attributes or wrap in more views.
-public protocol ViewModifier: Accessor, Makeable, IsPodable {
+public protocol ViewModifier: Accessor, Makeable, IsPodable, ElementEdgesQueryable {
     /// Modifier content placeholder given to `body(content:)`.
     typealias Content = ViewModifierContent<Self>
 
@@ -28,10 +28,6 @@ public protocol ViewModifier: Accessor, Makeable, IsPodable {
 
     /// Creates the graph node for this modifier.
     static func make(modifier: Self?, input: MakeInput) -> MakeOutput
-
-    /// The number of static edges of this modifier.
-    /// Must be constant.
-    static var staticEdgesCount: Int { get }
 }
 
 public extension ViewModifier {
@@ -40,7 +36,8 @@ public extension ViewModifier {
         // First case: no modifier has been given, we assume it unchanged
         // but content may still have changed
         guard var modifier = modifier else {
-            let bodyInput = MakeInput(storage: input.storage?.edges.asStatic[0], implementationPosition: input.implementationPosition, context: input.context)
+            let bodyStorage = input.storage?.edges.staticAt(0, for: Body.self)
+            let bodyInput = MakeInput(storage: bodyStorage, implementationPosition: input.implementationPosition, context: input.context)
             let bodyOutput = Body.make(view: nil, input: bodyInput)
 
             return Self.output(
@@ -63,7 +60,8 @@ public extension ViewModifier {
         // so do the same as above
         if let previous = input.storage?.value, anyEquals(lhs: modifier, rhs: previous) {
             // Modifier has not changed
-            let bodyInput = MakeInput(storage: input.storage?.edges.asStatic[0], implementationPosition: input.implementationPosition, context: input.context)
+            let bodyStorage = input.storage?.edges.staticAt(0, for: Body.self)
+            let bodyInput = MakeInput(storage: bodyStorage, implementationPosition: input.implementationPosition, context: input.context)
             let bodyOutput = Body.make(view: nil, input: bodyInput)
 
             return Self.output(
@@ -78,7 +76,8 @@ public extension ViewModifier {
             // Modifier has changed
             let output = ElementOutput(storage: modifier, attributes: modifier.collectAttributes())
 
-            let bodyInput = MakeInput(storage: input.storage?.edges.asStatic[0], implementationPosition: input.implementationPosition, context: input.context)
+            let bodyStorage = input.storage?.edges.staticAt(0, for: Body.self)
+            let bodyInput = MakeInput(storage: bodyStorage, implementationPosition: input.implementationPosition, context: input.context)
             let body = Dependencies.bodyAccessor.makeBody(of: modifier, storage: bodyInput.storage)
             let bodyOutput = Body.make(view: body, input: bodyInput)
 
@@ -95,8 +94,8 @@ public extension ViewModifier {
 
     /// Default implementation for `staticEdgesCount()` when there is a body: return one edge,
     /// the body.
-    static var staticEdgesCount: Int {
-        return 1
+    static var edgesType: ElementEdgesType{
+        return .static(count: 1)
     }
 
     var accessor: Accessor {
@@ -119,6 +118,8 @@ public extension ViewModifier {
 struct ViewModifierContentContext {
     // TODO: If the dynamic dispatch here is too slow, use a closure instead with a static dispatch `Content.make()` inside (assuming closures are any faster than dynamic dispatch calls)
     let content: (any Makeable)?
+
+    let contentType: ElementEdgesQueryable.Type
 }
 
 /// Placeholder for view modifier content.
@@ -143,7 +144,7 @@ public struct ViewModifierContent<Modifier>: View where Modifier: ViewModifier {
         }
 
         // We have a content node, make it
-        let contentStorage = input.storage?.edges.asStatic[0]
+        let contentStorage = input.storage?.edges.staticAt(0, for: vmcContext.contentType)
         let contentInput = MakeInput(
             storage: contentStorage,
             implementationPosition: input.implementationPosition,
@@ -163,23 +164,24 @@ public struct ViewModifierContent<Modifier>: View where Modifier: ViewModifier {
     }
 
     /// View modifier content has one edge, the modified content.
-    public static var staticEdgesCount: Int {
-        return 1
+    public static var edgesType: ElementEdgesType{
+        return .static(count: 1)
     }
 }
 
-extension ModifiedContent: View, Accessor, Makeable, Implementable, IsPodable where Content: View, Modifier: ViewModifier {
+extension ModifiedContent: View, Accessor, Makeable, Implementable, IsPodable, ElementEdgesQueryable where Content: View, Modifier: ViewModifier {
     public typealias Body = Never
     public typealias Implementation = Never
 
     public static func make(view: Self?, input: MakeInput) -> MakeOutput {
         // Prepare context for our VMCs
         let vmcContext = ViewModifierContentContext(
-            content: view?.content
+            content: view?.content,
+            contentType: Content.self
         )
 
         // Make our one edge: the modifier
-        let modifierStorage = input.storage?.edges.asStatic[0]
+        let modifierStorage = input.storage?.edges.staticAt(0, for: Modifier.self)
         let modifierContext = input.context.pushingVMCContext(context: vmcContext)
         let modifierInput = MakeInput(storage: modifierStorage, implementationPosition: input.implementationPosition, context: modifierContext)
         let modifierOutput = Modifier.make(modifier: view?.modifier, input: modifierInput)
@@ -195,8 +197,8 @@ extension ModifiedContent: View, Accessor, Makeable, Implementable, IsPodable wh
     }
 
     /// Modified content has one edge: the modifier body.
-    public static var staticEdgesCount: Int {
-        return 1
+    public static var edgesType: ElementEdgesType{
+        return .static(count: 1)
     }
 }
 

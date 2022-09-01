@@ -36,7 +36,7 @@ public struct Row<Content>: View where Content: View {
     }
 
     public static func make(view: Self?, input: MakeInput) -> MakeOutput {
-        let contentStorage = input.storage?.edges.asStatic[0]
+        let contentStorage = input.storage?.edges.staticAt(0, for: Content.self)
         let contentInput = MakeInput(storage: contentStorage, implementationPosition: Self.substantial ? 0 : input.implementationPosition, context: input.context)
         let contentOutput = Content.make(view: view?.content, input: contentInput)
 
@@ -50,7 +50,7 @@ public struct Row<Content>: View where Content: View {
         )
     }
 
-    public static var staticEdgesCount: Int {
-        return 1
+    public static var edgesType: ElementEdgesType{
+        return .static(count: 1)
     }
 }

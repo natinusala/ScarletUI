@@ -56,21 +56,30 @@ public enum ConditionalView<FirstContent, SecondContent>: View where FirstConten
         if let view = view {
             output = ElementOutput(storage: view.storageValue, attributes: view.collectAttributes())
 
-            // If the content storage belongs to a different type than the expected one,
-            // discard the node (it changed from `first` to `second` or `second` to `first`)
-            var contentStorage = input.storage?.edges.asStatic[0]
-            if let storage = contentStorage, storage.elementType != view.contentType {
-                contentStorage = nil
-            }
-
-            let input = MakeInput(storage: contentStorage, implementationPosition: input.implementationPosition, context: input.context)
-
             switch view {
                 case let .first(first):
+                    // If the content storage belongs to a different type than the expected one,
+                    // discard the node (it changed from `first` to `second` or `second` to `first`)
+                    var contentStorage = input.storage?.edges.staticAt(0, for: FirstContent.self)
+                    if let storage = contentStorage, storage.elementType != view.contentType {
+                        contentStorage = nil
+                    }
+
+                    let input = MakeInput(storage: contentStorage, implementationPosition: input.implementationPosition, context: input.context)
+
                     let output = FirstContent.make(view: first, input: input)
                     implementationCount = output.implementationCount
                     edges = [.some(output)]
                 case let .second(second):
+                    // If the content storage belongs to a different type than the expected one,
+                    // discard the node (it changed from `first` to `second` or `second` to `first`)
+                    var contentStorage = input.storage?.edges.staticAt(0, for: SecondContent.self)
+                    if let storage = contentStorage, storage.elementType != view.contentType {
+                        contentStorage = nil
+                    }
+
+                    let input = MakeInput(storage: contentStorage, implementationPosition: input.implementationPosition, context: input.context)
+
                     let output = SecondContent.make(view: second, input: input)
                     implementationCount = output.implementationCount
                     edges = [.some(output)]
@@ -78,15 +87,18 @@ public enum ConditionalView<FirstContent, SecondContent>: View where FirstConten
         } else if let storage = input.storage, let storageValue = storage.value as? Storage {
             output = nil
 
-            let contentStorage = storage.edges.asStatic[0]
-            let input = MakeInput(storage: contentStorage, implementationPosition: input.implementationPosition, context: input.context)
-
             switch storageValue {
                 case .first:
+                    let contentStorage = storage.edges.staticAt(0, for: FirstContent.self)
+                    let input = MakeInput(storage: contentStorage, implementationPosition: input.implementationPosition, context: input.context)
+
                     let output = FirstContent.make(view: nil, input: input)
                     implementationCount = output.implementationCount
                     edges = [.some(output)]
                 case .second:
+                    let contentStorage = storage.edges.staticAt(0, for: SecondContent.self)
+                    let input = MakeInput(storage: contentStorage, implementationPosition: input.implementationPosition, context: input.context)
+
                     let output = SecondContent.make(view: nil, input: input)
                     implementationCount = output.implementationCount
                     edges = [.some(output)]
@@ -106,8 +118,8 @@ public enum ConditionalView<FirstContent, SecondContent>: View where FirstConten
     }
 
     /// Conditionals have one edge: its content, either first or second.
-    public static var staticEdgesCount: Int {
-        return 1
+    public static var edgesType: ElementEdgesType{
+        return .static(count: 1)
     }
 }
 

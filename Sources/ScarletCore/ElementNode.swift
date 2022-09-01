@@ -141,7 +141,7 @@ public class ElementNode {
         self.parent = parent
         self.kind = .view
         self.type = V.self
-        self.storage = StorageNode(for: view)
+        self.storage = StorageNode(for: V.self)
         self.edges = [Edge](repeating: .static(nil), count: V.staticEdgesCount)
         self.context = context
 
@@ -165,7 +165,7 @@ public class ElementNode {
         self.parent = parent
         self.kind = .app
         self.type = A.self
-        self.storage = StorageNode(for: app)
+        self.storage = StorageNode(for: A.self)
         self.edges = [Edge](repeating: .static(nil), count: A.staticEdgesCount)
         self.context = context
 
@@ -353,7 +353,7 @@ public class ElementNode {
         let elementNodeEdges: [Edge]
         switch edge.edges {
             case .static(_, let count):
-                storageEdges = .static([StorageNode?](repeating: nil, count: count))
+                storageEdges = .static([StorageNodeEdge](repeating: .creating, count: count))
                 elementNodeEdges = [Edge](repeating: .static(nil), count: count)
             case .dynamic:
                 storageEdges = .dynamic([:])
@@ -420,6 +420,31 @@ func printState(of element: @autoclosure () -> Any, at prefix: String) {
     for property in elementInfo?.properties ?? [] {
         if let stateProperty = try? property.get(from: element) as? StateProperty {
             Logger.debug(debugState, "      - \(property.name): \(stateProperty.anyValue) (initialized: \(stateProperty.location != nil))")
+        }
+    }
+}
+
+/// Type of edges an element node can have.
+public enum ElementEdgesType {
+    /// Count must be constant.
+    case `static`(count: Int)
+
+    case `dynamic`
+}
+
+public protocol ElementEdgesQueryable {
+    /// The number of static edges of an element.
+
+    static var edgesType: ElementEdgesType { get }
+}
+
+extension ElementEdgesQueryable {
+    static var staticEdgesCount: Int {
+        switch self.edgesType {
+            case .static(let count):
+                return count
+            default:
+                fatalError("Cannot get static edges count of dynamic node")
         }
     }
 }

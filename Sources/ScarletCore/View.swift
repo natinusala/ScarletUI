@@ -16,7 +16,7 @@
 
 /// A view is the building block of an on-screen element. A scene is made
 /// of a views tree.
-public protocol View: Accessor, Makeable, Implementable, IsPodable {
+public protocol View: Accessor, Makeable, Implementable, IsPodable, ElementEdgesQueryable {
     /// The type of this view's body.
     associatedtype Body: View
 
@@ -27,10 +27,6 @@ public protocol View: Accessor, Makeable, Implementable, IsPodable {
     /// If no view is specified, assume it hasn't changed but still evaluate
     /// edges with `view: nil` recursively.
     static func make(view: Self?, input: MakeInput) -> MakeOutput
-
-    /// The number of static edges of a view.
-    /// Must be constant.
-    static var staticEdgesCount: Int { get }
 }
 
 public extension View {
@@ -72,7 +68,7 @@ public extension View {
 
         // Re-evaluate body
         let body = Dependencies.bodyAccessor.makeBody(of: view, storage: input.storage)
-        let bodyStorage = input.storage?.edges.asStatic[0]
+        let bodyStorage = input.storage?.edges.staticAt(0, for: Body.self)
         let bodyInput = MakeInput(storage: bodyStorage, implementationPosition: Self.substantial ? 0 : input.implementationPosition, context: input.context)
         let bodyOutput = Body.make(view: body, input: bodyInput)
 
@@ -88,8 +84,8 @@ public extension View {
 
     /// Default implementation for `staticEdgesCount()` when there is a body: return one edge,
     /// the body.
-    static var staticEdgesCount: Int {
-        return 1
+    static var edgesType: ElementEdgesType{
+        return .static(count: 1)
     }
 
     /// Creates the implementation for the view.
@@ -121,8 +117,8 @@ public extension View where Body == Never {
     }
 
     /// Default implementation for `staticEdgesCount()` when there is no body: no edges.
-    static var staticEdgesCount: Int {
-        return 0
+    static var edgesType: ElementEdgesType{
+        return .static(count: 0)
     }
 
     var body: Never {

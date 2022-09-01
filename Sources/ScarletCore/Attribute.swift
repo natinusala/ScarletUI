@@ -250,7 +250,7 @@ public extension AttributeViewModifier {
     /// Default implementation for `make()`: shortcut the usual modifier pattern and directly act
     /// as the VMC (except that we collect attributes).
     static func make(modifier: Self?, input: MakeInput) -> MakeOutput {
-        let output = modifier.map { ElementOutput(storage: input.storage, attributes: $0.collectAttributes()) } 
+        let output = modifier.map { ElementOutput(storage: nil, attributes: $0.collectAttributes()) } 
 
         // Make our edge: the actual modified content from the given VMC context
         let (vmcContext, contentContext) = input.context.poppingVMCContext()
@@ -268,7 +268,7 @@ public extension AttributeViewModifier {
         }
 
         // We have a content node, make it
-        let contentStorage = input.storage?.edges.asStatic[0]
+        let contentStorage = input.storage?.edges.staticAt(0, for: vmcContext.contentType)
         let contentInput = MakeInput(
             storage: contentStorage,
             implementationPosition: input.implementationPosition,

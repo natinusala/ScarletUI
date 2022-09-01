@@ -15,7 +15,7 @@
 */
 
 /// A scene is the container for the app views, typically a desktop window.
-public protocol Scene: Accessor, Makeable, Implementable, IsPodable {
+public protocol Scene: Accessor, Makeable, Implementable, IsPodable, ElementEdgesQueryable {
     /// The type of this scene's body.
     associatedtype Body: Scene
 
@@ -26,10 +26,6 @@ public protocol Scene: Accessor, Makeable, Implementable, IsPodable {
     /// If no scene is specified, assume it hasn't changed but still evaluate
     /// edges with `scene: nil` recursively.
     static func make(scene: Self?, input: MakeInput) -> MakeOutput
-
-    /// The number of static edges of a scene.
-    /// Must be constant.
-    static var staticEdgesCount: Int { get }
 }
 
 public extension Scene {
@@ -71,9 +67,9 @@ public extension Scene {
 
         // Re-evaluate body
         let body = scene.body // TODO: use BodyAccessor.makeBody(of: scene, storage: input.storage)
-        let bodyStorage = input.storage?.edges.asStatic[0]
+        let bodyStorage = input.storage?.edges.staticAt(0, for: Body.self)
         let bodyInput = MakeInput(storage: bodyStorage, implementationPosition: Self.substantial ? 0 : input.implementationPosition, context: input.context)
-        let bodyOutput = Body.make(scene: body, input: bodyInput)
+        let bodyOutput: MakeOutput = Body.make(scene: body, input: bodyInput)
 
         return Self.output(
             from: input,
@@ -86,8 +82,8 @@ public extension Scene {
     }
 
     /// A scene has one edge: its body.
-    static var staticEdgesCount: Int {
-        return 1
+    static var edgesType: ElementEdgesType{
+        return .static(count: 1)
     }
 
     /// Convenience function to create a `MakeOutput` from a `Scene` with less boilerplate.

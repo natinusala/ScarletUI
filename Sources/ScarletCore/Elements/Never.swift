@@ -26,7 +26,7 @@ extension Never: View, Scene, ImplementationNode, IsPodable {
         fatalError()
     }
 
-    public static var staticEdgesCount: Int {
+    public static var edgesType: ElementEdgesType {
         fatalError()
     }
 

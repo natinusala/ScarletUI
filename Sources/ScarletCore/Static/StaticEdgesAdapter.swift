@@ -51,10 +51,6 @@ struct StaticEdgesAdapter: EdgesAdapter {
 
      /// Inserts a new edge at the given index. Static variant.
     private func insertEdge(_ edge: MakeOutput, at idx: Int, in node: ElementNode, attributes: AttributesStash) {
-        guard node.storage.edges.staticAt(idx) == nil else {
-            fatalError("Tried to insert an edge on a non-empty storage node")
-        }
-
         // Prepare the edge storage and node depending on its type
         let (storageEdges, elementNodeEdges) = node.prepareEdgesForEdge(edge)
 

@@ -136,7 +136,7 @@ public struct MakeOutput {
     let nodeKind: ElementKind
 
     /// The node type.
-    let nodeType: Any.Type
+    let nodeType: ElementEdgesQueryable.Type
 
     /// The resulting node itself.
     /// Can be `nil` if there is nothing to store for that node
@@ -175,7 +175,7 @@ public struct MakeOutput {
     public init(
         from input: MakeInput,
         nodeKind: ElementKind,
-        nodeType: Any.Type,
+        nodeType: ElementEdgesQueryable.Type,
         node: ElementOutput?,
         implementationPosition: Int,
         implementationCount: Int,

@@ -17,7 +17,7 @@
 /// A ScarletUI application.
 /// An app is made of one scene, and a scene is made of one or multiple
 /// views.
-public protocol App: Accessor, Makeable, Implementable, IsPodable {
+public protocol App: Accessor, Makeable, Implementable, IsPodable, ElementEdgesQueryable {
     /// Initializer used for the framework to create the app on boot.
     init()
 
@@ -31,10 +31,6 @@ public protocol App: Accessor, Makeable, Implementable, IsPodable {
     /// If no app is specified, assume it hasn't changed but still evaluate
     /// edges with `app: nil` recursively.
     static func make(app: Self?, input: MakeInput) -> MakeOutput
-
-    /// The number of static edges of an app.
-    /// Must be constant.
-    static var staticEdgesCount: Int { get }
 }
 
 public extension App {
@@ -76,7 +72,7 @@ public extension App {
 
         // Re-evaluate body
         let body = app.body // TODO: Use BodyAccessor.makeBody(of: app, storage: input.storage)
-        let bodyStorage = input.storage?.edges.asStatic[0]
+        let bodyStorage = input.storage?.edges.staticAt(0, for: Body.self)
         let bodyInput = MakeInput(storage: bodyStorage, implementationPosition: Self.substantial ? 0 : input.implementationPosition, context: input.context)
         let bodyOutput = Body.make(scene: body, input: bodyInput)
 
@@ -91,8 +87,8 @@ public extension App {
     }
 
     /// An app has one edge: its body.
-    static var staticEdgesCount: Int {
-        return 1
+    static var edgesType: ElementEdgesType{
+        return .static(count: 1)
     }
 
     /// Convenience function to create a `MakeOutput` from an `App` with less boilerplate.

@@ -18,28 +18,34 @@ import ScarletUI
 
 @main
 struct ScarletUIDemo: App {
-    @State private var count = 0
-
     var body: some Scene {
         Window(title: "ScarletUI Demo") {
-            Row {
-                if count == 0 {
-                    Rectangle(color: .orange).grow()
-                    Rectangle(color: .black).grow()
-                    Rectangle(color: .yellow).grow()
-                } else {
-                    Rectangle(color: .blue).grow()
-                    Rectangle(color: .red).grow()
-                    Rectangle(color: .white).grow()
-                }
+            ContentView().grow()
+        }
+    }
+}
+
+struct ContentView: View {
+    @State private var count = 0
+
+    var body: some View {
+        Row {
+            if count == 0 {
+                Rectangle(color: .orange).grow()
+                Rectangle(color: .black).grow()
+                Rectangle(color: .yellow).grow()
+            } else {
+                Rectangle(color: .blue).grow()
+                Rectangle(color: .red).grow()
+                Rectangle(color: .white).grow()
             }
-            .grow()
-            .onGamepadButtonPress { button in
-                if button == .dpadRight {
-                    self.count += 1
-                } else if button == .dpadLeft {
-                    self.count -= 1
-                }
+        }
+        .grow()
+        .onGamepadButtonPress { button in
+            if button == .dpadRight {
+                self.count += 1
+            } else if button == .dpadLeft {
+                self.count -= 1
             }
         }
     }

@@ -19,7 +19,7 @@ public struct Group<Content> {
     let content: Content
 }
 
-extension Group: View, Accessor, Makeable, Implementable, IsPodable where Content: View {
+extension Group: View, Accessor, Makeable, Implementable, IsPodable, ElementEdgesQueryable where Content: View {
     public typealias Body = Never
     public typealias Implementation = Never
 
@@ -28,7 +28,7 @@ extension Group: View, Accessor, Makeable, Implementable, IsPodable where Conten
     }
 
     public static func make(view: Self?, input: MakeInput) -> MakeOutput {
-        let contentStorage = input.storage?.edges.asStatic[0]
+        let contentStorage = input.storage?.edges.staticAt(0, for: Content.self)
 
         let contentInput = MakeInput(storage: contentStorage, implementationPosition: input.implementationPosition, context: input.context)
         let contentOutput = Content.make(view: view?.content, input: contentInput)
@@ -43,8 +43,8 @@ extension Group: View, Accessor, Makeable, Implementable, IsPodable where Conten
         )
     }
 
-    public static var staticEdgesCount: Int {
-        return 1
+    public static var edgesType: ElementEdgesType{
+        return .static(count: 1)
     }
 }
 

@@ -15,7 +15,7 @@
 */
 
 /// An optional view.
-extension Optional: View, Accessor, Makeable, Implementable, IsPodable where Wrapped: View {
+extension Optional: View, Accessor, Makeable, Implementable, IsPodable, ElementEdgesQueryable where Wrapped: View {
     enum Storage {
         case none
         case some
@@ -49,7 +49,8 @@ extension Optional: View, Accessor, Makeable, Implementable, IsPodable where Wra
                     edges = [.none(input.implementationPosition)]
                     implementationCount = 0
                 case let .some(view):
-                    let wrappedInput = MakeInput(storage: input.storage?.edges.asStatic[0], implementationPosition: input.implementationPosition, context: input.context)
+                    let wrappedStorage = input.storage?.edges.staticAt(0, for: Wrapped.self)
+                    let wrappedInput = MakeInput(storage: wrappedStorage, implementationPosition: input.implementationPosition, context: input.context)
                     let wrappedOutput = Wrapped.make(view: view, input: wrappedInput)
                     edges = [.some(wrappedOutput)]
                     implementationCount = wrappedOutput.implementationCount
@@ -62,7 +63,8 @@ extension Optional: View, Accessor, Makeable, Implementable, IsPodable where Wra
                     edges = [.none(input.implementationPosition)]
                     implementationCount = 0
                 case .some:
-                    let wrappedInput = MakeInput(storage: storage.edges.asStatic[0], implementationPosition: input.implementationPosition, context: input.context)
+                    let wrappedStorage = storage.edges.staticAt(0, for: Wrapped.self)
+                    let wrappedInput = MakeInput(storage: wrappedStorage, implementationPosition: input.implementationPosition, context: input.context)
                     let wrappedOutput = Wrapped.make(view: nil, input: wrappedInput)
                     edges = [.some(wrappedOutput)]
                     implementationCount = wrappedOutput.implementationCount
@@ -82,8 +84,8 @@ extension Optional: View, Accessor, Makeable, Implementable, IsPodable where Wra
     }
 
     /// Optional views have one edge, the wrapped view (or `nil`).
-    public static var staticEdgesCount: Int {
-        return 1
+    public static var edgesType: ElementEdgesType{
+        return .static(count: 1)
     }
 }
 

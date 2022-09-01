@@ -30,13 +30,15 @@ public struct TupleView2<C0, C1>: View where C0: View, C1: View {
         var implementationCount = 0
         var edges: [MakeOutput.StaticEdge] = []
 
-        let c0Input = MakeInput(storage: input.storage?.edges.asStatic[0], implementationPosition: input.implementationPosition + implementationCount, context: input.context)
+        let c0Storage = input.storage?.edges.staticAt(0, for: C0.self)
+        let c0Input = MakeInput(storage: c0Storage, implementationPosition: input.implementationPosition + implementationCount, context: input.context)
         let c0Output = C0.make(view: view?.c0, input: c0Input)
         edges.append(.some(c0Output))
         implementationCount += c0Output.implementationCount
 
 
-        let c1Input = MakeInput(storage: input.storage?.edges.asStatic[1], implementationPosition: input.implementationPosition + implementationCount, context: input.context)
+        let c1Storage = input.storage?.edges.staticAt(1, for: C1.self)
+        let c1Input = MakeInput(storage: c1Storage, implementationPosition: input.implementationPosition + implementationCount, context: input.context)
         let c1Output = C1.make(view: view?.c1, input: c1Input)
         edges.append(.some(c1Output))
         implementationCount += c1Output.implementationCount
@@ -51,8 +53,8 @@ public struct TupleView2<C0, C1>: View where C0: View, C1: View {
         )
     }
 
-    public static var staticEdgesCount: Int {
-        return 2
+    public static var edgesType: ElementEdgesType{
+        return .static(count: 2)
     }
 }
 
@@ -74,17 +76,20 @@ public struct TupleView3<C0, C1, C2>: View where C0: View, C1: View, C2: View {
         var implementationCount = 0
         var edges: [MakeOutput.StaticEdge] = []
 
-        let c0Input = MakeInput(storage: input.storage?.edges.asStatic[0], implementationPosition: input.implementationPosition + implementationCount, context: input.context)
+        let c0Storage = input.storage?.edges.staticAt(0, for: C0.self)
+        let c0Input = MakeInput(storage: c0Storage, implementationPosition: input.implementationPosition + implementationCount, context: input.context)
         let c0Output = C0.make(view: view?.c0, input: c0Input)
         edges.append(.some(c0Output))
         implementationCount += c0Output.implementationCount
 
-        let c1Input = MakeInput(storage: input.storage?.edges.asStatic[1], implementationPosition: input.implementationPosition + implementationCount, context: input.context)
+        let c1Storage = input.storage?.edges.staticAt(1, for: C1.self)
+        let c1Input = MakeInput(storage: c1Storage, implementationPosition: input.implementationPosition + implementationCount, context: input.context)
         let c1Output = C1.make(view: view?.c1, input: c1Input)
         edges.append(.some(c1Output))
         implementationCount += c1Output.implementationCount
 
-        let c2Input = MakeInput(storage: input.storage?.edges.asStatic[2], implementationPosition: input.implementationPosition + implementationCount, context: input.context)
+        let c2Storage = input.storage?.edges.staticAt(2, for: C2.self)
+        let c2Input = MakeInput(storage: c2Storage, implementationPosition: input.implementationPosition + implementationCount, context: input.context)
         let c2Output = C2.make(view: view?.c2, input: c2Input)
         edges.append(.some(c2Output))
         implementationCount += c2Output.implementationCount
@@ -99,8 +104,8 @@ public struct TupleView3<C0, C1, C2>: View where C0: View, C1: View, C2: View {
         )
     }
 
-    public static var staticEdgesCount: Int {
-        return 3
+    public static var edgesType: ElementEdgesType{
+        return .static(count: 3)
     }
 }
 
@@ -124,22 +129,26 @@ public struct TupleView4<C0, C1, C2, C3>: View where C0: View, C1: View, C2: Vie
         var implementationCount = 0
         var edges: [MakeOutput.StaticEdge] = []
 
-        let c0Input = MakeInput(storage: input.storage?.edges.asStatic[0], implementationPosition: input.implementationPosition + implementationCount, context: input.context)
+        let c0Storage = input.storage?.edges.staticAt(0, for: C0.self)
+        let c0Input = MakeInput(storage: c0Storage, implementationPosition: input.implementationPosition + implementationCount, context: input.context)
         let c0Output = C0.make(view: view?.c0, input: c0Input)
         edges.append(.some(c0Output))
         implementationCount += c0Output.implementationCount
 
-        let c1Input = MakeInput(storage: input.storage?.edges.asStatic[1], implementationPosition: input.implementationPosition + implementationCount, context: input.context)
+        let c1Storage = input.storage?.edges.staticAt(1, for: C1.self)
+        let c1Input = MakeInput(storage: c1Storage, implementationPosition: input.implementationPosition + implementationCount, context: input.context)
         let c1Output = C1.make(view: view?.c1, input: c1Input)
         edges.append(.some(c1Output))
         implementationCount += c1Output.implementationCount
 
-        let c2Input = MakeInput(storage: input.storage?.edges.asStatic[2], implementationPosition: input.implementationPosition + implementationCount, context: input.context)
+        let c2Storage = input.storage?.edges.staticAt(2, for: C2.self)
+        let c2Input = MakeInput(storage: c2Storage, implementationPosition: input.implementationPosition + implementationCount, context: input.context)
         let c2Output = C2.make(view: view?.c2, input: c2Input)
         edges.append(.some(c2Output))
         implementationCount += c2Output.implementationCount
 
-        let c3Input = MakeInput(storage: input.storage?.edges.asStatic[3], implementationPosition: input.implementationPosition + implementationCount, context: input.context)
+        let c3Storage = input.storage?.edges.staticAt(3, for: C3.self)
+        let c3Input = MakeInput(storage: c3Storage, implementationPosition: input.implementationPosition + implementationCount, context: input.context)
         let c3Output = C3.make(view: view?.c3, input: c3Input)
         edges.append(.some(c3Output))
         implementationCount += c3Output.implementationCount
@@ -154,8 +163,8 @@ public struct TupleView4<C0, C1, C2, C3>: View where C0: View, C1: View, C2: Vie
         )
     }
 
-    public static var staticEdgesCount: Int {
-        return 4
+    public static var edgesType: ElementEdgesType{
+        return .static(count: 4)
     }
 }
 
@@ -181,27 +190,32 @@ public struct TupleView5<C0, C1, C2, C3, C4>: View where C0: View, C1: View, C2:
         var implementationCount = 0
         var edges: [MakeOutput.StaticEdge] = []
 
-        let c0Input = MakeInput(storage: input.storage?.edges.asStatic[0], implementationPosition: input.implementationPosition + implementationCount, context: input.context)
+        let c0Storage = input.storage?.edges.staticAt(0, for: C0.self)
+        let c0Input = MakeInput(storage: c0Storage, implementationPosition: input.implementationPosition + implementationCount, context: input.context)
         let c0Output = C0.make(view: view?.c0, input: c0Input)
         edges.append(.some(c0Output))
         implementationCount += c0Output.implementationCount
 
-        let c1Input = MakeInput(storage: input.storage?.edges.asStatic[1], implementationPosition: input.implementationPosition + implementationCount, context: input.context)
+        let c1Storage = input.storage?.edges.staticAt(1, for: C1.self)
+        let c1Input = MakeInput(storage: c1Storage, implementationPosition: input.implementationPosition + implementationCount, context: input.context)
         let c1Output = C1.make(view: view?.c1, input: c1Input)
         edges.append(.some(c1Output))
         implementationCount += c1Output.implementationCount
 
-        let c2Input = MakeInput(storage: input.storage?.edges.asStatic[2], implementationPosition: input.implementationPosition + implementationCount, context: input.context)
+        let c2Storage = input.storage?.edges.staticAt(2, for: C2.self)
+        let c2Input = MakeInput(storage: c2Storage, implementationPosition: input.implementationPosition + implementationCount, context: input.context)
         let c2Output = C2.make(view: view?.c2, input: c2Input)
         edges.append(.some(c2Output))
         implementationCount += c2Output.implementationCount
 
-        let c3Input = MakeInput(storage: input.storage?.edges.asStatic[3], implementationPosition: input.implementationPosition + implementationCount, context: input.context)
+        let c3Storage = input.storage?.edges.staticAt(3, for: C3.self)
+        let c3Input = MakeInput(storage: c3Storage, implementationPosition: input.implementationPosition + implementationCount, context: input.context)
         let c3Output = C3.make(view: view?.c3, input: c3Input)
         edges.append(.some(c3Output))
         implementationCount += c3Output.implementationCount
 
-        let c4Input = MakeInput(storage: input.storage?.edges.asStatic[4], implementationPosition: input.implementationPosition + implementationCount, context: input.context)
+        let c4Storage = input.storage?.edges.staticAt(4, for: C4.self)
+        let c4Input = MakeInput(storage: c4Storage, implementationPosition: input.implementationPosition + implementationCount, context: input.context)
         let c4Output = C4.make(view: view?.c4, input: c4Input)
         edges.append(.some(c4Output))
         implementationCount += c4Output.implementationCount
@@ -216,8 +230,8 @@ public struct TupleView5<C0, C1, C2, C3, C4>: View where C0: View, C1: View, C2:
         )
     }
 
-    public static var staticEdgesCount: Int {
-        return 5
+    public static var edgesType: ElementEdgesType{
+        return .static(count: 5)
     }
 }
 
@@ -245,32 +259,38 @@ public struct TupleView6<C0, C1, C2, C3, C4, C5>: View where C0: View, C1: View,
         var implementationCount = 0
         var edges: [MakeOutput.StaticEdge] = []
 
-        let c0Input = MakeInput(storage: input.storage?.edges.asStatic[0], implementationPosition: input.implementationPosition + implementationCount, context: input.context)
+        let c0Storage = input.storage?.edges.staticAt(0, for: C0.self)
+        let c0Input = MakeInput(storage: c0Storage, implementationPosition: input.implementationPosition + implementationCount, context: input.context)
         let c0Output = C0.make(view: view?.c0, input: c0Input)
         edges.append(.some(c0Output))
         implementationCount += c0Output.implementationCount
 
-        let c1Input = MakeInput(storage: input.storage?.edges.asStatic[1], implementationPosition: input.implementationPosition + implementationCount, context: input.context)
+        let c1Storage = input.storage?.edges.staticAt(1, for: C1.self)
+        let c1Input = MakeInput(storage: c1Storage, implementationPosition: input.implementationPosition + implementationCount, context: input.context)
         let c1Output = C1.make(view: view?.c1, input: c1Input)
         edges.append(.some(c1Output))
         implementationCount += c1Output.implementationCount
 
-        let c2Input = MakeInput(storage: input.storage?.edges.asStatic[2], implementationPosition: input.implementationPosition + implementationCount, context: input.context)
+        let c2Storage = input.storage?.edges.staticAt(2, for: C2.self)
+        let c2Input = MakeInput(storage: c2Storage, implementationPosition: input.implementationPosition + implementationCount, context: input.context)
         let c2Output = C2.make(view: view?.c2, input: c2Input)
         edges.append(.some(c2Output))
         implementationCount += c2Output.implementationCount
 
-        let c3Input = MakeInput(storage: input.storage?.edges.asStatic[3], implementationPosition: input.implementationPosition + implementationCount, context: input.context)
+        let c3Storage = input.storage?.edges.staticAt(3, for: C3.self)
+        let c3Input = MakeInput(storage: c3Storage, implementationPosition: input.implementationPosition + implementationCount, context: input.context)
         let c3Output = C3.make(view: view?.c3, input: c3Input)
         edges.append(.some(c3Output))
         implementationCount += c3Output.implementationCount
 
-        let c4Input = MakeInput(storage: input.storage?.edges.asStatic[4], implementationPosition: input.implementationPosition + implementationCount, context: input.context)
+        let c4Storage = input.storage?.edges.staticAt(4, for: C4.self)
+        let c4Input = MakeInput(storage: c4Storage, implementationPosition: input.implementationPosition + implementationCount, context: input.context)
         let c4Output = C4.make(view: view?.c4, input: c4Input)
         edges.append(.some(c4Output))
         implementationCount += c4Output.implementationCount
 
-        let c5Input = MakeInput(storage: input.storage?.edges.asStatic[5], implementationPosition: input.implementationPosition + implementationCount, context: input.context)
+        let c5Storage = input.storage?.edges.staticAt(5, for: C5.self)
+        let c5Input = MakeInput(storage: c5Storage, implementationPosition: input.implementationPosition + implementationCount, context: input.context)
         let c5Output = C5.make(view: view?.c5, input: c5Input)
         edges.append(.some(c5Output))
         implementationCount += c5Output.implementationCount
@@ -285,8 +305,8 @@ public struct TupleView6<C0, C1, C2, C3, C4, C5>: View where C0: View, C1: View,
         )
     }
 
-    public static var staticEdgesCount: Int {
-        return 6
+    public static var edgesType: ElementEdgesType{
+        return .static(count: 6)
     }
 }
 
@@ -316,37 +336,44 @@ public struct TupleView7<C0, C1, C2, C3, C4, C5, C6>: View where C0: View, C1: V
         var implementationCount = 0
         var edges: [MakeOutput.StaticEdge] = []
 
-        let c0Input = MakeInput(storage: input.storage?.edges.asStatic[0], implementationPosition: input.implementationPosition + implementationCount, context: input.context)
+        let c0Storage = input.storage?.edges.staticAt(0, for: C0.self)
+        let c0Input = MakeInput(storage: c0Storage, implementationPosition: input.implementationPosition + implementationCount, context: input.context)
         let c0Output = C0.make(view: view?.c0, input: c0Input)
         edges.append(.some(c0Output))
         implementationCount += c0Output.implementationCount
 
-        let c1Input = MakeInput(storage: input.storage?.edges.asStatic[1], implementationPosition: input.implementationPosition + implementationCount, context: input.context)
+        let c1Storage = input.storage?.edges.staticAt(1, for: C1.self)
+        let c1Input = MakeInput(storage: c1Storage, implementationPosition: input.implementationPosition + implementationCount, context: input.context)
         let c1Output = C1.make(view: view?.c1, input: c1Input)
         edges.append(.some(c1Output))
         implementationCount += c1Output.implementationCount
 
-        let c2Input = MakeInput(storage: input.storage?.edges.asStatic[2], implementationPosition: input.implementationPosition + implementationCount, context: input.context)
+        let c2Storage = input.storage?.edges.staticAt(2, for: C2.self)
+        let c2Input = MakeInput(storage: c2Storage, implementationPosition: input.implementationPosition + implementationCount, context: input.context)
         let c2Output = C2.make(view: view?.c2, input: c2Input)
         edges.append(.some(c2Output))
         implementationCount += c2Output.implementationCount
 
-        let c3Input = MakeInput(storage: input.storage?.edges.asStatic[3], implementationPosition: input.implementationPosition + implementationCount, context: input.context)
+        let c3Storage = input.storage?.edges.staticAt(3, for: C3.self)
+        let c3Input = MakeInput(storage: c3Storage, implementationPosition: input.implementationPosition + implementationCount, context: input.context)
         let c3Output = C3.make(view: view?.c3, input: c3Input)
         edges.append(.some(c3Output))
         implementationCount += c3Output.implementationCount
 
-        let c4Input = MakeInput(storage: input.storage?.edges.asStatic[4], implementationPosition: input.implementationPosition + implementationCount, context: input.context)
+        let c4Storage = input.storage?.edges.staticAt(4, for: C4.self)
+        let c4Input = MakeInput(storage: c4Storage, implementationPosition: input.implementationPosition + implementationCount, context: input.context)
         let c4Output = C4.make(view: view?.c4, input: c4Input)
         edges.append(.some(c4Output))
         implementationCount += c4Output.implementationCount
 
-        let c5Input = MakeInput(storage: input.storage?.edges.asStatic[5], implementationPosition: input.implementationPosition + implementationCount, context: input.context)
+        let c5Storage = input.storage?.edges.staticAt(5, for: C5.self)
+        let c5Input = MakeInput(storage: c5Storage, implementationPosition: input.implementationPosition + implementationCount, context: input.context)
         let c5Output = C5.make(view: view?.c5, input: c5Input)
         edges.append(.some(c5Output))
         implementationCount += c5Output.implementationCount
 
-        let c6Input = MakeInput(storage: input.storage?.edges.asStatic[6], implementationPosition: input.implementationPosition + implementationCount, context: input.context)
+        let c6Storage = input.storage?.edges.staticAt(6, for: C6.self)
+        let c6Input = MakeInput(storage: c6Storage, implementationPosition: input.implementationPosition + implementationCount, context: input.context)
         let c6Output = C6.make(view: view?.c6, input: c6Input)
         edges.append(.some(c6Output))
         implementationCount += c6Output.implementationCount
@@ -361,8 +388,8 @@ public struct TupleView7<C0, C1, C2, C3, C4, C5, C6>: View where C0: View, C1: V
         )
     }
 
-    public static var staticEdgesCount: Int {
-        return 7
+    public static var edgesType: ElementEdgesType{
+        return .static(count: 7)
     }
 }
 
@@ -394,42 +421,50 @@ public struct TupleView8<C0, C1, C2, C3, C4, C5, C6, C7>: View where C0: View, C
         var implementationCount = 0
         var edges: [MakeOutput.StaticEdge] = []
 
-        let c0Input = MakeInput(storage: input.storage?.edges.asStatic[0], implementationPosition: input.implementationPosition + implementationCount, context: input.context)
+        let c0Storage = input.storage?.edges.staticAt(0, for: C0.self)
+        let c0Input = MakeInput(storage: c0Storage, implementationPosition: input.implementationPosition + implementationCount, context: input.context)
         let c0Output = C0.make(view: view?.c0, input: c0Input)
         edges.append(.some(c0Output))
         implementationCount += c0Output.implementationCount
 
-        let c1Input = MakeInput(storage: input.storage?.edges.asStatic[1], implementationPosition: input.implementationPosition + implementationCount, context: input.context)
+        let c1Storage = input.storage?.edges.staticAt(1, for: C1.self)
+        let c1Input = MakeInput(storage: c1Storage, implementationPosition: input.implementationPosition + implementationCount, context: input.context)
         let c1Output = C1.make(view: view?.c1, input: c1Input)
         edges.append(.some(c1Output))
         implementationCount += c1Output.implementationCount
 
-        let c2Input = MakeInput(storage: input.storage?.edges.asStatic[2], implementationPosition: input.implementationPosition + implementationCount, context: input.context)
+        let c2Storage = input.storage?.edges.staticAt(2, for: C2.self)
+        let c2Input = MakeInput(storage: c2Storage, implementationPosition: input.implementationPosition + implementationCount, context: input.context)
         let c2Output = C2.make(view: view?.c2, input: c2Input)
         edges.append(.some(c2Output))
         implementationCount += c2Output.implementationCount
 
-        let c3Input = MakeInput(storage: input.storage?.edges.asStatic[3], implementationPosition: input.implementationPosition + implementationCount, context: input.context)
+        let c3Storage = input.storage?.edges.staticAt(3, for: C3.self)
+        let c3Input = MakeInput(storage: c3Storage, implementationPosition: input.implementationPosition + implementationCount, context: input.context)
         let c3Output = C3.make(view: view?.c3, input: c3Input)
         edges.append(.some(c3Output))
         implementationCount += c3Output.implementationCount
 
-        let c4Input = MakeInput(storage: input.storage?.edges.asStatic[4], implementationPosition: input.implementationPosition + implementationCount, context: input.context)
+        let c4Storage = input.storage?.edges.staticAt(4, for: C4.self)
+        let c4Input = MakeInput(storage: c4Storage, implementationPosition: input.implementationPosition + implementationCount, context: input.context)
         let c4Output = C4.make(view: view?.c4, input: c4Input)
         edges.append(.some(c4Output))
         implementationCount += c4Output.implementationCount
 
-        let c5Input = MakeInput(storage: input.storage?.edges.asStatic[5], implementationPosition: input.implementationPosition + implementationCount, context: input.context)
+        let c5Storage = input.storage?.edges.staticAt(5, for: C5.self)
+        let c5Input = MakeInput(storage: c5Storage, implementationPosition: input.implementationPosition + implementationCount, context: input.context)
         let c5Output = C5.make(view: view?.c5, input: c5Input)
         edges.append(.some(c5Output))
         implementationCount += c5Output.implementationCount
 
-        let c6Input = MakeInput(storage: input.storage?.edges.asStatic[6], implementationPosition: input.implementationPosition + implementationCount, context: input.context)
+        let c6Storage = input.storage?.edges.staticAt(6, for: C6.self)
+        let c6Input = MakeInput(storage: c6Storage, implementationPosition: input.implementationPosition + implementationCount, context: input.context)
         let c6Output = C6.make(view: view?.c6, input: c6Input)
         edges.append(.some(c6Output))
         implementationCount += c6Output.implementationCount
 
-        let c7Input = MakeInput(storage: input.storage?.edges.asStatic[7], implementationPosition: input.implementationPosition + implementationCount, context: input.context)
+        let c7Storage = input.storage?.edges.staticAt(7, for: C7.self)
+        let c7Input = MakeInput(storage: c7Storage, implementationPosition: input.implementationPosition + implementationCount, context: input.context)
         let c7Output = C7.make(view: view?.c7, input: c7Input)
         edges.append(.some(c7Output))
         implementationCount += c7Output.implementationCount
@@ -444,8 +479,8 @@ public struct TupleView8<C0, C1, C2, C3, C4, C5, C6, C7>: View where C0: View, C
         )
     }
 
-    public static var staticEdgesCount: Int {
-        return 8
+    public static var edgesType: ElementEdgesType{
+        return .static(count: 8)
     }
 }
 
@@ -479,47 +514,56 @@ public struct TupleView9<C0, C1, C2, C3, C4, C5, C6, C7, C8>: View where C0: Vie
         var implementationCount = 0
         var edges: [MakeOutput.StaticEdge] = []
 
-        let c0Input = MakeInput(storage: input.storage?.edges.asStatic[0], implementationPosition: input.implementationPosition + implementationCount, context: input.context)
+        let c0Storage = input.storage?.edges.staticAt(0, for: C0.self)
+        let c0Input = MakeInput(storage: c0Storage, implementationPosition: input.implementationPosition + implementationCount, context: input.context)
         let c0Output = C0.make(view: view?.c0, input: c0Input)
         edges.append(.some(c0Output))
         implementationCount += c0Output.implementationCount
 
-        let c1Input = MakeInput(storage: input.storage?.edges.asStatic[1], implementationPosition: input.implementationPosition + implementationCount, context: input.context)
+        let c1Storage = input.storage?.edges.staticAt(1, for: C1.self)
+        let c1Input = MakeInput(storage: c1Storage, implementationPosition: input.implementationPosition + implementationCount, context: input.context)
         let c1Output = C1.make(view: view?.c1, input: c1Input)
         edges.append(.some(c1Output))
         implementationCount += c1Output.implementationCount
 
-        let c2Input = MakeInput(storage: input.storage?.edges.asStatic[2], implementationPosition: input.implementationPosition + implementationCount, context: input.context)
+        let c2Storage = input.storage?.edges.staticAt(2, for: C2.self)
+        let c2Input = MakeInput(storage: c2Storage, implementationPosition: input.implementationPosition + implementationCount, context: input.context)
         let c2Output = C2.make(view: view?.c2, input: c2Input)
         edges.append(.some(c2Output))
         implementationCount += c2Output.implementationCount
 
-        let c3Input = MakeInput(storage: input.storage?.edges.asStatic[3], implementationPosition: input.implementationPosition + implementationCount, context: input.context)
+        let c3Storage = input.storage?.edges.staticAt(3, for: C3.self)
+        let c3Input = MakeInput(storage: c3Storage, implementationPosition: input.implementationPosition + implementationCount, context: input.context)
         let c3Output = C3.make(view: view?.c3, input: c3Input)
         edges.append(.some(c3Output))
         implementationCount += c3Output.implementationCount
 
-        let c4Input = MakeInput(storage: input.storage?.edges.asStatic[4], implementationPosition: input.implementationPosition + implementationCount, context: input.context)
+        let c4Storage = input.storage?.edges.staticAt(4, for: C4.self)
+        let c4Input = MakeInput(storage: c4Storage, implementationPosition: input.implementationPosition + implementationCount, context: input.context)
         let c4Output = C4.make(view: view?.c4, input: c4Input)
         edges.append(.some(c4Output))
         implementationCount += c4Output.implementationCount
 
-        let c5Input = MakeInput(storage: input.storage?.edges.asStatic[5], implementationPosition: input.implementationPosition + implementationCount, context: input.context)
+        let c5Storage = input.storage?.edges.staticAt(5, for: C5.self)
+        let c5Input = MakeInput(storage: c5Storage, implementationPosition: input.implementationPosition + implementationCount, context: input.context)
         let c5Output = C5.make(view: view?.c5, input: c5Input)
         edges.append(.some(c5Output))
         implementationCount += c5Output.implementationCount
 
-        let c6Input = MakeInput(storage: input.storage?.edges.asStatic[6], implementationPosition: input.implementationPosition + implementationCount, context: input.context)
+        let c6Storage = input.storage?.edges.staticAt(6, for: C6.self)
+        let c6Input = MakeInput(storage: c6Storage, implementationPosition: input.implementationPosition + implementationCount, context: input.context)
         let c6Output = C6.make(view: view?.c6, input: c6Input)
         edges.append(.some(c6Output))
         implementationCount += c6Output.implementationCount
 
-        let c7Input = MakeInput(storage: input.storage?.edges.asStatic[7], implementationPosition: input.implementationPosition + implementationCount, context: input.context)
+        let c7Storage = input.storage?.edges.staticAt(7, for: C7.self)
+        let c7Input = MakeInput(storage: c7Storage, implementationPosition: input.implementationPosition + implementationCount, context: input.context)
         let c7Output = C7.make(view: view?.c7, input: c7Input)
         edges.append(.some(c7Output))
         implementationCount += c7Output.implementationCount
 
-        let c8Input = MakeInput(storage: input.storage?.edges.asStatic[8], implementationPosition: input.implementationPosition + implementationCount, context: input.context)
+        let c8Storage = input.storage?.edges.staticAt(8, for: C8.self)
+        let c8Input = MakeInput(storage: c8Storage, implementationPosition: input.implementationPosition + implementationCount, context: input.context)
         let c8Output = C8.make(view: view?.c8, input: c8Input)
         edges.append(.some(c8Output))
         implementationCount += c8Output.implementationCount
@@ -534,8 +578,8 @@ public struct TupleView9<C0, C1, C2, C3, C4, C5, C6, C7, C8>: View where C0: Vie
         )
     }
 
-    public static var staticEdgesCount: Int {
-        return 9
+    public static var edgesType: ElementEdgesType{
+        return .static(count: 9)
     }
 }
 

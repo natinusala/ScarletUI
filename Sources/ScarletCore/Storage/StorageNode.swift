@@ -19,6 +19,15 @@ import Foundation
 import Runtime
 import OpenCombine
 
+/// Edge of a storage node.
+public enum StorageNodeEdge {
+    /// The edge will be created the first time it is accessed.
+    case creating
+
+    /// The edge is created.
+    case created(edge: StorageNode?)
+}
+
 /// An element storage graph node. Stores the app / scene / view itself as well as
 /// state variables.
 public class StorageNode {
@@ -26,20 +35,10 @@ public class StorageNode {
         /// Static edges follow the same layout as the containing node.
         /// The array has a fixed size and every element in the array is fixed to one type,
         /// corresponding to one static edge.
-        case `static`([StorageNode?])
+        case `static`([StorageNodeEdge])
 
         /// Dynamic edges are stored in an `ID: StorageNode` table.
         case `dynamic`([AnyHashable: StorageNode])
-
-        /// Returns static edges or raises a fatal error if edges are of the wrong type.
-        public var asStatic: [StorageNode?] {
-            switch self {
-                case .static(let edges):
-                    return edges
-                case .dynamic:
-                    fatalError("Cannot convert dynamic edges to static edges")
-            }
-        }
 
         /// Returns dynamic edges or raises a fatal error if edges are of the wrong type.
         var asDynamic: [AnyHashable: StorageNode] {
@@ -55,7 +54,7 @@ public class StorageNode {
         mutating func staticSet(edge: StorageNode?, at: Int) {
             switch self {
                 case .static(var edges):
-                    edges[at] = edge
+                    edges[at] = .created(edge: edge)
                     self = .static(edges)
                 case .dynamic:
                     fatalError("Cannot convert dynamic edges to static edges")
@@ -63,10 +62,16 @@ public class StorageNode {
         }
 
         /// Returns the static edge at given position or raises a fatal error if edges are of the wrong type.
-        func staticAt(_ index: Int) -> StorageNode? {
+        public func staticAt<E: ElementEdgesQueryable>(_ index: Int, for element: E.Type) -> StorageNode? {
             switch self {
                 case .static(let edges):
-                    return edges[index]
+                    let edge = edges[index]
+                    switch edge {
+                        case .creating:
+                            return StorageNode(for: element)
+                        case .created(edge: let edge):
+                            return edge
+                    }
                 case .dynamic:
                     fatalError("Cannot convert dynamic edges to static edges")
             }
@@ -95,7 +100,7 @@ public class StorageNode {
     }
 
     /// Type of the element this storage node belongs to.
-    var elementType: Any.Type
+    let elementType: Any.Type
 
     /// Node value, including state.
     var value: Any? {
@@ -117,24 +122,22 @@ public class StorageNode {
     /// See ``MakeOutput.implementationPosition``.
     var implementationCount = 0
 
-    /// Creates a new empty storage node for the given view.
-    init<V: View>(for view: V) {
-        self.elementType = V.self
-        self.value = nil
-        self.edges = .static([StorageNode?](repeating: nil, count: V.staticEdgesCount))
-    }
-
-    /// Creates a new empty storage node for the given app.
-    init<A: App>(for app: A) {
-        self.elementType = A.self
-        self.value = nil
-        self.edges = .static([StorageNode?](repeating: nil, count: A.staticEdgesCount))
-    }
-
     init(elementType: Any.Type, value: Any?, edges: Edges) {
         self.elementType = elementType
         self.value = value
         self.edges = edges
+    }
+
+    init<E: ElementEdgesQueryable>(for element: E.Type) {
+        self.elementType = element
+        self.value = nil
+
+        switch E.edgesType {
+            case .static(let count):
+                self.edges = .static([StorageNodeEdge](repeating: .creating, count: count))
+            case .dynamic:
+                self.edges = .dynamic([:])
+        }
     }
 
     /// Sets up state storage on the given element.
