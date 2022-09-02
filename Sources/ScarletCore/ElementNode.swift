@@ -59,9 +59,14 @@ extension Element where Implementation == Never {
 public protocol ElementNode<Value> {
     associatedtype Value: Element
 
+    /// Value for the element.
+    var value: Value { get set }
+
     /// Updates the node with a potential new version of the element.
-    /// Returns the node implementation count.
-    func update(with element: Value, compare: Bool, implementationPosition: Int) -> Int
+    /// Must update cached implementation values.
+    func updateEdges(from output: Value.Output, at implementationPosition: Int)
+
+    func make(element: Value) -> Value.Output
 
     /// Parent of this node.
     var parent: (any ElementNode)? { get }
@@ -73,7 +78,38 @@ public protocol ElementNode<Value> {
     var cachedImplementationPosition: Int { get }
 
     /// Last known implementation count.
-    var cachedImplementationCount: Int { get }
+    var cachedImplementationCount: Int { get set }
+}
+
+extension ElementNode {
+    /// Updates the node with a potential new version of the element.
+    /// Returns the node implementation count.
+    @discardableResult
+    public func update(with element: Value, compare: Bool, implementationPosition: Int) -> Int {
+        // Compare the element to see if it changed
+        // If it didn't, don't do anything
+        guard !compare || !Value.equals(lhs: element, rhs: self.value) else {
+            return self.cachedImplementationCount
+        }
+
+        // Update value
+        self.value = element
+
+        // Make the element and make edges
+        let output = self.make(element: element)
+
+        // Override implementation position if the element is substantial since our edges
+        // must start at 0 (the parent being ourself)
+
+        self.updateEdges(from: output, at: self.substantial ? 0 : implementationPosition)
+
+        // Override implementation count if the element is substantial since it has one implementation: itself
+        if self.substantial {
+            self.cachedImplementationCount = 1
+        }
+
+        return self.cachedImplementationCount
+    }
 }
 
 extension ElementNode {

@@ -14,18 +14,41 @@
    limitations under the License.
 */
 
+public struct LeafElementInput<Value>: MakeInput where Value: Element {
+
+}
+
+public struct LeafElementOutput<Value>: MakeOutput where Value: Element {
+
+}
+
 /// Element nodes for leaf views that have no edges.
-public class LeafElementNode<Value>: ElementNode where Value: Element {
+public class LeafElementNode<Value>: ElementNode where Value: Element, Value.Input == LeafElementInput<Value>, Value.Output == LeafElementOutput<Value> {
     public var parent: (any ElementNode)?
     public var implementation: Value.Implementation?
-    public var cachedImplementationPosition: Int
-    public var cachedImplementationCount: Int
+    public var cachedImplementationPosition = 0
+    public var cachedImplementationCount = 0
+    public var value: Value
 
-    public func update(with element: Value, compare: Bool, implementationPosition: Int) -> Int {
+    init(making element: Value, in parent: (any ElementNode)?, implementationPosition: Int) {
+        self.value = element
+
+        // Start a first update without comparing (since we update the value with itself)
+        self.update(with: element, compare: false, implementationPosition: implementationPosition)
+
+        // Create the implementation node
+        self.implementation = Value.makeImplementation(of: element)
+
+        // Attach the implementation once our cached values are set
+        self.attachImplementationToParent()
+    }
+
+    public func updateEdges(from output: Value.Output, at implementationPosition: Int) {
         
     }
 
-
-
-
+    public func make(element: Value) -> Value.Output {
+        let input = LeafElementInput<Value>()
+        return Value.make(element, input: input)
+    }
 }

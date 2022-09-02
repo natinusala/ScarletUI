@@ -76,8 +76,11 @@ extension Never: ElementNode {
     }
 
     public var cachedImplementationCount: Int {
-        fatalError()
+        get {
+            fatalError()
+        }
+        set {
+            fatalError()
+        }
     }
-
-    
 }

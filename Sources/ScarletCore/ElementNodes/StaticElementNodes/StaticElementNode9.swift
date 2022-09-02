@@ -1,4 +1,3 @@
-
 /*
    Copyright 2022 natinusala
 
@@ -39,19 +38,10 @@ public class StaticElementNode9<Value, E0, E1, E2, E3, E4, E5, E6, E7, E8>: Elem
     typealias Input = StaticMakeInput9<Value>
     typealias Output = StaticMakeOutput9<Value, E0, E1, E2, E3, E4, E5, E6, E7, E8>
 
-    /// Node parent.
+    public var value: Value
     public var parent: (any ElementNode)?
-
-    /// Value of the node.
-    var value: Value
-
-    /// Implementation node.
     public var implementation: Value.Implementation?
-
-    /// Last known implementation position.
     public var cachedImplementationPosition = 0
-
-    /// Last known implementation count.
     public var cachedImplementationCount = 0
 
     var e0: E0.Node?
@@ -77,34 +67,7 @@ public class StaticElementNode9<Value, E0, E1, E2, E3, E4, E5, E6, E7, E8>: Elem
         self.attachImplementationToParent()
     }
 
-    @discardableResult
-    public func update(with element: Value, compare: Bool, implementationPosition: Int) -> Int {
-        // Compare the element to see if it changed
-        // If it didn't, don't do anything
-        guard !compare || !Value.equals(lhs: element, rhs: self.value) else {
-            return self.cachedImplementationCount
-        }
-
-        let input = Input()
-        let output = Value.make(element, input: input)
-
-        // Override implementation position if the element is substantial since our edges
-        // must start at 0 (the parent being ourself)
-
-        self.update(element, with: output, implementationPosition: self.substantial ? 0 : implementationPosition)
-
-        // Override implementation count if the element is substantial since it has one implementation: itself
-        if self.substantial {
-            self.cachedImplementationCount = 1
-        }
-
-        return self.cachedImplementationCount
-    }
-
-    func update(_ element: Value, with output: Output, implementationPosition: Int) {
-        // Update value
-        self.value = element
-
+    public func updateEdges(from output: Value.Output, at implementationPosition: Int) {
         // Create edges if updating for the first time
         // Otherwise update them
 
@@ -213,5 +176,10 @@ public class StaticElementNode9<Value, E0, E1, E2, E3, E4, E5, E6, E7, E8>: Elem
         // Update cached values
         self.cachedImplementationPosition = implementationPosition
         self.cachedImplementationCount = totalImplementationCount
+    }
+
+    public func make(element: Value) -> Value.Output {
+        let input = Input()
+        return Value.make(element, input: input)
     }
 }

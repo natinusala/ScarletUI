@@ -34,15 +34,13 @@ public extension View {
 
 public extension View where Body == Never {
     /// Default implementation of `makeNode(for:)` for user views with a body: make a node with one edge, the body.
-    static func makeNode(of element: Self, in parent: any ElementNode, implementationPosition: Int) -> StaticElementNode1<Self, Body> where Input == StaticMakeInput1<Self> {
+    static func makeNode(of element: Self, in parent: any ElementNode, implementationPosition: Int) -> LeafElementNode<Self> where Input == LeafElementInput<Self> {
         return .init(making: element, in: parent, implementationPosition: implementationPosition)
     }
 
     /// Default implementation of `make(_input:)` for user views: make the body edge.
-    static func make(_ element: Self, input: StaticMakeInput1<Self>) -> StaticMakeOutput1<Self, Body> {
-        return .init(
-            e0: element.body
-        )
+    static func make(_ element: Self, input: LeafElementInput<Self>) -> LeafElementOutput<Self> {
+        return .init()
     }
 
     static func equals(lhs: Self, rhs: Self) -> Bool {
