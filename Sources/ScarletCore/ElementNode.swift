@@ -33,7 +33,7 @@ public protocol Element {
     associatedtype Implementation: ImplementationNode
 
     /// Makes the node for that element.
-    static func makeNode(of element: Self, in parent: any ElementNode, implementationPosition: Int) -> Node
+    static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int) -> Node
 
     /// Makes the element, usually to get its edges.
     static func make(_ element: Self, input: Input) -> Output
@@ -46,7 +46,7 @@ public protocol Element {
     static func makeImplementation(of element: Self) -> Implementation?
 }
 
-extension Element where Implementation == Never {
+public extension Element where Implementation == Never {
     static func makeImplementation(of element: Self) -> Never? {
         return nil
     }

@@ -70,6 +70,7 @@ public class StaticElementNode2<Value, E0, E1>: ElementNode where Value: Element
             e0ImplementationCount = edge.cachedImplementationCount
         }
         totalImplementationCount += e0ImplementationCount
+
         // Edge 1
         let e1ImplementationPosition = implementationPosition + totalImplementationCount
         let e1ImplementationCount: Int
@@ -81,6 +82,7 @@ public class StaticElementNode2<Value, E0, E1>: ElementNode where Value: Element
             e1ImplementationCount = edge.cachedImplementationCount
         }
         totalImplementationCount += e1ImplementationCount
+
 
         // Update cached values
         self.cachedImplementationPosition = implementationPosition

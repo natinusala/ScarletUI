@@ -14,16 +14,16 @@
    limitations under the License.
 */
 
-public struct LeafElementInput<Value>: MakeInput where Value: Element {
+public struct LeafMakeInput<Value>: MakeInput where Value: Element {
 
 }
 
-public struct LeafElementOutput<Value>: MakeOutput where Value: Element {
+public struct LeafMakeOutput<Value>: MakeOutput where Value: Element {
 
 }
 
 /// Element nodes for leaf views that have no edges.
-public class LeafElementNode<Value>: ElementNode where Value: Element, Value.Input == LeafElementInput<Value>, Value.Output == LeafElementOutput<Value> {
+public class LeafElementNode<Value>: ElementNode where Value: Element, Value.Input == LeafMakeInput<Value>, Value.Output == LeafMakeOutput<Value> {
     public var parent: (any ElementNode)?
     public var implementation: Value.Implementation?
     public var cachedImplementationPosition = 0
@@ -44,11 +44,11 @@ public class LeafElementNode<Value>: ElementNode where Value: Element, Value.Inp
     }
 
     public func updateEdges(from output: Value.Output, at implementationPosition: Int) {
-        
+        // No edge to update
     }
 
     public func make(element: Value) -> Value.Output {
-        let input = LeafElementInput<Value>()
+        let input = LeafMakeInput<Value>()
         return Value.make(element, input: input)
     }
 }

@@ -69,6 +69,7 @@ public class StaticElementNode1<Value, E0>: ElementNode where Value: Element, E0
         }
         totalImplementationCount += e0ImplementationCount
 
+
         // Update cached values
         self.cachedImplementationPosition = implementationPosition
         self.cachedImplementationCount = totalImplementationCount

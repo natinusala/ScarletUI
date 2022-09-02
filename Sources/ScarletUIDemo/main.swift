@@ -14,3 +14,21 @@
    limitations under the License.
 */
 
+import ScarletUI
+
+extension View {
+    typealias Implementation = Never
+}
+
+struct Text: LeafView {
+    let text: String
+}
+
+struct ContentView: View {
+    var body: some View {
+        Text(text: "lel")
+    }
+}
+
+let content = ContentView()
+let edge = ContentView.makeNode(of: content, in: nil, implementationPosition: 0)

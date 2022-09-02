@@ -84,6 +84,7 @@ public class StaticElementNode9<Value, E0, E1, E2, E3, E4, E5, E6, E7, E8>: Elem
             e0ImplementationCount = edge.cachedImplementationCount
         }
         totalImplementationCount += e0ImplementationCount
+
         // Edge 1
         let e1ImplementationPosition = implementationPosition + totalImplementationCount
         let e1ImplementationCount: Int
@@ -95,6 +96,7 @@ public class StaticElementNode9<Value, E0, E1, E2, E3, E4, E5, E6, E7, E8>: Elem
             e1ImplementationCount = edge.cachedImplementationCount
         }
         totalImplementationCount += e1ImplementationCount
+
         // Edge 2
         let e2ImplementationPosition = implementationPosition + totalImplementationCount
         let e2ImplementationCount: Int
@@ -106,6 +108,7 @@ public class StaticElementNode9<Value, E0, E1, E2, E3, E4, E5, E6, E7, E8>: Elem
             e2ImplementationCount = edge.cachedImplementationCount
         }
         totalImplementationCount += e2ImplementationCount
+
         // Edge 3
         let e3ImplementationPosition = implementationPosition + totalImplementationCount
         let e3ImplementationCount: Int
@@ -117,6 +120,7 @@ public class StaticElementNode9<Value, E0, E1, E2, E3, E4, E5, E6, E7, E8>: Elem
             e3ImplementationCount = edge.cachedImplementationCount
         }
         totalImplementationCount += e3ImplementationCount
+
         // Edge 4
         let e4ImplementationPosition = implementationPosition + totalImplementationCount
         let e4ImplementationCount: Int
@@ -128,6 +132,7 @@ public class StaticElementNode9<Value, E0, E1, E2, E3, E4, E5, E6, E7, E8>: Elem
             e4ImplementationCount = edge.cachedImplementationCount
         }
         totalImplementationCount += e4ImplementationCount
+
         // Edge 5
         let e5ImplementationPosition = implementationPosition + totalImplementationCount
         let e5ImplementationCount: Int
@@ -139,6 +144,7 @@ public class StaticElementNode9<Value, E0, E1, E2, E3, E4, E5, E6, E7, E8>: Elem
             e5ImplementationCount = edge.cachedImplementationCount
         }
         totalImplementationCount += e5ImplementationCount
+
         // Edge 6
         let e6ImplementationPosition = implementationPosition + totalImplementationCount
         let e6ImplementationCount: Int
@@ -150,6 +156,7 @@ public class StaticElementNode9<Value, E0, E1, E2, E3, E4, E5, E6, E7, E8>: Elem
             e6ImplementationCount = edge.cachedImplementationCount
         }
         totalImplementationCount += e6ImplementationCount
+
         // Edge 7
         let e7ImplementationPosition = implementationPosition + totalImplementationCount
         let e7ImplementationCount: Int
@@ -161,6 +168,7 @@ public class StaticElementNode9<Value, E0, E1, E2, E3, E4, E5, E6, E7, E8>: Elem
             e7ImplementationCount = edge.cachedImplementationCount
         }
         totalImplementationCount += e7ImplementationCount
+
         // Edge 8
         let e8ImplementationPosition = implementationPosition + totalImplementationCount
         let e8ImplementationCount: Int
@@ -172,6 +180,7 @@ public class StaticElementNode9<Value, E0, E1, E2, E3, E4, E5, E6, E7, E8>: Elem
             e8ImplementationCount = edge.cachedImplementationCount
         }
         totalImplementationCount += e8ImplementationCount
+
 
         // Update cached values
         self.cachedImplementationPosition = implementationPosition

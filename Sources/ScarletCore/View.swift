@@ -19,3 +19,20 @@ public protocol View: Element {
 
     var body: Body { get }
 }
+
+/// Extension for internal views that have no body but
+/// are not leaves (optionals, conditionals, tuple views...).
+public extension View where Body == Never {
+    var body: Never {
+        fatalError()
+    }
+}
+
+/// Protocol for leaves of the views graph, that have no edges.
+public protocol LeafView: View where Body == Never {}
+
+public extension LeafView {
+    var body: Never {
+        fatalError()
+    }
+}

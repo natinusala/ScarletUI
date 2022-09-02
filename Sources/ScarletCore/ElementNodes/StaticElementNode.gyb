@@ -79,6 +79,7 @@ public class StaticElementNode${IDX}<Value, ${E_TYPES}>: ElementNode where Value
             e${i}ImplementationCount = edge.cachedImplementationCount
         }
         totalImplementationCount += e${i}ImplementationCount
+
 % end
 
         // Update cached values

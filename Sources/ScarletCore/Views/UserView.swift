@@ -15,12 +15,12 @@
 */
 
 public extension View {
-    /// Default implementation of `makeNode(for:)` for user views with a body: make a node with one edge, the body.
-    static func makeNode(of element: Self, in parent: any ElementNode, implementationPosition: Int) -> StaticElementNode1<Self, Body> where Input == StaticMakeInput1<Self> {
+    /// Default implementation of `makeNode()` for user views with a body: make a node with one edge, the body.
+    static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int) -> StaticElementNode1<Self, Body> where Input == StaticMakeInput1<Self> {
         return .init(making: element, in: parent, implementationPosition: implementationPosition)
     }
 
-    /// Default implementation of `make(_input:)` for user views: make the body edge.
+    /// Default implementation of `make()` for user views with a body: make the body edge.
     static func make(_ element: Self, input: StaticMakeInput1<Self>) -> StaticMakeOutput1<Self, Body> {
         return .init(
             e0: element.body
@@ -32,14 +32,14 @@ public extension View {
     }
 }
 
-public extension View where Body == Never {
-    /// Default implementation of `makeNode(for:)` for user views with a body: make a node with one edge, the body.
-    static func makeNode(of element: Self, in parent: any ElementNode, implementationPosition: Int) -> LeafElementNode<Self> where Input == LeafElementInput<Self> {
+public extension LeafView {
+    /// Default implementation of `makeNode()` for user views with no body: make a leaf node.
+    static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int) -> LeafElementNode<Self> where Input == LeafMakeInput<Self> {
         return .init(making: element, in: parent, implementationPosition: implementationPosition)
     }
 
-    /// Default implementation of `make(_input:)` for user views: make the body edge.
-    static func make(_ element: Self, input: LeafElementInput<Self>) -> LeafElementOutput<Self> {
+    /// Default implementation of `make()` for user views with no body: make an empty edge.
+    static func make(_ element: Self, input: LeafMakeInput<Self>) -> LeafMakeOutput<Self> {
         return .init()
     }
 
