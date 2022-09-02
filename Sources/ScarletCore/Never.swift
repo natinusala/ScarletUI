@@ -14,6 +14,14 @@
    limitations under the License.
 */
 
+extension Never: MakeInput {
+    typealias Element = Never
+}
+
+extension Never: MakeOutput {
+    typealias Element = Never
+}
+
 extension Never: Element {
     public static func makeNode(of element: Self, in parent: any ElementNode, implementationPosition: Int) -> Node {}
 
