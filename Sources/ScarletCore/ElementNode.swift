@@ -69,7 +69,10 @@ public protocol ElementNode<Value> {
     /// Implementation node of this element.
     var implementation: Value.Implementation? { get }
 
+    /// Last known implementation position.
     var cachedImplementationPosition: Int { get }
+
+    /// Last known implementation count.
     var cachedImplementationCount: Int { get }
 }
 

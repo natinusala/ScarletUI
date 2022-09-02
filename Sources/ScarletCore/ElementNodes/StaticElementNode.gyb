@@ -4,7 +4,6 @@
     E_TYPES = ", ".join([f"E{i}" for i in range(0, IDX)])
     E_CONSTRAINTS = ", ".join([f"E{i}: Element" for i in range(0, IDX)])
 }%
-
 /*
    Copyright 2022 natinusala
 
@@ -39,19 +38,12 @@ public class StaticElementNode${IDX}<Value, ${E_TYPES}>: ElementNode where Value
     typealias Input = StaticMakeInput${IDX}<Value>
     typealias Output = StaticMakeOutput${IDX}<Value, ${E_TYPES}>
 
-    /// Node parent.
-    public var parent: (any ElementNode)?
-
     /// Value of the node.
     var value: Value
 
-    /// Implementation node.
+    public var parent: (any ElementNode)?
     public var implementation: Value.Implementation?
-
-    /// Last known implementation position.
     public var cachedImplementationPosition = 0
-
-    /// Last known implementation count.
     public var cachedImplementationCount = 0
 
 % for i in range(0, IDX):
