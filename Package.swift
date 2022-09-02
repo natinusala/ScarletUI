@@ -28,7 +28,7 @@ let package = Package(
         .executable(
             name: "ScarletUIDemo",
             targets: ["ScarletUIDemo"]
-        )
+        ),
     ],
     dependencies: [
         // Core dependencies
@@ -66,6 +66,9 @@ let package = Package(
                 "Rainbow",
                 "Runtime",
                 "OpenCombine",
+            ],
+            exclude: [
+                "ElementNodes/StaticElementNode.gyb",
             ]
         ),
         // ScarletNative: native code companion to ScarletUI

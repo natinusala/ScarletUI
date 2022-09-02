@@ -14,8 +14,4 @@
    limitations under the License.
 */
 
-public protocol View: Element {
-    associatedtype Body: View
-
-    var body: Body { get }
-}
+@_exported import ScarletCore

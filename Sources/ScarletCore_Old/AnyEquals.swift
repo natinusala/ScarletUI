@@ -17,13 +17,11 @@
 
 import Foundation
 
-// TODO: is anyEquals still necessary? since everything is statically typed now
-
 /// Performs an equality check on two type-erased values.
 /// This method tries its best to use the correct method with the info available at runtime
 /// by testing the following methods in order:
 ///     1. `Equatable` conformance
-///     2. `memcmp` if type is POD
+///     2. `memcmp`` if type is POD
 ///     3. `AnyClass` conformance (compare references)
 ///     4. Recursive field by field comparison using a `Mirror`
 func anyEquals(lhs: Any, rhs: Any) -> Bool {

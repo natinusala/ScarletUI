@@ -67,3 +67,12 @@ public enum ImplementationKind {
     case scene
     case view
 }
+
+/// Proxy to access an element's implementation in a type-erased manner.
+public protocol ImplementationAccessor {
+    /// Makes the implementation node if any.
+    func makeImplementation() -> ImplementationNode?
+
+    /// Updates the implementation node.
+    func updateImplementation(_ implementation: any ImplementationNode)
+}
