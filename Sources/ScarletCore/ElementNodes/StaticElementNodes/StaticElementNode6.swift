@@ -37,16 +37,19 @@ public class StaticElementNode6<Value, E0, E1, E2, E3, E4, E5>: ElementNode wher
     typealias Output = StaticMakeOutput6<Value, E0, E1, E2, E3, E4, E5>
 
     /// Node parent.
-    var parent: (any ElementNode)?
+    public var parent: (any ElementNode)?
 
     /// Value of the node.
     var value: Value
 
+    /// Implementation node.
+    public var implementation: Value.Implementation?
+
     /// Last known implementation position.
-    var cachedImplementationPosition = 0
+    public var cachedImplementationPosition = 0
 
     /// Last known implementation count.
-    var cachedImplementationCount = 0
+    public var cachedImplementationCount = 0
 
     var e0: E0.Node?
     var e1: E1.Node?
@@ -55,11 +58,14 @@ public class StaticElementNode6<Value, E0, E1, E2, E3, E4, E5>: ElementNode wher
     var e4: E4.Node?
     var e5: E5.Node?
 
-    init(making element: Value) {
+    init(making element: Value, in parent: (any ElementNode)?, implementationPosition: Int) {
         self.value = element
 
         // Start a first update without comparing (since we update the value with itself)
-        self.update(with: element, compare: false)
+        self.update(with: element, compare: false, implementationPosition: implementationPosition)
+
+        // Create the implementation node
+        self.implementation = Value.makeImplementation(of: element)
 
         // Attach the implementation once our cached values are set
         self.attachImplementationToParent()
