@@ -41,7 +41,7 @@ extension Never: ImplementationNode {
 }
 
 extension Never: Element {
-    public static func makeNode(of element: Self, in parent: any ElementNode, implementationPosition: Int) -> Never {}
+    public static func makeNode(of element: Self, in parent: any ElementNode, implementationPosition: Int) -> NeverElementNode {}
 
     /// Makes the element, usually to get its edges.
     public static func make(_ element: Self, input: Never) -> Never {}
@@ -60,27 +60,23 @@ extension Never: View {
     }
 }
 
-extension Never: ElementNode {
-    public func update(with element: Never, compare: Bool, implementationPosition: Int) -> Int {}
-
-    public var parent: (any ElementNode)? {
-        fatalError()
-    }
-
-    public var implementation: Never? {
-        fatalError()
-    }
-
-    public var cachedImplementationPosition: Int {
-        fatalError()
-    }
-
-    public var cachedImplementationCount: Int {
+public class NeverElementNode: ElementNode {
+    public var value: Never {
         get {
             fatalError()
         }
-        set {
-            fatalError()
-        }
+        set {}
     }
+    public var parent: (any ElementNode)?
+    public var implementation: Never?
+    public var cachedImplementationPosition = 0
+    public var cachedImplementationCount = 0
+
+    init() {
+        fatalError()
+    }
+
+    public func updateEdges(from output: Never, at implementationPosition: Int) {}
+
+    public func make(element: Never) -> Never {}
 }

@@ -56,7 +56,7 @@ extension Element where Implementation == Never {
 ///
 /// The "type" of an element node is determined from how it handles its
 /// edges (statically or dynamically).
-public protocol ElementNode<Value> {
+public protocol ElementNode<Value>: AnyObject {
     associatedtype Value: Element
 
     /// Value for the element.
