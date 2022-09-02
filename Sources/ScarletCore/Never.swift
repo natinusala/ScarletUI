@@ -18,20 +18,6 @@ extension Never: MakeInput, MakeOutput {
     public typealias Value = Never
 }
 
-extension Never: Element {
-    public static func makeNode(of element: Self, in parent: any ElementNode, implementationPosition: Int) -> Node {}
-
-    /// Makes the element, usually to get its edges.
-    public static func make(_ element: Self, input: Never) -> Never {}
-
-    /// Returns `true` if the two given elements are equal.
-    /// Used to optimize out some redundant comparisons for container elements.
-    public static func equals(lhs: Self, rhs: Self) -> Bool {}
-
-    /// Makes the implementation node for this element.
-    public static func makeImplementation(of element: Self) -> Never? {}
-}
-
 extension Never: ImplementationNode {
     public var displayName: String {
         fatalError()
@@ -54,8 +40,44 @@ extension Never: ImplementationNode {
     }
 }
 
+extension Never: Element {
+    public static func makeNode(of element: Self, in parent: any ElementNode, implementationPosition: Int) -> Never {}
+
+    /// Makes the element, usually to get its edges.
+    public static func make(_ element: Self, input: Never) -> Never {}
+
+    /// Returns `true` if the two given elements are equal.
+    /// Used to optimize out some redundant comparisons for container elements.
+    public static func equals(lhs: Self, rhs: Self) -> Bool {}
+
+    /// Makes the implementation node for this element.
+    public static func makeImplementation(of element: Self) -> Never? {}
+}
+
 extension Never: View {
     public var body: Never {
         fatalError()
     }
+}
+
+extension Never: ElementNode {
+    public func update(with element: Never, compare: Bool, implementationPosition: Int) -> Int {}
+
+    public var parent: (any ElementNode)? {
+        fatalError()
+    }
+
+    public var implementation: Never? {
+        fatalError()
+    }
+
+    public var cachedImplementationPosition: Int {
+        fatalError()
+    }
+
+    public var cachedImplementationCount: Int {
+        fatalError()
+    }
+
+    
 }

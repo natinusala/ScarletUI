@@ -77,7 +77,8 @@ public class StaticElementNode9<Value, E0, E1, E2, E3, E4, E5, E6, E7, E8>: Elem
         self.attachImplementationToParent()
     }
 
-    public func update(with element: Value, compare: Bool, implementationPosition: ImplementationPosition) -> Int {
+    @discardableResult
+    public func update(with element: Value, compare: Bool, implementationPosition: Int) -> Int {
         // Compare the element to see if it changed
         // If it didn't, don't do anything
         guard !compare || !Value.equals(lhs: element, rhs: self.value) else {
