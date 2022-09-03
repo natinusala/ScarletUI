@@ -39,8 +39,7 @@ public class StaticElementNode7<Value, E0, E1, E2, E3, E4, E5, E6>: ElementNode 
     public var value: Value
     public var parent: (any ElementNode)?
     public var implementation: Value.Implementation?
-    public var cachedImplementationPosition = 0
-    public var cachedImplementationCount = 0
+    public var implementationCount = 0
 
     var e0: E0.Node?
     var e1: E1.Node?
@@ -54,16 +53,16 @@ public class StaticElementNode7<Value, E0, E1, E2, E3, E4, E5, E6>: ElementNode 
         self.value = element
 
         // Start a first update without comparing (since we update the value with itself)
-        self.update(with: element, compare: false, implementationPosition: implementationPosition)
+        let result = self.update(with: element, compare: false, implementationPosition: implementationPosition)
 
         // Create the implementation node
         self.implementation = Value.makeImplementation(of: element)
 
-        // Attach the implementation once our cached values are set
-        self.attachImplementationToParent()
+        // Attach the implementation once everything is ready
+        self.attachImplementationToParent(position: result.implementationPosition)
     }
 
-    public func updateEdges(from output: Value.Output, at implementationPosition: Int) {
+    public func updateEdges(from output: Value.Output, at implementationPosition: Int) -> UpdateResult {
         // Create edges if updating for the first time
         // Otherwise update them
 
@@ -73,11 +72,11 @@ public class StaticElementNode7<Value, E0, E1, E2, E3, E4, E5, E6>: ElementNode 
         let e0ImplementationPosition = implementationPosition + totalImplementationCount
         let e0ImplementationCount: Int
         if let e0 = self.e0 {
-            e0ImplementationCount = e0.update(with: output.e0, compare: true, implementationPosition: e0ImplementationPosition)
+            e0ImplementationCount = e0.update(with: output.e0, compare: true, implementationPosition: e0ImplementationPosition).implementationCount
         } else {
             let edge = E0.makeNode(of: output.e0, in: self, implementationPosition: e0ImplementationPosition)
             self.e0 = edge
-            e0ImplementationCount = edge.cachedImplementationCount
+            e0ImplementationCount = edge.implementationCount
         }
         totalImplementationCount += e0ImplementationCount
 
@@ -85,11 +84,11 @@ public class StaticElementNode7<Value, E0, E1, E2, E3, E4, E5, E6>: ElementNode 
         let e1ImplementationPosition = implementationPosition + totalImplementationCount
         let e1ImplementationCount: Int
         if let e1 = self.e1 {
-            e1ImplementationCount = e1.update(with: output.e1, compare: true, implementationPosition: e1ImplementationPosition)
+            e1ImplementationCount = e1.update(with: output.e1, compare: true, implementationPosition: e1ImplementationPosition).implementationCount
         } else {
             let edge = E1.makeNode(of: output.e1, in: self, implementationPosition: e1ImplementationPosition)
             self.e1 = edge
-            e1ImplementationCount = edge.cachedImplementationCount
+            e1ImplementationCount = edge.implementationCount
         }
         totalImplementationCount += e1ImplementationCount
 
@@ -97,11 +96,11 @@ public class StaticElementNode7<Value, E0, E1, E2, E3, E4, E5, E6>: ElementNode 
         let e2ImplementationPosition = implementationPosition + totalImplementationCount
         let e2ImplementationCount: Int
         if let e2 = self.e2 {
-            e2ImplementationCount = e2.update(with: output.e2, compare: true, implementationPosition: e2ImplementationPosition)
+            e2ImplementationCount = e2.update(with: output.e2, compare: true, implementationPosition: e2ImplementationPosition).implementationCount
         } else {
             let edge = E2.makeNode(of: output.e2, in: self, implementationPosition: e2ImplementationPosition)
             self.e2 = edge
-            e2ImplementationCount = edge.cachedImplementationCount
+            e2ImplementationCount = edge.implementationCount
         }
         totalImplementationCount += e2ImplementationCount
 
@@ -109,11 +108,11 @@ public class StaticElementNode7<Value, E0, E1, E2, E3, E4, E5, E6>: ElementNode 
         let e3ImplementationPosition = implementationPosition + totalImplementationCount
         let e3ImplementationCount: Int
         if let e3 = self.e3 {
-            e3ImplementationCount = e3.update(with: output.e3, compare: true, implementationPosition: e3ImplementationPosition)
+            e3ImplementationCount = e3.update(with: output.e3, compare: true, implementationPosition: e3ImplementationPosition).implementationCount
         } else {
             let edge = E3.makeNode(of: output.e3, in: self, implementationPosition: e3ImplementationPosition)
             self.e3 = edge
-            e3ImplementationCount = edge.cachedImplementationCount
+            e3ImplementationCount = edge.implementationCount
         }
         totalImplementationCount += e3ImplementationCount
 
@@ -121,11 +120,11 @@ public class StaticElementNode7<Value, E0, E1, E2, E3, E4, E5, E6>: ElementNode 
         let e4ImplementationPosition = implementationPosition + totalImplementationCount
         let e4ImplementationCount: Int
         if let e4 = self.e4 {
-            e4ImplementationCount = e4.update(with: output.e4, compare: true, implementationPosition: e4ImplementationPosition)
+            e4ImplementationCount = e4.update(with: output.e4, compare: true, implementationPosition: e4ImplementationPosition).implementationCount
         } else {
             let edge = E4.makeNode(of: output.e4, in: self, implementationPosition: e4ImplementationPosition)
             self.e4 = edge
-            e4ImplementationCount = edge.cachedImplementationCount
+            e4ImplementationCount = edge.implementationCount
         }
         totalImplementationCount += e4ImplementationCount
 
@@ -133,11 +132,11 @@ public class StaticElementNode7<Value, E0, E1, E2, E3, E4, E5, E6>: ElementNode 
         let e5ImplementationPosition = implementationPosition + totalImplementationCount
         let e5ImplementationCount: Int
         if let e5 = self.e5 {
-            e5ImplementationCount = e5.update(with: output.e5, compare: true, implementationPosition: e5ImplementationPosition)
+            e5ImplementationCount = e5.update(with: output.e5, compare: true, implementationPosition: e5ImplementationPosition).implementationCount
         } else {
             let edge = E5.makeNode(of: output.e5, in: self, implementationPosition: e5ImplementationPosition)
             self.e5 = edge
-            e5ImplementationCount = edge.cachedImplementationCount
+            e5ImplementationCount = edge.implementationCount
         }
         totalImplementationCount += e5ImplementationCount
 
@@ -145,18 +144,19 @@ public class StaticElementNode7<Value, E0, E1, E2, E3, E4, E5, E6>: ElementNode 
         let e6ImplementationPosition = implementationPosition + totalImplementationCount
         let e6ImplementationCount: Int
         if let e6 = self.e6 {
-            e6ImplementationCount = e6.update(with: output.e6, compare: true, implementationPosition: e6ImplementationPosition)
+            e6ImplementationCount = e6.update(with: output.e6, compare: true, implementationPosition: e6ImplementationPosition).implementationCount
         } else {
             let edge = E6.makeNode(of: output.e6, in: self, implementationPosition: e6ImplementationPosition)
             self.e6 = edge
-            e6ImplementationCount = edge.cachedImplementationCount
+            e6ImplementationCount = edge.implementationCount
         }
         totalImplementationCount += e6ImplementationCount
 
 
-        // Update cached values
-        self.cachedImplementationPosition = implementationPosition
-        self.cachedImplementationCount = totalImplementationCount
+        return UpdateResult(
+            implementationPosition: implementationPosition,
+            implementationCount: totalImplementationCount
+        )
     }
 
     public func make(element: Value) -> Value.Output {

@@ -26,25 +26,28 @@ public struct LeafMakeOutput<Value>: MakeOutput where Value: Element {
 public class LeafElementNode<Value>: ElementNode where Value: Element, Value.Input == LeafMakeInput<Value>, Value.Output == LeafMakeOutput<Value> {
     public var parent: (any ElementNode)?
     public var implementation: Value.Implementation?
-    public var cachedImplementationPosition = 0
-    public var cachedImplementationCount = 0
+    public var implementationCount = 0
     public var value: Value
 
     init(making element: Value, in parent: (any ElementNode)?, implementationPosition: Int) {
         self.value = element
 
         // Start a first update without comparing (since we update the value with itself)
-        self.update(with: element, compare: false, implementationPosition: implementationPosition)
+        let result = self.update(with: element, compare: false, implementationPosition: implementationPosition)
 
         // Create the implementation node
         self.implementation = Value.makeImplementation(of: element)
 
-        // Attach the implementation once our cached values are set
-        self.attachImplementationToParent()
+        // Attach the implementation once everything is ready
+        self.attachImplementationToParent(position: result.implementationPosition)
     }
 
-    public func updateEdges(from output: Value.Output, at implementationPosition: Int) {
+    public func updateEdges(from output: Value.Output, at implementationPosition: Int) -> UpdateResult {
         // No edge to update
+        return UpdateResult(
+            implementationPosition: implementationPosition,
+            implementationCount: 0
+        )
     }
 
     public func make(element: Value) -> Value.Output {

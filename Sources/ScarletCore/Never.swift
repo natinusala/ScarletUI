@@ -69,14 +69,13 @@ public class NeverElementNode: ElementNode {
     }
     public var parent: (any ElementNode)?
     public var implementation: Never?
-    public var cachedImplementationPosition = 0
-    public var cachedImplementationCount = 0
+    public var implementationCount = 0
 
     init() {
         fatalError()
     }
 
-    public func updateEdges(from output: Never, at implementationPosition: Int) {}
+    public func updateEdges(from output: Never, at implementationPosition: Int) -> UpdateResult {}
 
     public func make(element: Never) -> Never {}
 }
