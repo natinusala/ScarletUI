@@ -25,8 +25,8 @@ public struct StaticMakeOutput2<Value, E0, E1>: MakeOutput where Value: Element,
     var e1: E1
 }
 
-/// An element with static edges, aka. always the same amount of edges
-/// with the same type.
+/// An element with static edges, aka. always the same amount of edges with the same type.
+/// Performs no equality check on the element so its edges will always be updated ("passthrough" element).
 public class StaticElementNode2<Value, E0, E1>: ElementNode where Value: Element, E0: Element, E1: Element, Value.Input == StaticMakeInput2<Value>, Value.Output == StaticMakeOutput2<Value, E0, E1> {
     typealias Input = StaticMakeInput2<Value>
     typealias Output = StaticMakeOutput2<Value, E0, E1>
@@ -43,7 +43,7 @@ public class StaticElementNode2<Value, E0, E1>: ElementNode where Value: Element
         self.value = element
 
         // Start a first update without comparing (since we update the value with itself)
-        let result = self.update(with: element, compare: false, implementationPosition: implementationPosition)
+        let result = self.update(with: element, implementationPosition: implementationPosition, forced: true)
 
         // Create the implementation node
         self.implementation = Value.makeImplementation(of: element)
@@ -62,7 +62,7 @@ public class StaticElementNode2<Value, E0, E1>: ElementNode where Value: Element
         let e0ImplementationPosition = implementationPosition + totalImplementationCount
         let e0ImplementationCount: Int
         if let e0 = self.e0 {
-            e0ImplementationCount = e0.update(with: output.e0, compare: true, implementationPosition: e0ImplementationPosition).implementationCount
+            e0ImplementationCount = e0.update(with: output.e0, implementationPosition: e0ImplementationPosition).implementationCount
         } else {
             let edge = E0.makeNode(of: output.e0, in: self, implementationPosition: e0ImplementationPosition)
             self.e0 = edge
@@ -74,7 +74,7 @@ public class StaticElementNode2<Value, E0, E1>: ElementNode where Value: Element
         let e1ImplementationPosition = implementationPosition + totalImplementationCount
         let e1ImplementationCount: Int
         if let e1 = self.e1 {
-            e1ImplementationCount = e1.update(with: output.e1, compare: true, implementationPosition: e1ImplementationPosition).implementationCount
+            e1ImplementationCount = e1.update(with: output.e1, implementationPosition: e1ImplementationPosition).implementationCount
         } else {
             let edge = E1.makeNode(of: output.e1, in: self, implementationPosition: e1ImplementationPosition)
             self.e1 = edge
@@ -92,5 +92,10 @@ public class StaticElementNode2<Value, E0, E1>: ElementNode where Value: Element
     public func make(element: Value) -> Value.Output {
         let input = Input()
         return Value.make(element, input: input)
+    }
+
+    public func shouldUpdate(with element: Value) -> Bool {
+        // Pass through
+        return true
     }
 }

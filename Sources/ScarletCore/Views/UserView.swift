@@ -26,10 +26,6 @@ public extension View {
             e0: element.body
         )
     }
-
-    static func equals(lhs: Self, rhs: Self) -> Bool {
-        return anyEquals(lhs: lhs, rhs: rhs)
-    }
 }
 
 public extension LeafView {
@@ -41,9 +37,5 @@ public extension LeafView {
     /// Default implementation of `make()` for user views with no body: make an empty edge.
     static func make(_ element: Self, input: LeafMakeInput<Self>) -> LeafMakeOutput<Self> {
         return .init()
-    }
-
-    static func equals(lhs: Self, rhs: Self) -> Bool {
-        return anyEquals(lhs: lhs, rhs: rhs)
     }
 }

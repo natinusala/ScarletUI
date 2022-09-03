@@ -22,7 +22,8 @@ public struct LeafMakeOutput<Value>: MakeOutput where Value: Element {
 
 }
 
-/// Element nodes for leaf views that have no edges.
+/// Element nodes for leaf elements that have no edges.
+/// Performs an equality check on the element (see ``shouldUpdate(with:)``).
 public class LeafElementNode<Value>: ElementNode where Value: Element, Value.Input == LeafMakeInput<Value>, Value.Output == LeafMakeOutput<Value> {
     public var parent: (any ElementNode)?
     public var implementation: Value.Implementation?
@@ -33,7 +34,7 @@ public class LeafElementNode<Value>: ElementNode where Value: Element, Value.Inp
         self.value = element
 
         // Start a first update without comparing (since we update the value with itself)
-        let result = self.update(with: element, compare: false, implementationPosition: implementationPosition)
+        let result = self.update(with: element, implementationPosition: implementationPosition, forced: true)
 
         // Create the implementation node
         self.implementation = Value.makeImplementation(of: element)
@@ -53,5 +54,12 @@ public class LeafElementNode<Value>: ElementNode where Value: Element, Value.Inp
     public func make(element: Value) -> Value.Output {
         let input = LeafMakeInput<Value>()
         return Value.make(element, input: input)
+    }
+
+    public func shouldUpdate(with element: Value) -> Bool {
+        // Even if leaves are mostly built-ins elements with only attributes,
+        // it doesn't cost much to make the check anyway for user elements
+        // since updating leaves is cheap (they have no edges) and they usually contain few properties
+        return anyEquals(lhs: self.value, rhs: element)
     }
 }

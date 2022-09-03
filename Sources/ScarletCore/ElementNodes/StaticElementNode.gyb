@@ -32,8 +32,8 @@ public struct StaticMakeOutput${IDX}<Value, ${E_TYPES}>: MakeOutput where Value:
 % end
 }
 
-/// An element with static edges, aka. always the same amount of edges
-/// with the same type.
+/// An element with static edges, aka. always the same amount of edges with the same type.
+/// Performs no equality check on the element so its edges will always be updated ("passthrough" element).
 public class StaticElementNode${IDX}<Value, ${E_TYPES}>: ElementNode where Value: Element, ${E_CONSTRAINTS}, Value.Input == StaticMakeInput${IDX}<Value>, Value.Output == StaticMakeOutput${IDX}<Value, ${E_TYPES}> {
     typealias Input = StaticMakeInput${IDX}<Value>
     typealias Output = StaticMakeOutput${IDX}<Value, ${E_TYPES}>
@@ -51,7 +51,7 @@ public class StaticElementNode${IDX}<Value, ${E_TYPES}>: ElementNode where Value
         self.value = element
 
         // Start a first update without comparing (since we update the value with itself)
-        let result = self.update(with: element, compare: false, implementationPosition: implementationPosition)
+        let result = self.update(with: element, implementationPosition: implementationPosition, forced: true)
 
         // Create the implementation node
         self.implementation = Value.makeImplementation(of: element)
@@ -71,7 +71,7 @@ public class StaticElementNode${IDX}<Value, ${E_TYPES}>: ElementNode where Value
         let e${i}ImplementationPosition = implementationPosition + totalImplementationCount
         let e${i}ImplementationCount: Int
         if let e${i} = self.e${i} {
-            e${i}ImplementationCount = e${i}.update(with: output.e${i}, compare: true, implementationPosition: e${i}ImplementationPosition).implementationCount
+            e${i}ImplementationCount = e${i}.update(with: output.e${i}, implementationPosition: e${i}ImplementationPosition).implementationCount
         } else {
             let edge = E${i}.makeNode(of: output.e${i}, in: self, implementationPosition: e${i}ImplementationPosition)
             self.e${i} = edge
@@ -90,5 +90,10 @@ public class StaticElementNode${IDX}<Value, ${E_TYPES}>: ElementNode where Value
     public func make(element: Value) -> Value.Output {
         let input = Input()
         return Value.make(element, input: input)
+    }
+
+    public func shouldUpdate(with element: Value) -> Bool {
+        // Pass through
+        return true
     }
 }

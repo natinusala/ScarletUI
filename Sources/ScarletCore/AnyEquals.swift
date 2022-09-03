@@ -17,7 +17,7 @@
 
 import Foundation
 
-// TODO: is anyEquals still necessary? since everything is statically typed now
+// TODO: is anyEquals still necessary? since everything is statically typed now we can make multiple equals functions with `where` clauses and a default one using Mirror
 
 /// Performs an equality check on two type-erased values.
 /// This method tries its best to use the correct method with the info available at runtime

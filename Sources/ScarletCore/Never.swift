@@ -43,14 +43,8 @@ extension Never: ImplementationNode {
 extension Never: Element {
     public static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int) -> NeverElementNode {}
 
-    /// Makes the element, usually to get its edges.
     public static func make(_ element: Self, input: Never) -> Never {}
 
-    /// Returns `true` if the two given elements are equal.
-    /// Used to optimize out some redundant comparisons for container elements.
-    public static func equals(lhs: Self, rhs: Self) -> Bool {}
-
-    /// Makes the implementation node for this element.
     public static func makeImplementation(of element: Self) -> Never? {}
 }
 
@@ -78,4 +72,6 @@ public class NeverElementNode: ElementNode {
     public func updateEdges(from output: Never, at implementationPosition: Int) -> UpdateResult {}
 
     public func make(element: Never) -> Never {}
+
+    public func shouldUpdate(with element: Never) -> Bool {}
 }

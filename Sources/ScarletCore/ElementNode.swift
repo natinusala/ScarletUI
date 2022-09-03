@@ -38,10 +38,6 @@ public protocol Element {
     /// Makes the element, usually to get its edges.
     static func make(_ element: Self, input: Input) -> Output
 
-    /// Returns `true` if the two given elements are equal.
-    /// Used to optimize out some redundant comparisons for container elements.
-    static func equals(lhs: Self, rhs: Self) -> Bool
-
     /// Makes the implementation node for this element.
     static func makeImplementation(of element: Self) -> Implementation?
 }
@@ -67,6 +63,10 @@ public protocol ElementNode<Value>: AnyObject {
     /// Value for the element.
     var value: Value { get set }
 
+    /// Returns `true` if the node should be updated with the given new element
+    /// (typically if it changed).
+    func shouldUpdate(with element: Value) -> Bool
+
     /// Updates the node with a potential new version of the element.
     func updateEdges(from output: Value.Output, at implementationPosition: Int) -> UpdateResult
 
@@ -85,10 +85,9 @@ public protocol ElementNode<Value>: AnyObject {
 extension ElementNode {
     /// Updates the node with a potential new version of the element.
     /// Returns the node implementation count.
-    public func update(with element: Value, compare: Bool, implementationPosition: Int) -> UpdateResult {
-        // Compare the element to see if it changed
-        // If it didn't, don't do anything
-        guard !compare || !Value.equals(lhs: element, rhs: self.value) else {
+    public func update(with element: Value, implementationPosition: Int, forced: Bool = false) -> UpdateResult {
+        // Only update if required or if it's forced
+        guard forced || self.shouldUpdate(with: element) else {
             return UpdateResult(
                 implementationPosition: implementationPosition,
                 implementationCount: self.implementationCount
