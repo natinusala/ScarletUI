@@ -14,38 +14,8 @@
    limitations under the License.
 */
 
-import ScarletUI
+public protocol App: Element {
+    associatedtype Body: Scene
 
-struct Window<Content: View>: LeafScene {
-    let content: Content
-
-    init(content: () -> Content) {
-        self.content = content()
-    }
+    var body: Body { get }
 }
-
-struct ScarletUIDemo: App {
-    var body: some Scene {
-        Window {
-            MainContent()
-        }
-    }
-}
-
-struct MainContent: View {
-    var body: some View {
-        Text("lel")
-    }
-}
-
-struct Text: LeafView {
-    let text: String
-
-    init(_ text: String) {
-        self.text = text
-    }
-}
-
-let app = ScarletUIDemo()
-let node = ScarletUIDemo.makeNode(of: app, in: nil, implementationPosition: 0)
-node.printTree()

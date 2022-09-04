@@ -140,4 +140,14 @@ public class StaticElementNode5<Value, E0, E1, E2, E3, E4>: ElementNode where Va
         // Pass through
         return true
     }
+
+    public var allEdges: [(any ElementNode)?] {
+        return [
+            self.e0,
+            self.e1,
+            self.e2,
+            self.e3,
+            self.e4,
+        ]
+    }
 }

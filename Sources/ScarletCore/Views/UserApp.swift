@@ -14,28 +14,16 @@
    limitations under the License.
 */
 
-public extension View {
-    /// Default implementation of `makeNode()` for user views with a body: make a node with one edge, the body.
+public extension App {
+    /// Default implementation of `makeNode()` for user apps with a body: make a node with one edge, the body.
     static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int) -> UserElementNode<Self, Body> where Input == UserMakeInput<Self> {
         return .init(making: element, in: parent, implementationPosition: implementationPosition)
     }
 
-    /// Default implementation of `make()` for user views with a body: make the body edge.
+    /// Default implementation of `make()` for user apps with a body: make the body edge.
     static func make(_ element: Self, input: UserMakeInput<Self>) -> UserMakeOutput<Self, Body> {
         return .init(
             edge: element.body
         )
-    }
-}
-
-public extension LeafView {
-    /// Default implementation of `makeNode()` for leaves: make a leaf node.
-    static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int) -> LeafViewElementNode<Self> where Input == LeafViewMakeInput<Self> {
-        return .init(making: element, in: parent, implementationPosition: implementationPosition)
-    }
-
-    /// Default implementation of `make()` for leaves: make an empty edge.
-    static func make(_ element: Self, input: LeafViewMakeInput<Self>) -> LeafViewMakeOutput<Self> {
-        return .init()
     }
 }

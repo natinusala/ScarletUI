@@ -74,4 +74,8 @@ public class NeverElementNode: ElementNode {
     public func make(element: Never) -> Never {}
 
     public func shouldUpdate(with element: Never) -> Bool {}
+
+    public var allEdges: [(any ElementNode)?] {
+        fatalError()
+    }
 }

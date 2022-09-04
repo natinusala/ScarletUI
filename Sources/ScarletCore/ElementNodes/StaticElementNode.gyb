@@ -96,4 +96,12 @@ public class StaticElementNode${IDX}<Value, ${E_TYPES}>: ElementNode where Value
         // Pass through
         return true
     }
+
+    public var allEdges: [(any ElementNode)?] {
+        return [
+% for i in range(0, IDX):
+            self.e${i},
+% end
+        ]
+    }
 }

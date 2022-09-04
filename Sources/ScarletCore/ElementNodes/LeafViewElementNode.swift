@@ -14,22 +14,21 @@
    limitations under the License.
 */
 
-public struct UserMakeInput<Value>: MakeInput where Value: Element {
+public struct LeafViewMakeInput<Value>: MakeInput where Value: Element {
 
 }
 
-public struct UserMakeOutput<Value, Edge>: MakeOutput where Value: Element, Edge: Element {
-    let edge: Edge
+public struct LeafViewMakeOutput<Value>: MakeOutput where Value: Element {
+
 }
 
-/// Element nodes for "user" elements with a body (apps, scenes, views, view modifiers...). Always performs equality checks.
-public class UserElementNode<Value, Edge>: ElementNode where Value: Element, Value.Input == UserMakeInput<Value>, Value.Output == UserMakeOutput<Value, Edge>, Edge: Element {
-    public var value: Value
+/// Element nodes for leaf views that have no edges.
+/// Performs an equality check on the element (see ``shouldUpdate(with:)``).
+public class LeafViewElementNode<Value>: ElementNode where Value: Element, Value.Input == LeafViewMakeInput<Value>, Value.Output == LeafViewMakeOutput<Value> {
     public var parent: (any ElementNode)?
     public var implementation: Value.Implementation?
     public var implementationCount = 0
-
-    var edge: Edge.Node?
+    public var value: Value
 
     init(making element: Value, in parent: (any ElementNode)?, implementationPosition: Int) {
         self.value = element
@@ -45,30 +44,26 @@ public class UserElementNode<Value, Edge>: ElementNode where Value: Element, Val
     }
 
     public func updateEdges(from output: Value.Output, at implementationPosition: Int) -> UpdateResult {
-        if let edge = self.edge {
-            return edge.update(with: output.edge, implementationPosition: implementationPosition)
-        } else {
-            let edge = Edge.makeNode(of: output.edge, in: self, implementationPosition: implementationPosition)
-            self.edge = edge
-            return UpdateResult(
-                implementationPosition: implementationPosition,
-                implementationCount: edge.implementationCount
-            )
-        }
+        // No edge to update
+        return UpdateResult(
+            implementationPosition: implementationPosition,
+            implementationCount: 0
+        )
     }
 
     public func make(element: Value) -> Value.Output {
-        let input = UserMakeInput<Value>()
+        let input = LeafViewMakeInput<Value>()
         return Value.make(element, input: input)
     }
 
     public func shouldUpdate(with element: Value) -> Bool {
-        return !anyEquals(lhs: self.value, rhs: element)
+        // Even if leaves are mostly built-ins elements with only attributes,
+        // it doesn't cost much to make the check anyway for user elements
+        // since updating leaves is cheap (they have no edges) and they usually contain few properties
+        return anyEquals(lhs: self.value, rhs: element)
     }
 
     public var allEdges: [(any ElementNode)?] {
-        return [
-            self.edge
-        ]
+        return []
     }
 }

@@ -81,6 +81,10 @@ public protocol ElementNode<Value>: AnyObject {
 
     /// Makes the given element.
     func make(element: Value) -> Value.Output
+
+    /// Used to visit all edges of the node.
+    /// Should only be used for debugging purposes.
+    var allEdges: [(any ElementNode)?] { get }
 }
 
 extension ElementNode {
@@ -140,5 +144,20 @@ extension ElementNode {
         guard let implementation = self.implementation else { return }
         guard let parent = self.parent else { return }
         inner(attaching: implementation, at: position, to: parent)
+    }
+}
+
+extension ElementNode {
+    public func printTree(indent: Int = 0) {
+        let indentStr = String(repeating: " ", count: indent)
+        print("\(indentStr)- \(Value.self)")
+
+        self.allEdges.forEach { edge in
+            if let edge {
+                edge.printTree(indent: indent + 4)
+            } else {
+                print("\(indentStr)    - ##UNINITIALIZED##")
+            }
+        }
     }
 }
