@@ -69,6 +69,7 @@ let package = Package(
             ],
             exclude: [
                 "ElementNodes/StaticElementNode.gyb",
+                "Views/TupleView.gyb",
             ]
         ),
         // ScarletNative: native code companion to ScarletUI

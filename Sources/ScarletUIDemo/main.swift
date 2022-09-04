@@ -19,7 +19,7 @@ import ScarletUI
 struct Window<Content: View>: LeafScene {
     let content: Content
 
-    init(content: () -> Content) {
+    init(@ViewBuilder content: () -> Content) {
         self.content = content()
     }
 }
@@ -34,15 +34,21 @@ struct ScarletUIDemo: App {
 
 struct MainContent: View {
     var body: some View {
-        Text("lel")
+        Text("1")
+        Text("2")
+        Text("3")
     }
 }
 
-struct Text: LeafView {
+struct Text: LeafView, CustomStringConvertible {
     let text: String
 
     init(_ text: String) {
         self.text = text
+    }
+
+    var description: String {
+        return "Text(text: \(self.text))"
     }
 }
 

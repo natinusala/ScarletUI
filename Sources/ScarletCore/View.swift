@@ -17,7 +17,7 @@
 public protocol View: Element {
     associatedtype Body: View
 
-    var body: Body { get }
+    @ViewBuilder var body: Body { get }
 }
 
 /// Extension for internal views that have no body but
@@ -34,5 +34,12 @@ public protocol LeafView: View where Body == Never {}
 public extension LeafView {
     var body: Never {
         fatalError()
+    }
+}
+
+@resultBuilder
+public struct ViewBuilder {
+    public static func buildBlock<Content>(_ content: Content) -> Content where Content: View {
+        return content
     }
 }

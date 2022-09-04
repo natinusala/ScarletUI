@@ -14,9 +14,9 @@
    limitations under the License.
 */
 
-public extension View {
+public extension View where Input == UserMakeInput<Self> {
     /// Default implementation of `makeNode()` for user views with a body: make a node with one edge, the body.
-    static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int) -> UserElementNode<Self, Body> where Input == UserMakeInput<Self> {
+    static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int) -> UserElementNode<Self, Body> where Output == UserMakeOutput<Self, Body> {
         return .init(making: element, in: parent, implementationPosition: implementationPosition)
     }
 
@@ -28,9 +28,9 @@ public extension View {
     }
 }
 
-public extension LeafView {
+public extension LeafView where Input == LeafViewMakeInput<Self> {
     /// Default implementation of `makeNode()` for leaves: make a leaf node.
-    static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int) -> LeafViewElementNode<Self> where Input == LeafViewMakeInput<Self> {
+    static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int) -> LeafViewElementNode<Self> where Output == LeafViewMakeOutput<Self> {
         return .init(making: element, in: parent, implementationPosition: implementationPosition)
     }
 
