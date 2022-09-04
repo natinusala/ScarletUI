@@ -48,7 +48,7 @@ extension Never: Element {
     public static func makeImplementation(of element: Self) -> Never? {}
 }
 
-extension Never: View {
+extension Never: View, Scene, App {
     public var body: Never {
         fatalError()
     }

@@ -15,11 +15,7 @@
 */
 
 public protocol Scene: Element {
-    /// Note: for the sake of simplicity, the body of a scene is a view. It's however
-    /// possible to change that to `Scene` is composing scenes becomes required.
-    /// "Final" scenes just need a special element node type taking a view
-    /// as an edge (something like `SceneViewElementNode`) and no body call.
-    associatedtype Body: View
+    associatedtype Body: Scene
 
     var body: Body { get }
 }
