@@ -116,7 +116,7 @@ extension ElementNode {
 extension ElementNode {
     public func printTree(indent: Int = 0) {
         let indentStr = String(repeating: " ", count: indent)
-        print("\(indentStr)- \(self.value.description)")
+        print("\(indentStr)- \(self.value.description) (node: \(Self.self))")
 
         self.allEdges.forEach { edge in
             if let edge {
