@@ -16,14 +16,14 @@
 
 public extension View {
     /// Default implementation of `makeNode()` for user views with a body: make a node with one edge, the body.
-    static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int) -> StaticElementNode1<Self, Body> where Input == StaticMakeInput1<Self> {
+    static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int) -> UserElementNode<Self, Body> where Input == UserMakeInput<Self> {
         return .init(making: element, in: parent, implementationPosition: implementationPosition)
     }
 
     /// Default implementation of `make()` for user views with a body: make the body edge.
-    static func make(_ element: Self, input: StaticMakeInput1<Self>) -> StaticMakeOutput1<Self, Body> {
+    static func make(_ element: Self, input: UserMakeInput<Self>) -> UserMakeOutput<Self, Body> {
         return .init(
-            e0: element.body
+            edge: element.body
         )
     }
 }

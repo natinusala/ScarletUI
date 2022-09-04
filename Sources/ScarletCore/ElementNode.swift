@@ -63,15 +63,6 @@ public protocol ElementNode<Value>: AnyObject {
     /// Value for the element.
     var value: Value { get set }
 
-    /// Returns `true` if the node should be updated with the given new element
-    /// (typically if it changed).
-    func shouldUpdate(with element: Value) -> Bool
-
-    /// Updates the node with a potential new version of the element.
-    func updateEdges(from output: Value.Output, at implementationPosition: Int) -> UpdateResult
-
-    func make(element: Value) -> Value.Output
-
     /// Parent of this node.
     var parent: (any ElementNode)? { get }
 
@@ -80,6 +71,16 @@ public protocol ElementNode<Value>: AnyObject {
 
     /// Implementation count.
     var implementationCount: Int { get set }
+
+    /// Updates the node with a potential new version of the element.
+    func updateEdges(from output: Value.Output, at implementationPosition: Int) -> UpdateResult
+
+    /// Returns `true` if the node should be updated with the given new element
+    /// (typically if it changed).
+    func shouldUpdate(with element: Value) -> Bool
+
+    /// Makes the given element.
+    func make(element: Value) -> Value.Output
 }
 
 extension ElementNode {
