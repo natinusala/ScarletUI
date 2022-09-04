@@ -23,7 +23,7 @@ public protocol MakeOutput<Value> {
 }
 
 /// Represents an element of the graph: an app, a scene or a view.
-public protocol Element: CustomStringConvertible {
+public protocol Element: CustomDebugStringConvertible {
     /// Type of the state tracking node for this element.
     associatedtype Node: ElementNode<Self>
 
@@ -52,7 +52,7 @@ public extension Element where Implementation == Never {
 }
 
 public extension Element {
-    var description: String {
+    var debugDescription: String {
         return "\(Self.self)"
     }
 }
