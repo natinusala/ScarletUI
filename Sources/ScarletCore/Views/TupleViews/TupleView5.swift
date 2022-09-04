@@ -29,9 +29,10 @@ public struct TupleView5<E0, E1, E2, E3, E4>: View where E0: Element, E1: Elemen
     public static func makeNode(
         of element: Self,
         in parent: (any ElementNode)?,
-        implementationPosition: Int
+        implementationPosition: Int,
+        using context: Context
     ) -> StaticElementNode5<Self, E0, E1, E2, E3, E4> where Input == StaticMakeInput5<Self> {
-        return .init(making: element, in: parent, implementationPosition: implementationPosition)
+        return .init(making: element, in: parent, implementationPosition: implementationPosition, using: context)
     }
 
     public static func make(

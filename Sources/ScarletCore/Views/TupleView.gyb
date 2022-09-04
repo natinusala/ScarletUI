@@ -37,9 +37,10 @@ public struct TupleView${IDX}<${E_TYPES}>: View where ${E_CONSTRAINTS} {
     public static func makeNode(
         of element: Self,
         in parent: (any ElementNode)?,
-        implementationPosition: Int
+        implementationPosition: Int,
+        using context: Context
     ) -> StaticElementNode${IDX}<Self, ${E_TYPES}> where Input == StaticMakeInput${IDX}<Self> {
-        return .init(making: element, in: parent, implementationPosition: implementationPosition)
+        return .init(making: element, in: parent, implementationPosition: implementationPosition, using: context)
     }
 
     public static func make(

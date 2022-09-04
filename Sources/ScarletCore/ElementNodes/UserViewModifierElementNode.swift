@@ -14,21 +14,22 @@
    limitations under the License.
 */
 
-public struct LeafViewMakeInput<Value>: MakeInput where Value: Element {
-
+public struct UserViewModifierMakeInput<Value>: MakeInput where Value: ViewModifier {
+    let content: Value.Content
 }
 
-public struct LeafViewMakeOutput<Value>: MakeOutput where Value: Element {
-
+public struct UserViewModifierMakeOutput<Value, Edge>: MakeOutput where Value: ViewModifier, Edge: Element {
+    let edge: Edge
 }
 
-/// Element nodes for leaf views that have no edges.
-/// Performs an equality check on the element (see ``shouldUpdate(with:)``).
-public class LeafViewElementNode<Value>: ElementNode where Value: Element, Value.Input == LeafViewMakeInput<Value>, Value.Output == LeafViewMakeOutput<Value> {
+/// Element node for user provided view modifiers. Always performs equality check.
+public class UserViewModifierElementNode<Value, Edge>: ElementNode where Value: ViewModifier, Value.Input == UserViewModifierMakeInput<Value>, Value.Output == UserViewModifierMakeOutput<Value, Edge>, Edge: Element {
+    public var value: Value
     public var parent: (any ElementNode)?
     public var implementation: Value.Implementation?
     public var implementationCount = 0
-    public var value: Value
+
+    var edge: Edge.Node?
 
     init(making element: Value, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) {
         self.value = element
@@ -44,26 +45,21 @@ public class LeafViewElementNode<Value>: ElementNode where Value: Element, Value
     }
 
     public func updateEdges(from output: Value.Output, at implementationPosition: Int, using context: Context) -> UpdateResult {
-        // No edge to update
-        return UpdateResult(
-            implementationPosition: implementationPosition,
-            implementationCount: 0
-        )
-    }
-
-    public func make(element: Value) -> Value.Output {
-        let input = LeafViewMakeInput<Value>()
-        return Value.make(element, input: input)
+        fatalError("Unimplemented")
     }
 
     public func shouldUpdate(with element: Value) -> Bool {
-        // Even if leaves are mostly built-ins elements with only attributes,
-        // it doesn't cost much to make the check anyway for user elements
-        // since updating leaves is cheap (they have no edges) and they usually contain few properties
-        return anyEquals(lhs: self.value, rhs: element)
+        // Comparison should already be made by our parent `ModifiedContent`
+        return true
+    }
+
+    public func make(element: Value) -> Value.Output {
+        fatalError("Unimplemented")
     }
 
     public var allEdges: [(any ElementNode)?] {
-        return []
+        return [
+            self.edge
+        ]
     }
 }

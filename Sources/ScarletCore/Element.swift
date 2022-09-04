@@ -35,8 +35,10 @@ public protocol Element: CustomDebugStringConvertible {
 
     associatedtype Implementation: ImplementationNode
 
+    typealias Context = ElementNodeContext
+
     /// Makes the node for that element.
-    static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int) -> Node
+    static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) -> Node
 
     /// Makes the element, usually to get its edges.
     static func make(_ element: Self, input: Input) -> Output

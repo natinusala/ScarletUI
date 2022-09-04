@@ -14,16 +14,14 @@
    limitations under the License.
 */
 
-public extension App where Input == UserMakeInput<Self>, Output == UserMakeOutput<Self, Body> {
-    /// Default implementation of `makeNode()` for user apps with a body: make a node with one edge, the body.
-    static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) -> UserElementNode<Self, Body> {
+public extension ViewModifier where Input == UserViewModifierMakeInput<Self>, Output == UserViewModifierMakeOutput<Self, Body> {
+    static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) -> UserViewModifierElementNode<Self, Body> {
         return .init(making: element, in: parent, implementationPosition: implementationPosition, using: context)
     }
 
-    /// Default implementation of `make()` for user apps with a body: make the body edge.
-    static func make(_ element: Self, input: UserMakeInput<Self>) -> UserMakeOutput<Self, Body> {
+    static func make(_ element: Self, input: UserViewModifierMakeInput<Self>) -> UserViewModifierMakeOutput<Self, Body> {
         return .init(
-            edge: element.body
+            edge: element.body(content: input.content)
         )
     }
 }

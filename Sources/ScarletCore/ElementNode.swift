@@ -19,12 +19,22 @@ public struct UpdateResult {
     let implementationCount: Int
 }
 
+/// Context given by the parent node to its edges when updating them.
+public struct ElementNodeContext {
+    /// Returns the initial root context.
+    public static func root() -> Self {
+        return Self()
+    }
+}
+
 /// Keeps track of a "mounted" element and its state.
 ///
 /// The "type" of an element node is determined from how it handles its
 /// edges (statically or dynamically).
 public protocol ElementNode<Value>: AnyObject {
     associatedtype Value: Element
+
+    typealias Context = Value.Context
 
     /// Value for the element.
     var value: Value { get set }
@@ -39,7 +49,7 @@ public protocol ElementNode<Value>: AnyObject {
     var implementationCount: Int { get set }
 
     /// Updates the node with a potential new version of the element.
-    func updateEdges(from output: Value.Output, at implementationPosition: Int) -> UpdateResult
+    func updateEdges(from output: Value.Output, at implementationPosition: Int, using context: Context) -> UpdateResult
 
     /// Returns `true` if the node should be updated with the given new element
     /// (typically if it changed).
@@ -56,7 +66,7 @@ public protocol ElementNode<Value>: AnyObject {
 extension ElementNode {
     /// Updates the node with a potential new version of the element.
     /// Returns the node implementation count.
-    public func update(with element: Value, implementationPosition: Int, forced: Bool = false) -> UpdateResult {
+    public func update(with element: Value, implementationPosition: Int, forced: Bool = false, using context: Context) -> UpdateResult {
         // Only update if required or if it's forced
         guard forced || self.shouldUpdate(with: element) else {
             return UpdateResult(
@@ -74,7 +84,11 @@ extension ElementNode {
         // Override implementation position if the element is substantial since our edges
         // must start at 0 (the parent being ourself)
 
-        let result = self.updateEdges(from: output, at: self.substantial ? 0 : implementationPosition)
+        let result = self.updateEdges(
+            from: output,
+            at: (self.substantial ? 0 : implementationPosition),
+            using: context
+        )
 
         self.implementationCount = result.implementationCount
 

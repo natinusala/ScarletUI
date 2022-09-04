@@ -53,5 +53,5 @@ struct Text: LeafView {
 }
 
 let app = ScarletUIDemo()
-let node = ScarletUIDemo.makeNode(of: app, in: nil, implementationPosition: 0)
+let node = ScarletUIDemo.makeNode(of: app, in: nil, implementationPosition: 0, using: .root())
 node.printTree()

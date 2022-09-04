@@ -31,11 +31,11 @@ public class LeafSceneElementNode<Value, Edge>: ElementNode where Value: Element
 
     var edge: Edge.Node?
 
-    init(making element: Value, in parent: (any ElementNode)?, implementationPosition: Int) {
+    init(making element: Value, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) {
         self.value = element
 
         // Start a first update without comparing (since we update the value with itself)
-        let result = self.update(with: element, implementationPosition: implementationPosition, forced: true)
+        let result = self.update(with: element, implementationPosition: implementationPosition, forced: true, using: context)
 
         // Create the implementation node
         self.implementation = Value.makeImplementation(of: element)
@@ -44,11 +44,11 @@ public class LeafSceneElementNode<Value, Edge>: ElementNode where Value: Element
         self.attachImplementationToParent(position: result.implementationPosition)
     }
 
-    public func updateEdges(from output: Value.Output, at implementationPosition: Int) -> UpdateResult {
+    public func updateEdges(from output: Value.Output, at implementationPosition: Int, using context: Context) -> UpdateResult {
         if let edge = self.edge {
-            return edge.update(with: output.edge, implementationPosition: implementationPosition)
+            return edge.update(with: output.edge, implementationPosition: implementationPosition, using: context)
         } else {
-            let edge = Edge.makeNode(of: output.edge, in: self, implementationPosition: implementationPosition)
+            let edge = Edge.makeNode(of: output.edge, in: self, implementationPosition: implementationPosition, using: context)
             self.edge = edge
             return UpdateResult(
                 implementationPosition: implementationPosition,
