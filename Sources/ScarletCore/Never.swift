@@ -71,7 +71,7 @@ public class NeverElementNode: ElementNode {
 
     public func updateEdges(from output: Never, at implementationPosition: Int, using context: Context) -> UpdateResult {}
 
-    public func make(element: Never) -> Never {}
+    public func make(element: Never, parameters: Any) -> Never {}
 
     public func shouldUpdate(with element: Never) -> Bool {}
 

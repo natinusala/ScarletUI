@@ -49,6 +49,7 @@ public protocol ElementNode<Value>: AnyObject {
     var implementationCount: Int { get set }
 
     /// Updates the node with a potential new version of the element.
+    /// Parameters are given by the parent node to this one when updating. It's type erased to save the code from a generic constraints hell.
     func updateEdges(from output: Value.Output, at implementationPosition: Int, using context: Context) -> UpdateResult
 
     /// Returns `true` if the node should be updated with the given new element
@@ -56,7 +57,8 @@ public protocol ElementNode<Value>: AnyObject {
     func shouldUpdate(with element: Value) -> Bool
 
     /// Makes the given element.
-    func make(element: Value) -> Value.Output
+    /// Parameters are given by the parent node to this one when updating. It's type erased to save the code from a generic constraints hell.
+    func make(element: Value, parameters: Any) -> Value.Output
 
     /// Used to visit all edges of the node.
     /// Should only be used for debugging purposes.
@@ -66,7 +68,8 @@ public protocol ElementNode<Value>: AnyObject {
 extension ElementNode {
     /// Updates the node with a potential new version of the element.
     /// Returns the node implementation count.
-    public func update(with element: Value, implementationPosition: Int, forced: Bool = false, using context: Context) -> UpdateResult {
+    /// Parameters are given by the parent node to this one when updating. It's type erased to save the code from a generic constraints hell.
+    public func update(with element: Value, implementationPosition: Int, forced: Bool = false, using context: Context, parameters: Any = ()) -> UpdateResult {
         // Only update if required or if it's forced
         guard forced || self.shouldUpdate(with: element) else {
             return UpdateResult(
@@ -79,7 +82,7 @@ extension ElementNode {
         self.value = element
 
         // Make the element and make edges
-        let output = self.make(element: element)
+        let output = self.make(element: element, parameters: parameters)
 
         // Override implementation position if the element is substantial since our edges
         // must start at 0 (the parent being ourself)

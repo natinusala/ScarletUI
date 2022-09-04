@@ -223,7 +223,7 @@ public class StaticElementNode9<Value, E0, E1, E2, E3, E4, E5, E6, E7, E8>: Elem
         )
     }
 
-    public func make(element: Value) -> Value.Output {
+    public func make(element: Value, parameters: Any) -> Value.Output {
         let input = Input()
         return Value.make(element, input: input)
     }

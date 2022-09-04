@@ -23,6 +23,8 @@ public struct UserViewModifierMakeOutput<Value, Edge>: MakeOutput where Value: V
 }
 
 /// Element node for user provided view modifiers. Always performs equality check.
+/// The view modifier edge is the actual modified content, passed by ``ModifiedContent`` through type-erased parameters.
+/// The pattern is `ModifiedContent -> ViewModifier -> ViewModifier.Body -> [...] -> ViewModifier.Content`.
 public class UserViewModifierElementNode<Value, Edge>: ElementNode where Value: ViewModifier, Value.Input == UserViewModifierMakeInput<Value>, Value.Output == UserViewModifierMakeOutput<Value, Edge>, Edge: Element {
     public var value: Value
     public var parent: (any ElementNode)?
@@ -45,7 +47,16 @@ public class UserViewModifierElementNode<Value, Edge>: ElementNode where Value: 
     }
 
     public func updateEdges(from output: Value.Output, at implementationPosition: Int, using context: Context) -> UpdateResult {
-        fatalError("Unimplemented")
+        if let edge = self.edge {
+            return edge.update(with: output.edge, implementationPosition: implementationPosition, using: context)
+        } else {
+            let edge = Edge.makeNode(of: output.edge, in: self, implementationPosition: implementationPosition, using: context)
+            self.edge = edge
+            return UpdateResult(
+                implementationPosition: implementationPosition,
+                implementationCount: edge.implementationCount
+            )
+        }
     }
 
     public func shouldUpdate(with element: Value) -> Bool {
@@ -53,8 +64,13 @@ public class UserViewModifierElementNode<Value, Edge>: ElementNode where Value: 
         return true
     }
 
-    public func make(element: Value) -> Value.Output {
-        fatalError("Unimplemented")
+    public func make(element: Value, parameters: Any) -> Value.Output {
+        guard let parameters = parameters as? Value.Content else {
+            fatalError("\(Self.self) expected parameters of type \(Value.Content.self), received \(type(of: parameters))")
+        }
+
+        let input = UserViewModifierMakeInput<Value>(content: parameters)
+        return Value.make(element, input: input)
     }
 
     public var allEdges: [(any ElementNode)?] {

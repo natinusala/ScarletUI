@@ -51,7 +51,7 @@ public class LeafViewElementNode<Value>: ElementNode where Value: Element, Value
         )
     }
 
-    public func make(element: Value) -> Value.Output {
+    public func make(element: Value, parameters: Any) -> Value.Output {
         let input = LeafViewMakeInput<Value>()
         return Value.make(element, input: input)
     }

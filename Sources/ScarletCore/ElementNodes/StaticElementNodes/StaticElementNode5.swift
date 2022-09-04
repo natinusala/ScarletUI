@@ -151,7 +151,7 @@ public class StaticElementNode5<Value, E0, E1, E2, E3, E4>: ElementNode where Va
         )
     }
 
-    public func make(element: Value) -> Value.Output {
+    public func make(element: Value, parameters: Any) -> Value.Output {
         let input = Input()
         return Value.make(element, input: input)
     }

@@ -57,7 +57,7 @@ public class LeafSceneElementNode<Value, Edge>: ElementNode where Value: Element
         }
     }
 
-    public func make(element: Value) -> Value.Output {
+    public func make(element: Value, parameters: Any) -> Value.Output {
         let input = UserMakeInput<Value>()
         return Value.make(element, input: input)
     }
