@@ -14,9 +14,9 @@
    limitations under the License.
 */
 
-public extension Scene {
+public extension Scene where Input == UserMakeInput<Self>, Output == UserMakeOutput<Self, Body> {
     /// Default implementation of `makeNode()` for user scenes with a body: make a node with one edge, the body.
-    static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int) -> UserElementNode<Self, Body> where Input == UserMakeInput<Self> {
+    static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int) -> UserElementNode<Self, Body> {
         return .init(making: element, in: parent, implementationPosition: implementationPosition)
     }
 
@@ -28,8 +28,8 @@ public extension Scene {
     }
 }
 
-public extension LeafScene {
-    static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int) -> UserElementNode<Self, Content> where Input == UserMakeInput<Self> {
+public extension LeafScene where Input == UserMakeInput<Self>, Output == UserMakeOutput<Self, Content> {
+    static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int) -> UserElementNode<Self, Content> {
         return .init(making: element, in: parent, implementationPosition: implementationPosition)
     }
 
