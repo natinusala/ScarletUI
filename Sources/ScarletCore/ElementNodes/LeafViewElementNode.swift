@@ -34,7 +34,7 @@ public class LeafViewElementNode<Value>: ElementNode where Value: Element, Value
         self.value = element
 
         // Start a first update without comparing (since we update the value with itself)
-        let result = self.update(with: element, implementationPosition: implementationPosition, forced: true, using: context)
+        let result = self.update(with: element, implementationPosition: implementationPosition, using: context)
 
         // Create the implementation node
         self.implementation = Value.makeImplementation(of: element)

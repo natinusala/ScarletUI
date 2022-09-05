@@ -58,3 +58,6 @@ public extension Element {
         return "\(Self.self)"
     }
 }
+
+@resultBuilder
+public struct ElementBuilder {}

@@ -14,9 +14,37 @@
    limitations under the License.
 */
 
-public protocol ViewModifier<Content>: Element {
-    associatedtype Content: View
-    associatedtype Body: View
+public protocol Modifier<Content>: Element {
+    associatedtype Content: Element
+    associatedtype Body: Element
 
-    @ViewBuilder func body(content: Content) -> Body
+    @ElementBuilder func body(content: Content) -> Body
+}
+
+public protocol ViewModifier: Modifier where Content: View, Body: View {}
+
+extension ModifiedContent: Element, View, CustomDebugStringConvertible where Content: View, Modifier: ViewModifier {
+    public typealias Input = ModifiedViewMakeInput<Content, Modifier>
+    public typealias Output = ModifiedViewMakeOutput<Content, Modifier>
+
+    public static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) -> ModifiedViewElementNode<Content, Modifier> {
+        return ModifiedViewElementNode(making: element, in: parent, implementationPosition: implementationPosition, using: context)
+    }
+
+    /// Makes the element, usually to get its edges.
+    public static func make(_ element: Self, input: Input) -> Output {
+        return .init()
+    }
+}
+
+public struct ModifiedContent<Content, Modifier> {
+    let content: Content
+    let modifier: Modifier
+}
+
+
+public extension View {
+    func modifier<Modifier: ViewModifier>(_ modifier: Modifier) -> ModifiedContent<Self, Modifier> {
+        return ModifiedContent<Self, Modifier>(content: self, modifier: modifier)
+    }
 }

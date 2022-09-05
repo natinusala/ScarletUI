@@ -53,7 +53,7 @@ public class StaticElementNode7<Value, E0, E1, E2, E3, E4, E5, E6>: ElementNode 
         self.value = element
 
         // Start a first update without comparing (since we update the value with itself)
-        let result = self.update(with: element, implementationPosition: implementationPosition, forced: true, using: context)
+        let result = self.update(with: element, implementationPosition: implementationPosition, using: context)
 
         // Create the implementation node
         self.implementation = Value.makeImplementation(of: element)
@@ -72,7 +72,7 @@ public class StaticElementNode7<Value, E0, E1, E2, E3, E4, E5, E6>: ElementNode 
         let e0ImplementationPosition = implementationPosition + totalImplementationCount
         let e0ImplementationCount: Int
         if let e0 = self.e0 {
-            e0ImplementationCount = e0.update(
+            e0ImplementationCount = e0.installAndUpdate(
                 with: output.e0,
                 implementationPosition: e0ImplementationPosition,
                 using: context
@@ -88,7 +88,7 @@ public class StaticElementNode7<Value, E0, E1, E2, E3, E4, E5, E6>: ElementNode 
         let e1ImplementationPosition = implementationPosition + totalImplementationCount
         let e1ImplementationCount: Int
         if let e1 = self.e1 {
-            e1ImplementationCount = e1.update(
+            e1ImplementationCount = e1.installAndUpdate(
                 with: output.e1,
                 implementationPosition: e1ImplementationPosition,
                 using: context
@@ -104,7 +104,7 @@ public class StaticElementNode7<Value, E0, E1, E2, E3, E4, E5, E6>: ElementNode 
         let e2ImplementationPosition = implementationPosition + totalImplementationCount
         let e2ImplementationCount: Int
         if let e2 = self.e2 {
-            e2ImplementationCount = e2.update(
+            e2ImplementationCount = e2.installAndUpdate(
                 with: output.e2,
                 implementationPosition: e2ImplementationPosition,
                 using: context
@@ -120,7 +120,7 @@ public class StaticElementNode7<Value, E0, E1, E2, E3, E4, E5, E6>: ElementNode 
         let e3ImplementationPosition = implementationPosition + totalImplementationCount
         let e3ImplementationCount: Int
         if let e3 = self.e3 {
-            e3ImplementationCount = e3.update(
+            e3ImplementationCount = e3.installAndUpdate(
                 with: output.e3,
                 implementationPosition: e3ImplementationPosition,
                 using: context
@@ -136,7 +136,7 @@ public class StaticElementNode7<Value, E0, E1, E2, E3, E4, E5, E6>: ElementNode 
         let e4ImplementationPosition = implementationPosition + totalImplementationCount
         let e4ImplementationCount: Int
         if let e4 = self.e4 {
-            e4ImplementationCount = e4.update(
+            e4ImplementationCount = e4.installAndUpdate(
                 with: output.e4,
                 implementationPosition: e4ImplementationPosition,
                 using: context
@@ -152,7 +152,7 @@ public class StaticElementNode7<Value, E0, E1, E2, E3, E4, E5, E6>: ElementNode 
         let e5ImplementationPosition = implementationPosition + totalImplementationCount
         let e5ImplementationCount: Int
         if let e5 = self.e5 {
-            e5ImplementationCount = e5.update(
+            e5ImplementationCount = e5.installAndUpdate(
                 with: output.e5,
                 implementationPosition: e5ImplementationPosition,
                 using: context
@@ -168,7 +168,7 @@ public class StaticElementNode7<Value, E0, E1, E2, E3, E4, E5, E6>: ElementNode 
         let e6ImplementationPosition = implementationPosition + totalImplementationCount
         let e6ImplementationCount: Int
         if let e6 = self.e6 {
-            e6ImplementationCount = e6.update(
+            e6ImplementationCount = e6.installAndUpdate(
                 with: output.e6,
                 implementationPosition: e6ImplementationPosition,
                 using: context

@@ -37,7 +37,7 @@ public class UserViewModifierElementNode<Value, Edge>: ElementNode where Value: 
         self.value = element
 
         // Start a first update without comparing (since we update the value with itself)
-        let result = self.update(with: element, implementationPosition: implementationPosition, forced: true, using: context)
+        let result = self.update(with: element, implementationPosition: implementationPosition, using: context)
 
         // Create the implementation node
         self.implementation = Value.makeImplementation(of: element)
@@ -48,7 +48,7 @@ public class UserViewModifierElementNode<Value, Edge>: ElementNode where Value: 
 
     public func updateEdges(from output: Value.Output, at implementationPosition: Int, using context: Context) -> UpdateResult {
         if let edge = self.edge {
-            return edge.update(with: output.edge, implementationPosition: implementationPosition, using: context)
+            return edge.installAndUpdate(with: output.edge, implementationPosition: implementationPosition, using: context)
         } else {
             let edge = Edge.makeNode(of: output.edge, in: self, implementationPosition: implementationPosition, using: context)
             self.edge = edge

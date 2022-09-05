@@ -19,7 +19,7 @@ import ScarletUI
 struct Window<Content: View>: LeafScene {
     let content: Content
 
-    init(@ViewBuilder content: () -> Content) {
+    init(@ElementBuilder content: () -> Content) {
         self.content = content()
     }
 }
@@ -35,7 +35,10 @@ struct ScarletUIDemo: App {
 struct MainContent: View {
     var body: some View {
         Text("1")
+
         Text("2")
+            .wrapped()
+
         Text("3")
     }
 }
@@ -49,6 +52,20 @@ struct Text: LeafView {
 
     var debugDescription: String {
         return "Text(text: \(self.text))"
+    }
+}
+
+struct TextWrapper<Content: View>: ViewModifier {
+    func body(content: Content) -> some View {
+        Text("Wrapped 1")
+        content
+        Text("Wrapped 2")
+    }
+}
+
+extension View {
+    func wrapped() -> some View {
+        return modifier(TextWrapper<Self>())
     }
 }
 

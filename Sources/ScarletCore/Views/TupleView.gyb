@@ -53,7 +53,7 @@ ${",\n".join([f"            e{i}: element.e{i}" for i in range(0, IDX)])}
     }
 }
 
-public extension ViewBuilder {
+public extension ElementBuilder {
     static func buildBlock<${C_TYPES}>(${C_ARGS}) -> TupleView${IDX}<${C_TYPES}> where ${C_CONSTRAINTS} {
         return .init(
 ${",\n".join([f"            e{i}: c{i}" for i in range(0, IDX)])}

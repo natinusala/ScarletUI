@@ -17,7 +17,7 @@
 public protocol View: Element {
     associatedtype Body: View
 
-    @ViewBuilder var body: Body { get }
+    @ElementBuilder var body: Body { get }
 }
 
 /// Extension for internal views that have no body but
@@ -37,9 +37,10 @@ public extension LeafView {
     }
 }
 
-@resultBuilder
-public struct ViewBuilder {
+extension ElementBuilder {
     public static func buildBlock<Content>(_ content: Content) -> Content where Content: View {
         return content
     }
 }
+
+public typealias ViewBuilder = ElementBuilder

@@ -69,15 +69,7 @@ extension ElementNode {
     /// Updates the node with a potential new version of the element.
     /// Returns the node implementation count.
     /// Parameters are given by the parent node to this one when updating. It's type erased to save the code from a generic constraints hell.
-    public func update(with element: Value, implementationPosition: Int, forced: Bool = false, using context: Context, parameters: Any = ()) -> UpdateResult {
-        // Only update if required or if it's forced
-        guard forced || self.shouldUpdate(with: element) else {
-            return UpdateResult(
-                implementationPosition: implementationPosition,
-                implementationCount: self.implementationCount
-            )
-        }
-
+    public func update(with element: Value, implementationPosition: Int, using context: Context, parameters: Any = ()) -> UpdateResult {
         // Update value
         self.value = element
 
@@ -104,6 +96,28 @@ extension ElementNode {
             implementationPosition: result.implementationPosition,
             implementationCount: self.implementationCount
         )
+    }
+
+    /// Installs the given element with the proper state and environment then returns a
+    /// boolean indicating if the node must be updated (that is, if the newly installed element is
+    /// different from the stored one).
+    func install(element: inout Value) -> Bool {
+        // Perform equality check
+        return self.shouldUpdate(with: element)
+    }
+
+    /// Installs the view then updates it if necessary.
+    public func installAndUpdate(with element: Value, implementationPosition: Int, using context: Context, parameters: Any = ()) -> UpdateResult {
+        var installed = element
+
+        guard self.install(element: &installed) else {
+            return UpdateResult(
+                implementationPosition: implementationPosition,
+                implementationCount: self.implementationCount
+            )
+        }
+
+        return self.update(with: element, implementationPosition: implementationPosition, using: context, parameters: parameters)
     }
 }
 

@@ -45,7 +45,7 @@ public struct TupleView3<E0, E1, E2>: View where E0: Element, E1: Element, E2: E
     }
 }
 
-public extension ViewBuilder {
+public extension ElementBuilder {
     static func buildBlock<C0, C1, C2>(_ c0: C0, _ c1: C1, _ c2: C2) -> TupleView3<C0, C1, C2> where C0: View, C1: View, C2: View {
         return .init(
             e0: c0,

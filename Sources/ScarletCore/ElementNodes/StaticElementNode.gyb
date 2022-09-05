@@ -51,7 +51,7 @@ public class StaticElementNode${IDX}<Value, ${E_TYPES}>: ElementNode where Value
         self.value = element
 
         // Start a first update without comparing (since we update the value with itself)
-        let result = self.update(with: element, implementationPosition: implementationPosition, forced: true, using: context)
+        let result = self.update(with: element, implementationPosition: implementationPosition, using: context)
 
         // Create the implementation node
         self.implementation = Value.makeImplementation(of: element)
@@ -71,7 +71,7 @@ public class StaticElementNode${IDX}<Value, ${E_TYPES}>: ElementNode where Value
         let e${i}ImplementationPosition = implementationPosition + totalImplementationCount
         let e${i}ImplementationCount: Int
         if let e${i} = self.e${i} {
-            e${i}ImplementationCount = e${i}.update(
+            e${i}ImplementationCount = e${i}.installAndUpdate(
                 with: output.e${i},
                 implementationPosition: e${i}ImplementationPosition,
                 using: context
