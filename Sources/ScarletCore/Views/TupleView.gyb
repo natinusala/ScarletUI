@@ -38,7 +38,8 @@ public struct TupleView${IDX}<${E_TYPES}>: View where ${E_CONSTRAINTS} {
         of element: Self,
         in parent: (any ElementNode)?,
         implementationPosition: Int,
-        using context: Context
+        using context: Context,
+        parameters: Any = ()
     ) -> StaticElementNode${IDX}<Self, ${E_TYPES}> where Input == StaticMakeInput${IDX}<Self> {
         return .init(making: element, in: parent, implementationPosition: implementationPosition, using: context)
     }

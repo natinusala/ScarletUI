@@ -41,7 +41,7 @@ extension Never: ImplementationNode {
 }
 
 extension Never: Element {
-    public static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) -> NeverElementNode {}
+    public static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context, parameters: Any = ()) -> NeverElementNode {}
 
     public static func make(_ element: Self, input: Never) -> Never {}
 

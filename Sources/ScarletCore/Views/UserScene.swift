@@ -16,7 +16,7 @@
 
 public extension Scene where Input == UserMakeInput<Self>, Output == UserMakeOutput<Self, Body> {
     /// Default implementation of `makeNode()` for user scenes with a body: make a node with one edge, the body.
-    static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) -> UserElementNode<Self, Body> {
+    static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context, parameters: Any = ()) -> UserElementNode<Self, Body> {
         return .init(making: element, in: parent, implementationPosition: implementationPosition, using: context)
     }
 
@@ -29,7 +29,7 @@ public extension Scene where Input == UserMakeInput<Self>, Output == UserMakeOut
 }
 
 public extension LeafScene where Input == UserMakeInput<Self>, Output == UserMakeOutput<Self, Content> {
-    static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) -> UserElementNode<Self, Content> {
+    static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context, parameters: Any = ()) -> UserElementNode<Self, Content> {
         return .init(making: element, in: parent, implementationPosition: implementationPosition, using: context)
     }
 

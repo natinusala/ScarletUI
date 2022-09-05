@@ -22,6 +22,18 @@ public struct UserViewModifierMakeOutput<Value, Edge>: MakeOutput where Value: V
     let edge: Edge
 }
 
+public struct UserViewModifierParameters<Value> where Value: ViewModifier {
+    enum Edge {
+        /// 
+        case initialized(edge: Value.Content.Node)
+        case uninitialized(setter: (Value.Content.Node) -> ())
+    }
+    /// Content of this view modifier.
+    let content: Value.Content
+
+    let edge: Edge
+}
+
 /// Element node for user provided view modifiers. Always performs equality check.
 /// The view modifier edge is the actual modified content, passed by ``ModifiedContent`` through type-erased parameters.
 /// The pattern is `ModifiedContent -> ViewModifier -> ViewModifier.Body -> [...] -> ViewModifier.Content`.
@@ -33,11 +45,11 @@ public class UserViewModifierElementNode<Value, Edge>: ElementNode where Value: 
 
     var edge: Edge.Node?
 
-    init(making element: Value, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) {
+    init(making element: Value, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context, parameters: Any) {
         self.value = element
 
         // Start a first update without comparing (since we update the value with itself)
-        let result = self.update(with: element, implementationPosition: implementationPosition, using: context)
+        let result = self.update(with: element, implementationPosition: implementationPosition, using: context, parameters: parameters)
 
         // Create the implementation node
         self.implementation = Value.makeImplementation(of: element)

@@ -27,13 +27,13 @@ extension ModifiedContent: Element, View, CustomDebugStringConvertible where Con
     public typealias Input = ModifiedViewMakeInput<Content, Modifier>
     public typealias Output = ModifiedViewMakeOutput<Content, Modifier>
 
-    public static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) -> ModifiedViewElementNode<Content, Modifier> {
+    public static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context, parameters: Any = ()) -> ModifiedViewElementNode<Content, Modifier> {
         return ModifiedViewElementNode(making: element, in: parent, implementationPosition: implementationPosition, using: context)
     }
 
     /// Makes the element, usually to get its edges.
     public static func make(_ element: Self, input: Input) -> Output {
-        return .init()
+        return .init(content: element.content, modifier: element.modifier)
     }
 }
 
