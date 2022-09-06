@@ -16,7 +16,7 @@
 
 public extension View where Input == UserMakeInput<Self>, Output == UserMakeOutput<Self, Body> {
     /// Default implementation of `makeNode()` for user views with a body: make a node with one edge, the body.
-    static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context, parameters: Any = ()) -> UserElementNode<Self, Body> {
+    static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) -> UserElementNode<Self, Body> {
         return .init(making: element, in: parent, implementationPosition: implementationPosition, using: context)
     }
 
@@ -30,7 +30,7 @@ public extension View where Input == UserMakeInput<Self>, Output == UserMakeOutp
 
 public extension LeafView where Input == LeafViewMakeInput<Self>, Output == LeafViewMakeOutput<Self> {
     /// Default implementation of `makeNode()` for leaves: make a leaf node.
-    static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context, parameters: Any = ()) -> LeafViewElementNode<Self> {
+    static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) -> LeafViewElementNode<Self> {
         return .init(making: element, in: parent, implementationPosition: implementationPosition, using: context)
     }
 

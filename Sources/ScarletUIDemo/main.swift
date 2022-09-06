@@ -55,7 +55,7 @@ struct Text: LeafView {
     }
 }
 
-struct TextWrapper<Content: View>: ViewModifier {
+struct TextWrapper: ViewModifier {
     func body(content: Content) -> some View {
         Text("Wrapped 1")
         content
@@ -65,7 +65,7 @@ struct TextWrapper<Content: View>: ViewModifier {
 
 extension View {
     func wrapped() -> some View {
-        return modifier(TextWrapper<Self>())
+        return modifier(TextWrapper())
     }
 }
 

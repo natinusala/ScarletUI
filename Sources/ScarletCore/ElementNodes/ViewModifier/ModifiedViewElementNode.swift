@@ -28,7 +28,7 @@ public struct ModifiedViewMakeOutput<Content, Modifier>: MakeOutput where Conten
 /// Element node for modified views. Contains the modifier as an edge.
 /// Doesn't perform equality check on itself, however checks for equality on the modifier and content
 /// to update one or the other accordingly.
-public class ModifiedViewElementNode<Content, Modifier>: ElementNode where Content: View, Modifier: ViewModifier, Modifier.Node == UserViewModifierElementNode<Modifier, Modifier.Body>, Content == Modifier.Content {
+public class ModifiedViewElementNode<Content, Modifier>: ElementNode where Content: View, Modifier: ViewModifier {
     public typealias Value = ModifiedContent<Content, Modifier>
 
     public var value: ModifiedContent<Content, Modifier>
@@ -51,57 +51,29 @@ public class ModifiedViewElementNode<Content, Modifier>: ElementNode where Conte
         self.attachImplementationToParent(position: result.implementationPosition)
     }
 
-    public func updateEdges(from output: ModifiedViewMakeOutput<Content, Modifier>, at implementationPosition: Int, using context: Context) -> UpdateResult {
-        // If the modifier doesn't exist, just create it
-        guard let edge else {
-            let edge = Modifier.makeNode(
-                of: output.modifier,
-                in: self,
-                implementationPosition: implementationPosition,
-                using: context,
-                parameters: output.content
-            )
+    public func updateEdges(from output: Value.Output?, at implementationPosition: Int, using context: Context) -> UpdateResult {
+        let vmcContext = ViewModifierContentContext(content: output?.content)
+        let context = context.pushingVmcContext(vmcContext)
+
+        if let edge = self.edge {
+            return edge.update(with: output?.modifier, implementationPosition: implementationPosition, using: context)
+        } else if let output {
+            let edge = Modifier.makeNode(of: output.modifier, in: self, implementationPosition: implementationPosition, using: context)
             self.edge = edge
             return UpdateResult(
                 implementationPosition: implementationPosition,
-                implementationCount: edge.implementationCount
+                implementationCount: self.implementationCount
             )
+        } else {
+            nilOutputFatalError(for: Modifier.self)
         }
-
-        // If the modifier changed, call its body with the new content
-        // The modifier will be responsible for checking if the content changed
-        var installedModifier = output.modifier
-        if edge.install(element: &installedModifier) {
-            return edge.update(
-                with: installedModifier,
-                implementationPosition: implementationPosition,
-                using: context,
-                parameters: output.content
-            )
-        }
-
-        // If content changed, only update the content
-        guard let contentEdge = edge.edge else {
-            fatalError("Tried to update uninitialized content node")
-        }
-
-        var installedContent = output.content
-        if contentEdge.install(element: &installedContent) {
-            return contentEdge.
-        }
-
-        // Nothing changed, don't do anything then
-        return UpdateResult(
-            implementationPosition: implementationPosition,
-            implementationCount: self.implementationCount
-        )
     }
 
-    public func shouldUpdate(with element: ModifiedContent<Content, Modifier>) -> Bool {
+    public func shouldUpdate(with element: Value) -> Bool {
         return true
     }
 
-    public func make(element: ModifiedContent<Content, Modifier>, parameters: Any) -> ModifiedViewMakeOutput<Content, Modifier> {
+    public func make(element: Value) -> ModifiedViewMakeOutput<Content, Modifier> {
         let input = ModifiedViewMakeInput<Content, Modifier>()
         return Value.make(element, input: input)
     }

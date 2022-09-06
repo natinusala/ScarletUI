@@ -22,21 +22,9 @@ public struct UserViewModifierMakeOutput<Value, Edge>: MakeOutput where Value: V
     let edge: Edge
 }
 
-public struct UserViewModifierParameters<Value> where Value: ViewModifier {
-    enum Edge {
-        /// 
-        case initialized(edge: Value.Content.Node)
-        case uninitialized(setter: (Value.Content.Node) -> ())
-    }
-    /// Content of this view modifier.
-    let content: Value.Content
-
-    let edge: Edge
-}
-
 /// Element node for user provided view modifiers. Always performs equality check.
-/// The view modifier edge is the actual modified content, passed by ``ModifiedContent`` through type-erased parameters.
-/// The pattern is `ModifiedContent -> ViewModifier -> ViewModifier.Body -> [...] -> ViewModifier.Content`.
+/// The view modifier edge is a placeholder ``ViewModifierContent``.
+/// The pattern is `ModifiedContent -> ViewModifier -> ViewModifier.Body -> [...] -> ViewModifierContent -> ViewModifier.Content`.
 public class UserViewModifierElementNode<Value, Edge>: ElementNode where Value: ViewModifier, Value.Input == UserViewModifierMakeInput<Value>, Value.Output == UserViewModifierMakeOutput<Value, Edge>, Edge: Element {
     public var value: Value
     public var parent: (any ElementNode)?
@@ -45,11 +33,11 @@ public class UserViewModifierElementNode<Value, Edge>: ElementNode where Value: 
 
     var edge: Edge.Node?
 
-    init(making element: Value, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context, parameters: Any) {
+    init(making element: Value, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) {
         self.value = element
 
         // Start a first update without comparing (since we update the value with itself)
-        let result = self.update(with: element, implementationPosition: implementationPosition, using: context, parameters: parameters)
+        let result = self.update(with: element, implementationPosition: implementationPosition, using: context)
 
         // Create the implementation node
         self.implementation = Value.makeImplementation(of: element)
@@ -58,16 +46,18 @@ public class UserViewModifierElementNode<Value, Edge>: ElementNode where Value: 
         self.attachImplementationToParent(position: result.implementationPosition)
     }
 
-    public func updateEdges(from output: Value.Output, at implementationPosition: Int, using context: Context) -> UpdateResult {
+    public func updateEdges(from output: Value.Output?, at implementationPosition: Int, using context: Context) -> UpdateResult {
         if let edge = self.edge {
-            return edge.installAndUpdate(with: output.edge, implementationPosition: implementationPosition, using: context)
-        } else {
+            return edge.installAndUpdate(with: output?.edge, implementationPosition: implementationPosition, using: context)
+        } else if let output {
             let edge = Edge.makeNode(of: output.edge, in: self, implementationPosition: implementationPosition, using: context)
             self.edge = edge
             return UpdateResult(
                 implementationPosition: implementationPosition,
                 implementationCount: edge.implementationCount
             )
+        } else {
+            nilOutputFatalError(for: Edge.self)
         }
     }
 
@@ -76,12 +66,10 @@ public class UserViewModifierElementNode<Value, Edge>: ElementNode where Value: 
         return true
     }
 
-    public func make(element: Value, parameters: Any) -> Value.Output {
-        guard let parameters = parameters as? Value.Content else {
-            fatalError("\(Self.self) expected parameters of type \(Value.Content.self), received \(type(of: parameters))")
-        }
-
-        let input = UserViewModifierMakeInput<Value>(content: parameters)
+    public func make(element: Value) -> Value.Output {
+        let input = UserViewModifierMakeInput<Value>(
+            content: ViewModifierContent<Value>()
+        )
         return Value.make(element, input: input)
     }
 

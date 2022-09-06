@@ -28,8 +28,7 @@ public struct TupleView3<E0, E1, E2>: View where E0: Element, E1: Element, E2: E
         of element: Self,
         in parent: (any ElementNode)?,
         implementationPosition: Int,
-        using context: Context,
-        parameters: Any = ()
+        using context: Context
     ) -> StaticElementNode3<Self, E0, E1, E2> where Input == StaticMakeInput3<Self> {
         return .init(making: element, in: parent, implementationPosition: implementationPosition, using: context)
     }

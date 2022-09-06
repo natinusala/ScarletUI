@@ -54,7 +54,7 @@ public class StaticElementNode3<Value, E0, E1, E2>: ElementNode where Value: Ele
         self.attachImplementationToParent(position: result.implementationPosition)
     }
 
-    public func updateEdges(from output: Value.Output, at implementationPosition: Int, using context: Context) -> UpdateResult {
+    public func updateEdges(from output: Value.Output?, at implementationPosition: Int, using context: Context) -> UpdateResult {
         // Create edges if updating for the first time
         // Otherwise update them
 
@@ -65,14 +65,16 @@ public class StaticElementNode3<Value, E0, E1, E2>: ElementNode where Value: Ele
         let e0ImplementationCount: Int
         if let e0 = self.e0 {
             e0ImplementationCount = e0.installAndUpdate(
-                with: output.e0,
+                with: output?.e0,
                 implementationPosition: e0ImplementationPosition,
                 using: context
             ).implementationCount
-        } else {
+        } else if let output {
             let edge = E0.makeNode(of: output.e0, in: self, implementationPosition: e0ImplementationPosition, using: context)
             self.e0 = edge
             e0ImplementationCount = edge.implementationCount
+        } else {
+            nilOutputFatalError(for: E0.self)
         }
         totalImplementationCount += e0ImplementationCount
 
@@ -81,14 +83,16 @@ public class StaticElementNode3<Value, E0, E1, E2>: ElementNode where Value: Ele
         let e1ImplementationCount: Int
         if let e1 = self.e1 {
             e1ImplementationCount = e1.installAndUpdate(
-                with: output.e1,
+                with: output?.e1,
                 implementationPosition: e1ImplementationPosition,
                 using: context
             ).implementationCount
-        } else {
+        } else if let output {
             let edge = E1.makeNode(of: output.e1, in: self, implementationPosition: e1ImplementationPosition, using: context)
             self.e1 = edge
             e1ImplementationCount = edge.implementationCount
+        } else {
+            nilOutputFatalError(for: E1.self)
         }
         totalImplementationCount += e1ImplementationCount
 
@@ -97,14 +101,16 @@ public class StaticElementNode3<Value, E0, E1, E2>: ElementNode where Value: Ele
         let e2ImplementationCount: Int
         if let e2 = self.e2 {
             e2ImplementationCount = e2.installAndUpdate(
-                with: output.e2,
+                with: output?.e2,
                 implementationPosition: e2ImplementationPosition,
                 using: context
             ).implementationCount
-        } else {
+        } else if let output {
             let edge = E2.makeNode(of: output.e2, in: self, implementationPosition: e2ImplementationPosition, using: context)
             self.e2 = edge
             e2ImplementationCount = edge.implementationCount
+        } else {
+            nilOutputFatalError(for: E2.self)
         }
         totalImplementationCount += e2ImplementationCount
 
@@ -115,7 +121,7 @@ public class StaticElementNode3<Value, E0, E1, E2>: ElementNode where Value: Ele
         )
     }
 
-    public func make(element: Value, parameters: Any) -> Value.Output {
+    public func make(element: Value) -> Value.Output {
         let input = Input()
         return Value.make(element, input: input)
     }

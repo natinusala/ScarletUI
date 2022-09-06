@@ -44,20 +44,22 @@ public class UserElementNode<Value, Edge>: ElementNode where Value: Element, Val
         self.attachImplementationToParent(position: result.implementationPosition)
     }
 
-    public func updateEdges(from output: Value.Output, at implementationPosition: Int, using context: Context) -> UpdateResult {
+    public func updateEdges(from output: Value.Output?, at implementationPosition: Int, using context: Context) -> UpdateResult {
         if let edge = self.edge {
-            return edge.installAndUpdate(with: output.edge, implementationPosition: implementationPosition, using: context)
-        } else {
+            return edge.installAndUpdate(with: output?.edge, implementationPosition: implementationPosition, using: context)
+        } else if let output {
             let edge = Edge.makeNode(of: output.edge, in: self, implementationPosition: implementationPosition, using: context)
             self.edge = edge
             return UpdateResult(
                 implementationPosition: implementationPosition,
                 implementationCount: edge.implementationCount
             )
+        } else {
+            nilOutputFatalError(for: Edge.self)
         }
     }
 
-    public func make(element: Value, parameters: Any) -> Value.Output {
+    public func make(element: Value) -> Value.Output {
         let input = UserMakeInput<Value>()
         return Value.make(element, input: input)
     }

@@ -38,7 +38,7 @@ public protocol Element: CustomDebugStringConvertible {
     typealias Context = ElementNodeContext
 
     /// Makes the node for that element.
-    static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context, parameters: Any) -> Node
+    static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) -> Node
 
     /// Makes the element, usually to get its edges.
     static func make(_ element: Self, input: Input) -> Output
@@ -54,8 +54,8 @@ public extension Element where Implementation == Never {
 }
 
 public extension Element {
-    static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) -> Node {
-        return Self.makeNode(of: element, in: parent, implementationPosition: implementationPosition, using: context, parameters: ())
+    func makeAnyNode(in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) -> any ElementNode {
+        return Self.makeNode(of: self, in: parent, implementationPosition: implementationPosition, using: context)
     }
 }
 

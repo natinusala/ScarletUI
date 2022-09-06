@@ -14,9 +14,9 @@
    limitations under the License.
 */
 
-public extension Modifier where Content: View, Body: View, Input == UserViewModifierMakeInput<Self>, Output == UserViewModifierMakeOutput<Self, Body> {
-    static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context, parameters: Any) -> UserViewModifierElementNode<Self, Body> {
-        return .init(making: element, in: parent, implementationPosition: implementationPosition, using: context, parameters: parameters)
+public extension ViewModifier where Body: View, Input == UserViewModifierMakeInput<Self>, Output == UserViewModifierMakeOutput<Self, Body> {
+    static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) -> UserViewModifierElementNode<Self, Body> {
+        return .init(making: element, in: parent, implementationPosition: implementationPosition, using: context)
     }
 
     static func make(_ element: Self, input: UserViewModifierMakeInput<Self>) -> UserViewModifierMakeOutput<Self, Body> {

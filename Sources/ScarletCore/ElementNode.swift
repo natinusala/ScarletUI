@@ -21,16 +21,37 @@ public struct UpdateResult {
 
 /// Context given by the parent node to its edges when updating them.
 public struct ElementNodeContext {
+    let vmcStack: [ViewModifierContentContext]
+
+    /// Creates a copy of the context with another VMC context pushed on the stack.
+    func pushingVmcContext(_ context: ViewModifierContentContext) -> Self {
+        return Self(
+            vmcStack: self.vmcStack + [context]
+        )
+    }
+
+    /// Creates a copy of the context with the last VMC context popped from the stack.
+    func poppingVmcContext() -> (vmcContext: ViewModifierContentContext?, context: Self) {
+        return (
+            vmcContext: self.vmcStack.last,
+            context: Self(
+                vmcStack: self.vmcStack.dropLast()
+            )
+        )
+    }
+
     /// Returns the initial root context.
     public static func root() -> Self {
-        return Self()
+        return Self(
+            vmcStack: []
+        )
     }
 }
 
 /// Keeps track of a "mounted" element and its state.
 ///
-/// The "type" of an element node is determined from how it handles its
-/// edges (statically or dynamically).
+/// The "type" of an element node changes depending from how it handles its
+/// edges (statically or dynamically, with specific behaviors...).
 public protocol ElementNode<Value>: AnyObject {
     associatedtype Value: Element
 
@@ -49,16 +70,17 @@ public protocol ElementNode<Value>: AnyObject {
     var implementationCount: Int { get set }
 
     /// Updates the node with a potential new version of the element.
-    /// Parameters are given by the parent node to this one when updating. It's type erased to save the code from a generic constraints hell.
-    func updateEdges(from output: Value.Output, at implementationPosition: Int, using context: Context) -> UpdateResult
+    ///
+    /// If the output is `nil` it means the element was unchanged. Still, its edges may have changed (depending on context)
+    /// so the function should still forward the update call to its edges, giving `nil` as an element.
+    func updateEdges(from output: Value.Output?, at implementationPosition: Int, using context: Context) -> UpdateResult
 
     /// Returns `true` if the node should be updated with the given new element
     /// (typically if it changed).
     func shouldUpdate(with element: Value) -> Bool
 
     /// Makes the given element.
-    /// Parameters are given by the parent node to this one when updating. It's type erased to save the code from a generic constraints hell.
-    func make(element: Value, parameters: Any) -> Value.Output
+    func make(element: Value) -> Value.Output
 
     /// Used to visit all edges of the node.
     /// Should only be used for debugging purposes.
@@ -67,14 +89,20 @@ public protocol ElementNode<Value>: AnyObject {
 
 extension ElementNode {
     /// Updates the node with a potential new version of the element.
+    ///
+    /// If the given element is `nil` it means it's unchanged. ``updateEdges(from:at:using:)`` is still called
+    /// since the edges may have changed depending on context.
+    ///
     /// Returns the node implementation count.
-    /// Parameters are given by the parent node to this one when updating. It's type erased to save the code from a generic constraints hell.
-    public func update(with element: Value, implementationPosition: Int, using context: Context, parameters: Any = ()) -> UpdateResult {
+    public func update(with element: Value?, implementationPosition: Int, using context: Context) -> UpdateResult {
         // Update value
-        self.value = element
+        if let element {
+            // Update value
+            self.value = element
+        }
 
         // Make the element and make edges
-        let output = self.make(element: element, parameters: parameters)
+        let output = element.map { self.make(element: $0) }
 
         // Override implementation position if the element is substantial since our edges
         // must start at 0 (the parent being ourself)
@@ -98,26 +126,41 @@ extension ElementNode {
         )
     }
 
-    /// Installs the given element with the proper state and environment then returns a
-    /// boolean indicating if the node must be updated (that is, if the newly installed element is
-    /// different from the stored one).
-    func install(element: inout Value) -> Bool {
-        // Perform equality check
-        return self.shouldUpdate(with: element)
+    /// Installs the given element with the proper state and environment.
+    func install(element: inout Value) {
+
     }
 
     /// Installs the view then updates it if necessary.
-    public func installAndUpdate(with element: Value, implementationPosition: Int, using context: Context, parameters: Any = ()) -> UpdateResult {
-        var installed = element
-
-        guard self.install(element: &installed) else {
-            return UpdateResult(
-                implementationPosition: implementationPosition,
-                implementationCount: self.implementationCount
-            )
+    public func installAndUpdate(with element: Value?, implementationPosition: Int, using context: Context) -> UpdateResult {
+        // If no element is given, assume the view is unchanged so perform an update giving `nil` as element
+        // TODO: Compare environment versions and if it changed, install the new environment values inside
+        //       the stored value and run the update with that
+        guard let element else {
+            return self.update(with: nil, implementationPosition: implementationPosition, using: context)
         }
 
-        return self.update(with: element, implementationPosition: implementationPosition, using: context, parameters: parameters)
+        // Otherwise, install the element and update, giving `nil` if the element is equal to the previous one
+        // TODO: check if we are inside a ViewModifier - if not, there is no point to continue here.
+        //       Instead, continue by checking if any subsequent node has different environment values
+        //       and restart the update there
+
+        var installed = element
+        self.install(element: &installed)
+
+        if self.shouldUpdate(with: installed) {
+            return self.update(with: element, implementationPosition: implementationPosition, using: context)
+        } else {
+            return self.update(with: nil, implementationPosition: implementationPosition, using: context)
+        }
+    }
+
+    public func installAndUpdateAny(with element: (any Element)?, implementationPosition: Int, using context: Context) -> UpdateResult {
+        guard let element = element as? Value else {
+            fatalError("Cannot update \(Value.self) with type-erased element: expected \(Value.self), got \(type(of: element))")
+        }
+
+        return self.installAndUpdate(with: element, implementationPosition: implementationPosition, using: context)
     }
 }
 
@@ -153,8 +196,14 @@ extension ElementNode {
             if let edge {
                 edge.printTree(indent: indent + 4)
             } else {
-                print("\(indentStr)    - ##UNINITIALIZED##")
+                print("\(indentStr)    - nil")
             }
         }
+    }
+}
+
+extension ElementNode {
+    func nilOutputFatalError<Edge: Element>(for edge: Edge.Type) -> Never {
+        fatalError("Cannot create edge \(Edge.self): given output is `nil`")
     }
 }

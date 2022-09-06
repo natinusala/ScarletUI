@@ -14,22 +14,22 @@
    limitations under the License.
 */
 
-public struct LeafSceneMakeInput<Value>: MakeInput where Value: Element {
+public struct ViewModifierContentMakeInput<Value>: MakeInput where Value: View {
 
 }
 
-public struct LeafSceneMakeOutput<Value, Edge>: MakeOutput where Value: Element, Edge: Element {
-    let edge: Edge
+public struct ViewModifierContentMakeOutput<Value>: MakeOutput where Value: View {
+
 }
 
-/// Element nodes for scenes that have a view as content. Does not perform equality check.
-public class LeafSceneElementNode<Value, Edge>: ElementNode where Value: Element, Value.Input == UserMakeInput<Value>, Value.Output == UserMakeOutput<Value, Edge>, Edge: Element {
+public class ViewModifierContentElementNode<Value>: ElementNode where Value: View, Value.Input == ViewModifierContentMakeInput<Value>, Value.Output == ViewModifierContentMakeOutput<Value> {
     public var value: Value
     public var parent: (any ElementNode)?
     public var implementation: Value.Implementation?
     public var implementationCount = 0
 
-    var edge: Edge.Node?
+    /// Must be type-erased since the type is dynamic from the context.
+    var edge: (any ElementNode)?
 
     init(making element: Value, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) {
         self.value = element
@@ -45,27 +45,34 @@ public class LeafSceneElementNode<Value, Edge>: ElementNode where Value: Element
     }
 
     public func updateEdges(from output: Value.Output?, at implementationPosition: Int, using context: Context) -> UpdateResult {
+        // Pop the context from the stack and use that to update the edge
+        let (vmcContext, context) = context.poppingVmcContext()
+
+        guard let vmcContext else {
+            fatalError("Cannot update ViewModifierContent edges: context stack is empty")
+        }
+
         if let edge = self.edge {
-            return edge.installAndUpdate(with: output?.edge, implementationPosition: implementationPosition, using: context)
-        } else if let output {
-            let edge = Edge.makeNode(of: output.edge, in: self, implementationPosition: implementationPosition, using: context)
+            return edge.installAndUpdateAny(with: vmcContext.content, implementationPosition: implementationPosition, using: context)
+        } else if let content = vmcContext.content {
+            let edge = content.makeAnyNode(in: self , implementationPosition: implementationPosition, using: context)
             self.edge = edge
             return UpdateResult(
                 implementationPosition: implementationPosition,
                 implementationCount: edge.implementationCount
             )
         } else {
-            nilOutputFatalError(for: Edge.self)
+            fatalError("Cannot create type-erased ViewModifierContent edge: content is `nil` inside the context")
         }
-    }
-
-    public func make(element: Value) -> Value.Output {
-        let input = UserMakeInput<Value>()
-        return Value.make(element, input: input)
     }
 
     public func shouldUpdate(with element: Value) -> Bool {
         return true
+    }
+
+    public func make(element: Value) -> Value.Output {
+        let input = ViewModifierContentMakeInput<Value>()
+        return Value.make(element, input: input)
     }
 
     public var allEdges: [(any ElementNode)?] {

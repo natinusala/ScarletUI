@@ -43,7 +43,7 @@ public class LeafViewElementNode<Value>: ElementNode where Value: Element, Value
         self.attachImplementationToParent(position: result.implementationPosition)
     }
 
-    public func updateEdges(from output: Value.Output, at implementationPosition: Int, using context: Context) -> UpdateResult {
+    public func updateEdges(from output: Value.Output?, at implementationPosition: Int, using context: Context) -> UpdateResult {
         // No edge to update
         return UpdateResult(
             implementationPosition: implementationPosition,
@@ -51,7 +51,7 @@ public class LeafViewElementNode<Value>: ElementNode where Value: Element, Value
         )
     }
 
-    public func make(element: Value, parameters: Any) -> Value.Output {
+    public func make(element: Value) -> Value.Output {
         let input = LeafViewMakeInput<Value>()
         return Value.make(element, input: input)
     }
