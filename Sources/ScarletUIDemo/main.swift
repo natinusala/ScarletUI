@@ -58,8 +58,27 @@ struct Text: LeafView {
 struct TextWrapper: ViewModifier {
     func body(content: Content) -> some View {
         Text("Wrapped 1")
+
         content
+
         Text("Wrapped 2")
+
+        Text("Wrapped AGAIN")
+            .again()
+    }
+}
+
+struct AgainWrapper: ViewModifier {
+    func body(content: Content) -> some View {
+        Text("AGAIN1")
+        content
+        Text("AGAIN2")
+    }
+}
+
+extension View {
+    func again() -> some View {
+        return modifier(AgainWrapper())
     }
 }
 

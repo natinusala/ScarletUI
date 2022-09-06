@@ -188,13 +188,14 @@ extension ElementNode {
 }
 
 extension ElementNode {
-    public func printTree(indent: Int = 0) {
+    public func printTree(displayNode: Bool = false, indent: Int = 0) {
+        let nodeStr = displayNode ? " (node: \(Self.self))" : ""
         let indentStr = String(repeating: " ", count: indent)
-        print("\(indentStr)- \(self.value.debugDescription) (node: \(Self.self))")
+        print("\(indentStr)- \(self.value.debugDescription)\(nodeStr)")
 
         self.allEdges.forEach { edge in
             if let edge {
-                edge.printTree(indent: indent + 4)
+                edge.printTree(displayNode: displayNode, indent: indent + 4)
             } else {
                 print("\(indentStr)    - nil")
             }
