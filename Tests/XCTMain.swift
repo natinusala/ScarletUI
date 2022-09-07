@@ -28,7 +28,7 @@ let specs: [QuickSpec.Type] = [
     AnyEqualsSpec.self,
 
     // ScarletCoreIntegrationTests
-    // ViewSpecSpec.QuickSpec.self,
+    ViewSpecSpec.QuickSpec.self,
     // EmptyViewSpecSpec.QuickSpec.self,
     // TupleViewSpecSpec.QuickSpec.self,
     // BalancedConditionalViewSpecSpec.QuickSpec.self,

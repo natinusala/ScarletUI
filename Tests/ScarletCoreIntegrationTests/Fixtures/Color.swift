@@ -14,24 +14,13 @@
    limitations under the License.
 */
 
-public protocol View: Element {
-    associatedtype Body: View
-
-    @ElementBuilder var body: Body { get }
+enum Color {
+    case red
+    case green
+    case blue
+    case white
+    case black
+    case purple
+    case orange
+    case yellow
 }
-
-/// Extension for internal views that have no body but
-/// are not leaves (optionals, conditionals, tuple views...).
-public extension View where Body == Never {
-    var body: Never {
-        fatalError()
-    }
-}
-
-extension ElementBuilder {
-    public static func buildBlock<Content>(_ content: Content) -> Content where Content: View {
-        return content
-    }
-}
-
-public typealias ViewBuilder = ElementBuilder

@@ -23,7 +23,7 @@ public extension View where Input == UserMakeInput<Self>, Output == UserMakeOutp
     /// Default implementation of `make()` for user views with a body: make the body edge.
     static func make(_ element: Self, input: UserMakeInput<Self>) -> UserMakeOutput<Self, Body> {
         return .init(
-            edge: element.body
+            edge: Dependencies.bodyAccessor.makeBody(of: element)
         )
     }
 }

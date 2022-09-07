@@ -25,19 +25,25 @@ struct Window<Content: View>: LeafScene {
 }
 
 struct ScarletUIDemo: App {
+    let four: Bool
+
     var body: some Scene {
         Window {
-            MainContent()
+            MainContent(four: four)
         }
     }
 }
 
 struct MainContent: View {
+    let four: Bool
+
     var body: some View {
         Text("1")
-
         Text("2")
-            .wrapped()
+
+        if four {
+            Text("4")
+        }
 
         Text("3")
     }
@@ -55,39 +61,10 @@ struct Text: LeafView {
     }
 }
 
-struct TextWrapper: ViewModifier {
-    func body(content: Content) -> some View {
-        Text("Wrapped 1")
-
-        content
-
-        Text("Wrapped 2")
-
-        Text("Wrapped AGAIN")
-            .again()
-    }
-}
-
-struct AgainWrapper: ViewModifier {
-    func body(content: Content) -> some View {
-        Text("AGAIN1")
-        content
-        Text("AGAIN2")
-    }
-}
-
-extension View {
-    func again() -> some View {
-        return modifier(AgainWrapper())
-    }
-}
-
-extension View {
-    func wrapped() -> some View {
-        return modifier(TextWrapper())
-    }
-}
-
-let app = ScarletUIDemo()
+let app = ScarletUIDemo(four: false)
 let node = ScarletUIDemo.makeNode(of: app, in: nil, implementationPosition: 0, using: .root())
+node.printTree()
+
+let new = ScarletUIDemo(four: true)
+_ = node.update(with: new, implementationPosition: 0, using: .root())
 node.printTree()

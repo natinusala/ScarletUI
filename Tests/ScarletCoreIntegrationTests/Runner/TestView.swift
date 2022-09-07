@@ -14,24 +14,14 @@
    limitations under the License.
 */
 
-public protocol View: Element {
-    associatedtype Body: View
+import Quick
+import Nimble
 
-    @ElementBuilder var body: Body { get }
+@testable import ScarletCore
+
+/// A view with a test spec.
+protocol TestView: View, UpdateAction {
+    typealias Spec = Specs<Self>
+
+    @SpecsBuilder static func spec() -> Spec
 }
-
-/// Extension for internal views that have no body but
-/// are not leaves (optionals, conditionals, tuple views...).
-public extension View where Body == Never {
-    var body: Never {
-        fatalError()
-    }
-}
-
-extension ElementBuilder {
-    public static func buildBlock<Content>(_ content: Content) -> Content where Content: View {
-        return content
-    }
-}
-
-public typealias ViewBuilder = ElementBuilder

@@ -14,24 +14,16 @@
    limitations under the License.
 */
 
-public protocol View: Element {
-    associatedtype Body: View
+/// Special protocol for scenes which content is a view.
+/// Uses the `content` property instead of `body`.
+public protocol LeafScene: Scene where Body == Never {
+    associatedtype Content: View
 
-    @ElementBuilder var body: Body { get }
+    var content: Content { get }
 }
 
-/// Extension for internal views that have no body but
-/// are not leaves (optionals, conditionals, tuple views...).
-public extension View where Body == Never {
+public extension LeafScene{
     var body: Never {
         fatalError()
     }
 }
-
-extension ElementBuilder {
-    public static func buildBlock<Content>(_ content: Content) -> Content where Content: View {
-        return content
-    }
-}
-
-public typealias ViewBuilder = ElementBuilder

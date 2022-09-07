@@ -88,7 +88,7 @@ public protocol ElementNode<Value>: AnyObject {
 }
 
 extension ElementNode {
-    /// Updates the node with a potential new version of the element.
+    /// Updates the node with a new version of the element that is assumed to be different from the existing one.
     ///
     /// If the given element is `nil` it means it's unchanged. ``updateEdges(from:at:using:)`` is still called
     /// since the edges may have changed depending on context.
@@ -149,7 +149,7 @@ extension ElementNode {
         self.install(element: &installed)
 
         if self.shouldUpdate(with: installed) {
-            return self.update(with: element, implementationPosition: implementationPosition, using: context)
+            return self.update(with: installed, implementationPosition: implementationPosition, using: context)
         } else {
             return self.update(with: nil, implementationPosition: implementationPosition, using: context)
         }

@@ -14,24 +14,15 @@
    limitations under the License.
 */
 
-public protocol View: Element {
-    associatedtype Body: View
+import ScarletCore
 
-    @ElementBuilder var body: Body { get }
-}
+/// A rectangle filled by a solid color.
+struct Rectangle: View {
+    let color: Color
 
-/// Extension for internal views that have no body but
-/// are not leaves (optionals, conditionals, tuple views...).
-public extension View where Body == Never {
-    var body: Never {
-        fatalError()
+    public var body: some View {
+        EmptyView()
+            // .fill(color: color)
+            // .grow(1.0)
     }
 }
-
-extension ElementBuilder {
-    public static func buildBlock<Content>(_ content: Content) -> Content where Content: View {
-        return content
-    }
-}
-
-public typealias ViewBuilder = ElementBuilder

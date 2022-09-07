@@ -19,17 +19,3 @@ public protocol Scene: Element {
 
     var body: Body { get }
 }
-
-/// Special protocol for scenes which content is a view.
-/// Uses the `content` property instead of `body`.
-public protocol LeafScene: Scene where Body == Never {
-    associatedtype Content: View
-
-    var content: Content { get }
-}
-
-public extension LeafScene{
-    var body: Never {
-        fatalError()
-    }
-}

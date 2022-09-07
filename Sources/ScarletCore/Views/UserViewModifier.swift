@@ -21,7 +21,7 @@ public extension ViewModifier where Body: View, Input == UserViewModifierMakeInp
 
     static func make(_ element: Self, input: UserViewModifierMakeInput<Self>) -> UserViewModifierMakeOutput<Self, Body> {
         return .init(
-            edge: element.body(content: input.content)
+            edge: Dependencies.bodyAccessor.makeBody(of: element)
         )
     }
 }

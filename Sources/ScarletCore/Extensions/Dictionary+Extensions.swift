@@ -14,24 +14,9 @@
    limitations under the License.
 */
 
-public protocol View: Element {
-    associatedtype Body: View
-
-    @ElementBuilder var body: Body { get }
-}
-
-/// Extension for internal views that have no body but
-/// are not leaves (optionals, conditionals, tuple views...).
-public extension View where Body == Never {
-    var body: Never {
-        fatalError()
+extension Dictionary {
+    /// Returns `true` if the specified key is in the dictionary.
+    func contains(_ key: Key) -> Bool {
+        return self[key] != nil
     }
 }
-
-extension ElementBuilder {
-    public static func buildBlock<Content>(_ content: Content) -> Content where Content: View {
-        return content
-    }
-}
-
-public typealias ViewBuilder = ElementBuilder

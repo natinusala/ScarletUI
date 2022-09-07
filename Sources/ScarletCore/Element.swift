@@ -63,6 +63,11 @@ public extension Element {
     var debugDescription: String {
         return "\(Self.self)"
     }
+
+    /// Display name of the element, aka. its type stripped of any generic parameters.
+    var displayName: String {
+        return String(describing: Self.self).before(first: "<")
+    }
 }
 
 @resultBuilder
