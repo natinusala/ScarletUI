@@ -25,11 +25,11 @@ protocol ScarletSpec {
     static var describing: String { get }
 }
 
-extension ScarletSpec where Tested.Implementation == ViewImpl {
+extension ScarletSpec {
     typealias QuickSpec = ScarletSpecRunner<Self>
 }
 
-class ScarletSpecRunner<Spec: ScarletSpec>: QuickSpec where Spec.Tested.Implementation == ViewImpl {
+class ScarletSpecRunner<Spec: ScarletSpec>: QuickSpec {
     typealias Tested = Spec.Tested
 
     var node: Tested.Node!
@@ -65,7 +65,7 @@ class ScarletSpecRunner<Spec: ScarletSpec>: QuickSpec where Spec.Tested.Implemen
         // Make the result object and run the expectations closure
         let result = UpdateResult(
             bodyCalls: self.bodyAccessor.bodyCalls,
-            implementation: self.node.implementation
+            implementation: self.node.implementation as? ViewImpl
         )
 
         expectation.closure(result)

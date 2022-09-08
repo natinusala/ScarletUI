@@ -23,6 +23,8 @@ public protocol ViewModifier: Element {
 }
 
 extension ModifiedContent: Element, View, CustomDebugStringConvertible where Content: View, Modifier: ViewModifier {
+    public typealias Implementation = Never
+
     public typealias Input = ModifiedViewMakeInput<Content, Modifier>
     public typealias Output = ModifiedViewMakeOutput<Content, Modifier>
 
@@ -49,6 +51,8 @@ struct ViewModifierContentContext {
 
 /// Placeholder for view modifiers content. Contains one edge: the actual content.
 public struct ViewModifierContent<Modifier>: View where Modifier: ViewModifier {
+    public typealias Implementation = Never
+
     public typealias Input = ViewModifierContentMakeInput<Self>
     public typealias Output = ViewModifierContentMakeOutput<Self>
 

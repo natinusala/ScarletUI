@@ -33,19 +33,20 @@ public class ModifiedViewElementNode<Content, Modifier>: ElementNode where Conte
 
     public var value: ModifiedContent<Content, Modifier>
     public var parent: (any ElementNode)?
-    public var implementation: Never?
+    public var implementation: Value.Implementation?
     public var implementationCount = 0
 
     var edge: Modifier.Node?
 
     init(making element: Value, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) {
         self.value = element
-
-        // Start a first update without comparing (since we update the value with itself)
-        let result = self.update(with: element, implementationPosition: implementationPosition, using: context)
+        self.parent = parent
 
         // Create the implementation node
         self.implementation = Value.makeImplementation(of: element)
+
+        // Start a first update without comparing (since we update the value with itself)
+        let result = self.update(with: element, implementationPosition: implementationPosition, using: context)
 
         // Attach the implementation once everything is ready
         self.attachImplementationToParent(position: result.implementationPosition)

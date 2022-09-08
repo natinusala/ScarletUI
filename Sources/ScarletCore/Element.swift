@@ -33,6 +33,7 @@ public protocol Element: CustomDebugStringConvertible {
     associatedtype Input: MakeInput<Self> = UserMakeInput<Self>
     associatedtype Output: MakeOutput<Self>
 
+    /// Type of implementation node for this element.
     associatedtype Implementation: ImplementationNode
 
     typealias Context = ElementNodeContext
@@ -42,14 +43,16 @@ public protocol Element: CustomDebugStringConvertible {
 
     /// Makes the element, usually to get its edges.
     static func make(_ element: Self, input: Input) -> Output
-
-    /// Makes the implementation node for this element.
-    static func makeImplementation(of element: Self) -> Implementation?
 }
 
-public extension Element where Implementation == Never {
-    static func makeImplementation(of element: Self) -> Never? {
-        return nil
+public extension Element {
+    /// Creates the implementation for the view.
+    static func makeImplementation(of element: Self) -> Implementation? {
+        if Implementation.self == Never.self {
+            return nil
+        }
+
+        return Implementation(displayName: element.displayName)
     }
 }
 

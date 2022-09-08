@@ -18,7 +18,7 @@ import Nimble
 
 @testable import ScarletCore
 
-class ViewSpecSpec: ScarletSpec {
+class UserViewSpec: ScarletSpec {
     static let describing = "a view with input"
 
     struct NestedView: View {
@@ -60,10 +60,6 @@ class ViewSpecSpec: ScarletSpec {
                     Tested(variable: true, anotherVariable: false)
                 }
 
-                then("body is not called") { result in
-                    expect(result.bodyCalled(of: Tested.self)).to(beFalse())
-                }
-
                 then("nested body is not called") { result in
                     expect(result.bodyCalled(of: NestedView.self)).to(beFalse())
                 }
@@ -83,10 +79,6 @@ class ViewSpecSpec: ScarletSpec {
                 given {
                     Tested(variable: true, anotherVariable: false)
                     Tested(variable: false, anotherVariable: true)
-                }
-
-                then("body is called") { result in
-                    expect(result.bodyCalled(of: Tested.self)).to(beTrue())
                 }
 
                 then("nested body is called") { result in

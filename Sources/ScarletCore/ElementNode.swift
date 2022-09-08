@@ -69,7 +69,7 @@ public protocol ElementNode<Value>: AnyObject {
     /// Implementation count.
     var implementationCount: Int { get set }
 
-    /// Updates the node with a potential new version of the element.
+    /// Updates the node with a new version of the element.
     ///
     /// If the output is `nil` it means the element was unchanged. Still, its edges may have changed (depending on context)
     /// so the function should still forward the update call to its edges, giving `nil` as an element.

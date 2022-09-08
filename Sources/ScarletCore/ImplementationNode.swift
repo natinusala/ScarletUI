@@ -48,8 +48,8 @@ public extension Implementable {
 public protocol ImplementationNode {
     var displayName: String { get }
 
-    /// Creates a new implementation node for the given kind.
-    init(kind: ImplementationKind, displayName: String)
+    /// Creates a new implementation node.
+    init(displayName: String)
 
     /// Called right after node creation when all attributes have been set.
     func attributesDidSet()
@@ -59,11 +59,4 @@ public protocol ImplementationNode {
 
     /// Removes the given element from this implementation node.
     func removeChild(at position: Int)
-}
-
-/// Kind of an implementation node.
-public enum ImplementationKind {
-    case app
-    case scene
-    case view
 }

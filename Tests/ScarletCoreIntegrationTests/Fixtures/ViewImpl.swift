@@ -23,7 +23,6 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
         var grow: Float?
     }
 
-    let kind: ImplementationKind
     public let displayName: String
     var attributes = Attributes()
     var children: [ViewImpl] = []
@@ -34,7 +33,6 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
         let childrenEqual = lhs.ignoreChildren || rhs.ignoreChildren || lhs.children == rhs.children
 
         return type(of: lhs) == type(of: rhs)
-            && lhs.kind == rhs.kind
             && lhs.displayName == rhs.displayName
             && lhs.attributes == rhs.attributes
             && lhs.equals(to: rhs)
@@ -69,7 +67,7 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
         grow: Float? = nil,
         @ViewImplChildrenBuilder children: () -> [ViewImpl] = { [] }
     ) {
-        self.init(kind: .view, displayName: displayName)
+        self.init(displayName: displayName)
 
         self.attributes.id = id
         self.attributes.fill = fill
@@ -79,8 +77,7 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
     }
 
     /// Initializer used by ScarletCore.
-    public required init(kind: ImplementationKind, displayName: String) {
-        self.kind = kind
+    public required init(displayName: String) {
         self.displayName = displayName
     }
 
@@ -117,9 +114,7 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
 }
 
 extension View {
-    static func makeImplementation(of element: Self) -> ViewImpl? {
-        return ViewImpl(kind: .view, displayName: element.displayName)
-    }
+    public typealias Implementation = ViewImpl
 }
 
 @resultBuilder

@@ -18,6 +18,8 @@
 /// Does not use the built-in `Optional` enum to avoid using built-in optional features (don't treat
 /// optional views as true optionals).
 public enum OptionalView<Wrapped>: Element, View where Wrapped: View {
+    public typealias Implementation = Never
+
     case some(wrapped: Wrapped)
     case none
 

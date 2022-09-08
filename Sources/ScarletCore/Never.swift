@@ -23,7 +23,7 @@ extension Never: ImplementationNode {
         fatalError()
     }
 
-    public init(kind: ImplementationKind, displayName: String) {
+    public init(displayName: String) {
         fatalError()
     }
 
@@ -41,11 +41,13 @@ extension Never: ImplementationNode {
 }
 
 extension Never: Element {
+    public typealias Implementation = Never
+
     public static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) -> NeverElementNode {}
 
     public static func make(_ element: Self, input: Never) -> Never {}
 
-    public static func makeImplementation(of element: Self) -> Never? {}
+    public static func makeImplementation(of element: Self) -> (any ImplementationNode)? {}
 }
 
 extension Never: View, Scene, App {
@@ -62,7 +64,7 @@ public class NeverElementNode: ElementNode {
         set {}
     }
     public var parent: (any ElementNode)?
-    public var implementation: Never?
+    public var implementation: Value.Implementation?
     public var implementationCount = 0
 
     init() {
