@@ -35,3 +35,17 @@ extension ElementBuilder {
 }
 
 public typealias ViewBuilder = ElementBuilder
+
+/// Leaves of the views graph, that have no edges.
+public protocol LeafView: View where Body == Never {}
+
+public extension LeafView {
+    var body: Never {
+        fatalError()
+    }
+}
+
+
+/// A view that only contains other views. Does not perform equality check on itself
+/// since it would be redundant with checking its content view.
+public protocol ContainerView: View {}

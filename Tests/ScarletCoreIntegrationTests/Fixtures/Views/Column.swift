@@ -17,7 +17,7 @@
 import ScarletCore
 
 /// A view that arranges its children in a column.
-struct Column<Content>: View where Content: View {
+struct Column<Content>: ContainerView where Content: View {
     let content: Content
 
     init(@ViewBuilder content: () -> Content) {

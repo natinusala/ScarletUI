@@ -66,6 +66,12 @@ public class UserElementNode<Value, Edge>: ElementNode where Value: Element, Val
     }
 
     public func shouldUpdate(with element: Value) -> Bool {
+        // If the view is a container, don't check it since it's redundant
+        // with checking its content
+        if Value.self is any ContainerView.Type {
+            return true
+        }
+
         return !anyEquals(lhs: self.value, rhs: element)
     }
 

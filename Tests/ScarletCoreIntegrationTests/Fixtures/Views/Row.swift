@@ -17,7 +17,7 @@
 import ScarletCore
 
 /// A view that arranges its children in a row.
-struct Row<Content>: View where Content: View {
+struct Row<Content>: ContainerView where Content: View {
     let content: Content
 
     init(@ViewBuilder content: () -> Content) {
