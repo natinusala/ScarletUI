@@ -21,11 +21,16 @@ public struct UpdateResult {
 
 /// Context given by the parent node to its edges when updating them.
 public struct ElementNodeContext {
+    /// Attributes pending to be set, coming from above in the graph.
+    let attributes: AttributesStash
+
+    /// Stack of `ViewModifierContentContext` for view modifiers.
     let vmcStack: [ViewModifierContentContext]
 
     /// Creates a copy of the context with another VMC context pushed on the stack.
     func pushingVmcContext(_ context: ViewModifierContentContext) -> Self {
         return Self(
+            attributes: self.attributes,
             vmcStack: self.vmcStack + [context]
         )
     }
@@ -35,14 +40,56 @@ public struct ElementNodeContext {
         return (
             vmcContext: self.vmcStack.last,
             context: Self(
+                attributes: self.attributes,
                 vmcStack: self.vmcStack.dropLast()
             )
+        )
+    }
+
+    /// Creates a copy of the context popping the attributes corresponding to the given implementation type,
+    /// returning them along the context copy.
+    func poppingAttributes(for implementationType: any ImplementationNode.Type) -> (attributes: AttributesStash, context: Self) {
+        // Create a new attributes stash containing only the corresponding attributes
+        // then return that, as well as a new context containing all remaining attributes
+        var newStash = AttributesStash()
+        var remainingAttributes = AttributesStash()
+
+        for (target, attribute) in self.attributes {
+            if implementationType == attribute.implementationType {
+                newStash[target] = attribute
+            } else {
+                remainingAttributes[target] = attribute
+            }
+        }
+
+        return (
+            attributes: newStash,
+            context: Self(
+                attributes: remainingAttributes,
+                vmcStack: self.vmcStack
+            )
+        )
+    }
+
+    /// Returns a copy of the context with additional attributes added.
+    /// Given attributes will overwrite existing ones in case of duplicates.
+    func pushingAttributes(from stash: AttributesStash) -> Self {
+        var newStash = self.attributes
+
+        for (key, value) in stash {
+            newStash[key] = value
+        }
+
+        return Self(
+            attributes: newStash,
+            vmcStack: self.vmcStack
         )
     }
 
     /// Returns the initial root context.
     public static func root() -> Self {
         return Self(
+            attributes: AttributesStash(),
             vmcStack: []
         )
     }
