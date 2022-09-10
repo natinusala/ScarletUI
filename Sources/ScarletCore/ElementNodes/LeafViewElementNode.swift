@@ -29,6 +29,7 @@ public class LeafViewElementNode<Value>: ElementNode where Value: Element, Value
     public var implementation: Value.Implementation?
     public var implementationCount = 0
     public var value: Value
+    public var attributes = AttributesStash()
 
     init(making element: Value, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) {
         self.value = element

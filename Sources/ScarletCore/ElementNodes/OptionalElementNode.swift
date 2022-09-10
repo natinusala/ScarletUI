@@ -28,6 +28,7 @@ public class OptionalElementNode<Value, Wrapped>: ElementNode where Value: Eleme
     public var parent: (any ElementNode)?
     public var implementation: Value.Implementation?
     public var implementationCount = 0
+    public var attributes = AttributesStash()
 
     /// As opposed to other nodes, having `nil` here means the node is
     /// actually missing (and not uninitialized).

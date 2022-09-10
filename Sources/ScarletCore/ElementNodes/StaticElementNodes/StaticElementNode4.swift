@@ -37,6 +37,7 @@ public class StaticElementNode4<Value, E0, E1, E2, E3>: ElementNode where Value:
     public var parent: (any ElementNode)?
     public var implementation: Value.Implementation?
     public var implementationCount = 0
+    public var attributes = AttributesStash()
 
     var e0: E0.Node?
     var e1: E1.Node?

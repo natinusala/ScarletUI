@@ -28,6 +28,7 @@ public class UserElementNode<Value, Edge>: ElementNode where Value: Element, Val
     public var parent: (any ElementNode)?
     public var implementation: Value.Implementation?
     public var implementationCount = 0
+    public var attributes = AttributesStash()
 
     var edge: Edge.Node?
 

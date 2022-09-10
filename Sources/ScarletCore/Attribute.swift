@@ -67,18 +67,16 @@ public struct Attribute<Implementation: ImplementationNode, Value>: AttributeSet
         self.target = keyPath
     }
 
-    public func set(on implementation: Implementation, identifiedBy: AnyHashable) -> Bool {
+    public func set(on implementation: Implementation, identifiedBy: AnyHashable) {
         // If the attribute is unset, get it over with immediately
         // Return `true` to have it removed from the stash
         guard case let .set(value) = self.actualValue else {
-            return true
+            return
         }
 
         if !anyEquals(lhs: implementation[keyPath: self.keyPath], rhs: value) {
             implementation[keyPath: self.keyPath] = value
         }
-
-        return true
     }
 
     /// If the element parameter is an optional value and `nil` means "attribute unset",
@@ -152,11 +150,11 @@ public struct AppendAttribute<Implementation: ImplementationNode, Value>: Attrib
         self.target = keyPath
     }
 
-    public func set(on implementation: Implementation, identifiedBy key: AnyHashable) -> Bool {
+    public func set(on implementation: Implementation, identifiedBy key: AnyHashable) {
         // If the attribute is unset, get it over with immediately
         // Return `true` to have it removed from the stash
         guard case let .set(value) = self.actualValue else {
-            return true
+            return
         }
 
         let list = implementation[keyPath: self.keyPath]
@@ -170,8 +168,6 @@ public struct AppendAttribute<Implementation: ImplementationNode, Value>: Attrib
         } else {
             implementation[keyPath: self.keyPath].values[key] = value
         }
-
-        return true
     }
 
     /// If the element parameter is an optional value and `nil` means "attribute unset",
@@ -208,8 +204,7 @@ public protocol AttributeSetter<Implementation> {
     /// Set the value to the given implementation.
     /// The identifier represents the unique element holding the attribute,
     /// using structural identity.
-    /// Returns `true` if the attribute has been set.
-    func set(on implementation: Implementation, identifiedBy: AnyHashable) -> Bool
+    func set(on implementation: Implementation, identifiedBy: AnyHashable)
 }
 
 extension AttributeSetter {
@@ -223,5 +218,20 @@ public typealias AttributeTarget = AnyKeyPath
 
 /// An attributes "stash" holds attributes while the graph is traversed.
 public typealias AttributesStash = [AttributeTarget: any AttributeSetter]
+
+extension AttributesStash {
+    /// Returns a new attributes stash containing all attributes of this stash
+    /// plus all those of the given stash.
+    /// Attributes from the given stash will be used if there are duplicates.
+    func merging(with other: AttributesStash) -> AttributesStash {
+        var newStash = self
+
+        for (key, value) in other {
+            newStash[key] = value
+        }
+
+        return newStash
+    }
+}
 
 // TODO: AttributeViewModifier

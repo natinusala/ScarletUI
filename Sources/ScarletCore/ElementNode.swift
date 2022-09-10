@@ -48,15 +48,20 @@ public struct ElementNodeContext {
 
     /// Creates a copy of the context popping the attributes corresponding to the given implementation type,
     /// returning them along the context copy.
-    func poppingAttributes(for implementationType: any ImplementationNode.Type) -> (attributes: AttributesStash, context: Self) {
+    func poppingAttributes<Implementation: ImplementationNode>(for implementationType: Implementation.Type) -> (attributes: [any AttributeSetter<Implementation>], context: Self) {
         // Create a new attributes stash containing only the corresponding attributes
         // then return that, as well as a new context containing all remaining attributes
-        var newStash = AttributesStash()
+        var newStash: [any AttributeSetter<Implementation>] = []
         var remainingAttributes = AttributesStash()
 
         for (target, attribute) in self.attributes {
-            if implementationType == attribute.implementationType {
-                newStash[target] = attribute
+            if let attribute = attribute as? any AttributeSetter<Implementation> {
+                newStash.append(attribute)
+
+                // If the attribute needs to be propagated, put it back in the remaining attributes
+                if attribute.propagate {
+                    remainingAttributes[target] = attribute
+                }
             } else {
                 remainingAttributes[target] = attribute
             }
@@ -72,13 +77,9 @@ public struct ElementNodeContext {
     }
 
     /// Returns a copy of the context with additional attributes added.
-    /// Given attributes will overwrite existing ones in case of duplicates.
-    func pushingAttributes(from stash: AttributesStash) -> Self {
-        var newStash = self.attributes
-
-        for (key, value) in stash {
-            newStash[key] = value
-        }
+    /// Existing attributes will not be overwritten, hence the name "completing".
+    func completingAttributes(from stash: AttributesStash) -> Self {
+        let newStash = stash.merging(with: self.attributes)
 
         return Self(
             attributes: newStash,
@@ -116,6 +117,10 @@ public protocol ElementNode<Value>: AnyObject {
     /// Implementation count.
     var implementationCount: Int { get set }
 
+    /// Last known values for attributes.
+    /// Stored to keep a coherent context for edges when updating with no given element.
+    var attributes: AttributesStash { get set }
+
     /// Updates the node with a new version of the element.
     ///
     /// If the output is `nil` it means the element was unchanged. Still, its edges may have changed (depending on context)
@@ -142,10 +147,29 @@ extension ElementNode {
     ///
     /// Returns the node implementation count.
     public func update(with element: Value?, implementationPosition: Int, using context: Context) -> UpdateResult {
-        // Update value
+        let attributes: AttributesStash
+
+        // Update value and collect attributes
         if let element {
-            // Update value
             self.value = element
+            attributes = Self.collectAttributes(of: element)
+        } else {
+            attributes = self.attributes
+        }
+
+        // Add our attributes to the context then split it to get those we need to apply here
+        // The rest will stay in the context struct given to our edges
+        let (attributesToApply, context) = context
+            .completingAttributes(from: attributes)
+            .poppingAttributes(for: Value.Implementation.self)
+
+        // Apply attributes
+        for attribute in attributesToApply {
+            guard let implementation = self.implementation else {
+                fatalError("Invalid ElementNode state: expected an implementation node of type \(Value.Implementation.self) to be set")
+            }
+
+            attribute.set(on: implementation, identifiedBy: ObjectIdentifier(self))
         }
 
         // Make the element and make edges
@@ -154,13 +178,16 @@ extension ElementNode {
         // Override implementation position if the element is substantial since our edges
         // must start at 0 (the parent being ourself)
 
+        // Update edges
         let result = self.updateEdges(
             from: output,
             at: (self.substantial ? 0 : implementationPosition),
             using: context
         )
 
+        // Update state
         self.implementationCount = result.implementationCount
+        self.attributes = attributes
 
         // Override implementation count if the element is substantial since it has one implementation: itself
         if self.substantial {
@@ -208,6 +235,21 @@ extension ElementNode {
         }
 
         return self.installAndUpdate(with: element, implementationPosition: implementationPosition, using: context)
+    }
+
+    /// Uses a mirror to collect all attributes of the given element.
+    static func collectAttributes(of element: Value) -> AttributesStash {
+        let mirror = Mirror(reflecting: element)
+
+        var attributes: AttributesStash = [:]
+
+        for child in mirror.children {
+            if let attribute = child.value as? any AttributeSetter {
+                attributes[attribute.target] = attribute
+            }
+        }
+
+        return attributes
     }
 }
 

@@ -35,6 +35,7 @@ public class ModifiedViewElementNode<Content, Modifier>: ElementNode where Conte
     public var parent: (any ElementNode)?
     public var implementation: Value.Implementation?
     public var implementationCount = 0
+    public var attributes = AttributesStash()
 
     var edge: Modifier.Node?
 
