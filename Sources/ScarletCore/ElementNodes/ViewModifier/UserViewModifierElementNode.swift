@@ -64,8 +64,13 @@ public class UserViewModifierElementNode<Value, Edge>: ElementNode where Value: 
     }
 
     public func shouldUpdate(with element: Value) -> Bool {
-        // Comparison should already be made by our parent `ModifiedContent`
-        return true
+        // If the view is an attribute modifier, don't check it since it's redundant
+        // with the existing attributes equality check
+        if Value.self is any AttributeViewModifier.Type {
+            return true
+        }
+
+        return !anyEquals(lhs: self.value, rhs: element)
     }
 
     public func make(element: Value) -> Value.Output {

@@ -14,13 +14,39 @@
    limitations under the License.
 */
 
+import _StringProcessing
+import RegexBuilder
+
 @testable import ScarletCore
 
+private func removeOptional(_ string: String) -> String {
+    let match = string.firstMatch(of: Regex {
+        "Optional("
+            Capture {
+                OneOrMore(.any)
+            }
+        ")"
+    })
+
+    guard let match else {
+        return string
+    }
+
+    return String(match.1)
+}
+
 public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
-    struct Attributes: Equatable {
+    struct Attributes: Equatable, CustomStringConvertible {
         var id: String?
         var fill: Color?
         var grow: Float?
+
+        var description: String {
+            return Mirror(reflecting: self).children.map { label, value in
+                let valueStr = removeOptional("\(value)")
+                return "\(label ?? "nil")=\"\(valueStr)\""
+            }.joined(separator: ", ")
+        }
     }
 
     public let displayName: String
@@ -101,20 +127,20 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
         if self.children.isEmpty {
             children = ""
         } else {
-            children = """
-            {
-                \(self.children.map { "\($0)" }.joined(separator: " "))
-            }
-            """
+            children = self.children.map { "\($0)" }.joined(separator: " ")
         }
         return """
-        \(Self.self)("\(self.displayName)", \(self.attributes)) \(children)
+        <\(self.displayName) \(self.attributes)>\(children)</\(self.displayName)>
         """
     }
 }
 
 extension View {
     public typealias Implementation = ViewImpl
+}
+
+extension ViewModifier {
+    public typealias Implementation = Never
 }
 
 @resultBuilder

@@ -216,7 +216,7 @@ extension ElementNode {
 
         // Otherwise, install the element and update, giving `nil` if the element is equal to the previous one
         // TODO: check if we are inside a ViewModifier - if not, there is no point to continue here.
-        //       Instead, continue by checking if any subsequent node has different environment values
+        //       Instead, continue by checking if any subsequent node has different context
         //       and restart the update there
 
         var installed = element
@@ -230,11 +230,18 @@ extension ElementNode {
     }
 
     public func installAndUpdateAny(with element: (any Element)?, implementationPosition: Int, using context: Context) -> UpdateResult {
-        guard let element = element as? Value else {
-            fatalError("Cannot update \(Value.self) with type-erased element: expected \(Value.self), got \(type(of: element))")
+        let typedElement: Value?
+        if let element {
+            guard let element = element as? Value else {
+                fatalError("Cannot update \(Value.self) with type-erased element: expected \(Value.self), got \(type(of: element))")
+            }
+
+            typedElement = element
+        } else {
+            typedElement = nil
         }
 
-        return self.installAndUpdate(with: element, implementationPosition: implementationPosition, using: context)
+        return self.installAndUpdate(with: typedElement, implementationPosition: implementationPosition, using: context)
     }
 
     /// Uses a mirror to collect all attributes of the given element.

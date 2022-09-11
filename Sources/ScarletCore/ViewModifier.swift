@@ -32,3 +32,14 @@ public extension View {
         return ModifiedContent<Self, Modifier>(content: self, modifier: modifier)
     }
 }
+
+/// A simplified kind of view modifier that only has attributes. As such, it doesn't
+/// perform an equality check on itself since it's redundant with attributes equality,
+/// and its body is fixed to be the content directly.
+public protocol AttributeViewModifier: ViewModifier where Body == ViewModifierContent<Self> {}
+
+public extension AttributeViewModifier {
+    func body(content: Content) -> Content {
+        content
+    }
+}

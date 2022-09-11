@@ -16,13 +16,17 @@
 
 import ScarletCore
 
-/// A rectangle filled by a solid color.
-struct Rectangle: View {
-    let color: Color
+struct GrowModifier: AttributeViewModifier {
+    @Attribute(\ViewImpl.attributes.grow)
+    var grow
 
-    public var body: some View {
-        EmptyView()
-            .fill(color: color)
-            .grow(1.0)
+    init(_ grow: Float?) {
+        self.grow = grow
+    }
+}
+
+extension View {
+    func grow(_ grow: Float?) -> some View {
+        self.modifier(GrowModifier(grow))
     }
 }
