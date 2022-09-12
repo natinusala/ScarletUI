@@ -49,6 +49,15 @@ public struct ElementNodeContext {
     /// Creates a copy of the context popping the attributes corresponding to the given implementation type,
     /// returning them along the context copy.
     func poppingAttributes<Implementation: ImplementationNode>(for implementationType: Implementation.Type) -> (attributes: [any AttributeSetter<Implementation>], context: Self) {
+        // If we request attributes for `Never` just return empty attributes and the untouched context since
+        // we can never have attributes for a `Never` implementation type.
+        if Implementation.self == Never.self {
+            return (
+                attributes: [],
+                context: self
+            )
+        }
+
         // Create a new attributes stash containing only the corresponding attributes
         // then return that, as well as a new context containing all remaining attributes
         var newStash: [any AttributeSetter<Implementation>] = []
@@ -147,6 +156,8 @@ extension ElementNode {
     ///
     /// Returns the node implementation count.
     public func update(with element: Value?, implementationPosition: Int, using context: Context) -> UpdateResult {
+        Logger.debug(debugImplementation, "Updating \(Value.self) with implementation position \(implementationPosition)")
+
         let attributes: AttributesStash
 
         // Update value and collect attributes
@@ -179,14 +190,15 @@ extension ElementNode {
         // must start at 0 (the parent being ourself)
 
         // Update edges
-        let result = self.updateEdges(
+        let edgesResult = self.updateEdges(
             from: output,
             at: (self.substantial ? 0 : implementationPosition),
             using: context
         )
 
         // Update state
-        self.implementationCount = result.implementationCount
+        Logger.debug(debugImplementation, "Set implementation position of \(Value.self) to \(edgesResult.implementationCount)")
+        self.implementationCount = edgesResult.implementationCount
         self.attributes = attributes
 
         // Override implementation count if the element is substantial since it has one implementation: itself
@@ -194,10 +206,12 @@ extension ElementNode {
             self.implementationCount = 1
         }
 
-        return UpdateResult(
-            implementationPosition: result.implementationPosition,
+        let result = UpdateResult(
+            implementationPosition: implementationPosition,
             implementationCount: self.implementationCount
         )
+        Logger.debug(debugImplementation, "Update result of \(Value.self): \(result)")
+        return result
     }
 
     /// Installs the given element with the proper state and environment.
@@ -272,13 +286,17 @@ extension ElementNode {
         func inner(attaching implementation: ImplementationNode, at position: Int, to parentNode: any ElementNode) {
             if let parentImplementation = parentNode.implementation {
                 parentImplementation.insertChild(implementation, at: position)
+                Logger.debug(debugImplementation, "Attaching \(Value.self) to parent \(parentImplementation.displayName) at position \(position)")
             } else if let parent = parentNode.parent {
                 inner(attaching: implementation, at: position, to: parent)
+            } else {
+                Logger.debug(debugImplementation, "Did not find parent to attach \(Value.self) at position \(position)")
             }
         }
 
         guard let implementation = self.implementation else { return }
         guard let parent = self.parent else { return }
+
         inner(attaching: implementation, at: position, to: parent)
     }
 }

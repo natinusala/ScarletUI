@@ -92,6 +92,7 @@ public class StaticElementNode9<Value, E0, E1, E2, E3, E4, E5, E6, E7, E8>: Elem
         }
         totalImplementationCount += e0ImplementationCount
 
+        Logger.debug(debugImplementation, "\(E0.self) returned implementation count \(e0ImplementationCount) - Total: \(totalImplementationCount)")
         // Edge 1
         let e1ImplementationPosition = implementationPosition + totalImplementationCount
         let e1ImplementationCount: Int
@@ -110,6 +111,7 @@ public class StaticElementNode9<Value, E0, E1, E2, E3, E4, E5, E6, E7, E8>: Elem
         }
         totalImplementationCount += e1ImplementationCount
 
+        Logger.debug(debugImplementation, "\(E1.self) returned implementation count \(e1ImplementationCount) - Total: \(totalImplementationCount)")
         // Edge 2
         let e2ImplementationPosition = implementationPosition + totalImplementationCount
         let e2ImplementationCount: Int
@@ -128,6 +130,7 @@ public class StaticElementNode9<Value, E0, E1, E2, E3, E4, E5, E6, E7, E8>: Elem
         }
         totalImplementationCount += e2ImplementationCount
 
+        Logger.debug(debugImplementation, "\(E2.self) returned implementation count \(e2ImplementationCount) - Total: \(totalImplementationCount)")
         // Edge 3
         let e3ImplementationPosition = implementationPosition + totalImplementationCount
         let e3ImplementationCount: Int
@@ -146,6 +149,7 @@ public class StaticElementNode9<Value, E0, E1, E2, E3, E4, E5, E6, E7, E8>: Elem
         }
         totalImplementationCount += e3ImplementationCount
 
+        Logger.debug(debugImplementation, "\(E3.self) returned implementation count \(e3ImplementationCount) - Total: \(totalImplementationCount)")
         // Edge 4
         let e4ImplementationPosition = implementationPosition + totalImplementationCount
         let e4ImplementationCount: Int
@@ -164,6 +168,7 @@ public class StaticElementNode9<Value, E0, E1, E2, E3, E4, E5, E6, E7, E8>: Elem
         }
         totalImplementationCount += e4ImplementationCount
 
+        Logger.debug(debugImplementation, "\(E4.self) returned implementation count \(e4ImplementationCount) - Total: \(totalImplementationCount)")
         // Edge 5
         let e5ImplementationPosition = implementationPosition + totalImplementationCount
         let e5ImplementationCount: Int
@@ -182,6 +187,7 @@ public class StaticElementNode9<Value, E0, E1, E2, E3, E4, E5, E6, E7, E8>: Elem
         }
         totalImplementationCount += e5ImplementationCount
 
+        Logger.debug(debugImplementation, "\(E5.self) returned implementation count \(e5ImplementationCount) - Total: \(totalImplementationCount)")
         // Edge 6
         let e6ImplementationPosition = implementationPosition + totalImplementationCount
         let e6ImplementationCount: Int
@@ -200,6 +206,7 @@ public class StaticElementNode9<Value, E0, E1, E2, E3, E4, E5, E6, E7, E8>: Elem
         }
         totalImplementationCount += e6ImplementationCount
 
+        Logger.debug(debugImplementation, "\(E6.self) returned implementation count \(e6ImplementationCount) - Total: \(totalImplementationCount)")
         // Edge 7
         let e7ImplementationPosition = implementationPosition + totalImplementationCount
         let e7ImplementationCount: Int
@@ -218,6 +225,7 @@ public class StaticElementNode9<Value, E0, E1, E2, E3, E4, E5, E6, E7, E8>: Elem
         }
         totalImplementationCount += e7ImplementationCount
 
+        Logger.debug(debugImplementation, "\(E7.self) returned implementation count \(e7ImplementationCount) - Total: \(totalImplementationCount)")
         // Edge 8
         let e8ImplementationPosition = implementationPosition + totalImplementationCount
         let e8ImplementationCount: Int
@@ -236,6 +244,7 @@ public class StaticElementNode9<Value, E0, E1, E2, E3, E4, E5, E6, E7, E8>: Elem
         }
         totalImplementationCount += e8ImplementationCount
 
+        Logger.debug(debugImplementation, "\(E8.self) returned implementation count \(e8ImplementationCount) - Total: \(totalImplementationCount)")
 
         return UpdateResult(
             implementationPosition: implementationPosition,

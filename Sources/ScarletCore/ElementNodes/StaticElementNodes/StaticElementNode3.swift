@@ -80,6 +80,7 @@ public class StaticElementNode3<Value, E0, E1, E2>: ElementNode where Value: Ele
         }
         totalImplementationCount += e0ImplementationCount
 
+        Logger.debug(debugImplementation, "\(E0.self) returned implementation count \(e0ImplementationCount) - Total: \(totalImplementationCount)")
         // Edge 1
         let e1ImplementationPosition = implementationPosition + totalImplementationCount
         let e1ImplementationCount: Int
@@ -98,6 +99,7 @@ public class StaticElementNode3<Value, E0, E1, E2>: ElementNode where Value: Ele
         }
         totalImplementationCount += e1ImplementationCount
 
+        Logger.debug(debugImplementation, "\(E1.self) returned implementation count \(e1ImplementationCount) - Total: \(totalImplementationCount)")
         // Edge 2
         let e2ImplementationPosition = implementationPosition + totalImplementationCount
         let e2ImplementationCount: Int
@@ -116,6 +118,7 @@ public class StaticElementNode3<Value, E0, E1, E2>: ElementNode where Value: Ele
         }
         totalImplementationCount += e2ImplementationCount
 
+        Logger.debug(debugImplementation, "\(E2.self) returned implementation count \(e2ImplementationCount) - Total: \(totalImplementationCount)")
 
         return UpdateResult(
             implementationPosition: implementationPosition,

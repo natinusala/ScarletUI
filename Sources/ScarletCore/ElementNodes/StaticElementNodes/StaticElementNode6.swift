@@ -86,6 +86,7 @@ public class StaticElementNode6<Value, E0, E1, E2, E3, E4, E5>: ElementNode wher
         }
         totalImplementationCount += e0ImplementationCount
 
+        Logger.debug(debugImplementation, "\(E0.self) returned implementation count \(e0ImplementationCount) - Total: \(totalImplementationCount)")
         // Edge 1
         let e1ImplementationPosition = implementationPosition + totalImplementationCount
         let e1ImplementationCount: Int
@@ -104,6 +105,7 @@ public class StaticElementNode6<Value, E0, E1, E2, E3, E4, E5>: ElementNode wher
         }
         totalImplementationCount += e1ImplementationCount
 
+        Logger.debug(debugImplementation, "\(E1.self) returned implementation count \(e1ImplementationCount) - Total: \(totalImplementationCount)")
         // Edge 2
         let e2ImplementationPosition = implementationPosition + totalImplementationCount
         let e2ImplementationCount: Int
@@ -122,6 +124,7 @@ public class StaticElementNode6<Value, E0, E1, E2, E3, E4, E5>: ElementNode wher
         }
         totalImplementationCount += e2ImplementationCount
 
+        Logger.debug(debugImplementation, "\(E2.self) returned implementation count \(e2ImplementationCount) - Total: \(totalImplementationCount)")
         // Edge 3
         let e3ImplementationPosition = implementationPosition + totalImplementationCount
         let e3ImplementationCount: Int
@@ -140,6 +143,7 @@ public class StaticElementNode6<Value, E0, E1, E2, E3, E4, E5>: ElementNode wher
         }
         totalImplementationCount += e3ImplementationCount
 
+        Logger.debug(debugImplementation, "\(E3.self) returned implementation count \(e3ImplementationCount) - Total: \(totalImplementationCount)")
         // Edge 4
         let e4ImplementationPosition = implementationPosition + totalImplementationCount
         let e4ImplementationCount: Int
@@ -158,6 +162,7 @@ public class StaticElementNode6<Value, E0, E1, E2, E3, E4, E5>: ElementNode wher
         }
         totalImplementationCount += e4ImplementationCount
 
+        Logger.debug(debugImplementation, "\(E4.self) returned implementation count \(e4ImplementationCount) - Total: \(totalImplementationCount)")
         // Edge 5
         let e5ImplementationPosition = implementationPosition + totalImplementationCount
         let e5ImplementationCount: Int
@@ -176,6 +181,7 @@ public class StaticElementNode6<Value, E0, E1, E2, E3, E4, E5>: ElementNode wher
         }
         totalImplementationCount += e5ImplementationCount
 
+        Logger.debug(debugImplementation, "\(E5.self) returned implementation count \(e5ImplementationCount) - Total: \(totalImplementationCount)")
 
         return UpdateResult(
             implementationPosition: implementationPosition,
