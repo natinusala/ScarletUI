@@ -24,7 +24,7 @@ public struct LeafViewMakeOutput<Value>: MakeOutput where Value: Element {
 
 /// Element nodes for leaf views that have no edges.
 /// Performs an equality check on the element (see ``shouldUpdate(with:)``).
-public class LeafViewElementNode<Value>: ElementNode where Value: Element, Value.Input == LeafViewMakeInput<Value>, Value.Output == LeafViewMakeOutput<Value> {
+public class LeafViewElementNode<Value>: StoredElementNode where Value: Element, Value.Input == LeafViewMakeInput<Value>, Value.Output == LeafViewMakeOutput<Value> {
     public var parent: (any ElementNode)?
     public var implementation: Value.Implementation?
     public var implementationCount = 0
@@ -56,13 +56,6 @@ public class LeafViewElementNode<Value>: ElementNode where Value: Element, Value
     public func make(element: Value) -> Value.Output {
         let input = LeafViewMakeInput<Value>()
         return Value.make(element, input: input)
-    }
-
-    public func shouldUpdate(with element: Value) -> Bool {
-        // Even if leaves are mostly built-ins elements with only attributes,
-        // it doesn't cost much to make the check anyway for user elements
-        // since updating leaves is cheap (they have no edges) and they usually contain few properties
-        return anyEquals(lhs: self.value, rhs: element)
     }
 
     public var allEdges: [(any ElementNode)?] {

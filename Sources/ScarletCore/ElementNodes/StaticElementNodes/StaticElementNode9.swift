@@ -38,7 +38,6 @@ public class StaticElementNode9<Value, E0, E1, E2, E3, E4, E5, E6, E7, E8>: Elem
     typealias Input = StaticMakeInput9<Value>
     typealias Output = StaticMakeOutput9<Value, E0, E1, E2, E3, E4, E5, E6, E7, E8>
 
-    public var value: Value
     public var parent: (any ElementNode)?
     public var implementation: Value.Implementation?
     public var implementationCount = 0
@@ -55,7 +54,6 @@ public class StaticElementNode9<Value, E0, E1, E2, E3, E4, E5, E6, E7, E8>: Elem
     var e8: E8.Node?
 
     init(making element: Value, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) {
-        self.value = element
         self.parent = parent
 
         // Create the implementation node
@@ -255,11 +253,6 @@ public class StaticElementNode9<Value, E0, E1, E2, E3, E4, E5, E6, E7, E8>: Elem
     public func make(element: Value) -> Value.Output {
         let input = Input()
         return Value.make(element, input: input)
-    }
-
-    public func shouldUpdate(with element: Value) -> Bool {
-        // Pass through
-        return true
     }
 
     public var allEdges: [(any ElementNode)?] {

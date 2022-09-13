@@ -114,9 +114,6 @@ public protocol ElementNode<Value>: AnyObject {
 
     typealias Context = Value.Context
 
-    /// Value for the element.
-    var value: Value { get set }
-
     /// Parent of this node.
     var parent: (any ElementNode)? { get }
 
@@ -146,6 +143,46 @@ public protocol ElementNode<Value>: AnyObject {
     /// Used to visit all edges of the node.
     /// Should only be used for debugging purposes.
     var allEdges: [(any ElementNode)?] { get }
+
+    func storeValue(_ value: Value)
+    var valueDebugDescription: String { get }
+}
+
+/// An element node for which the element is stored.
+/// This protocol must be used for any element that has state properties
+/// or needs an equality check (all user elements).
+public protocol StoredElementNode: ElementNode {
+    /// Value for the element.
+    var value: Value { get set }
+}
+
+public extension StoredElementNode {
+    /// Default implementation for stored element nodes: compare the stored value
+    /// with the new one.
+    func shouldUpdate(with element: Value) -> Bool {
+        return !anyEquals(lhs: self.value, rhs: element)
+    }
+
+    func storeValue(_ value: Value) {
+        self.value = value
+    }
+
+    var valueDebugDescription: String {
+        return self.value.debugDescription
+    }
+}
+
+public extension ElementNode {
+    /// Default implementation: always return `true` to pass through.
+    func shouldUpdate(with element: Value) -> Bool {
+        return true
+    }
+
+    func storeValue(_ value: Value) {}
+
+    var valueDebugDescription: String {
+        return "\(Value.self)"
+    }
 }
 
 extension ElementNode {
@@ -162,7 +199,7 @@ extension ElementNode {
 
         // Update value and collect attributes
         if let element {
-            self.value = element
+            self.storeValue(element)
             attributes = Self.collectAttributes(of: element)
         } else {
             attributes = self.attributes
@@ -305,7 +342,7 @@ extension ElementNode {
     public func printTree(displayNode: Bool = false, indent: Int = 0) {
         let nodeStr = displayNode ? " (node: \(Self.self))" : ""
         let indentStr = String(repeating: " ", count: indent)
-        print("\(indentStr)- \(self.value.debugDescription)\(nodeStr)")
+        print("\(indentStr)- \(self.valueDebugDescription)\(nodeStr)")
 
         self.allEdges.forEach { edge in
             if let edge {

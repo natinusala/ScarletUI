@@ -24,7 +24,6 @@ public struct LeafSceneMakeOutput<Value, Edge>: MakeOutput where Value: Element,
 
 /// Element nodes for scenes that have a view as content. Does not perform equality check.
 public class LeafSceneElementNode<Value, Edge>: ElementNode where Value: Element, Value.Input == UserMakeInput<Value>, Value.Output == UserMakeOutput<Value, Edge>, Edge: Element {
-    public var value: Value
     public var parent: (any ElementNode)?
     public var implementation: Value.Implementation?
     public var implementationCount = 0
@@ -33,7 +32,6 @@ public class LeafSceneElementNode<Value, Edge>: ElementNode where Value: Element
     var edge: Edge.Node?
 
     init(making element: Value, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) {
-        self.value = element
         self.parent = parent
 
         // Create the implementation node
@@ -64,10 +62,6 @@ public class LeafSceneElementNode<Value, Edge>: ElementNode where Value: Element
     public func make(element: Value) -> Value.Output {
         let input = UserMakeInput<Value>()
         return Value.make(element, input: input)
-    }
-
-    public func shouldUpdate(with element: Value) -> Bool {
-        return true
     }
 
     public var allEdges: [(any ElementNode)?] {

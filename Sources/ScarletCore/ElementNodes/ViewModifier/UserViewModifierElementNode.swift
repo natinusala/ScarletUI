@@ -25,7 +25,7 @@ public struct UserViewModifierMakeOutput<Value, Edge>: MakeOutput where Value: V
 /// Element node for user provided view modifiers. Always performs equality check.
 /// The view modifier edge is a placeholder ``ViewModifierContent``.
 /// The pattern is `ModifiedContent -> ViewModifier -> ViewModifier.Body -> [...] -> ViewModifierContent -> ViewModifier.Content`.
-public class UserViewModifierElementNode<Value, Edge>: ElementNode where Value: ViewModifier, Value.Input == UserViewModifierMakeInput<Value>, Value.Output == UserViewModifierMakeOutput<Value, Edge>, Edge: Element {
+public class UserViewModifierElementNode<Value, Edge>: StoredElementNode where Value: ViewModifier, Value.Input == UserViewModifierMakeInput<Value>, Value.Output == UserViewModifierMakeOutput<Value, Edge>, Edge: Element {
     public var value: Value
     public var parent: (any ElementNode)?
     public var implementation: Value.Implementation?
@@ -61,16 +61,6 @@ public class UserViewModifierElementNode<Value, Edge>: ElementNode where Value: 
         } else {
             nilOutputFatalError(for: Edge.self)
         }
-    }
-
-    public func shouldUpdate(with element: Value) -> Bool {
-        // If the view is an attribute modifier, don't check it since it's redundant
-        // with the existing attributes equality check
-        if Value.self is any AttributeViewModifier.Type {
-            return true
-        }
-
-        return !anyEquals(lhs: self.value, rhs: element)
     }
 
     public func make(element: Value) -> Value.Output {

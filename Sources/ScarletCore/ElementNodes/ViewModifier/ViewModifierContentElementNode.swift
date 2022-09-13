@@ -22,8 +22,8 @@ public struct ViewModifierContentMakeOutput<Value>: MakeOutput where Value: View
 
 }
 
+/// Element node for view modifier content placeholder. Does not perform equality check on itself.
 public class ViewModifierContentElementNode<Value>: ElementNode where Value: View, Value.Input == ViewModifierContentMakeInput<Value>, Value.Output == ViewModifierContentMakeOutput<Value> {
-    public var value: Value
     public var parent: (any ElementNode)?
     public var implementation: Value.Implementation?
     public var implementationCount = 0
@@ -33,7 +33,6 @@ public class ViewModifierContentElementNode<Value>: ElementNode where Value: Vie
     var edge: (any ElementNode)?
 
     init(making element: Value, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) {
-        self.value = element
         self.parent = parent
 
         // Create the implementation node
@@ -66,10 +65,6 @@ public class ViewModifierContentElementNode<Value>: ElementNode where Value: Vie
         } else {
             fatalError("Cannot create type-erased ViewModifierContent edge: content is `nil` inside the context")
         }
-    }
-
-    public func shouldUpdate(with element: Value) -> Bool {
-        return true
     }
 
     public func make(element: Value) -> Value.Output {

@@ -71,10 +71,6 @@ public class ModifiedViewElementNode<Content, Modifier>: ElementNode where Conte
         }
     }
 
-    public func shouldUpdate(with element: Value) -> Bool {
-        return true
-    }
-
     public func make(element: Value) -> ModifiedViewMakeOutput<Content, Modifier> {
         let input = ModifiedViewMakeInput<Content, Modifier>()
         return Value.make(element, input: input)

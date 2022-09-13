@@ -23,7 +23,7 @@ public struct UserMakeOutput<Value, Edge>: MakeOutput where Value: Element, Edge
 }
 
 /// Element nodes for "user" elements with a body (apps, scenes, views, view modifiers...). Always performs equality checks.
-public class UserElementNode<Value, Edge>: ElementNode where Value: Element, Value.Input == UserMakeInput<Value>, Value.Output == UserMakeOutput<Value, Edge>, Edge: Element {
+public class UserElementNode<Value, Edge>: StoredElementNode where Value: Element, Value.Input == UserMakeInput<Value>, Value.Output == UserMakeOutput<Value, Edge>, Edge: Element {
     public var value: Value
     public var parent: (any ElementNode)?
     public var implementation: Value.Implementation?

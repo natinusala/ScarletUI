@@ -24,7 +24,6 @@ public struct OptionalMakeOutput<Value, Wrapped>: MakeOutput where Value: Elemen
 
 /// Node for optional elements. Doesn't perform equaliyty check on itself.
 public class OptionalElementNode<Value, Wrapped>: ElementNode where Value: Element, Wrapped: Element, Value.Input == OptionalMakeInput<Value>, Value.Output == OptionalMakeOutput<Value, Wrapped> {
-    public var value: Value
     public var parent: (any ElementNode)?
     public var implementation: Value.Implementation?
     public var implementationCount = 0
@@ -35,7 +34,6 @@ public class OptionalElementNode<Value, Wrapped>: ElementNode where Value: Eleme
     var edge: Wrapped.Node?
 
     init(making element: Value, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) {
-        self.value = element
         self.parent = parent
 
         // Create the implementation node
@@ -93,10 +91,6 @@ public class OptionalElementNode<Value, Wrapped>: ElementNode where Value: Eleme
                 // Edge has been removed, destroy it
                 fatalError("Unimplemented")
         }
-    }
-
-    public func shouldUpdate(with element: Value) -> Bool {
-        return true
     }
 
     public func make(element: Value) -> Value.Output {
