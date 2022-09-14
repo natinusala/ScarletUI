@@ -31,3 +31,15 @@ for i in range(2, max):  # TupleView1 does not exist
         "",
         "Sources/ScarletCore/Views/TupleView.gyb",
     )
+
+# ViewAttributes
+for i in range(1, max):
+    run(
+        "gyb",
+        f"-DIDX={i}",
+        "-o",
+        f"Sources/ScarletCore/Views/ViewAttributes/ViewAttribute{i}.swift",
+        "--line-directive",
+        "",
+        "Sources/ScarletCore/Views/ViewAttribute.gyb",
+    )

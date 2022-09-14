@@ -14,10 +14,12 @@
    limitations under the License.
 */
 
+// TODO: Rename to ElementInput and all implementations to XXXInput
 public protocol MakeInput<Value> {
     associatedtype Value: Element
 }
 
+// TODO: Rename to ElementOutput and all implementations to XXXOutput
 public protocol MakeOutput<Value> {
     associatedtype Value: Element
 }
@@ -43,6 +45,9 @@ public protocol Element: CustomDebugStringConvertible {
 
     /// Makes the element, usually to get its edges.
     static func make(_ element: Self, input: Input) -> Output
+
+    /// Returns all attributes of the element.
+    static func collectAttributes(of element: Self) -> AttributesStash
 }
 
 public extension Element {
@@ -53,6 +58,27 @@ public extension Element {
         }
 
         return Implementation(displayName: element.displayName)
+    }
+
+    /// Default way of collecting attributes: use a Mirror on the element directly
+    /// to gather `@Attribute` property wrappers.
+    static func collectAttributes(of element: Self) -> AttributesStash {
+        return Self.collectAttributesUsingMirror(of: element)
+    }
+
+    /// Uses a Mirror to collect all attributes of the given element.
+    static func collectAttributesUsingMirror(of element: Self) -> AttributesStash {
+        let mirror = Mirror(reflecting: element)
+
+        var attributes: AttributesStash = [:]
+
+        for child in mirror.children {
+            if let attribute = child.value as? any AttributeSetter {
+                attributes[attribute.target] = attribute
+            }
+        }
+
+        return attributes
     }
 }
 

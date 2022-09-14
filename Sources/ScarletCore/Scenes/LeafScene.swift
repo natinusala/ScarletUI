@@ -22,7 +22,7 @@ public protocol LeafScene: Scene where Body == Never {
     var content: Content { get }
 }
 
-public extension LeafScene{
+public extension LeafScene {
     var body: Never {
         fatalError()
     }

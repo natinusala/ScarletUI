@@ -25,7 +25,7 @@ import Foundation
 ///     1. `Equatable` conformance
 ///     2. `memcmp` if type is POD
 ///     3. `AnyClass` conformance (compare references)
-///     4. Recursive field by field comparison using a `Mirror`
+///     4. Recursive field by field comparison using a Mirror
 func anyEquals(lhs: Any, rhs: Any) -> Bool {
     var lhs = lhs
     var rhs = rhs

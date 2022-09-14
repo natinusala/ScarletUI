@@ -19,6 +19,27 @@ public enum AttributeStorage<Value> {
     case set(value: Value)
 }
 
+public extension Optional {
+    /// Returns an unset attribute value if the optional is `nil`.
+    ///
+    /// Useful to have a "nil == unset" semantic on attributes that are
+    /// not optional on the implementation side.
+    ///
+    /// An attribute "unset" through this property will not be set on the
+    /// implementation node (the current value will stay). On a proper optional
+    /// attribute however, the value would be overwritten to `nil` and this property
+    /// wouldn't need to be used.
+    var unsetIfNil: AttributeStorage<Wrapped> {
+        switch self {
+            case .some(let value):
+                return .set(value: value)
+            case .none:
+                return .unset
+        }
+    }
+}
+
+
 /// Contains the value to give an attribute of an eventual implementation node.
 ///
 /// The key path defines where the value is written to (the target attribute) as well
@@ -65,6 +86,29 @@ public struct Attribute<Implementation: ImplementationNode, Value>: AttributeSet
         self.propagate = propagate
 
         self.target = keyPath
+    }
+
+    /// Creates a new attribute for the given `keyPath` and initial value.
+    ///
+    /// If `propagate` is `true`, the attribute will be propagated to all nodes in the graph
+    /// even if they don't have the attribute. This is useful for attributes that should be set
+    /// on the whole hierarchy if it's set on one parent node.
+    public init(_ keyPath: AttributeKeyPath, value: AttributeStorage<Value>, propagate: Bool = false) {
+        self.keyPath = keyPath
+        self.propagate = propagate
+
+        self.target = keyPath
+
+        self.actualValue = value
+    }
+
+    /// Creates a new attribute for the given `keyPath` and initial value.
+    ///
+    /// If `propagate` is `true`, the attribute will be propagated to all nodes in the graph
+    /// even if they don't have the attribute. This is useful for attributes that should be set
+    /// on the whole hierarchy if it's set on one parent node.
+    public init(_ keyPath: AttributeKeyPath, value: Value, propagate: Bool = false) {
+        self.init(keyPath, value: .set(value: value), propagate: propagate)
     }
 
     public func set(on implementation: Implementation, identifiedBy: AnyHashable) {
@@ -150,6 +194,29 @@ public struct AppendAttribute<Implementation: ImplementationNode, Value>: Attrib
         self.target = keyPath
     }
 
+    /// Creates a new attribute for the given `keyPath` and initial value.
+    ///
+    /// If `propagate` is `true`, the attribute will be propagated to all nodes in the graph
+    /// even if they don't have the attribute. This is useful for attributes that should be set
+    /// on the whole hierarchy if it's set on one parent node.
+    public init(_ keyPath: AttributeKeyPath, value: AttributeStorage<Value>, propagate: Bool = false) {
+        self.keyPath = keyPath
+        self.propagate = propagate
+
+        self.target = keyPath
+
+        self.actualValue = value
+    }
+
+    /// Creates a new attribute for the given `keyPath` and initial value.
+    ///
+    /// If `propagate` is `true`, the attribute will be propagated to all nodes in the graph
+    /// even if they don't have the attribute. This is useful for attributes that should be set
+    /// on the whole hierarchy if it's set on one parent node.
+    public init(_ keyPath: AttributeKeyPath, value: Value, propagate: Bool = false) {
+        self.init(keyPath, value: .set(value: value), propagate: propagate)
+    }
+
     public func set(on implementation: Implementation, identifiedBy key: AnyHashable) {
         // If the attribute is unset, get it over with immediately
         // Return `true` to have it removed from the stash
@@ -181,6 +248,13 @@ public struct AppendAttribute<Implementation: ImplementationNode, Value>: Attrib
 }
 
 /// Sets an attribute value to any implementation.
+///
+/// By default, attributes of an element are collected using a Mirror on the element itself
+/// to gather all `@Attribute` property wrappers.
+/// However this is quite slow due to the Mirror.
+///
+/// Using a specialized element like `ViewAttribute` without property wrappers allows collecting
+/// attributes in a type-safe and faster way.
 public protocol AttributeSetter<Implementation> {
     /// The implementation node type this attribute is bound to.
     associatedtype Implementation: ImplementationNode
@@ -233,5 +307,3 @@ extension AttributesStash {
         return newStash
     }
 }
-
-// TODO: AttributeViewModifier

@@ -200,7 +200,7 @@ extension ElementNode {
         // Update value and collect attributes
         if let element {
             self.storeValue(element)
-            attributes = Self.collectAttributes(of: element)
+            attributes = Value.collectAttributes(of: element)
         } else {
             attributes = self.attributes
         }
@@ -293,21 +293,6 @@ extension ElementNode {
         }
 
         return self.installAndUpdate(with: typedElement, implementationPosition: implementationPosition, using: context)
-    }
-
-    /// Uses a mirror to collect all attributes of the given element.
-    static func collectAttributes(of element: Value) -> AttributesStash {
-        let mirror = Mirror(reflecting: element)
-
-        var attributes: AttributesStash = [:]
-
-        for child in mirror.children {
-            if let attribute = child.value as? any AttributeSetter {
-                attributes[attribute.target] = attribute
-            }
-        }
-
-        return attributes
     }
 }
 

@@ -16,17 +16,10 @@
 
 import ScarletCore
 
-struct GrowModifier: AttributeViewModifier {
-    @Attribute(\ViewImpl.attributes.grow)
-    var grow
-
-    init(_ grow: Float?) {
-        self.grow = grow
-    }
-}
-
 extension View {
-    func grow(_ grow: Float?) -> some View {
-        self.modifier(GrowModifier(grow))
+    func id(_ id: String?) -> some View {
+        return self.attributed(
+            Attribute(\ViewImpl.attributes.id, value: id)
+        )
     }
 }

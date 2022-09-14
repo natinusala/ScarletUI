@@ -16,17 +16,10 @@
 
 import ScarletCore
 
-struct FillModifier: AttributeViewModifier {
-    @Attribute(\ViewImpl.attributes.fill)
-    var fill
-
-    init(_ fill: Color?) {
-        self.fill = fill
-    }
-}
-
 extension View {
-    func fill(color: Color) -> some View {
-        self.modifier(FillModifier(color))
+    func fill(color: Color?) -> some View {
+        return self.attributed(
+            Attribute(\ViewImpl.attributes.fill, value: color)
+        )
     }
 }
