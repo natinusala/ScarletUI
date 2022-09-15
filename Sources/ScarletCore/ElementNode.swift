@@ -321,6 +321,44 @@ extension ElementNode {
 
         inner(attaching: implementation, at: position, to: parent)
     }
+
+    var parentImplementation: ImplementationNode? {
+        if let parent = self.parent {
+            if let implementation = parent.implementation {
+                return implementation
+            } else {
+                return parent.parentImplementation
+            }
+        }
+
+        return nil
+    }
+
+    func detachImplementationFromParent(implementationPosition: Int?) {
+        // Step 1: find the parent implementation node by traversing upwards
+        guard let parentImplementation = self.parentImplementation else { return }
+        let implementationPosition = implementationPosition ?? 0
+
+        // Step 2: traverse the tree downwards and remove every found implementation node
+        // as every deletion offsets the position of the next node by 1, we can remove all nodes
+        // in the same position as the one we're removing
+        func inner(node: any ElementNode) {
+            if node.implementation != nil {
+                let position = implementationPosition
+                Logger.debug(debugImplementation, "Removing node at position \(position) from \(parentImplementation.displayName)")
+                parentImplementation.removeChild(at: position)
+            } else {
+                // TODO: if this is inefficient, find a way to detach all edges with direct calls
+                for edge in node.allEdges {
+                    if let edge {
+                        inner(node: edge)
+                    }
+                }
+            }
+        }
+
+        inner(node: self)
+    }
 }
 
 extension ElementNode {

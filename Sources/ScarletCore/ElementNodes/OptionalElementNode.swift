@@ -87,9 +87,14 @@ public class OptionalElementNode<Value, Wrapped>: ElementNode where Value: Eleme
                     implementationPosition: implementationPosition,
                     implementationCount: edge.implementationCount
                 )
-            case (.some(let previous), .none):
+            case (.some, .none):
                 // Edge has been removed, destroy it
-                fatalError("Unimplemented")
+                self.edge?.detachImplementationFromParent(implementationPosition: implementationPosition)
+                self.edge = nil
+                return UpdateResult(
+                    implementationPosition: implementationPosition,
+                    implementationCount: 0
+                )
         }
     }
 
