@@ -234,11 +234,11 @@ extension ElementNode {
         )
 
         // Update state
-        Logger.debug(debugImplementation, "Set implementation position of \(Value.self) to \(edgesResult.implementationCount)")
+        Logger.debug(debugImplementation, "Edges result of \(Value.self): \(edgesResult)")
         self.implementationCount = edgesResult.implementationCount
         self.attributes = attributes
 
-        // Override implementation count if the element is substantial since it has one implementation: itself
+        // Override implementation count if the element is substantial since it has ieone implementation: itself
         if self.substantial {
             self.implementationCount = 1
         }

@@ -56,7 +56,7 @@ public class ViewModifierContentElementNode<Value>: ElementNode where Value: Vie
         if let edge = self.edge {
             return edge.installAndUpdateAny(with: vmcContext.content, implementationPosition: implementationPosition, using: context)
         } else if let content = vmcContext.content {
-            let edge = content.makeAnyNode(in: self , implementationPosition: implementationPosition, using: context)
+            let edge = content.makeAnyNode(in: self, implementationPosition: implementationPosition, using: context)
             self.edge = edge
             return UpdateResult(
                 implementationPosition: implementationPosition,

@@ -1,0 +1,16 @@
+- state change dans un modifier
+- state change dans un modifier qui réordonne content dans son body
+- state change dans la vue modifiée
+
+- plusieurs VMC (modifier avec plusieurs fois content dedans) (vérifier que le state est bien différent = différente identité)
+- modifier appliqué sur plusieurs vues avec Group (dans GroupSpec)
+
+- un modifier avec un body avec des ifs pour voir que le contenu change / le content est déplacé par exemple
+
+- un modifier dans le body d'un modifier (on modifie content)
+
+
+- pour foreach:
+    - un foreach modifié
+    - des state dans les vues générées par le foreach
+    - les vues générées par le foreach modifiées

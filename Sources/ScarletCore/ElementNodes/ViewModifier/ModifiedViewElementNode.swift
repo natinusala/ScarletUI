@@ -64,7 +64,7 @@ public class ModifiedViewElementNode<Content, Modifier>: ElementNode where Conte
             self.edge = edge
             return UpdateResult(
                 implementationPosition: implementationPosition,
-                implementationCount: self.implementationCount
+                implementationCount: edge.implementationCount
             )
         } else {
             nilOutputFatalError(for: Modifier.self)

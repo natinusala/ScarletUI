@@ -45,7 +45,7 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
             return Mirror(reflecting: self).children.map { label, value in
                 let valueStr = removeOptional("\(value)")
                 return "\(label ?? "nil")=\"\(valueStr)\""
-            }.joined(separator: ", ")
+            }.joined(separator: " ")
         }
     }
 
@@ -122,6 +122,10 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
         self.children.remove(at: position)
     }
 
+    open var customAttributesDebugDescription: String {
+        return ""
+    }
+
     public var description: String {
         let children: String
         if self.children.isEmpty {
@@ -130,7 +134,7 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
             children = self.children.map { "\($0)" }.joined(separator: " ")
         }
         return """
-        <\(self.displayName) \(self.attributes)>\(children)</\(self.displayName)>
+        <\(self.displayName) \(self.attributes) \(self.customAttributesDebugDescription)>\(children)</\(self.displayName)>
         """
     }
 }

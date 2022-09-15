@@ -17,31 +17,30 @@
 import Rainbow
 
 public actor Logger {
-    // TODO: implement "labels" so that apps can enable / disable Scarlet logs
+    // TODO: implement tags so that apps can enable / disable Scarlet logs
     // TODO: replace debug bools by debug facets with a name and add a prefix
-    // TODO: use #file, #line and #function to improve debug messages
 
     /// Logs an informative message.
-    public static func info(_ message: @autoclosure () -> String) {
-        print("\("[INFO]".blue) \(message())")
+    public static func info(_ message: @autoclosure () -> String, function: String = #function) {
+        print("\("[INFO]".blue) \(function) -> \(message())")
     }
 
     /// Logs a warning message.
-    public static func warning(_ message: @autoclosure () -> String) {
-        print("\("[WARNING]".yellow) \(message())")
+    public static func warning(_ message: @autoclosure () -> String, function: String = #function) {
+        print("\("[WARNING]".yellow) \(function) -> \(message())")
     }
 
     /// Logs an error message.
-    public static func error(_ message: @autoclosure () -> String) {
-        print("\("[ERROR]".red) \(message())")
+    public static func error(_ message: @autoclosure () -> String, function: String = #function) {
+        print("\("[ERROR]".red) \(function) -> \(message())")
     }
 
     /// Logs a debug message. The first parameter is used to toggle debug logs for
     /// components of the library at compile time.
     /// Change the debug flags for components in `Debug.swift`.
-    public static func debug(_ dbg: Bool, _ message: @autoclosure () -> String) {
+    public static func debug(_ dbg: Bool, _ message: @autoclosure () -> String, function: String = #function) {
         if dbg {
-            print("\("[DEBUG]".green) \(message())")
+            print("\("[DEBUG]".green) \(function) -> \(message())")
         }
     }
 }
