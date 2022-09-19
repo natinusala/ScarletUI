@@ -59,7 +59,7 @@ public class StaticElementNode7<Value, E0, E1, E2, E3, E4, E5, E6>: ElementNode 
         let result = self.update(with: element, implementationPosition: implementationPosition, using: context)
 
         // Attach the implementation once everything is ready
-        self.attachImplementationToParent(position: result.implementationPosition)
+        self.insertImplementationInParent(position: result.implementationPosition)
     }
 
     public func updateEdges(from output: Value.Output?, at implementationPosition: Int, using context: Context) -> UpdateResult {

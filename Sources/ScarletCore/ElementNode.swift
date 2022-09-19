@@ -304,7 +304,7 @@ extension ElementNode {
 
     /// Attaches the implementation of this node to its parent implementation node. The implementation parent
     /// is not always the element parent (it can skip elements).
-    func attachImplementationToParent(position: Int) {
+    func insertImplementationInParent(position: Int) {
         func inner(attaching implementation: ImplementationNode, at position: Int, to parentNode: any ElementNode) {
             if let parentImplementation = parentNode.implementation {
                 parentImplementation.insertChild(implementation, at: position)
@@ -334,7 +334,7 @@ extension ElementNode {
         return nil
     }
 
-    func detachImplementationFromParent(implementationPosition: Int?) {
+    func removeImplementationFromParent(implementationPosition: Int?) {
         // Step 1: find the parent implementation node by traversing upwards
         guard let parentImplementation = self.parentImplementation else { return }
         let implementationPosition = implementationPosition ?? 0

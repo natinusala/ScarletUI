@@ -42,7 +42,7 @@ public class LeafViewElementNode<Value>: StoredElementNode where Value: Element,
         let result = self.update(with: element, implementationPosition: implementationPosition, using: context)
 
         // Attach the implementation once everything is ready
-        self.attachImplementationToParent(position: result.implementationPosition)
+        self.insertImplementationInParent(position: result.implementationPosition)
     }
 
     public func updateEdges(from output: Value.Output?, at implementationPosition: Int, using context: Context) -> UpdateResult {
