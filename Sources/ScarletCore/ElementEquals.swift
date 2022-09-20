@@ -17,22 +17,26 @@
 
 import Foundation
 
-// TODO: is anyEquals still necessary? since everything is statically typed now we can make multiple equals functions with `where` clauses and a default one using Mirror
-
 /// Performs an equality check on two type-erased values.
+/// Ignores dynamic properties in the comparison (they are always considered equal).
 /// This method tries its best to use the correct method with the info available at runtime
 /// by testing the following methods in order:
 ///     1. `Equatable` conformance
 ///     2. `memcmp` if type is POD
 ///     3. `AnyClass` conformance (compare references)
 ///     4. Recursive field by field comparison using a Mirror
-func anyEquals(lhs: Any, rhs: Any) -> Bool {
+func elementEquals(lhs: Any, rhs: Any) -> Bool {
     var lhs = lhs
     var rhs = rhs
 
     // Type check
     if type(of: lhs) != type(of: rhs) {
         return false
+    }
+
+    // Consider dynamci properties as always equal
+    if lhs is DynamicProperty {
+        return true
     }
 
     // Consider closures as never equal
@@ -76,7 +80,15 @@ func anyEquals(lhs: Any, rhs: Any) -> Bool {
     }
 
     return zip(lhsMirror.children, rhsMirror.children).allSatisfy { (lhsChild, rhsChild) in
-        anyEquals(lhs: lhsChild.value, rhs: rhsChild.value)
+        let lhs = lhsChild.value
+        let rhs = rhsChild.value
+
+        // Ignore dynamic properties.
+        if lhs is DynamicProperty {
+            return true
+        }
+
+        return elementEquals(lhs: lhs, rhs: rhs)
     }
 }
 

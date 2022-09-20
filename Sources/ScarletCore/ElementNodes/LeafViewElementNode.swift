@@ -24,16 +24,25 @@ public struct LeafViewMakeOutput<Value>: MakeOutput where Value: Element {
 
 /// Element nodes for leaf views that have no edges.
 /// Performs an equality check on the element (see ``shouldUpdate(with:)``).
-public class LeafViewElementNode<Value>: StoredElementNode where Value: Element, Value.Input == LeafViewMakeInput<Value>, Value.Output == LeafViewMakeOutput<Value> {
+public class LeafViewElementNode<Value>: StatefulElementNode where Value: Element, Value.Input == LeafViewMakeInput<Value>, Value.Output == LeafViewMakeOutput<Value> {
     public var parent: (any ElementNode)?
     public var implementation: Value.Implementation?
     public var implementationCount = 0
     public var value: Value
     public var attributes = AttributesStash()
+    public var retainedStateProperties: [any Location] = []
+    public var context: Context
+    public var implementationPosition: Int
 
     init(making element: Value, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) {
         self.value = element
         self.parent = parent
+        self.context = context
+        self.implementationPosition = implementationPosition
+
+        // Install the element
+        var element = element
+        self.install(element: &element, using: context)
 
         // Create the implementation node
         self.implementation = Value.makeImplementation(of: element)

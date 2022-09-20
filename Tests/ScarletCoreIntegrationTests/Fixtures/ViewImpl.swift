@@ -66,19 +66,19 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
     }
 
     /// Test signals handlers.
-    // var signalHandlers = AttributeList<(signal: any TestSignal, closure: () -> ())>()
+    var signalHandlers = AttributeList<(signal: any TestSignal, closure: () -> ())>()
 
-    // func signal(_ signal: any TestSignal) {
-    //     for handler in self.signalHandlers {
-    //         if handler.signal.rawValue == signal.rawValue {
-    //             handler.closure()
-    //         }
-    //     }
+    func signal(_ signal: any TestSignal) {
+        for handler in self.signalHandlers {
+            if handler.signal.rawValue == signal.rawValue {
+                handler.closure()
+            }
+        }
 
-    //     for child in self.children {
-    //         child.signal(signal)
-    //     }
-    // }
+        for child in self.children {
+            child.signal(signal)
+        }
+    }
 
     /// Used by custom implementations to compare their custom attributes.
     open func equals(to other: ViewImpl) -> Bool {

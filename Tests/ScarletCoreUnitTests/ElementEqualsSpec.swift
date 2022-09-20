@@ -30,8 +30,8 @@ fileprivate let equatableObject3 = EquatableClass(val1: false, val2: 2500)
 fileprivate let classWrappedObject1 = ClassWrappedNonEquatableStruct(val1: false, val2: 780)
 fileprivate let classWrappedObject2 = classWrappedObject1
 
-/// Specs for testing `anyEquals`.
-let anyEqualsSpecs: [(_: String, lhs: Any, rhs: Any, expected: Bool)] = [
+/// Specs for testing `elementEquals`.
+let elementEqualsSpecs: [(_: String, lhs: Any, rhs: Any, expected: Bool)] = [
     // Different types
     ("different equatable types", lhs: 10, rhs: "test string", expected: false),
     ("different nonequatable types", lhs: NonEquatableEnum.int(10), rhs: { (val: Bool) in !val }, expected: false),
@@ -76,18 +76,23 @@ let anyEqualsSpecs: [(_: String, lhs: Any, rhs: Any, expected: Bool)] = [
     ("nonequatable dicts", lhs: [10: NonEquatableEnum.int(4321)], rhs: [10: NonEquatableEnum.int(8874)], expected: false),
     // Closures (will most likely never conform)
     ("closures", lhs: {(param: Int) in return param + 10}, rhs: {(param: Int) in return param + 20}, expected: false),
+    // Dynamic properties ignore
+    ("changing structs with still dynamic properties", lhs: HasDynamicProperties(dynamicProperty: 10, value: true), rhs: HasDynamicProperties(dynamicProperty: 10, value: false), expected: false),
+    ("still structs with still dynamic properties", lhs: HasDynamicProperties(dynamicProperty: 20, value: true), rhs: HasDynamicProperties(dynamicProperty: 20, value: true), expected: true),
+    ("still structs with changing dynamic properties", lhs: HasDynamicProperties(dynamicProperty: 20, value: true), rhs: HasDynamicProperties(dynamicProperty: 70, value: true), expected: true),
+    ("changing structs with changing dynamic properties", lhs: HasDynamicProperties(dynamicProperty: 15, value: true), rhs: HasDynamicProperties(dynamicProperty: 10, value: false), expected: false),
 ]
 
-class AnyEqualsSpec: QuickSpec {
+class ElementEqualsSpec: QuickSpec {
     override func spec() {
-        describe("`anyEquals`") {
-            for (description, lhs, rhs, expected) in anyEqualsSpecs {
+        describe("`elementEquals`") {
+            for (description, lhs, rhs, expected) in elementEqualsSpecs {
                 context("comparing \(description)") {
                     let ctx: (String, String) = expected ? ("when equal", "returns true") : ("when different", "returns false")
 
                     context(ctx.0) {
                         it(ctx.1) {
-                            expect(anyEquals(lhs: lhs, rhs: rhs)).to(equal(expected))
+                            expect(elementEquals(lhs: lhs, rhs: rhs)).to(equal(expected))
                         }
                     }
                 }
@@ -187,4 +192,17 @@ fileprivate enum NonEquatableEnum {
 fileprivate enum UnbalancedEnum {
     case none
     case one(String)
+}
+
+struct SomeDynamicProperty: DynamicProperty, ExpressibleByIntegerLiteral {
+    let dynamicValue: Int
+
+    init(integerLiteral: Int) {
+        self.dynamicValue = integerLiteral
+    }
+}
+
+struct HasDynamicProperties {
+    let dynamicProperty: SomeDynamicProperty
+    let value: Bool
 }

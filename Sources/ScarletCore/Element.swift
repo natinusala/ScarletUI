@@ -25,7 +25,7 @@ public protocol MakeOutput<Value> {
 }
 
 /// Represents an element of the graph: an app, a scene or a view.
-public protocol Element: CustomDebugStringConvertible {
+public protocol Element: CustomDebugStringConvertible, IsPodable {
     /// Type of the state tracking node for this element.
     associatedtype Node: ElementNode<Self>
 

@@ -46,7 +46,7 @@ public class LeafSceneElementNode<Value, Edge>: ElementNode where Value: Element
 
     public func updateEdges(from output: Value.Output?, at implementationPosition: Int, using context: Context) -> UpdateResult {
         if let edge = self.edge {
-            return edge.installAndUpdate(with: output?.edge, implementationPosition: implementationPosition, using: context)
+            return edge.compareAndUpdate(with: output?.edge, implementationPosition: implementationPosition, using: context)
         } else if let output {
             let edge = Edge.makeNode(of: output.edge, in: self, implementationPosition: implementationPosition, using: context)
             self.edge = edge

@@ -23,18 +23,27 @@ public struct UserMakeOutput<Value, Edge>: MakeOutput where Value: Element, Edge
 }
 
 /// Element nodes for "user" elements with a body (apps, scenes, views, view modifiers...). Always performs equality checks.
-public class UserElementNode<Value, Edge>: StoredElementNode where Value: Element, Value.Input == UserMakeInput<Value>, Value.Output == UserMakeOutput<Value, Edge>, Edge: Element {
+public class UserElementNode<Value, Edge>: StatefulElementNode where Value: Element, Value.Input == UserMakeInput<Value>, Value.Output == UserMakeOutput<Value, Edge>, Edge: Element {
     public var value: Value
     public var parent: (any ElementNode)?
     public var implementation: Value.Implementation?
     public var implementationCount = 0
     public var attributes = AttributesStash()
+    public var retainedStateProperties: [any Location] = []
+    public var context: Context
+    public var implementationPosition: Int
 
     var edge: Edge.Node?
 
     init(making element: Value, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) {
         self.value = element
         self.parent = parent
+        self.context = context
+        self.implementationPosition = implementationPosition
+
+        // Install the element
+        var element = element
+        self.install(element: &element, using: context)
 
         // Create the implementation node
         self.implementation = Value.makeImplementation(of: element)
@@ -48,7 +57,7 @@ public class UserElementNode<Value, Edge>: StoredElementNode where Value: Elemen
 
     public func updateEdges(from output: Value.Output?, at implementationPosition: Int, using context: Context) -> UpdateResult {
         if let edge = self.edge {
-            return edge.installAndUpdate(with: output?.edge, implementationPosition: implementationPosition, using: context)
+            return edge.compareAndUpdate(with: output?.edge, implementationPosition: implementationPosition, using: context)
         } else if let output {
             let edge = Edge.makeNode(of: output.edge, in: self, implementationPosition: implementationPosition, using: context)
             self.edge = edge
@@ -66,14 +75,11 @@ public class UserElementNode<Value, Edge>: StoredElementNode where Value: Elemen
         return Value.make(element, input: input)
     }
 
-    public func shouldUpdate(with element: Value) -> Bool {
+    public func shouldUpdate(with element: Value, using context: ElementNodeContext) -> Bool where Value: ContainerView {
         // If the view is a container, don't check it since it's redundant
         // with checking its content
-        if Value.self is any ContainerView.Type {
-            return true
-        }
-
-        return !anyEquals(lhs: self.value, rhs: element)
+        // TODO: test that it works
+        return true
     }
 
     public var allEdges: [(any ElementNode)?] {

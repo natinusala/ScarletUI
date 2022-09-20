@@ -25,18 +25,27 @@ public struct UserViewModifierMakeOutput<Value, Edge>: MakeOutput where Value: V
 /// Element node for user provided view modifiers. Always performs equality check.
 /// The view modifier edge is a placeholder ``ViewModifierContent``.
 /// The pattern is `ModifiedContent -> ViewModifier -> ViewModifier.Body -> [...] -> ViewModifierContent -> ViewModifier.Content`.
-public class UserViewModifierElementNode<Value, Edge>: StoredElementNode where Value: ViewModifier, Value.Input == UserViewModifierMakeInput<Value>, Value.Output == UserViewModifierMakeOutput<Value, Edge>, Edge: Element {
+public class UserViewModifierElementNode<Value, Edge>: StatefulElementNode where Value: ViewModifier, Value.Input == UserViewModifierMakeInput<Value>, Value.Output == UserViewModifierMakeOutput<Value, Edge>, Edge: Element {
     public var value: Value
     public var parent: (any ElementNode)?
     public var implementation: Value.Implementation?
     public var implementationCount = 0
     public var attributes = AttributesStash()
+    public var retainedStateProperties: [any Location] = []
+    public var context: Context
+    public var implementationPosition: Int
 
     var edge: Edge.Node?
 
     init(making element: Value, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) {
         self.value = element
         self.parent = parent
+        self.context = context
+        self.implementationPosition = implementationPosition
+
+        // Install the element
+        var element = element
+        self.install(element: &element, using: context)
 
         // Create the implementation node
         self.implementation = Value.makeImplementation(of: element)
@@ -50,7 +59,7 @@ public class UserViewModifierElementNode<Value, Edge>: StoredElementNode where V
 
     public func updateEdges(from output: Value.Output?, at implementationPosition: Int, using context: Context) -> UpdateResult {
         if let edge = self.edge {
-            return edge.installAndUpdate(with: output?.edge, implementationPosition: implementationPosition, using: context)
+            return edge.compareAndUpdate(with: output?.edge, implementationPosition: implementationPosition, using: context)
         } else if let output {
             let edge = Edge.makeNode(of: output.edge, in: self, implementationPosition: implementationPosition, using: context)
             self.edge = edge

@@ -14,7 +14,7 @@
    limitations under the License.
 */
 
-extension ModifiedContent: Element, View, CustomDebugStringConvertible where Content: View, Modifier: ViewModifier {
+extension ModifiedContent: Element, View, CustomDebugStringConvertible, IsPodable where Content: View, Modifier: ViewModifier {
     public typealias Implementation = Never
 
     public typealias Input = ModifiedViewMakeInput<Content, Modifier>

@@ -118,7 +118,7 @@ public struct Attribute<Implementation: ImplementationNode, Value>: AttributeSet
             return
         }
 
-        if !anyEquals(lhs: implementation[keyPath: self.keyPath], rhs: value) {
+        if !elementEquals(lhs: implementation[keyPath: self.keyPath], rhs: value) {
             implementation[keyPath: self.keyPath] = value
         }
     }
@@ -229,7 +229,7 @@ public struct AppendAttribute<Implementation: ImplementationNode, Value>: Attrib
         // If a value exists in the node, compare it before setting
         // Otherwise just set it
         if let existingValue = list.values[key] {
-            if !anyEquals(lhs: existingValue, rhs: value) {
+            if !elementEquals(lhs: existingValue, rhs: value) {
                 implementation[keyPath: self.keyPath].values[key] = value
             }
         } else {

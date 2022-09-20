@@ -58,7 +58,7 @@ public class ModifiedViewElementNode<Content, Modifier>: ElementNode where Conte
         let context = context.pushingVmcContext(vmcContext)
 
         if let edge = self.edge {
-            return edge.installAndUpdate(with: output?.modifier, implementationPosition: implementationPosition, using: context)
+            return edge.compareAndUpdate(with: output?.modifier, implementationPosition: implementationPosition, using: context)
         } else if let output {
             let edge = Modifier.makeNode(of: output.modifier, in: self, implementationPosition: implementationPosition, using: context)
             self.edge = edge

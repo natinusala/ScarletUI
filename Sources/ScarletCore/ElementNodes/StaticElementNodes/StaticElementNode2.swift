@@ -62,7 +62,7 @@ public class StaticElementNode2<Value, E0, E1>: ElementNode where Value: Element
         let e0ImplementationPosition = implementationPosition + totalImplementationCount
         let e0ImplementationCount: Int
         if let e0 = self.e0 {
-            e0ImplementationCount = e0.installAndUpdate(
+            e0ImplementationCount = e0.compareAndUpdate(
                 with: output?.e0,
                 implementationPosition: e0ImplementationPosition,
                 using: context
@@ -81,7 +81,7 @@ public class StaticElementNode2<Value, E0, E1>: ElementNode where Value: Element
         let e1ImplementationPosition = implementationPosition + totalImplementationCount
         let e1ImplementationCount: Int
         if let e1 = self.e1 {
-            e1ImplementationCount = e1.installAndUpdate(
+            e1ImplementationCount = e1.compareAndUpdate(
                 with: output?.e1,
                 implementationPosition: e1ImplementationPosition,
                 using: context

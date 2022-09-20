@@ -25,7 +25,7 @@ import Backtrace
 let specs: [QuickSpec.Type] = [
     // ScarletCoreUnitTests
     TryEquatableSpec.self,
-    AnyEqualsSpec.self,
+    ElementEqualsSpec.self,
 
     // ScarletCoreIntegrationTests
     UserViewSpec.QuickSpec.self,
@@ -48,7 +48,7 @@ let specs: [QuickSpec.Type] = [
     ViewModifierBodySpec.QuickSpec.self,
     MultipleViewModifierSpec.QuickSpec.self,
     NestedViewModifierSpec.QuickSpec.self,
-    // ViewModifierStateSpec.QuickSpec.self,
+    ViewModifierStateSpec.QuickSpec.self,
     // ForEachSpecs.self,
 ]
 

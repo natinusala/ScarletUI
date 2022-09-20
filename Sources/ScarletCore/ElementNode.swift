@@ -27,11 +27,20 @@ public struct ElementNodeContext {
     /// Stack of `ViewModifierContentContext` for view modifiers.
     let vmcStack: [ViewModifierContentContext]
 
+    /// Has any state property changed?
+    let hasStateChanged: Bool
+
+    /// Has any dynamic variable changed?
+    var dynamicVariableChanged: Bool {
+        return hasStateChanged
+    }
+
     /// Creates a copy of the context with another VMC context pushed on the stack.
     func pushingVmcContext(_ context: ViewModifierContentContext) -> Self {
         return Self(
             attributes: self.attributes,
-            vmcStack: self.vmcStack + [context]
+            vmcStack: self.vmcStack + [context],
+            hasStateChanged: self.hasStateChanged
         )
     }
 
@@ -41,7 +50,8 @@ public struct ElementNodeContext {
             vmcContext: self.vmcStack.last,
             context: Self(
                 attributes: self.attributes,
-                vmcStack: self.vmcStack.dropLast()
+                vmcStack: self.vmcStack.dropLast(),
+                hasStateChanged: self.hasStateChanged
             )
         )
     }
@@ -80,7 +90,8 @@ public struct ElementNodeContext {
             attributes: newStash,
             context: Self(
                 attributes: remainingAttributes,
-                vmcStack: self.vmcStack
+                vmcStack: self.vmcStack,
+                hasStateChanged: self.hasStateChanged
             )
         )
     }
@@ -92,7 +103,26 @@ public struct ElementNodeContext {
 
         return Self(
             attributes: newStash,
-            vmcStack: self.vmcStack
+            vmcStack: self.vmcStack,
+            hasStateChanged: self.hasStateChanged
+        )
+    }
+
+    /// Returns a copy of the context with the state change flag cleared.
+    func clearingStateChange() -> Self {
+        return ElementNodeContext(
+            attributes: self.attributes,
+            vmcStack: self.vmcStack,
+            hasStateChanged: false
+        )
+    }
+
+    /// Returns a copy of the context with the state change flag set.
+    func settingStateChange() -> Self {
+        return ElementNodeContext(
+            attributes: self.attributes,
+            vmcStack: self.vmcStack,
+            hasStateChanged: true
         )
     }
 
@@ -100,7 +130,8 @@ public struct ElementNodeContext {
     public static func root() -> Self {
         return Self(
             attributes: AttributesStash(),
-            vmcStack: []
+            vmcStack: [],
+            hasStateChanged: false
         )
     }
 }
@@ -135,7 +166,7 @@ public protocol ElementNode<Value>: AnyObject {
 
     /// Returns `true` if the node should be updated with the given new element
     /// (typically if it changed).
-    func shouldUpdate(with element: Value) -> Bool
+    func shouldUpdate(with element: Value, using context: ElementNodeContext) -> Bool
 
     /// Makes the given element.
     func make(element: Value) -> Value.Output
@@ -144,41 +175,35 @@ public protocol ElementNode<Value>: AnyObject {
     /// Should only be used for debugging purposes.
     var allEdges: [(any ElementNode)?] { get }
 
+    /// Installs the view then updates it if necessary.
+    func compareAndUpdate(with element: Value?, implementationPosition: Int, using context: Context) -> UpdateResult
+
+    /// Installs the given element with the proper state and environment.
+    func install(element: inout Value, using context: ElementNodeContext)
+
     func storeValue(_ value: Value)
+    func storeContext(_ context: Context)
+    func storeImplementationPosition(_ position: Int)
     var valueDebugDescription: String { get }
-}
-
-/// An element node for which the element is stored.
-/// This protocol must be used for any element that has state properties
-/// or needs an equality check (all user elements).
-public protocol StoredElementNode: ElementNode {
-    /// Value for the element.
-    var value: Value { get set }
-}
-
-public extension StoredElementNode {
-    /// Default implementation for stored element nodes: compare the stored value
-    /// with the new one.
-    func shouldUpdate(with element: Value) -> Bool {
-        return !anyEquals(lhs: self.value, rhs: element)
-    }
-
-    func storeValue(_ value: Value) {
-        self.value = value
-    }
-
-    var valueDebugDescription: String {
-        return self.value.debugDescription
-    }
 }
 
 public extension ElementNode {
     /// Default implementation: always return `true` to pass through.
-    func shouldUpdate(with element: Value) -> Bool {
+    func shouldUpdate(with element: Value, using context: ElementNodeContext) -> Bool {
         return true
     }
 
+    /// Default implementation: no comparison, no installation, just update the node.
+    func compareAndUpdate(with element: Value?, implementationPosition: Int, using context: Context) -> UpdateResult {
+        return self.update(with: element, implementationPosition: implementationPosition, using: context)
+    }
+
     func storeValue(_ value: Value) {}
+    func storeContext(_ context: Context) {}
+    func storeImplementationPosition(_ position: Int) {}
+
+    /// Default implementation: do nothing.
+    func install(element: inout Value, using context: ElementNodeContext) {}
 
     var valueDebugDescription: String {
         return "\(Value.self)"
@@ -205,9 +230,14 @@ extension ElementNode {
             attributes = self.attributes
         }
 
-        // Add our attributes to the context then split it to get those we need to apply here
+        // Clear context
+        let context = context
+            .clearingStateChange()
+
+        // Take the context from the parent, add our attributes
+        // Then split it by implementation type to only get those we need to apply here
         // The rest will stay in the context struct given to our edges
-        let (attributesToApply, context) = context
+        let (attributesToApply, edgesContext) = context
             .completingAttributes(from: attributes)
             .poppingAttributes(for: Value.Implementation.self)
 
@@ -230,19 +260,22 @@ extension ElementNode {
         let edgesResult = self.updateEdges(
             from: output,
             at: (self.substantial ? 0 : implementationPosition),
-            using: context
+            using: edgesContext
         )
 
         // Update state
         Logger.debug(debugImplementation, "Edges result of \(Value.self): \(edgesResult)")
         self.implementationCount = edgesResult.implementationCount
         self.attributes = attributes
+        self.storeContext(context)
+        self.storeImplementationPosition(implementationPosition)
 
         // Override implementation count if the element is substantial since it has ieone implementation: itself
         if self.substantial {
             self.implementationCount = 1
         }
 
+        // Return result
         let result = UpdateResult(
             implementationPosition: implementationPosition,
             implementationCount: self.implementationCount
@@ -251,36 +284,7 @@ extension ElementNode {
         return result
     }
 
-    /// Installs the given element with the proper state and environment.
-    func install(element: inout Value) {
-
-    }
-
-    /// Installs the view then updates it if necessary.
-    public func installAndUpdate(with element: Value?, implementationPosition: Int, using context: Context) -> UpdateResult {
-        // If no element is given, assume the view is unchanged so perform an update giving `nil` as element
-        // TODO: Compare environment versions and if it changed, install the new environment values inside
-        //       the stored value and run the update with that
-        guard let element else {
-            return self.update(with: nil, implementationPosition: implementationPosition, using: context)
-        }
-
-        // Otherwise, install the element and update, giving `nil` if the element is equal to the previous one
-        // TODO: check if we are inside a ViewModifier - if not, there is no point to continue here.
-        //       Instead, continue by checking if any subsequent node has different context
-        //       and restart the update there
-
-        var installed = element
-        self.install(element: &installed)
-
-        if self.shouldUpdate(with: installed) {
-            return self.update(with: installed, implementationPosition: implementationPosition, using: context)
-        } else {
-            return self.update(with: nil, implementationPosition: implementationPosition, using: context)
-        }
-    }
-
-    public func installAndUpdateAny(with element: (any Element)?, implementationPosition: Int, using context: Context) -> UpdateResult {
+    public func compareAndUpdateAny(with element: (any Element)?, implementationPosition: Int, using context: Context) -> UpdateResult {
         let typedElement: Value?
         if let element {
             guard let element = element as? Value else {
@@ -292,7 +296,7 @@ extension ElementNode {
             typedElement = nil
         }
 
-        return self.installAndUpdate(with: typedElement, implementationPosition: implementationPosition, using: context)
+        return self.compareAndUpdate(with: typedElement, implementationPosition: implementationPosition, using: context)
     }
 }
 
