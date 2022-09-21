@@ -133,3 +133,15 @@ public extension IsPodable {
         return MemoryLayout<Self>.size
     }
 }
+
+/// Allows wrapping any value in a POD to know if the value itself is a POD,
+/// since `Podable<Value>` will be POD if `Value` is POD too.
+/// Allows using ``elementEquals(lhs:rhs:)`` efficiently on stored values.
+@propertyWrapper
+public struct Podable<Value>: IsPodable {
+    public var wrappedValue: Value
+
+    public init(wrappedValue: Value) {
+        self.wrappedValue = wrappedValue
+    }
+}

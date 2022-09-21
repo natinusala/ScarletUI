@@ -53,6 +53,10 @@ class ViewModifierStateSpec: ScarletSpec {
                     signal(Signal.increment)
                 }
 
+                then("modifier body is called") { result in
+                    expect(result.bodyCalled(of: SomeModifier.self)).to(equal(true))
+                }
+
                 then("implementation is updated") { result in
                     expect(result.implementation).to(equal(
                         ViewImpl("Tested") {
@@ -75,6 +79,10 @@ class ViewModifierStateSpec: ScarletSpec {
                     signal(Signal.increment)
                     signal(Signal.increment)
                     signal(Signal.increment)
+                }
+
+                then("modifier body is called") { result in
+                    expect(result.bodyCalled(of: SomeModifier.self)).to(equal(true))
                 }
 
                 then("implementation is updated") { result in

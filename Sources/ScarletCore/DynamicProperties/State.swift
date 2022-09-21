@@ -24,7 +24,8 @@ protocol StateProperty<Value>: DynamicProperty {
 }
 
 class StateLocation<Value>: Location {
-    var value: Value
+    @Podable var value: Value
+
     unowned var node: any StatefulElementNode
 
     init(value: Value, node: any StatefulElementNode) {
@@ -37,6 +38,11 @@ class StateLocation<Value>: Location {
     }
 
     func set(_ value: Value) {
+        // If the new value is the same as the current one, don't do anything
+        if elementEquals(lhs: self.value, rhs: value) {
+            return
+        }
+
         self.value = value
 
         self.node.notifyStateChange()

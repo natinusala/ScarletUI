@@ -14,3 +14,5 @@
     - un foreach modifié
     - des state dans les vues générées par le foreach
     - les vues générées par le foreach modifiées
+
+- state change avec une valeur qui ne change pas (body ne doit pas être appelé)
