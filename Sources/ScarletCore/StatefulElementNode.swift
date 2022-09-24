@@ -35,9 +35,6 @@ public protocol StatefulElementNode: ElementNode {
     /// Last implementation position used to update the element.
     /// Used to update it again if a dynamic property changes.
     var implementationPosition: Int { get set }
-
-    /// All retained state properties locations go here.
-    var retainedStateProperties: [any Location] { get set }
 }
 
 public extension StatefulElementNode {
@@ -105,7 +102,6 @@ public extension StatefulElementNode {
                 return try metadata.get(from: self.value)
             } else {
                 let location = property.makeLocation(node: self)
-                self.retainedStateProperties.append(location)
                 return property.withLocation(location)
             }
         }

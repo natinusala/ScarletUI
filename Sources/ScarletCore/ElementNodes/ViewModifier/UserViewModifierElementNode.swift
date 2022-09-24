@@ -31,7 +31,6 @@ public class UserViewModifierElementNode<Value, Edge>: StatefulElementNode where
     public var implementation: Value.Implementation?
     public var implementationCount = 0
     public var attributes = AttributesStash()
-    public var retainedStateProperties: [any Location] = []
     public var context: Context
     public var implementationPosition: Int
 

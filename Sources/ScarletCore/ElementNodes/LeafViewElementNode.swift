@@ -30,7 +30,6 @@ public class LeafViewElementNode<Value>: StatefulElementNode where Value: Elemen
     public var implementationCount = 0
     public var value: Value
     public var attributes = AttributesStash()
-    public var retainedStateProperties: [any Location] = []
     public var context: Context
     public var implementationPosition: Int
 

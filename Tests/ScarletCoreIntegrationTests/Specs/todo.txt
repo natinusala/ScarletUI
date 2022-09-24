@@ -24,3 +24,7 @@ tests sur les attributs:
     tester le type d'implémentation (mettre un attribut sur une view parent doit le propager au bon enfants)
     vérifier la priorité des attributs (appliquer le même attribut N+2 sur la vue N et N+1 (doit se propager et prendre la bonne valeur))
     tester les append: avoir plusieurs onTestSignal mais sur des signaux différents
+
+tests sur le retain des elementnode et implementationnode
+    vérifier que la copie de state met bien à jour le retain count et que le weak fonctionne
+    vérifier que retirer un noeud deinit bien le node + l'implementation (stateful et stateless)
