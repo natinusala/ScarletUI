@@ -16,3 +16,6 @@
 
 /// Set to `true` to enable implementation nodes debug logging.
 let debugImplementation = false
+
+/// Set to `true` to enable attributes setting debug logging.
+let debugAttributes = false

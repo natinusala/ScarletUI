@@ -1,5 +1,5 @@
-- state change dans un modifier
-- state change dans un modifier qui réordonne content dans son body
+- state change dans un modifier qui réordonne content dans son body (un conditional avec if content, else if content, else rien du tout)
+- state change dans un modifier qui ajoute et retire un content dans son body (il y en a 2, un qui reste et un qui est toggle) - vérifier que le state est bien différent et conservé
 - state change dans la vue modifiée
 
 - plusieurs VMC (modifier avec plusieurs fois content dedans) (vérifier que le state est bien différent = différente identité)
@@ -9,10 +9,18 @@
 
 - un modifier dans le body d'un modifier (on modifie content)
 
-
 - pour foreach:
     - un foreach modifié
     - des state dans les vues générées par le foreach
     - les vues générées par le foreach modifiées
 
 - state change avec une valeur qui ne change pas (body ne doit pas être appelé)
+- un state change dans une vue fille qui insère (et retire) des vues au milieu de la vue parent
+
+tests sur les attributs:
+    tester AttributeView
+    tester les property wrapper
+    tester la propagation
+    tester le type d'implémentation (mettre un attribut sur une view parent doit le propager au bon enfants)
+    vérifier la priorité des attributs (appliquer le même attribut N+2 sur la vue N et N+1 (doit se propager et prendre la bonne valeur))
+    tester les append: avoir plusieurs onTestSignal mais sur des signaux différents

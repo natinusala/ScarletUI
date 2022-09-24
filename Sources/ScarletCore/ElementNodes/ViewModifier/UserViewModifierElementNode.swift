@@ -25,7 +25,7 @@ public struct UserViewModifierMakeOutput<Value, Edge>: MakeOutput where Value: V
 /// Element node for user provided view modifiers. Always performs equality check.
 /// The view modifier edge is a placeholder ``ViewModifierContent``.
 /// The pattern is `ModifiedContent -> ViewModifier -> ViewModifier.Body -> [...] -> ViewModifierContent -> ViewModifier.Content`.
-public class UserViewModifierElementNode<Value, Edge>: StatefulElementNode where Value: ViewModifier, Value.Input == UserViewModifierMakeInput<Value>, Value.Output == UserViewModifierMakeOutput<Value, Edge>, Edge: Element {
+public class UserViewModifierElementNode<Value, Edge>: StatefulElementNode where Value: ViewModifier, Value.Input == UserViewModifierMakeInput<Value>, Value.Output == UserViewModifierMakeOutput<Value, Edge>, Edge: Element, Value.Body == Edge {
     public var value: Value
     public var parent: (any ElementNode)?
     public var implementation: Value.Implementation?

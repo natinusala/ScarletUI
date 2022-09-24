@@ -23,10 +23,11 @@ protocol StateProperty<Value>: DynamicProperty {
     func makeLocation(node: any StatefulElementNode) -> any Location
 }
 
+/// Serves as storage for state properties.
 class StateLocation<Value>: Location {
     @Podable var value: Value
 
-    unowned var node: any StatefulElementNode
+    weak var node: (any StatefulElementNode)?
 
     init(value: Value, node: any StatefulElementNode) {
         self.value = value
@@ -38,6 +39,10 @@ class StateLocation<Value>: Location {
     }
 
     func set(_ value: Value) {
+        guard let node else {
+            fatalError("Trying to update a state value on a deinited element node")
+        }
+
         // If the new value is the same as the current one, don't do anything
         if elementEquals(lhs: self.value, rhs: value) {
             return
@@ -45,21 +50,18 @@ class StateLocation<Value>: Location {
 
         self.value = value
 
-        self.node.notifyStateChange()
+        node.notifyStateChange()
     }
 }
 
 @propertyWrapper
-struct State<Value>: StateProperty {
+public struct State<Value>: StateProperty {
     let defaultValue: Value
 
     /// Location of the state value.
-    /// Unowned for performances reasons and because I'm not certain
-    /// ARC works well with Runtime they way it's currently used.
-    /// The element node is reponsible for retaining them.
-    unowned var location: (any Location<Value>)?
+    var location: (any Location<Value>)?
 
-    var wrappedValue: Value {
+    public var wrappedValue: Value {
         get {
             return self.location?.get() ?? self.defaultValue
         }
@@ -72,7 +74,7 @@ struct State<Value>: StateProperty {
         }
     }
 
-    init(wrappedValue: Value) {
+    public init(wrappedValue: Value) {
         self.defaultValue = wrappedValue
     }
 

@@ -19,123 +19,6 @@ public struct UpdateResult {
     let implementationCount: Int
 }
 
-/// Context given by the parent node to its edges when updating them.
-public struct ElementNodeContext {
-    /// Attributes pending to be set, coming from above in the graph.
-    let attributes: AttributesStash
-
-    /// Stack of `ViewModifierContentContext` for view modifiers.
-    let vmcStack: [ViewModifierContentContext]
-
-    /// Has any state property changed?
-    let hasStateChanged: Bool
-
-    /// Has any dynamic variable changed?
-    var dynamicVariableChanged: Bool {
-        return hasStateChanged
-    }
-
-    /// Creates a copy of the context with another VMC context pushed on the stack.
-    func pushingVmcContext(_ context: ViewModifierContentContext) -> Self {
-        return Self(
-            attributes: self.attributes,
-            vmcStack: self.vmcStack + [context],
-            hasStateChanged: self.hasStateChanged
-        )
-    }
-
-    /// Creates a copy of the context with the last VMC context popped from the stack.
-    func poppingVmcContext() -> (vmcContext: ViewModifierContentContext?, context: Self) {
-        return (
-            vmcContext: self.vmcStack.last,
-            context: Self(
-                attributes: self.attributes,
-                vmcStack: self.vmcStack.dropLast(),
-                hasStateChanged: self.hasStateChanged
-            )
-        )
-    }
-
-    /// Creates a copy of the context popping the attributes corresponding to the given implementation type,
-    /// returning them along the context copy.
-    func poppingAttributes<Implementation: ImplementationNode>(for implementationType: Implementation.Type) -> (attributes: [any AttributeSetter<Implementation>], context: Self) {
-        // If we request attributes for `Never` just return empty attributes and the untouched context since
-        // we can never have attributes for a `Never` implementation type.
-        if Implementation.self == Never.self {
-            return (
-                attributes: [],
-                context: self
-            )
-        }
-
-        // Create a new attributes stash containing only the corresponding attributes
-        // then return that, as well as a new context containing all remaining attributes
-        var newStash: [any AttributeSetter<Implementation>] = []
-        var remainingAttributes = AttributesStash()
-
-        for (target, attribute) in self.attributes {
-            if let attribute = attribute as? any AttributeSetter<Implementation> {
-                newStash.append(attribute)
-
-                // If the attribute needs to be propagated, put it back in the remaining attributes
-                if attribute.propagate {
-                    remainingAttributes[target] = attribute
-                }
-            } else {
-                remainingAttributes[target] = attribute
-            }
-        }
-
-        return (
-            attributes: newStash,
-            context: Self(
-                attributes: remainingAttributes,
-                vmcStack: self.vmcStack,
-                hasStateChanged: self.hasStateChanged
-            )
-        )
-    }
-
-    /// Returns a copy of the context with additional attributes added.
-    /// Existing attributes will not be overwritten, hence the name "completing".
-    func completingAttributes(from stash: AttributesStash) -> Self {
-        let newStash = stash.merging(with: self.attributes)
-
-        return Self(
-            attributes: newStash,
-            vmcStack: self.vmcStack,
-            hasStateChanged: self.hasStateChanged
-        )
-    }
-
-    /// Returns a copy of the context with the state change flag cleared.
-    func clearingStateChange() -> Self {
-        return ElementNodeContext(
-            attributes: self.attributes,
-            vmcStack: self.vmcStack,
-            hasStateChanged: false
-        )
-    }
-
-    /// Returns a copy of the context with the state change flag set.
-    func settingStateChange() -> Self {
-        return ElementNodeContext(
-            attributes: self.attributes,
-            vmcStack: self.vmcStack,
-            hasStateChanged: true
-        )
-    }
-
-    /// Returns the initial root context.
-    public static func root() -> Self {
-        return Self(
-            attributes: AttributesStash(),
-            vmcStack: [],
-            hasStateChanged: false
-        )
-    }
-}
-
 /// Keeps track of a "mounted" element and its state.
 ///
 /// The "type" of an element node changes depending from how it handles its
@@ -217,7 +100,7 @@ extension ElementNode {
     /// since the edges may have changed depending on context.
     ///
     /// Returns the node implementation count.
-    public func update(with element: Value?, implementationPosition: Int, using context: Context) -> UpdateResult {
+    func update(with element: Value?, implementationPosition: Int, using context: Context) -> UpdateResult {
         Logger.debug(debugImplementation, "Updating \(Value.self) with implementation position \(implementationPosition)")
 
         let attributes: AttributesStash
@@ -230,6 +113,12 @@ extension ElementNode {
             attributes = self.attributes
         }
 
+        if !attributes.isEmpty {
+            Logger.debug(debugAttributes, "Collected attributes on \(Value.displayName): \(attributes.count)")
+        }
+
+        Logger.debug(debugAttributes, "Parent attributes for \(Value.displayName): \(context.attributes.count)")
+
         // Clear context
         let context = context
             .clearingStateChange()
@@ -241,13 +130,19 @@ extension ElementNode {
             .completingAttributes(from: attributes)
             .poppingAttributes(for: Value.Implementation.self)
 
+        if !attributes.isEmpty {
+            Logger.debug(debugAttributes, "     Attributes to apply on \(Value.displayName): \(attributesToApply.count)")
+        }
+        Logger.debug(debugAttributes, "Remaining attributes for \(Value.displayName)'s edges: \(edgesContext.attributes.count)")
+
         // Apply attributes
         for attribute in attributesToApply {
             guard let implementation = self.implementation else {
-                fatalError("Invalid ElementNode state: expected an implementation node of type \(Value.Implementation.self) to be set")
+                fatalError("Invalid `ElementNode` state: expected an implementation node of type \(Value.Implementation.self) to be set")
             }
 
-            attribute.set(on: implementation, identifiedBy: ObjectIdentifier(self))
+            Logger.debug(debugAttributes, "Applying attribute on \(Value.displayName)")
+            attribute.anySet(on: implementation, identifiedBy: ObjectIdentifier(self))
         }
 
         // Make the element and make edges
@@ -284,7 +179,7 @@ extension ElementNode {
         return result
     }
 
-    public func compareAndUpdateAny(with element: (any Element)?, implementationPosition: Int, using context: Context) -> UpdateResult {
+    func compareAndUpdateAny(with element: (any Element)?, implementationPosition: Int, using context: Context) -> UpdateResult {
         let typedElement: Value?
         if let element {
             guard let element = element as? Value else {

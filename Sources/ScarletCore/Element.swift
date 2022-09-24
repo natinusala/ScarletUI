@@ -95,6 +95,10 @@ public extension Element {
 
     /// Display name of the element, aka. its type stripped of any generic parameters.
     var displayName: String {
+        return Self.displayName
+    }
+
+    static var displayName: String {
         return String(describing: Self.self).before(first: "<")
     }
 }

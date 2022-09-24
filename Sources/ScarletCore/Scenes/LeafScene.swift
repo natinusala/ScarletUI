@@ -15,7 +15,7 @@
 */
 
 /// Special protocol for scenes which content is a view.
-/// Uses the `content` property instead of `body`.
+/// Uses the ``content`` property instead of ``body``.
 public protocol LeafScene: Scene where Body == Never {
     associatedtype Content: View
 

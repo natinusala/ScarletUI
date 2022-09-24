@@ -14,6 +14,7 @@
    limitations under the License.
 */
 
+/// Value of an attribute setter.
 public enum AttributeStorage<Value> {
     case unset
     case set(value: Value)
@@ -230,9 +231,13 @@ public struct AppendAttribute<Implementation: ImplementationNode, Value>: Attrib
         // Otherwise just set it
         if let existingValue = list.values[key] {
             if !elementEquals(lhs: existingValue, rhs: value) {
+                Logger.debug(debugAttributes, "Appending attribute identified by \(key) on \(implementation.displayName)")
                 implementation[keyPath: self.keyPath].values[key] = value
+            } else {
+                Logger.debug(debugAttributes, "Skipping appending attribute identified by \(key) on \(implementation.displayName): value hasn't changed")
             }
         } else {
+            Logger.debug(debugAttributes, "Appending attribute identified by \(key) on \(implementation.displayName)")
             implementation[keyPath: self.keyPath].values[key] = value
         }
     }
@@ -284,6 +289,19 @@ public protocol AttributeSetter<Implementation> {
 extension AttributeSetter {
     var implementationType: any ImplementationNode.Type {
         return Implementation.self
+    }
+
+    func anySet(on implementation: Any, identifiedBy id: AnyHashable) {
+        guard let implementation = implementation as? Implementation else {
+            fatalError("Tried to set an attribute on the wrong implementation type: got \(type(of: implementation)), expected \(Implementation.self)")
+        }
+
+        self.set(on: implementation, identifiedBy: id)
+    }
+
+    /// Returns `true` if this attribute can be applied to the given implementation type.
+    func applies(to type: any ImplementationNode.Type) -> Bool {
+        return implementationType is Implementation.Type
     }
 }
 
