@@ -101,14 +101,16 @@ public class EnvironmentElementNode<Value, E0>: ElementNode where Value: Element
 
     public func compareEnvironment(of element: Value, using context: ElementNodeContext) -> (values: EnvironmentValues, changed: EnvironmentDiff) {
         let newEnvironment = Value.collectEnvironment(of: element)
-
         let changed = !elementEquals(lhs: self.environmentValue, rhs: newEnvironment.value)
 
+        // Update state
         self.environmentValue = newEnvironment.value
 
+        // Update store
         var values = context.environment
         values[keyPath: newEnvironment.keyPath] = newEnvironment.value
 
+        // Set changed flag
         var changedEnvironment = context.changedEnvironment
         changedEnvironment[newEnvironment.keyPath] = changed
 

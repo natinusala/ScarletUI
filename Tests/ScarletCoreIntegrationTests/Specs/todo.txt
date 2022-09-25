@@ -1,10 +1,12 @@
-- 10
-- 20 -> 10: le 10 d'en dessous ne doit pas être refait (par contre on réévalue les vues sous le 20)
-- 10
-
 valeur par défaut
 première installation
-faire le schéma du tableau et jouer un peu avec tout et assert un maximum de choses
+modifs consécutives
+jointer avec State un peu dans tous les sens
+
+faire le schéma du tableau et jouer un peu avec tout et assert un maximum de choses, y compris:
+    - 10
+    - 20 -> 10: le 10 d'en dessous ne doit pas être refait (par contre on réévalue les vues sous le 20)
+    - 10
 
 pas implémenté, à faire en dernier: la vue ne change pas mais l'environnement si : ça skip les vues qui n'ont pas changé sauf si l'env est différent
 
