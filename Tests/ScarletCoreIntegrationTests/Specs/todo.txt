@@ -1,5 +1,3 @@
-valeur par défaut
-première installation
 modifs consécutives
 jointer avec State un peu dans tous les sens
 
@@ -8,7 +6,8 @@ faire le schéma du tableau et jouer un peu avec tout et assert un maximum de ch
     - 20 -> 10: le 10 d'en dessous ne doit pas être refait (par contre on réévalue les vues sous le 20)
     - 10
 
-pas implémenté, à faire en dernier: la vue ne change pas mais l'environnement si : ça skip les vues qui n'ont pas changé sauf si l'env est différent
+pas implémenté, à faire en dernier: le cas des trous
+    la vue ne change pas mais l'environnement si : ça skip les vues qui n'ont pas changé sauf si l'env est différent
 
 impl:
     dans le contexte on stocke les valeurs avec un flag qui dit si ça a changé

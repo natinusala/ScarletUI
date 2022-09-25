@@ -31,7 +31,12 @@ class EnvironmentValueSpec: ScarletSpec {
     }
 
     struct Tested: TestView {
+        @Environment(\.test)
+        var test
+
         var body: some View {
+            Text("Environment value: \(test)")
+
             EnvironmentDisplay()
                 .environment(\.test, value: "hello")
         }
@@ -45,6 +50,8 @@ class EnvironmentValueSpec: ScarletSpec {
                 then("implementation is created") { result in
                     expect(result.implementation).to(equal(
                         ViewImpl("Tested") {
+                            TextImpl(text: "Environment value: default value")
+
                             ViewImpl("EnvironmentDisplay") {
                                 TextImpl(text: "Environment value: hello")
                             }
