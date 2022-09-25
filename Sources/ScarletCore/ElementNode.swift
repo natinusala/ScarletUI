@@ -64,6 +64,10 @@ public protocol ElementNode<Value>: AnyObject {
     /// Installs the given element with the proper state and environment.
     func install(element: inout Value, using context: ElementNodeContext)
 
+    /// Takes the previous environment values and compares them with the new ones.
+    /// Returns a new environment storage as well as the list of all changed key paths.
+    func compareEnvironment(of element: Value, using context: ElementNodeContext) -> (values: EnvironmentValues, changed: EnvironmentDiff)
+
     func storeValue(_ value: Value)
     func storeContext(_ context: Context)
     func storeImplementationPosition(_ position: Int)
@@ -88,6 +92,11 @@ public extension ElementNode {
     /// Default implementation: do nothing.
     func install(element: inout Value, using context: ElementNodeContext) {}
 
+    /// Default implementation: return the same environment storage.
+    func compareEnvironment(of element: Value, using context: ElementNodeContext) -> (values: EnvironmentValues, changed: EnvironmentDiff) {
+        return (values: context.environment, changed: [:])
+    }
+
     var valueDebugDescription: String {
         return "\(Value.self)"
     }
@@ -104,13 +113,19 @@ extension ElementNode {
         Logger.debug(debugImplementation, "Updating \(Value.self) with implementation position \(implementationPosition)")
 
         let attributes: AttributesStash
+        let environment: EnvironmentValues
+        let changedEnvironment: EnvironmentDiff
 
-        // Update value and collect attributes
+        // Update value, collect attributes and environment
         if let element {
             self.storeValue(element)
             attributes = Value.collectAttributes(of: element)
+
+            (environment, changedEnvironment) = self.compareEnvironment(of: element, using: context)
         } else {
             attributes = self.attributes
+            environment = context.environment
+            changedEnvironment = [:]
         }
 
         if !attributes.isEmpty {
@@ -128,6 +143,7 @@ extension ElementNode {
         // The rest will stay in the context struct given to our edges
         let (attributesToApply, edgesContext) = context
             .completingAttributes(from: attributes)
+            .withEnvironment(environment, changed: changedEnvironment)
             .poppingAttributes(for: Value.Implementation.self)
 
         if !attributes.isEmpty {
@@ -162,7 +178,7 @@ extension ElementNode {
         Logger.debug(debugImplementation, "Edges result of \(Value.self): \(edgesResult)")
         self.implementationCount = edgesResult.implementationCount
         self.attributes = attributes
-        self.storeContext(context)
+        self.storeContext(context.clearingEnvironment())
         self.storeImplementationPosition(implementationPosition)
 
         // Override implementation count if the element is substantial since it has ieone implementation: itself

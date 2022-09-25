@@ -68,9 +68,9 @@ public extension StatefulElementNode {
             return self.update(with: nil, implementationPosition: implementationPosition, using: context)
         }
 
-        // If any dynamic variable changed, always install and update the view since
+        // If any state variable changed, always install and update the view since
         // we know it's outdated
-        if context.dynamicVariableChanged {
+        if context.hasStateChanged {
             var installed = element
             self.install(element: &installed, using: context)
 
@@ -95,14 +95,36 @@ public extension StatefulElementNode {
     }
 
     func install(element: inout Value, using context: ElementNodeContext) {
-        func installStateProperty(property: any StateProperty, metadata: PropertyInfo) throws -> (any DynamicProperty)? {
+        func installStateProperty(property: any StateProperty, metadata: PropertyInfo) throws -> any DynamicProperty {
             // If the location is set, copy the whole state property from storage
             // Otherwise, set its location up
-            if property.location != nil {
-                return try metadata.get(from: self.value)
-            } else {
+            if property.location == nil {
                 let location = property.makeLocation(node: self)
                 return property.withLocation(location)
+            } else {
+                return try metadata.get(from: self.value)
+            }
+        }
+
+        func installEnvironmentProperty(
+            property: any EnvironmentProperty,
+            values: EnvironmentValues,
+            diff: EnvironmentDiff,
+            metadata: PropertyInfo
+        ) throws -> any DynamicProperty {
+            // If the state property is not installed, set the value and install it
+            if property.location == nil {
+                let location = property.makeLocation(values: values)
+                return property.withLocation(location)
+            }
+
+            // If the value changed, set the new value
+            // Otherwise just copy over the previous environment we had
+            if property.changed(using: diff) {
+                let location = property.makeLocation(values: values)
+                return property.withLocation(location)
+            } else {
+                return try metadata.get(from: self.value)
             }
         }
 
@@ -111,6 +133,13 @@ public extension StatefulElementNode {
                 switch property {
                     case let stateProperty as any StateProperty:
                         return try installStateProperty(property: stateProperty, metadata: metadata)
+                    case let environmentProperty as any EnvironmentProperty:
+                        return try installEnvironmentProperty(
+                            property: environmentProperty,
+                            values: context.environment,
+                            diff: context.changedEnvironment,
+                            metadata: metadata
+                        )
                     default:
                         fatalError("Cannot install dynamic properties of \(Self.self): unsupported type \(type(of: property))")
                 }

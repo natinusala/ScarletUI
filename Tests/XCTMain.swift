@@ -50,6 +50,7 @@ let specs: [QuickSpec.Type] = [
     NestedViewModifierSpec.QuickSpec.self,
     ViewModifierStateSpec.QuickSpec.self,
     ViewModifierTogglingContentSpec.QuickSpec.self,
+    EnvironmentValueSpec.QuickSpec.self,
     // ForEachSpecs.self,
 ]
 

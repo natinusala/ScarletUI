@@ -1,0 +1,118 @@
+/*
+   Copyright 2022 natinusala
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
+
+/// Identifies an environment value.
+public protocol EnvironmentKey {
+    associatedtype Value
+
+    static var defaultValue: Value { get }
+}
+
+public typealias EnvironmentDiff = [PartialKeyPath<EnvironmentValues>: Bool]
+
+/// Serves as storage for environment values.
+public struct EnvironmentValues {
+    /// Key is an `EnvironmentKey.Type` identifier.
+    private var values: [ObjectIdentifier: Any] = [:]
+
+    /// Subscript used by users to get and set a value from its key.
+    subscript<Key>(key: Key.Type) -> Key.Value where Key: EnvironmentKey {
+        get {
+            if let value = self.values[ObjectIdentifier(key)] as? Key.Value {
+                return value
+            } else {
+                return Key.defaultValue
+            }
+        }
+        set {
+            self.values[ObjectIdentifier(key)] = newValue
+        }
+    }
+}
+
+public protocol EnvironmentProperty: DynamicProperty {
+    var location: (any Location)? { get }
+
+    func changed(using diff: EnvironmentDiff) -> Bool
+    func makeLocation(values: EnvironmentValues) -> any Location
+    func withLocation(_ location: any Location) -> Self
+}
+
+public class EnvironmentLocation<Value>: Location {
+    let keyPath: WritableKeyPath<EnvironmentValues, Value>
+
+    var value: Value
+
+    init(keyPath: WritableKeyPath<EnvironmentValues, Value>, value: Value) {
+        self.keyPath = keyPath
+        self.value = value
+    }
+
+    public func get() -> Value {
+        return self.value
+    }
+
+    public func set(_ value: Value) {
+        fatalError("EnvironmentLocation.set(_:) unimplemented")
+    }
+}
+
+@propertyWrapper
+public struct Environment<Value>: EnvironmentProperty {
+    let keyPath: WritableKeyPath<EnvironmentValues, Value>
+    public var location: (any Location<Value>)?
+
+    public init(_ keyPath: WritableKeyPath<EnvironmentValues, Value>) {
+        self.keyPath = keyPath
+    }
+
+    private init(keyPath: WritableKeyPath<EnvironmentValues, Value>, location: any Location<Value>) {
+        self.keyPath = keyPath
+        self.location = location
+    }
+
+    public var wrappedValue: Value {
+        get {
+            guard let location else {
+                fatalError("Tried to get value on non installed environment property")
+            }
+
+            return location.get()
+        }
+    }
+
+    public func changed(using diff: EnvironmentDiff) -> Bool {
+        return diff[self.keyPath] ?? false
+    }
+
+    public func makeLocation(values: EnvironmentValues) -> any Location {
+        return EnvironmentLocation(keyPath: self.keyPath, value: values[keyPath: self.keyPath])
+    }
+
+    public func withLocation(_ location: any Location) -> Self {
+        guard let location = location as? (any Location<Value>) else {
+            fatalError("Cannot install environment property: was given a location of wrong type")
+        }
+
+        return Self(keyPath: keyPath, location: location)
+    }
+}
+
+public protocol EnvironmentCollectable {
+    associatedtype Value
+
+    static func collectEnvironment(of element: Self) -> (keyPath: WritableKeyPath<EnvironmentValues, Value>, value: Value)
+}

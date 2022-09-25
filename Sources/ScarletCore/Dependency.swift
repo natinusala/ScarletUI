@@ -25,7 +25,7 @@ protocol Dependency {
 }
 
 /// Global, unique container for injected dependencies.
-/// Use it like SwiftUI environment values.
+/// Use it like environment values.
 class Dependencies {
     private static var values: [ObjectIdentifier: Any] = [:]
 

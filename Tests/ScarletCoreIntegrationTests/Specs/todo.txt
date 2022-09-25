@@ -1,3 +1,21 @@
+- 10
+- 20 -> 10: le 10 d'en dessous ne doit pas être refait (par contre on réévalue les vues sous le 20)
+- 10
+
+valeur par défaut
+première installation
+faire le schéma du tableau et jouer un peu avec tout et assert un maximum de choses
+
+pas implémenté, à faire en dernier: la vue ne change pas mais l'environnement si : ça skip les vues qui n'ont pas changé sauf si l'env est différent
+
+impl:
+    dans le contexte on stocke les valeurs avec un flag qui dit si ça a changé
+    lors de l'installation on n'installe que celles qui ont changé
+    les valeurs sont discard dans le context à la sauvegarde
+    à l'intérieur de EnvironmentElementNode on stocke la dernière valeur, on fait la comparaison là (dans la collecte)
+
+-------------------------------------------------
+
 - state change dans un modifier qui réordonne content dans son body (un conditional avec if content, else if content, else rien du tout)
 - state change dans un modifier qui ajoute et retire un content dans son body (il y en a 2, un qui reste et un qui est toggle) - vérifier que le state est bien différent et conservé
 - state change dans la vue modifiée

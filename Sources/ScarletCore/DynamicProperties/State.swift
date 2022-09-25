@@ -78,7 +78,7 @@ public struct State<Value>: StateProperty {
         self.defaultValue = wrappedValue
     }
 
-    init(defaultValue: Value, location: (any Location<Value>)?) {
+    private init(defaultValue: Value, location: (any Location<Value>)?) {
         self.defaultValue = defaultValue
         self.location = location
     }

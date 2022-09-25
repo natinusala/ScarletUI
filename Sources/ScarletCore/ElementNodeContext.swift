@@ -25,17 +25,20 @@ public struct ElementNodeContext {
     /// Has any state property changed?
     let hasStateChanged: Bool
 
-    /// Has any dynamic variable changed?
-    var dynamicVariableChanged: Bool {
-        return hasStateChanged
-    }
+    /// Contains all environment values.
+    let environment: EnvironmentValues
+
+    /// List of all changed environment values.
+    let changedEnvironment: EnvironmentDiff
 
     /// Creates a copy of the context with another VMC context pushed on the stack.
     func pushingVmcContext(_ context: ViewModifierContentContext) -> Self {
         return Self(
             attributes: self.attributes,
             vmcStack: self.vmcStack + [context],
-            hasStateChanged: self.hasStateChanged
+            hasStateChanged: self.hasStateChanged,
+            environment: self.environment,
+            changedEnvironment: self.changedEnvironment
         )
     }
 
@@ -46,7 +49,9 @@ public struct ElementNodeContext {
             context: Self(
                 attributes: self.attributes,
                 vmcStack: self.vmcStack.dropLast(),
-                hasStateChanged: self.hasStateChanged
+                hasStateChanged: self.hasStateChanged,
+                environment: self.environment,
+                changedEnvironment: self.changedEnvironment
             )
         )
     }
@@ -91,7 +96,9 @@ public struct ElementNodeContext {
             context: Self(
                 attributes: remainingAttributes,
                 vmcStack: self.vmcStack,
-                hasStateChanged: self.hasStateChanged
+                hasStateChanged: self.hasStateChanged,
+                environment: self.environment,
+                changedEnvironment: self.changedEnvironment
             )
         )
     }
@@ -104,25 +111,52 @@ public struct ElementNodeContext {
         return Self(
             attributes: newStash,
             vmcStack: self.vmcStack,
-            hasStateChanged: self.hasStateChanged
+            hasStateChanged: self.hasStateChanged,
+            environment: self.environment,
+            changedEnvironment: self.changedEnvironment
         )
     }
 
     /// Returns a copy of the context with the state change flag cleared.
     func clearingStateChange() -> Self {
-        return ElementNodeContext(
+        return Self(
             attributes: self.attributes,
             vmcStack: self.vmcStack,
-            hasStateChanged: false
+            hasStateChanged: false,
+            environment: self.environment,
+            changedEnvironment: self.changedEnvironment
+        )
+    }
+
+    /// Returns a copy of the context with the changed environment values cleared.
+    func clearingEnvironment() -> Self {
+        return Self(
+            attributes: self.attributes,
+            vmcStack: self.vmcStack,
+            hasStateChanged: self.hasStateChanged,
+            environment: EnvironmentValues(),
+            changedEnvironment: [:]
+        )
+    }
+
+    func withEnvironment(_ environment: EnvironmentValues, changed: EnvironmentDiff) -> Self {
+        return Self(
+            attributes: self.attributes,
+            vmcStack: self.vmcStack,
+            hasStateChanged: self.hasStateChanged,
+            environment: environment,
+            changedEnvironment: changed
         )
     }
 
     /// Returns a copy of the context with the state change flag set.
     func settingStateChange() -> Self {
-        return ElementNodeContext(
+        return Self(
             attributes: self.attributes,
             vmcStack: self.vmcStack,
-            hasStateChanged: true
+            hasStateChanged: true,
+            environment: self.environment,
+            changedEnvironment: self.changedEnvironment
         )
     }
 
@@ -131,7 +165,9 @@ public struct ElementNodeContext {
         return Self(
             attributes: AttributesStash(),
             vmcStack: [],
-            hasStateChanged: false
+            hasStateChanged: false,
+            environment: EnvironmentValues(), 
+            changedEnvironment: [:]
         )
     }
 }
