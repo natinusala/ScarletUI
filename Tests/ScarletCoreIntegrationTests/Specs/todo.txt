@@ -26,5 +26,6 @@ tests sur les attributs:
     tester les append: avoir plusieurs onTestSignal mais sur des signaux différents
 
 tests sur le retain des elementnode et implementationnode
-    vérifier que la copie de state met bien à jour le retain count et que le weak fonctionne
+    vérifier que la copie de state met bien à jour le retain count sur la location
     vérifier que retirer un noeud deinit bien le node + l'implementation (stateful et stateless)
+    vérifier que le weak sur statelocation fonctionne

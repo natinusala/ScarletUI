@@ -24,11 +24,15 @@ public protocol View: Element {
 /// are not leaves (optionals, conditionals, tuple views...).
 public extension View where Body == Never {
     var body: Never {
-        fatalError()
+        fatalError("View `\(Self.displayName)` has body type `Never`, which is illegal - please use `LeafView` instead")
     }
 }
 
 extension ElementBuilder {
+    public static func buildBlock() -> OptionalView<Never> {
+        return .none
+    }
+
     public static func buildBlock<Content>(_ content: Content) -> Content where Content: View {
         return content
     }

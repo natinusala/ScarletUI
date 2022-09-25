@@ -18,6 +18,8 @@
 /// Does not use the built-in `Optional` enum to avoid using built-in optional features (don't treat
 /// optional views as true optionals).
 public enum OptionalView<Wrapped>: Element, View where Wrapped: View {
+    public typealias Input = OptionalMakeInput<Self>
+    public typealias Output = OptionalMakeOutput<Self, Wrapped>
     public typealias Implementation = Never
 
     case some(wrapped: Wrapped)
@@ -31,9 +33,6 @@ public enum OptionalView<Wrapped>: Element, View where Wrapped: View {
                 self = .none
         }
     }
-
-    public typealias Input = OptionalMakeInput<Self>
-    public typealias Output = OptionalMakeOutput<Self, Wrapped>
 
     public static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) -> OptionalElementNode<Self, Wrapped> {
         return OptionalElementNode<Self, Wrapped>(making: element, in: parent, implementationPosition: implementationPosition, using: context)

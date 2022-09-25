@@ -16,6 +16,4 @@
 
 import ScarletCore
 
-struct Divider: View {
-    typealias Body = Never
-}
+struct Divider: LeafView {}
