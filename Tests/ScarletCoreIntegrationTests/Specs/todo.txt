@@ -1,5 +1,8 @@
-modifs consécutives
+quand on modifie une autre var d'environnement le body ne doit pas être refait
+
 jointer avec State un peu dans tous les sens
+    vérifier que changer le state d'une vue qui a @Environment les conserve proprement
+le cas où on modifie une variable d'environnement pas utilisée dans la vue N mais utilisée dans la vue N+1 : le body de la vue N doit pas être appelé (on la skip) mais celui de la N+1 si
 
 faire le schéma du tableau et jouer un peu avec tout et assert un maximum de choses, y compris:
     - 10

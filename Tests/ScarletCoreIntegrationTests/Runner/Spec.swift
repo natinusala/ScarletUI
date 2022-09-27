@@ -112,7 +112,12 @@ extension TestView {
             fatalError("Tried to update \(Self.self) with node type \(type(of: node))")
         }
 
-        _ = node.update(with: self, implementationPosition: 0, using: .root())
+        let context = ElementNodeContext.root()
+
+        var installed = self
+        node.install(element: &installed, using: context)
+
+        _ = node.update(with: installed, implementationPosition: 0, using: context)
     }
 }
 

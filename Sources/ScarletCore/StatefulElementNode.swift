@@ -77,6 +77,14 @@ public extension StatefulElementNode {
             return self.update(with: installed, implementationPosition: implementationPosition, using: context)
         }
 
+        // If an environment variable that we use changed, also update the view
+        if EnvironmentMetadataCache.shared.shouldUpdate(element: element, using: context.changedEnvironment) {
+            var installed = element
+            self.install(element: &installed, using: context)
+
+            return self.update(with: installed, implementationPosition: implementationPosition, using: context)
+        }
+
         // Then compare fields ignoring dynamic variables
         if self.shouldUpdate(with: element, using: context) {
             var installed = element

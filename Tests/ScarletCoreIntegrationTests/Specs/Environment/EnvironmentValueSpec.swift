@@ -25,12 +25,19 @@ class EnvironmentValueSpec: ScarletSpec {
         @Environment(\.test)
         var test
 
+        @Environment(\.immutable)
+        var immutable
+
         var body: some View {
             Text("Environment value: \(test)")
+            Text("Immutable environment value: \(immutable)")
         }
     }
 
     struct Tested: TestView {
+        let value: String
+        let unused: String
+
         @Environment(\.test)
         var test
 
@@ -38,13 +45,14 @@ class EnvironmentValueSpec: ScarletSpec {
             Text("Environment value: \(test)")
 
             EnvironmentDisplay()
-                .environment(\.test, value: "hello")
+                .environment(\.test, value: value)
+                .environment(\.unused, value: unused)
         }
 
         static func spec() -> Spec {
-            when("view is created") {
+            when("the view is created") {
                 given {
-                    Tested()
+                    Tested(value: "hello", unused: "unused")
                 }
 
                 then("implementation is created") { result in
@@ -54,9 +62,108 @@ class EnvironmentValueSpec: ScarletSpec {
 
                             ViewImpl("EnvironmentDisplay") {
                                 TextImpl(text: "Environment value: hello")
+                                TextImpl(text: "Immutable environment value: immutable")
                             }
                         }
                     ))
+                }
+            }
+
+            when("the environment value is changed") {
+                given {
+                    Tested(value: "hello", unused: "unused")
+                    Tested(value: "world", unused: "unused")
+                }
+
+                then("implementation is updated") { result in
+                    expect(result.implementation).to(equal(
+                        ViewImpl("Tested") {
+                            TextImpl(text: "Environment value: default value")
+
+                            ViewImpl("EnvironmentDisplay") {
+                                TextImpl(text: "Environment value: world")
+                                TextImpl(text: "Immutable environment value: immutable")
+                            }
+                        }
+                    ))
+                }
+
+                then("wrapped body is called") { result in
+                    expect(result.bodyCalled(of: EnvironmentDisplay.self)).to(beTrue())
+                }
+            }
+
+            when("the environment value is changed multiple times") {
+                given {
+                    Tested(value: "hello", unused: "unused")
+                    Tested(value: "world", unused: "unused")
+                    Tested(value: "foo", unused: "unused")
+                    Tested(value: "bar", unused: "unused")
+                }
+
+                then("implementation is updated") { result in
+                    expect(result.implementation).to(equal(
+                        ViewImpl("Tested") {
+                            TextImpl(text: "Environment value: default value")
+
+                            ViewImpl("EnvironmentDisplay") {
+                                TextImpl(text: "Environment value: bar")
+                                TextImpl(text: "Immutable environment value: immutable")
+                            }
+                        }
+                    ))
+                }
+
+                then("wrapped body is called") { result in
+                    expect(result.bodyCalled(of: EnvironmentDisplay.self)).to(beTrue())
+                }
+            }
+
+            when("the environment value is unchanged") {
+                given {
+                    Tested(value: "hello", unused: "unused")
+                    Tested(value: "hello", unused: "unused")
+                }
+
+                then("implementation is unchanged") { result in
+                    expect(result.implementation).to(equal(
+                        ViewImpl("Tested") {
+                            TextImpl(text: "Environment value: default value")
+
+                            ViewImpl("EnvironmentDisplay") {
+                                TextImpl(text: "Environment value: hello")
+                                TextImpl(text: "Immutable environment value: immutable")
+                            }
+                        }
+                    ))
+                }
+
+                then("wrapped body is not called") { result in
+                    expect(result.bodyCalled(of: EnvironmentDisplay.self)).to(beFalse())
+                }
+            }
+
+            when("an ununsed environment value is unchanged") {
+                given {
+                    Tested(value: "hello", unused: "unused")
+                    Tested(value: "hello", unused: "used!!!")
+                }
+
+                then("implementation is unchanged") { result in
+                    expect(result.implementation).to(equal(
+                        ViewImpl("Tested") {
+                            TextImpl(text: "Environment value: default value")
+
+                            ViewImpl("EnvironmentDisplay") {
+                                TextImpl(text: "Environment value: hello")
+                                TextImpl(text: "Immutable environment value: immutable")
+                            }
+                        }
+                    ))
+                }
+
+                then("wrapped body is not called") { result in
+                    expect(result.bodyCalled(of: EnvironmentDisplay.self)).to(beFalse())
                 }
             }
         }
@@ -71,5 +178,27 @@ extension EnvironmentValues {
     var test: String {
         get { self[TestEnvironmentKey.self] }
         set { self[TestEnvironmentKey.self] = newValue }
+    }
+}
+
+struct ImmutableEnvironmentKey: EnvironmentKey {
+    static let defaultValue = "immutable"
+}
+
+extension EnvironmentValues {
+    var immutable: String {
+        get { self[ImmutableEnvironmentKey.self] }
+        set { self[ImmutableEnvironmentKey.self] = newValue }
+    }
+}
+
+struct UnusedEnvironmentKey: EnvironmentKey {
+    static let defaultValue = "unused"
+}
+
+extension EnvironmentValues {
+    var unused: String {
+        get { self[UnusedEnvironmentKey.self] }
+        set { self[UnusedEnvironmentKey.self] = newValue }
     }
 }

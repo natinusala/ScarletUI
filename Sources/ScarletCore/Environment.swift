@@ -45,6 +45,7 @@ public struct EnvironmentValues {
 
 public protocol EnvironmentProperty: DynamicProperty {
     var location: (any Location)? { get }
+    var partialKeyPath: PartialKeyPath<EnvironmentValues> { get }
 
     func changed(using diff: EnvironmentDiff) -> Bool
     func makeLocation(values: EnvironmentValues) -> any Location
@@ -109,10 +110,70 @@ public struct Environment<Value>: EnvironmentProperty {
 
         return Self(keyPath: keyPath, location: location)
     }
+
+    public var partialKeyPath: PartialKeyPath<EnvironmentValues> {
+        return keyPath
+    }
 }
 
 public protocol EnvironmentCollectable {
     associatedtype Value
 
     static func collectEnvironment(of element: Self) -> (keyPath: WritableKeyPath<EnvironmentValues, Value>, value: Value)
+}
+
+/// Serves as cache for environment metadata.
+/// Contains the list of all environment properties for all element types in the
+/// app, to know if the element needs to be updated when an environment value changes.
+class EnvironmentMetadataCache {
+    static let shared = EnvironmentMetadataCache()
+
+    private var cache: [ObjectIdentifier: Set<PartialKeyPath<EnvironmentValues>>] = [:]
+
+    private init() {}
+
+    /// Returns `true` if the given element needs to be updated.
+    func shouldUpdate<E: Element>(element: E, using diff: EnvironmentDiff) -> Bool {
+        let modifiedValues: [PartialKeyPath<EnvironmentValues>] = Array(diff.filter { $1 }.keys)
+
+        let diffSet: Set<PartialKeyPath<EnvironmentValues>> = Set(modifiedValues)
+        let cacheValue = self.environmentProperties(of: element)
+
+        // Update if the intersection of "changed environment" and "environment properties for this element"
+        // is not empty -> at least one environment property needs to be updated
+        return !diffSet.intersection(cacheValue).isEmpty
+    }
+
+    /// Looks up environment properties for given element in cache. If missing, discovers the properties
+    /// using a Mirror.
+    private func environmentProperties<E: Element>(of element: E) -> Set<PartialKeyPath<EnvironmentValues>> {
+        let key = ObjectIdentifier(E.self)
+
+        if let cacheValue = self.cache[key] {
+            return cacheValue
+        }
+
+        let value = self.discoverEnvironmentProperties(of: element)
+        self.cache[key] = value
+        return value
+    }
+
+    private func discoverEnvironmentProperties<E: Element>(of element: E) -> Set<PartialKeyPath<EnvironmentValues>> {
+        // Non-stateful element nodes will never have environment properties
+        guard E.Node.self is any StatefulElementNode.Type else {
+            return []
+        }
+
+        let mirror = Mirror(reflecting: element)
+
+        return Set(
+            mirror.children.compactMap { label, value -> PartialKeyPath<EnvironmentValues>? in
+                guard let value = value as? EnvironmentProperty else {
+                    return nil
+                }
+
+                return value.partialKeyPath
+            }
+        )
+    }
 }
