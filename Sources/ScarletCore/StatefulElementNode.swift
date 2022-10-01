@@ -78,7 +78,7 @@ public extension StatefulElementNode {
         }
 
         // If an environment variable that we use changed, also update the view
-        if EnvironmentMetadataCache.shared.shouldUpdate(element: element, using: context.changedEnvironment) {
+        if EnvironmentMetadataCache.shared.shouldUpdate(element: Value.self, using: context.changedEnvironment) {
             var installed = element
             self.install(element: &installed, using: context)
 

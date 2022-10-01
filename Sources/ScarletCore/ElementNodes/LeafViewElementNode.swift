@@ -39,6 +39,9 @@ public class LeafViewElementNode<Value>: StatefulElementNode where Value: Elemen
         self.context = context
         self.implementationPosition = implementationPosition
 
+        // Set environment metadata for the type
+        EnvironmentMetadataCache.shared.setCache(for: element)
+
         // Install the element
         var element = element
         self.install(element: &element, using: context)

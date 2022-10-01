@@ -133,7 +133,7 @@ class EnvironmentMetadataCache {
     private init() {}
 
     /// Returns `true` if the given element needs to be updated.
-    func shouldUpdate<E: Element>(element: E, using diff: EnvironmentDiff) -> Bool {
+    func shouldUpdate<E: Element>(element: E.Type, using diff: EnvironmentDiff) -> Bool {
         let modifiedValues: [PartialKeyPath<EnvironmentValues>] = Array(diff.filter { $1 }.keys)
 
         let diffSet: Set<PartialKeyPath<EnvironmentValues>> = Set(modifiedValues)
@@ -144,26 +144,32 @@ class EnvironmentMetadataCache {
         return !diffSet.intersection(cacheValue).isEmpty
     }
 
-    /// Looks up environment properties for given element in cache. If missing, discovers the properties
-    /// using a Mirror.
-    private func environmentProperties<E: Element>(of element: E) -> Set<PartialKeyPath<EnvironmentValues>> {
+    /// Looks up environment properties for given element in cache.
+    /// If missing, throws a fatal error.
+    private func environmentProperties<E: Element>(of element: E.Type) -> Set<PartialKeyPath<EnvironmentValues>> {
         let key = ObjectIdentifier(E.self)
 
-        if let cacheValue = self.cache[key] {
-            return cacheValue
+        guard let cacheValue = self.cache[key] else {
+            fatalError("Environment metadata cache not found for \(E.self) - was 'setCache(for:)' properly called?")
+        }
+
+        return cacheValue
+    }
+
+    /// Triggers a discovery on the given element and updates the cache.
+    /// Doesn't do anything if a value was already present for the key.
+    func setCache<E: Element>(for element: E) {
+        let key = ObjectIdentifier(E.self)
+
+        guard self.cache[key] == nil else {
+            return
         }
 
         let value = self.discoverEnvironmentProperties(of: element)
         self.cache[key] = value
-        return value
     }
 
     private func discoverEnvironmentProperties<E: Element>(of element: E) -> Set<PartialKeyPath<EnvironmentValues>> {
-        // Non-stateful element nodes will never have environment properties
-        guard E.Node.self is any StatefulElementNode.Type else {
-            return []
-        }
-
         let mirror = Mirror(reflecting: element)
 
         return Set(
