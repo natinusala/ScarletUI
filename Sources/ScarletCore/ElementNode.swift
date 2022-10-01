@@ -94,7 +94,7 @@ public extension ElementNode {
 
     /// Default implementation: return the same environment storage.
     func compareEnvironment(of element: Value, using context: ElementNodeContext) -> (values: EnvironmentValues, changed: EnvironmentDiff) {
-        return (values: context.environment, changed: [:])
+        return (values: context.environment, changed: context.changedEnvironment)
     }
 
     var valueDebugDescription: String {
@@ -125,7 +125,7 @@ extension ElementNode {
         } else {
             attributes = self.attributes
             environment = context.environment
-            changedEnvironment = [:]
+            changedEnvironment = context.changedEnvironment
         }
 
         if !attributes.isEmpty {

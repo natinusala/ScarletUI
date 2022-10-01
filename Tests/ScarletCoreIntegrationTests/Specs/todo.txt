@@ -1,4 +1,6 @@
-le cas où on modifie une variable d'environnement pas utilisée dans la vue N mais utilisée dans la vue N+1 : le body de la vue N doit pas être appelé (on la skip) mais celui de la N+1 si
+plus besoin de ChangeToken vu qu'on ne compare plus ?
+
+tester plusieurs .environment sur la même vue
 
 jointer avec State un peu dans tous les sens
     vérifier que changer le state d'une vue qui a @Environment les conserve proprement
@@ -8,9 +10,7 @@ faire le schéma du tableau et jouer un peu avec tout et assert un maximum de ch
     - 20 -> 10: le 10 d'en dessous ne doit pas être refait (par contre on réévalue les vues sous le 20)
     - 10
 
-pas implémenté, à faire en dernier: le cas des trous
-    la vue ne change pas mais l'environnement si : ça skip les vues qui n'ont pas changé sauf si l'env est différent
-
+-------------------------------------------------
 impl:
     dans le contexte on stocke les valeurs avec un flag qui dit si ça a changé
     lors de l'installation on n'installe que celles qui ont changé

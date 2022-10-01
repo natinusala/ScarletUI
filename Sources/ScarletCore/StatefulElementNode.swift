@@ -61,10 +61,18 @@ public extension StatefulElementNode {
     }
 
     func compareAndUpdate(with element: Value?, implementationPosition: Int, using context: Context) -> UpdateResult {
-        // If no element is given, assume the view is unchanged so perform an update giving `nil` as element
-        // TODO: Compare environment versions and if it changed, install the new environment values inside
-        //       the stored value and run the update with that
+        // If no value is given, assume its direct input didn't change
         guard let element else {
+            // If any element variable changed, take our own stored view, install it with the new environment values
+            // and update with that
+            if EnvironmentMetadataCache.shared.shouldUpdate(element: Value.self, using: context.changedEnvironment) {
+                var installed = self.value
+                self.install(element: &installed, using: context)
+
+                return self.update(with: installed, implementationPosition: implementationPosition, using: context)
+            }
+
+            // Otherwise assume the view is unchanged so perform an update giving `nil` as element
             return self.update(with: nil, implementationPosition: implementationPosition, using: context)
         }
 

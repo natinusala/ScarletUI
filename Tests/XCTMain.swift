@@ -51,6 +51,7 @@ let specs: [QuickSpec.Type] = [
     ViewModifierStateSpec.QuickSpec.self,
     ViewModifierTogglingContentSpec.QuickSpec.self,
     EnvironmentValueSpec.QuickSpec.self,
+    EnvironmentUpdatesSpec.QuickSpec.self,
     // ForEachSpecs.self,
 ]
 
