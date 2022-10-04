@@ -341,22 +341,22 @@ class EnvironmentUpdatesSpec: ScarletSpec {
     }
 }
 
-struct FirstValueKey: EnvironmentKey {
+private struct FirstValueKey: EnvironmentKey {
     static let defaultValue = 1
 }
 
-extension EnvironmentValues {
+private extension EnvironmentValues {
     var first: Int{
         get { self[FirstValueKey.self] }
         set { self[FirstValueKey.self] = newValue }
     }
 }
 
-struct SecondValueKey: EnvironmentKey {
+private struct SecondValueKey: EnvironmentKey {
     static let defaultValue = "hello"
 }
 
-extension EnvironmentValues {
+private extension EnvironmentValues {
     var second: String {
         get { self[SecondValueKey.self] }
         set { self[SecondValueKey.self] = newValue }
