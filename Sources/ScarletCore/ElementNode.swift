@@ -110,7 +110,7 @@ extension ElementNode {
     ///
     /// Returns the node implementation count.
     func update(with element: Value?, implementationPosition: Int, using context: Context) -> UpdateResult {
-        Logger.debug(debugImplementation, "Updating \(Value.self) with implementation position \(implementationPosition)")
+        implementationLogger.trace("Updating \(Value.self) with implementation position \(implementationPosition)")
 
         let attributes: AttributesStash
         let environment: EnvironmentValues
@@ -129,10 +129,10 @@ extension ElementNode {
         }
 
         if !attributes.isEmpty {
-            Logger.debug(debugAttributes, "Collected attributes on \(Value.displayName): \(attributes.count)")
+            attributesLogger.trace("Collected attributes on \(Value.displayName): \(attributes.count)")
         }
 
-        Logger.debug(debugAttributes, "Parent attributes for \(Value.displayName): \(context.attributes.count)")
+        attributesLogger.trace("Parent attributes for \(Value.displayName): \(context.attributes.count)")
 
         // Clear context
         let context = context
@@ -147,9 +147,9 @@ extension ElementNode {
             .poppingAttributes(for: Value.Implementation.self)
 
         if !attributes.isEmpty {
-            Logger.debug(debugAttributes, "     Attributes to apply on \(Value.displayName): \(attributesToApply.count)")
+            attributesLogger.trace("     Attributes to apply on \(Value.displayName): \(attributesToApply.count)")
         }
-        Logger.debug(debugAttributes, "Remaining attributes for \(Value.displayName)'s edges: \(edgesContext.attributes.count)")
+        attributesLogger.trace("Remaining attributes for \(Value.displayName)'s edges: \(edgesContext.attributes.count)")
 
         // Apply attributes
         for attribute in attributesToApply {
@@ -157,7 +157,7 @@ extension ElementNode {
                 fatalError("Invalid `ElementNode` state: expected an implementation node of type \(Value.Implementation.self) to be set")
             }
 
-            Logger.debug(debugAttributes, "Applying attribute on \(Value.displayName)")
+            attributesLogger.trace("Applying attribute on \(Value.displayName)")
             attribute.anySet(on: implementation, identifiedBy: ObjectIdentifier(self))
         }
 
@@ -175,7 +175,7 @@ extension ElementNode {
         )
 
         // Update state
-        Logger.debug(debugImplementation, "Edges result of \(Value.self): \(edgesResult)")
+        implementationLogger.trace("Edges result of \(Value.self): \(edgesResult)")
         self.implementationCount = edgesResult.implementationCount
         self.attributes = attributes
         self.storeContext(context.clearingEnvironment())
@@ -191,7 +191,7 @@ extension ElementNode {
             implementationPosition: implementationPosition,
             implementationCount: self.implementationCount
         )
-        Logger.debug(debugImplementation, "Update result of \(Value.self): \(result)")
+        implementationLogger.trace("Update result of \(Value.self): \(result)")
         return result
     }
 
@@ -223,11 +223,11 @@ extension ElementNode {
         func inner(attaching implementation: ImplementationNode, at position: Int, to parentNode: any ElementNode) {
             if let parentImplementation = parentNode.implementation {
                 parentImplementation.insertChild(implementation, at: position)
-                Logger.debug(debugImplementation, "Attaching \(Value.self) to parent \(parentImplementation.displayName) at position \(position)")
+                implementationLogger.trace("Attaching \(Value.self) to parent \(parentImplementation.displayName) at position \(position)")
             } else if let parent = parentNode.parent {
                 inner(attaching: implementation, at: position, to: parent)
             } else {
-                Logger.debug(debugImplementation, "Did not find parent to attach \(Value.self) at position \(position)")
+                implementationLogger.trace("Did not find parent to attach \(Value.self) at position \(position)")
             }
         }
 
@@ -260,7 +260,7 @@ extension ElementNode {
         func inner(node: any ElementNode) {
             if node.implementation != nil {
                 let position = implementationPosition
-                Logger.debug(debugImplementation, "Removing node at position \(position) from \(parentImplementation.displayName)")
+                implementationLogger.trace("Removing node at position \(position) from \(parentImplementation.displayName)")
                 parentImplementation.removeChild(at: position)
             } else {
                 // TODO: if this is inefficient, find a way to detach all edges with direct calls

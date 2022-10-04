@@ -85,7 +85,7 @@ public class StaticElementNode${IDX}<Value, ${E_TYPES}>: ElementNode where Value
         }
         totalImplementationCount += e${i}ImplementationCount
 
-        Logger.debug(debugImplementation, "\(E${i}.self) returned implementation count \(e${i}ImplementationCount) - Total: \(totalImplementationCount)")
+        implementationLogger.trace("\(E${i}.self) returned implementation count \(e${i}ImplementationCount) - Total: \(totalImplementationCount)")
 % end
 
         return UpdateResult(

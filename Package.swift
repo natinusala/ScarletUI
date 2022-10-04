@@ -32,9 +32,13 @@ let package = Package(
     ],
     dependencies: [
         // Core dependencies
-        .package(url: "https://github.com/onevcat/Rainbow.git", .upToNextMajor(from: "4.0.0")),
-        .package(url: "https://github.com/wickwirew/Runtime", .upToNextMajor(from: "2.2.4")),
-        .package(url: "https://github.com/OpenCombine/OpenCombine.git", from: "0.13.0"),
+        .package(url: "https://github.com/wickwirew/Runtime.git", .upToNextMajor(from: "2.2.4")),
+        .package(url: "https://github.com/OpenCombine/OpenCombine.git", .upToNextMajor(from: "0.13.0")),
+        .package(url: "https://github.com/apple/swift-argument-parser.git", .upToNextMajor(from: "1.1.4")),
+
+        // Logging
+        .package(url: "https://github.com/vapor/console-kit.git", .upToNextMajor(from: "4.5.0")),
+        .package(url: "https://github.com/apple/swift-log.git", .upToNextMajor(from: "1.4.4")),
 
         // Linux compat
         .package(url: "https://github.com/swift-server/swift-backtrace.git", .upToNextMajor(from: "1.3.1")),
@@ -42,7 +46,6 @@ let package = Package(
         // Testing
         .package(url: "https://github.com/Quick/Quick.git", .upToNextMajor(from: "4.0.0")),
         .package(url: "https://github.com/Quick/Nimble.git", .upToNextMajor(from: "9.2.1")),
-        .package(url: "https://github.com/natinusala/mockolo-linux", branch: "fb627cfd1b1f8058ab5cae1ced30c2419cc6a0eb")
     ],
     targets: [
         // ScarletUI: contains scenes, views, modifiers as well as the actual runtime
@@ -63,7 +66,9 @@ let package = Package(
         .target(
             name: "ScarletCore",
             dependencies: [
-                "Rainbow",
+                .product(name: "Logging", package: "swift-log"),
+                .product(name: "ConsoleKit", package: "console-kit"),
+                .product(name: "ArgumentParser", package: "swift-argument-parser"),
                 "Runtime",
                 "OpenCombine",
             ],
@@ -91,9 +96,6 @@ let package = Package(
                 "Quick",
                 "Nimble",
                 .product(name: "Backtrace", package: "swift-backtrace"),
-            ],
-            plugins: [
-                .plugin(name: "MockoloPlugin", package: "mockolo"),
             ]
         ),
         .testTarget(
@@ -103,9 +105,6 @@ let package = Package(
                 "Quick",
                 "Nimble",
                 .product(name: "Backtrace", package: "swift-backtrace"),
-            ],
-            plugins: [
-                .plugin(name: "MockoloPlugin", package: "mockolo"),
             ]
         ),
         // Embedded native libraries

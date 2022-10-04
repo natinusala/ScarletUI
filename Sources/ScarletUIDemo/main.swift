@@ -15,3 +15,9 @@
 */
 
 import ScarletUI
+
+let logger = createLogger(label: "Test")
+logger.info("Info!")
+
+
+logger.debug("Debug")

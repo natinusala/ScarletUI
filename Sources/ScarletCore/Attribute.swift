@@ -231,13 +231,13 @@ public struct AppendAttribute<Implementation: ImplementationNode, Value>: Attrib
         // Otherwise just set it
         if let existingValue = list.values[key] {
             if !elementEquals(lhs: existingValue, rhs: value) {
-                Logger.debug(debugAttributes, "Appending attribute identified by \(key) on \(implementation.displayName)")
+                attributesLogger.trace("Appending attribute identified by \(key) on \(implementation.displayName)")
                 implementation[keyPath: self.keyPath].values[key] = value
             } else {
-                Logger.debug(debugAttributes, "Skipping appending attribute identified by \(key) on \(implementation.displayName): value hasn't changed")
+                attributesLogger.trace("Skipping appending attribute identified by \(key) on \(implementation.displayName): value hasn't changed")
             }
         } else {
-            Logger.debug(debugAttributes, "Appending attribute identified by \(key) on \(implementation.displayName)")
+            attributesLogger.trace("Appending attribute identified by \(key) on \(implementation.displayName)")
             implementation[keyPath: self.keyPath].values[key] = value
         }
     }

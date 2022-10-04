@@ -59,7 +59,7 @@ public struct ElementNodeContext {
     /// Creates a copy of the context popping the attributes corresponding to the given implementation type,
     /// returning them along the context copy.
     func poppingAttributes<Implementation: ImplementationNode>(for implementationType: Implementation.Type) -> (attributes: [any AttributeSetter], context: Self) {
-        Logger.debug(debugAttributes, "Searching for attributes to apply on \(Implementation.self)")
+        attributesLogger.trace("Searching for attributes to apply on \(Implementation.self)")
 
         // If we request attributes for `Never` just return empty attributes and the untouched context since
         // we can never have attributes for a `Never` implementation type
@@ -77,16 +77,16 @@ public struct ElementNodeContext {
 
         for (target, attribute) in self.attributes {
             if attribute.applies(to: implementationType) {
-                Logger.debug(debugAttributes, "Selected attribute for applying")
+                attributesLogger.trace("Selected attribute for applying")
                 newStash.append(attribute)
 
                 // If the attribute needs to be propagated, put it back in the remaining attributes
                 if attribute.propagate {
-                    Logger.debug(debugAttributes, "     Attribute is propagated, putting it back for the edges")
+                    attributesLogger.trace("     Attribute is propagated, putting it back for the edges")
                     remainingAttributes[target] = attribute
                 }
             } else {
-                Logger.debug(debugAttributes, "Selected attribute for the edges (\(attribute.implementationType) isn't applyable on \(Implementation.self))")
+                attributesLogger.trace("Selected attribute for the edges (\(attribute.implementationType) isn't applyable on \(Implementation.self))")
                 remainingAttributes[target] = attribute
             }
         }
