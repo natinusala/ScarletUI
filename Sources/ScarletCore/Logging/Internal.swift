@@ -14,24 +14,5 @@
     limitations under the License.
 */
 
-import Logging
-import ConsoleKit
-
-/// Creates a new logger with the given label.
-public func createLogger(label: String) -> Logging.Logger {
-    return Logging.Logger(label: label, factory: { _ in
-        let consoles = [terminalConsole]
-
-        return Logging.MultiplexLogHandler(consoles.map { console in
-            console.stylizedOutputOverride = !arguments.disableLogColors
-
-            return ConsoleLogger(
-                label: label,
-                console: console,
-                level: arguments.logLevel
-            )
-        })
-    })
-}
-
-private let terminalConsole = Terminal()
+let attributesLogger = createLogger(label: "attributes")
+let implementationLogger = createLogger(label: "implementation")

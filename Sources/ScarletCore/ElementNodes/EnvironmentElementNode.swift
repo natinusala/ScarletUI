@@ -80,7 +80,7 @@ public class EnvironmentElementNode<Value, E0>: ElementNode where Value: Element
         }
         totalImplementationCount += e0ImplementationCount
 
-        Logger.debug(debugImplementation, "\(E0.self) returned implementation count \(e0ImplementationCount) - Total: \(totalImplementationCount)")
+        implementationLogger.trace("\(E0.self) returned implementation count \(e0ImplementationCount) - Total: \(totalImplementationCount)")
 
         return UpdateResult(
             implementationPosition: implementationPosition,
