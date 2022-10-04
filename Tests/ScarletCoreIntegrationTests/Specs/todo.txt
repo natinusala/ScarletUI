@@ -5,7 +5,7 @@ tester plusieurs .environment sur la même vue
 jointer avec State un peu dans tous les sens
     vérifier que changer le state d'une vue qui a @Environment les conserve proprement
 
-faire le schéma du tableau et jouer un peu avec tout et assert un maximum de choses, y compris:
+faire ce cas mais avec un changement de state:
     - 10
     - 20 -> 10: le 10 d'en dessous ne doit pas être refait (par contre on réévalue les vues sous le 20)
     - 10

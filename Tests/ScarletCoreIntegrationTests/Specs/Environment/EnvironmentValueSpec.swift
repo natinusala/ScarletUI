@@ -170,33 +170,33 @@ class EnvironmentValueSpec: ScarletSpec {
     }
 }
 
-struct TestEnvironmentKey: EnvironmentKey {
+private struct TestEnvironmentKey: EnvironmentKey {
     static let defaultValue = "default value"
 }
 
-extension EnvironmentValues {
+private extension EnvironmentValues {
     var test: String {
         get { self[TestEnvironmentKey.self] }
         set { self[TestEnvironmentKey.self] = newValue }
     }
 }
 
-struct ImmutableEnvironmentKey: EnvironmentKey {
+private struct ImmutableEnvironmentKey: EnvironmentKey {
     static let defaultValue = "immutable"
 }
 
-extension EnvironmentValues {
+private extension EnvironmentValues {
     var immutable: String {
         get { self[ImmutableEnvironmentKey.self] }
         set { self[ImmutableEnvironmentKey.self] = newValue }
     }
 }
 
-struct UnusedEnvironmentKey: EnvironmentKey {
+private struct UnusedEnvironmentKey: EnvironmentKey {
     static let defaultValue = "unused"
 }
 
-extension EnvironmentValues {
+private extension EnvironmentValues {
     var unused: String {
         get { self[UnusedEnvironmentKey.self] }
         set { self[UnusedEnvironmentKey.self] = newValue }
