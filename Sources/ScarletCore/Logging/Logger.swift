@@ -17,6 +17,8 @@
 import Logging
 import ConsoleKit
 
+// TODO: add option to log to file (is rotation needed?)
+
 /// Creates a new logger with the given label.
 public func createLogger(label: String) -> Logging.Logger {
     return Logging.Logger(label: label, factory: { _ in
