@@ -18,7 +18,6 @@ import ArgumentParser
 import Foundation
 import Logging
 
-// TODO: should we wrap `main` in the end since swift test doesn't allow passing parameters? would that allow merging with user arguments?
 // TODO: how to allow adding user arguments too while merging `--help` messages?
 
 struct Arguments: ParsableCommand  {
@@ -27,6 +26,9 @@ struct Arguments: ParsableCommand  {
 
     @Flag(help: "Disable colors from logs if your terminal doesn't support them.")
     var disableLogColors = false
+
+    @Option(help: "Send logs to cutelog on this network address (port: \(defaultCutelogPort)).")
+    var cutelog: String?
 
     static var _commandName: String {
         let executablePath = CommandLine.arguments[0]
@@ -37,5 +39,3 @@ struct Arguments: ParsableCommand  {
 }
 
 extension Logger.Level: EnumerableFlag {}
-
-let arguments = Arguments.parseOrExit()

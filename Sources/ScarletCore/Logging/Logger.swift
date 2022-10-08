@@ -16,24 +16,61 @@
 
 import Logging
 import ConsoleKit
+import Builders
 
 // TODO: add option to log to file (is rotation needed?)
 
-/// Creates a new logger with the given label.
-public func createLogger(label: String) -> Logging.Logger {
-    return Logging.Logger(label: label, factory: { _ in
-        let consoles = [terminalConsole]
-
-        return Logging.MultiplexLogHandler(consoles.map { console in
-            console.stylizedOutputOverride = !arguments.disableLogColors
+func bootstrapLogger(arguments: Arguments) {
+    // Create one Cutelog logger for the target address and reuse it in
+    // multiple handlers in the factory
+    #if DEBUG
+    let cutelogLogger: CutelogLogger?
+    if let cutelogAddress = arguments.cutelog {
+        // Create the internal Cutelog logger
+        let internalCutelogLogger = Logger(label: "cutelog", factory: { label in
+            let terminal = Terminal()
+            terminal.stylizedOutputOverride = !arguments.disableLogColors
 
             return ConsoleLogger(
                 label: label,
-                console: console,
+                console: terminal,
                 level: arguments.logLevel
             )
         })
-    })
-}
 
-private let terminalConsole = Terminal()
+        cutelogLogger = CutelogLogger(
+            address: cutelogAddress,
+            port: defaultCutelogPort,
+            internalLogger: internalCutelogLogger
+        )
+    } else {
+        cutelogLogger = nil
+    }
+    #endif
+
+    // Executed for every new logger to create its handlers
+    LoggingSystem.bootstrap { label in
+        // Terminal
+        let terminal = Terminal()
+        terminal.stylizedOutputOverride = !arguments.disableLogColors
+
+        let terminalHandler: LogHandler = ConsoleLogger(
+            label: label,
+            console: terminal,
+            level: arguments.logLevel
+        )
+
+        // Final handlers list
+        let handlers: [LogHandler] = .init {
+            #if DEBUG
+            if let cutelogLogger {
+                cutelogLogger.makeHandler(label: label, logLevel: arguments.logLevel)
+            }
+            #endif
+
+            terminalHandler
+        }
+
+        return MultiplexLogHandler(handlers)
+    }
+}
