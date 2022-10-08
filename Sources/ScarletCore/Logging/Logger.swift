@@ -18,9 +18,10 @@ import Foundation
 import Logging
 import ConsoleKit
 import Builders
+import Cutelog
 
 let cutelogAddressEnv = "SCARLET_CUTELOG_ADDRESS"
-let logLevelEnv: String = "SCARLET_LOG_LEVEL"
+let logLevelEnv = "SCARLET_LOG_LEVEL"
 
 // TODO: add option to log to file (is rotation needed?)
 // TODO: maybe remove ConsoleKit to either use something that also has log file rotation, or a manual solution (useless dependency)
@@ -68,7 +69,7 @@ func bootstrapLogger(arguments: Arguments) {
 
         let logger = CutelogLogger(
             address: cutelogAddress,
-            port: defaultCutelogPort,
+            port: Cutelog.defaultPort,
             internalLogger: internalCutelogLogger
         )
 

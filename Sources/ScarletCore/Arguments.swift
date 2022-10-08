@@ -17,6 +17,7 @@
 import ArgumentParser
 import Foundation
 import Logging
+import Cutelog
 
 // TODO: how to allow adding user arguments too while merging `--help` messages?
 
@@ -27,7 +28,7 @@ struct Arguments: ParsableCommand  {
     @Flag(help: "Disable colors from logs if your terminal doesn't support them.")
     var disableLogColors = false
 
-    @Option(help: "Send logs to cutelog on this network address (port: \(defaultCutelogPort)).")
+    @Option(help: "Send logs to cutelog on this network address (port: \(Cutelog.defaultPort)).")
     var cutelog: String?
 
     static var _commandName: String {
