@@ -18,7 +18,6 @@
 
 import Dispatch
 import Logging
-import ConsoleKit
 import Socket
 import Foundation
 import SwiftMsgPack
@@ -295,7 +294,7 @@ class CutelogLogger {
         let record = LogRecord(
             label: label,
             message: message.description,
-            level: level.cutelogLevel,
+            level: level,
             created: date,
             file: file,
             line: line,
@@ -327,7 +326,7 @@ private enum MessageFormat: String {
 private struct LogRecord {
     let label: String
     let message: String
-    let level: CutelogLevel
+    let level: Logger.Level
     let created: Date
 
     let file: String
@@ -340,7 +339,7 @@ private struct LogRecord {
         var values: [String: Any] = [
             "name": self.label,
             "message": self.message,
-            "levelname": self.level.rawValue,
+            "levelname": self.level.cutelogLevel,
             "created": Int(self.created.timeIntervalSince1970),
             "file": self.file,
             "line": self.line,
@@ -357,28 +356,9 @@ private struct LogRecord {
     }
 }
 
-private enum CutelogLevel: String {
-    case debug = "DEBUG"
-    case info = "INFO"
-    case warning = "WARNING"
-    case error = "ERROR"
-    case critical = "CRITICAL"
-}
-
 private extension Logger.Level {
-    var cutelogLevel: CutelogLevel {
-        switch self {
-            case .debug, .trace:
-                return .debug
-            case .info:
-                return .info
-            case .warning, .notice:
-                return .warning
-            case .error:
-                return .error
-            case .critical:
-                return .critical
-        }
+    var cutelogLevel: String {
+        return self.rawValue.uppercased()
     }
 }
 
