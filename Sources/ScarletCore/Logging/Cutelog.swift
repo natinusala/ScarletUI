@@ -20,8 +20,6 @@ import Socket
 import Foundation
 import SwiftMsgPack
 
-// TODO: maybe remove ConsoleKit to either use something that also has log file rotation, or a manual solution (useless dependency)
-
 /// Default port as defined by the cutelog GUI.
 public let defaultCutelogPort: Int = 19996
 
