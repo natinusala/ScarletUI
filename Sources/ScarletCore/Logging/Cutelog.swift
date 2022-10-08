@@ -155,6 +155,8 @@ class CutelogLogger {
     }
 
     deinit {
+        self.timer.cancel()
+
         self.flush()
 
         self.state.socket?.close()
@@ -196,8 +198,6 @@ class CutelogLogger {
     /// To be called when gracefully exiting your app or at the end of your tests.
     public func flush() {
         self.queue.sync {
-            self.timer.cancel()
-
             guard case .running(let socket) = self.state else {
                 self.logger?.warning("Cannot flush cutelog as it is not connected - latest \(self.buffer.count) logs will be lost")
                 return
