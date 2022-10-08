@@ -24,3 +24,9 @@ public func bootstrap() {
 
     bootstrapLogger(arguments: arguments)
 }
+
+/// Tears down ScarletCore and all of its systems.
+/// Useful to flush log files for example.
+public func teardown() {
+    teardownLogger()
+}

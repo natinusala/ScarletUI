@@ -153,14 +153,10 @@ class CutelogLogger {
     }
 
     deinit {
-        self.timer.cancel()
+        self.flush()
 
-        self.queue.sync {
-            self.flush()
-
-            self.state.socket?.close() // `Socket` deinit doesn't close it :(
-            self.state = .closed
-        }
+        self.state.socket?.close()
+        self.state = .closed
     }
 
     private func tick() {
@@ -194,14 +190,19 @@ class CutelogLogger {
         self.buffer = Array(self.buffer.dropFirst(sent))
     }
 
-    private func flush() {
+    func flush() {
+        self.timer.cancel()
+
         guard case .running(let socket) = self.state else {
             self.logger?.warning("Cannot flush cutelog as it is not connected - latest \(self.buffer.count) logs will be lost")
             return
         }
 
-        for record in self.buffer {
+        self.logger?.info("Flushing cutelog, this might take a while...")
+
+        for record in buffer {
             try? self.send(record: record, to: socket)
+            Thread.sleep(forTimeInterval: 0.0001) // necessary to avoid crashing cutelog
         }
 
         self.buffer = []

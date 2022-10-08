@@ -65,11 +65,14 @@ func bootstrapLogger(arguments: Arguments) {
             )
         })
 
-        cutelogLogger = CutelogLogger(
+        let logger = CutelogLogger(
             address: cutelogAddress,
             port: defaultCutelogPort,
             internalLogger: internalCutelogLogger
         )
+
+        cutelogLogger = logger
+        teardownHandlers.append({ logger.flush() })
     } else {
         cutelogLogger = nil
     }
@@ -101,3 +104,11 @@ func bootstrapLogger(arguments: Arguments) {
         return MultiplexLogHandler(handlers)
     }
 }
+
+func teardownLogger() {
+    teardownHandlers.forEach { handler in
+        handler()
+    }
+}
+
+private var teardownHandlers: [() -> ()] = []

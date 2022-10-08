@@ -66,6 +66,18 @@ struct Main {
         Backtrace.install()
         ScarletCore.bootstrap()
 
-        QCKMain(specs)
+        QCKMain(specs + [TeardownSpec.self])
+    }
+}
+
+private class TeardownSpec: QuickSpec {
+    override func spec() {
+        describe("ScarletCore tests") {
+            context("when finished") {
+                it("tears down") {
+                    ScarletCore.teardown()
+                }
+            }
+        }
     }
 }
