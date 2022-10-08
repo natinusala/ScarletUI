@@ -17,6 +17,8 @@
 import Quick
 import Backtrace
 
+@testable import ScarletCore
+
 // Add every test target here
 @testable import ScarletCoreUnitTests
 @testable import ScarletCoreIntegrationTests
@@ -62,6 +64,8 @@ let specs: [QuickSpec.Type] = [
 struct Main {
     static func main() {
         Backtrace.install()
+        ScarletCore.bootstrap()
+
         QCKMain(specs)
     }
 }
