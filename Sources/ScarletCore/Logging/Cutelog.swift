@@ -23,6 +23,7 @@ import Socket
 import Foundation
 import SwiftMsgPack
 
+// TODO: does cutelog support custom log levels?
 // TODO: maybe remove ConsoleKit to either use something that also has log file rotation, or a manual solution (useless dependency)
 
 /// Default port as defined by the cutelog GUI.
@@ -134,7 +135,8 @@ class CutelogLogger {
         }
     }
 
-    init(address: String, port: Int, internalLogger: Logger?, queue: DispatchQueue = DispatchQueue(label: "cutelog", qos: .background)) {
+    /// Creates a new Cutelog logger.
+    public init(address: String, port: Int, internalLogger: Logger?, queue: DispatchQueue = DispatchQueue(label: "cutelog", qos: .background)) {
         self.address = address
         self.port = Int32(port)
         self.queue = queue
@@ -190,22 +192,26 @@ class CutelogLogger {
         self.buffer = Array(self.buffer.dropFirst(sent))
     }
 
-    func flush() {
-        self.timer.cancel()
+    /// Synchronously flushes the buffer to ensure that all pending logs are sent to cutelog.
+    /// To be called when gracefully exiting your app or at the end of your tests.
+    public func flush() {
+        self.queue.sync {
+            self.timer.cancel()
 
-        guard case .running(let socket) = self.state else {
-            self.logger?.warning("Cannot flush cutelog as it is not connected - latest \(self.buffer.count) logs will be lost")
-            return
+            guard case .running(let socket) = self.state else {
+                self.logger?.warning("Cannot flush cutelog as it is not connected - latest \(self.buffer.count) logs will be lost")
+                return
+            }
+
+            self.logger?.info("Flushing cutelog, this might take a while...")
+
+            for record in buffer {
+                try? self.send(record: record, to: socket)
+                Thread.sleep(forTimeInterval: 0.0001) // necessary to avoid crashing cutelog
+            }
+
+            self.buffer = []
         }
-
-        self.logger?.info("Flushing cutelog, this might take a while...")
-
-        for record in buffer {
-            try? self.send(record: record, to: socket)
-            Thread.sleep(forTimeInterval: 0.0001) // necessary to avoid crashing cutelog
-        }
-
-        self.buffer = []
     }
 
     private func disconnect(socket: Socket) {
@@ -302,7 +308,7 @@ class CutelogLogger {
         }
     }
 
-    func makeHandler(label: String, logLevel: Logger.Level) -> CutelogHandler {
+    public func makeHandler(label: String, logLevel: Logger.Level) -> CutelogHandler {
         return CutelogHandler(label: label, logLevel: logLevel, logger: self)
     }
 }
