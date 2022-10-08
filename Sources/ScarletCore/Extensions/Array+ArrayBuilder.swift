@@ -14,7 +14,8 @@
     limitations under the License.
 */
 
-import Logging
-
-let attributesLogger = Logger(label: "attributes")
-let implementationLogger = Logger(label: "implementation")
+extension Array {
+    init(@Builder elements: () -> [Element]) {
+        self = elements()
+    }
+}

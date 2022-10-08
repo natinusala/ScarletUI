@@ -15,9 +15,33 @@
 */
 
 import ScarletUI
+import Dispatch
+import Logging
 
-let logger = createLogger(label: "Test")
-logger.info("Info!")
+ScarletUI.bootstrap()
 
+let logger = Logger(label: "Graphics")
 
-logger.debug("Debug")
+logger.debug("Available contexts: OpenGL, Vulkan")
+logger.debug("Using OpenGL")
+logger.info("1280x720 OpenGL window created")
+
+let secondLogger = Logger(label: "Input")
+
+secondLogger.debug("Available drivers: Xinput, udev")
+secondLogger.debug("Using Xinput")
+secondLogger.debug("Found Xbox Controller on slot #1")
+
+secondLogger.info("Xbox Controller (slot 1) bound to player 1")
+
+let timer = DispatchSource.makeTimerSource(queue: DispatchQueue.main)
+
+var count = 0
+timer.schedule(deadline: .now(), repeating: 1)
+timer.setEventHandler {
+    count += 1
+    secondLogger.info("Tick \(count)")
+}
+timer.resume()
+
+dispatchMain()
