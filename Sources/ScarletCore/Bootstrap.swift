@@ -15,6 +15,12 @@
 */
 
 import Logging
+import ConsoleKit
 
-let attributesLogger = Logger(label: "attributes")
-let implementationLogger = Logger(label: "implementation")
+/// Bootstraps ScarletCore and all of its systems.
+/// Must be called by the implementation library on `main`, before creating the app.
+public func bootstrap() {
+    let arguments = Arguments.parseOrExit()
+
+    bootstrapLogger(arguments: arguments)
+}

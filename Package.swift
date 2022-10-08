@@ -39,6 +39,11 @@ let package = Package(
         // Logging
         .package(url: "https://github.com/vapor/console-kit.git", .upToNextMajor(from: "4.5.0")),
         .package(url: "https://github.com/apple/swift-log.git", .upToNextMajor(from: "1.4.4")),
+        .package(url: "https://github.com/Kitura/BlueSocket.git", .upToNextMajor(from: "2.0.2")),
+        .package(url: "https://github.com/malcommac/SwiftMsgPack.git", .upToNextMajor(from: "1.2.0")),
+
+        // Utils
+        .package(url: "https://github.com/davdroman/swift-builders.git", .upToNextMajor(from: "0.2.0")),
 
         // Linux compat
         .package(url: "https://github.com/swift-server/swift-backtrace.git", .upToNextMajor(from: "1.3.1")),
@@ -66,11 +71,14 @@ let package = Package(
         .target(
             name: "ScarletCore",
             dependencies: [
+                "Runtime",
+                "OpenCombine",
+                "SwiftMsgPack",
+                .product(name: "Socket", package: "BlueSocket"),
                 .product(name: "Logging", package: "swift-log"),
                 .product(name: "ConsoleKit", package: "console-kit"),
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
-                "Runtime",
-                "OpenCombine",
+                .product(name: "Builders", package: "swift-builders"),
             ],
             exclude: [
                 "ElementNodes/StaticElementNode.gyb",
