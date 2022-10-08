@@ -14,15 +14,12 @@
     limitations under the License.
 */
 
-#if DEBUG
-
 import Dispatch
 import Logging
 import Socket
 import Foundation
 import SwiftMsgPack
 
-// TODO: does cutelog support custom log levels?
 // TODO: maybe remove ConsoleKit to either use something that also has log file rotation, or a manual solution (useless dependency)
 
 /// Default port as defined by the cutelog GUI.
@@ -361,7 +358,3 @@ private extension Logger.Level {
         return self.rawValue.uppercased()
     }
 }
-
-#endif
-
-
