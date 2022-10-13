@@ -16,5 +16,5 @@
 
 import Logging
 
-let attributesLogger = Logger(label: "attributes")
-let implementationLogger = Logger(label: "implementation")
+let attributesLogger = Logger(label: "ScarletCore.Attributes")
+let implementationLogger = Logger(label: "ScarletCore.Implementation")
