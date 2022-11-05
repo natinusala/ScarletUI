@@ -50,6 +50,7 @@ public protocol EnvironmentProperty: DynamicProperty {
     func changed(using diff: EnvironmentDiff) -> Bool
     func makeLocation(values: EnvironmentValues) -> any Location
     func withLocation(_ location: any Location) -> Self
+    func setValue(from values: EnvironmentValues)
 }
 
 public class EnvironmentLocation<Value>: Location {
@@ -67,7 +68,7 @@ public class EnvironmentLocation<Value>: Location {
     }
 
     public func set(_ value: Value) {
-        fatalError("EnvironmentLocation.set(_:) unimplemented")
+        self.value = value
     }
 }
 
@@ -113,6 +114,10 @@ public struct Environment<Value>: EnvironmentProperty {
 
     public var partialKeyPath: PartialKeyPath<EnvironmentValues> {
         return keyPath
+    }
+
+    public func setValue(from values: EnvironmentValues) {
+        self.location?.set(values[keyPath: self.keyPath])
     }
 }
 

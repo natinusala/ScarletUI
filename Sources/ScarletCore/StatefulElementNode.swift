@@ -111,14 +111,17 @@ public extension StatefulElementNode {
     }
 
     func install(element: inout Value, using context: ElementNodeContext) {
-        func installStateProperty(property: any StateProperty, metadata: PropertyInfo) throws -> any DynamicProperty {
-            // If the location is set, copy the whole state property from storage
-            // Otherwise, set its location up
-            if property.location == nil {
-                let location = property.makeLocation(node: self)
-                return property.withLocation(location)
+        func installStateProperty(metadata: PropertyInfo) throws -> any DynamicProperty {
+            // Take the existing state property, setup a new location if needed and return that
+            let existingState: any StateProperty = try metadata.get(from: self.value)
+
+            if existingState.location == nil {
+                stateLogger.trace("State location not found, making a new one")
+                let location = existingState.makeLocation(node: self)
+                return existingState.withLocation(location)
             } else {
-                return try metadata.get(from: self.value)
+                stateLogger.trace("Using existing state location")
+                return existingState
             }
         }
 
@@ -128,27 +131,31 @@ public extension StatefulElementNode {
             diff: EnvironmentDiff,
             metadata: PropertyInfo
         ) throws -> any DynamicProperty {
-            // If the state property is not installed, set the value and install it
-            if property.location == nil {
+            let existingEnvironment: any EnvironmentProperty = try metadata.get(from: self.value)
+
+            // If the environment property is not installed, set the initial value and install it
+            if existingEnvironment.location == nil {
+                stateLogger.trace("Environment location not found, making a new one")
                 let location = property.makeLocation(values: values)
-                return property.withLocation(location)
+                return existingEnvironment.withLocation(location)
             }
+
+            stateLogger.trace("Using existing environment location")
 
             // If the value changed, set the new value
             // Otherwise just copy over the previous environment we had
             if property.changed(using: diff) {
-                let location = property.makeLocation(values: values)
-                return property.withLocation(location)
-            } else {
-                return try metadata.get(from: self.value)
+                existingEnvironment.setValue(from: values)
             }
+
+            return existingEnvironment
         }
 
         do {
             try element.visitDynamicProperties { name, offset, property, metadata in
                 switch property {
-                    case let stateProperty as any StateProperty:
-                        return try installStateProperty(property: stateProperty, metadata: metadata)
+                    case is any StateProperty:
+                        return try installStateProperty(metadata: metadata)
                     case let environmentProperty as any EnvironmentProperty:
                         return try installEnvironmentProperty(
                             property: environmentProperty,

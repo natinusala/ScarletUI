@@ -16,7 +16,7 @@
 
 import ScarletCore
 
-struct Text: LeafView {
+struct Text: StatelessLeafView {
     @Attribute(\TextImpl.text)
     var text
 

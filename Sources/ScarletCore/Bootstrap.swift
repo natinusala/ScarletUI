@@ -19,8 +19,14 @@ import ConsoleKit
 
 /// Bootstraps ScarletCore and all of its systems.
 /// Must be called by the implementation library on `main`, before creating the app.
-public func bootstrap() {
-    let arguments = Arguments.parseOrExit()
+/// If running from a test environment, specify `testing` to disable arguments parsing (that would clash with XCTest's own arguments).
+public func bootstrap(testing: Bool = false) {
+    let arguments: Arguments
+    if testing {
+        arguments = .init()
+    } else {
+        arguments = Arguments.parseOrExit()
+    }
 
     bootstrapLogger(arguments: arguments)
 }

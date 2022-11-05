@@ -32,6 +32,12 @@ class StateLocation<Value>: Location {
     init(value: Value, node: any StatefulElementNode) {
         self.value = value
         self.node = node
+
+        stateLogger.trace("Initializing a new state location")
+    }
+
+    deinit {
+        stateLogger.trace("Releasing a state location")
     }
 
     func get() -> Value {
@@ -101,5 +107,3 @@ public struct State<Value>: StateProperty {
         )
     }
 }
-
-

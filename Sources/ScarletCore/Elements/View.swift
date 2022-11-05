@@ -49,6 +49,15 @@ public extension LeafView {
     }
 }
 
+/// Leaves of the views graph, that have no edges and no dynamic properties.
+/// Attributes are not dynamic properties.
+public protocol StatelessLeafView: View where Body == Never {}
+
+public extension StatelessLeafView {
+    var body: Never {
+        fatalError()
+    }
+}
 
 /// A view that only contains other views. Does not perform equality check on itself
 /// since it would be redundant with checking its content view.

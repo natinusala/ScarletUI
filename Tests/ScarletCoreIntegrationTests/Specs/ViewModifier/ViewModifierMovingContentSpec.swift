@@ -22,7 +22,8 @@ class ViewModifierTogglingContentSpec: ScarletSpec {
     static let describing = "a view modifier with state changes toggling its content"
 
     struct Modified: View {
-        @State private var count = 0
+        @State 
+        private var count = 0
 
         var body: some View {
             Text("Count: \(count)")
@@ -170,7 +171,8 @@ class ViewModifierTogglingContentSpec: ScarletSpec {
 }
 
 private struct SomeModifier: ViewModifier {
-    @State private var toggle = false
+    @State
+    private var toggle = false
 
     func body(content: Content) -> some View {
         Row {

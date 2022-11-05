@@ -104,7 +104,8 @@ class ViewModifierStateSpec: ScarletSpec {
 }
 
 private struct SomeModifier: ViewModifier {
-    @State private var count = 0
+    @State
+    private var count = 0
 
     func body(content: Content) -> some View {
         Row {

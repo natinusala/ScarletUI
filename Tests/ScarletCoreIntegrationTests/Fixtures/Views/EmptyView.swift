@@ -16,4 +16,4 @@
 
 import ScarletCore
 
-struct EmptyView: LeafView {}
+struct EmptyView: StatelessLeafView {}

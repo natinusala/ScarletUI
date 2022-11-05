@@ -16,7 +16,7 @@
 
 import ScarletCore
 
-struct Image: LeafView {
+struct Image: StatelessLeafView {
     @Attribute(\ImageImpl.source)
     var source
 

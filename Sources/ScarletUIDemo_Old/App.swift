@@ -26,7 +26,8 @@ struct ScarletUIDemo: App {
 }
 
 struct ContentView: View {
-    @State private var count = 0
+    @State 
+    private var count = 0
 
     var body: some View {
         Row {

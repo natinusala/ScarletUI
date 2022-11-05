@@ -55,6 +55,7 @@ let specs: [QuickSpec.Type] = [
     EnvironmentValueSpec.QuickSpec.self,
     EnvironmentUpdatesSpec.QuickSpec.self,
     EnvironmentSameValueSpec.QuickSpec.self,
+    EnvironmentStateSpec.QuickSpec.self,
     // ForEachSpecs.self,
 ]
 
@@ -64,8 +65,7 @@ let specs: [QuickSpec.Type] = [
 struct Main {
     static func main() {
         Backtrace.install()
-        ScarletCore.bootstrap()
-
+        ScarletCore.bootstrap(testing: true)
         QCKMain(specs + [TeardownSpec.self])
     }
 }

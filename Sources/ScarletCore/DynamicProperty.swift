@@ -35,11 +35,14 @@ extension Element {
     mutating func visitDynamicProperties(
         visitor: (String, Int, any DynamicProperty, PropertyInfo) throws -> (any DynamicProperty)?
     ) throws {
+        stateLogger.trace("-> Visiting dynamic properties of \(Self.self)")
+
         let elementInfo = try typeInfo(of: Self.self)
 
         for (offset, property) in elementInfo.properties.enumerated() {
             if let stateValue = try property.get(from: self) as? DynamicProperty {
                 if let newStateValue = try visitor(property.name, offset, stateValue, property) {
+                    stateLogger.trace("Setting \(type(of: newStateValue)) dynamic property on \(Self.self)")
                     try property.set(value: newStateValue, on: &self)
                 }
             }

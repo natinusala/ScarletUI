@@ -39,3 +39,15 @@ public extension LeafView where Input == LeafViewMakeInput<Self>, Output == Leaf
         return .init()
     }
 }
+
+public extension StatelessLeafView where Input == StatelessLeafViewMakeInput<Self>, Output == StatelessLeafViewMakeOutput<Self> {
+    /// Default implementation of `makeNode()` for leaves: make a leaf node.
+    static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) -> StatelessLeafViewElementNode<Self> {
+        return .init(making: element, in: parent, implementationPosition: implementationPosition, using: context)
+    }
+
+    /// Default implementation of `make()` for leaves: make an empty edge.
+    static func make(_ element: Self, input: StatelessLeafViewMakeInput<Self>) -> StatelessLeafViewMakeOutput<Self> {
+        return .init()
+    }
+}
