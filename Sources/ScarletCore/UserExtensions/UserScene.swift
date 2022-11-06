@@ -29,7 +29,19 @@ public extension Scene where Input == UserMakeInput<Self>, Output == UserMakeOut
 }
 
 public extension LeafScene where Input == UserMakeInput<Self>, Output == UserMakeOutput<Self, Content> {
-    static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) -> UserElementNode<Self, Content> {
+    static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) -> LeafSceneElementNode<Self, Content> {
+        return .init(making: element, in: parent, implementationPosition: implementationPosition, using: context)
+    }
+
+    static func make(_ element: Self, input: UserMakeInput<Self>) -> UserMakeOutput<Self, Content> {
+        return .init(
+            edge: element.content
+        )
+    }
+}
+
+public extension StatelessLeafScene where Input == UserMakeInput<Self>, Output == UserMakeOutput<Self, Content> {
+    static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) -> StatelessLeafSceneElementNode<Self, Content> {
         return .init(making: element, in: parent, implementationPosition: implementationPosition, using: context)
     }
 
