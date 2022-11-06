@@ -140,8 +140,14 @@ public struct AttributeList<Value>: Sequence {
 
     var values: Values = [:]
 
+    public init() {}
+
     public func makeIterator() -> Values.Values.Iterator {
-        return values.values.makeIterator()
+        return self.values.values.makeIterator()
+    }
+
+    public var isEmpty: Bool {
+        return self.values.isEmpty
     }
 }
 

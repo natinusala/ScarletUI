@@ -14,27 +14,17 @@
    limitations under the License.
 */
 
-import ScarletUI
+/// A rectangle filled by a solid color.
+public struct Rectangle: View {
+    let color: Color
 
-let colors = [Color.black, Color.red, Color.orange]
+    public init(color: Color) {
+        self.color = color
+    }
 
-@main
-struct ScarletUIDemo: App {
-    @State private var color = 0
-
-    var body: some Scene {
-        Window(title: "ScarletUI Demo") {
-            Rectangle(color: colors[color])
-                .grow()
-                .onGamepadButtonPress(.dpadUp) {
-                    color += 1
-                }
-                .onGamepadButtonPress(.dpadDown) {
-                    color -= 1
-                }
-
-            Rectangle(color: .blue)
-                .grow()
-        }
+    public var body: some View {
+        EmptyView()
+            .fill(color: color)
+            .grow(1.0)
     }
 }

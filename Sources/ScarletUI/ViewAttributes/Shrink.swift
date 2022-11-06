@@ -14,27 +14,14 @@
    limitations under the License.
 */
 
-import ScarletUI
-
-let colors = [Color.black, Color.red, Color.orange]
-
-@main
-struct ScarletUIDemo: App {
-    @State private var color = 0
-
-    var body: some Scene {
-        Window(title: "ScarletUI Demo") {
-            Rectangle(color: colors[color])
-                .grow()
-                .onGamepadButtonPress(.dpadUp) {
-                    color += 1
-                }
-                .onGamepadButtonPress(.dpadDown) {
-                    color -= 1
-                }
-
-            Rectangle(color: .blue)
-                .grow()
-        }
+public extension View {
+    /// Sets the view shrink factor, aka. the percentage of space the view is allowed to
+    /// shrink for if there is not enough space for everyone.
+    ///
+    /// Opposite of grow.
+    func shrink(_ shrink: Float) -> some View {
+        return self.attributed(
+            Attribute(\ViewImplementation.shrink, value: shrink)
+        )
     }
 }

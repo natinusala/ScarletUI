@@ -14,6 +14,8 @@
    limitations under the License.
 */
 
+public typealias GamepadButtonPressCallback = (GamepadButton) -> Bool
+
 /// A node with "button pressed" and "button released" events.
 protocol GamepadButtonEventImplementationNode {
     /// The children array, used to propagate the event.

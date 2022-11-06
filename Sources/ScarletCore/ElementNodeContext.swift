@@ -58,7 +58,9 @@ public struct ElementNodeContext {
 
     /// Creates a copy of the context popping the attributes corresponding to the given implementation type,
     /// returning them along the context copy.
-    func poppingAttributes<Implementation: ImplementationNode>(for implementationType: Implementation.Type) -> (attributes: [any AttributeSetter], context: Self) {
+    func poppingAttributes<Implementation: ImplementationNode>(
+        for implementationType: Implementation.Type
+    ) -> (attributes: [any AttributeSetter], context: Self) {
         attributesLogger.trace("Searching for attributes to apply on \(Implementation.self)")
 
         // If we request attributes for `Never` just return empty attributes and the untouched context since

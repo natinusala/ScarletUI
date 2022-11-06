@@ -114,3 +114,10 @@ func teardownLogger() {
 }
 
 private var teardownHandlers: [() -> ()] = []
+
+/// Enters an LLDB breakpoint programmatically.
+public func breakpoint() {
+  #if DEBUG
+    raise(SIGINT)
+  #endif
+}

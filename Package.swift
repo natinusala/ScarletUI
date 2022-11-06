@@ -51,8 +51,8 @@ let package = Package(
         .package(url: "https://github.com/Quick/Nimble.git", .upToNextMajor(from: "9.2.1")),
     ],
     targets: [
-        // ScarletUI: contains scenes, views, modifiers as well as the actual runtime
-        // on top of ScarletCore - also exposes ScarletCore for the DSL and custom views
+        // ScarletUI: contains scenes, views, attributes, modifiers as well as the actual rendering runtime
+        // on top of ScarletCore. Also exposes ScarletCore for the DSL and custom views.
         .target(
             name: "ScarletUI",
             dependencies: [

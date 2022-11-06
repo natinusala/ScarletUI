@@ -14,27 +14,22 @@
    limitations under the License.
 */
 
-import ScarletUI
+public extension View {
+    /// Sets the view growth factor, aka. the percentage of remaining space to give this view,
+    /// in the containing view axis.
+    ///
+    /// Opposite of shrink.
+    func grow(_ grow: Float) -> some View {
+        return self.attributed(
+            Attribute(\ViewImplementation.grow, value: grow)
+        )
+    }
 
-let colors = [Color.black, Color.red, Color.orange]
-
-@main
-struct ScarletUIDemo: App {
-    @State private var color = 0
-
-    var body: some Scene {
-        Window(title: "ScarletUI Demo") {
-            Rectangle(color: colors[color])
-                .grow()
-                .onGamepadButtonPress(.dpadUp) {
-                    color += 1
-                }
-                .onGamepadButtonPress(.dpadDown) {
-                    color -= 1
-                }
-
-            Rectangle(color: .blue)
-                .grow()
-        }
+    /// Sets the view growth factor to 1 to make is take as much space as possible,
+    /// in the containing view axis.
+    ///
+    /// Opposite of shrink.
+    func grow() -> some View {
+        return self.grow(1.0)
     }
 }

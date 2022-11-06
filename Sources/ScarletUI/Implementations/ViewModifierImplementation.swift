@@ -14,27 +14,7 @@
    limitations under the License.
 */
 
-import ScarletUI
-
-let colors = [Color.black, Color.red, Color.orange]
-
-@main
-struct ScarletUIDemo: App {
-    @State private var color = 0
-
-    var body: some Scene {
-        Window(title: "ScarletUI Demo") {
-            Rectangle(color: colors[color])
-                .grow()
-                .onGamepadButtonPress(.dpadUp) {
-                    color += 1
-                }
-                .onGamepadButtonPress(.dpadDown) {
-                    color -= 1
-                }
-
-            Rectangle(color: .blue)
-                .grow()
-        }
-    }
+public extension ViewModifier {
+    /// Default implementation for user view modifiers.
+    typealias Implementation = Never
 }

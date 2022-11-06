@@ -55,7 +55,7 @@ open class ViewImplementation: LayoutImplementationNode, GamepadButtonEventImple
 
     /// Called when a gamepad button is pressed.
     /// The event will be consumed if set.
-    var gamepadButtonPressAction: ((GamepadButton) -> Void)?
+    var gamepadButtonPressAction = AttributeList<GamepadButtonPressCallback>()
 
     /// The view grow factor, aka. the percentage of remaining space to give this view.
     var grow: Float {
@@ -270,12 +270,12 @@ open class ViewImplementation: LayoutImplementationNode, GamepadButtonEventImple
     }
 
     open func gamepadButtonDidPress(_ button: GamepadButton) -> Bool {
-        if let action = self.gamepadButtonPressAction {
-            action(button)
-            return true
+        var consumed = false
+        for action in self.gamepadButtonPressAction {
+            consumed = consumed || action(button)
         }
 
-        return false
+        return consumed
     }
 
     open func gamepadButtonDidRelease(_ button: GamepadButton) -> Bool {

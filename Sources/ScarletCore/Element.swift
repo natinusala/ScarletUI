@@ -67,10 +67,10 @@ public extension Element {
     }
 
     /// Uses a Mirror to collect all attributes of the given element.
-    static func collectAttributesUsingMirror(of element: Self) -> AttributesStash {
+    static func collectAttributesUsingMirror(of element: Self) -> [AttributeTarget: any AttributeSetter] {
         let mirror = Mirror(reflecting: element)
 
-        var attributes: AttributesStash = [:]
+        var attributes: [AttributeTarget: any AttributeSetter] = [:]
 
         for child in mirror.children {
             if let attribute = child.value as? any AttributeSetter {

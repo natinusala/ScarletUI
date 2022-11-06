@@ -14,27 +14,10 @@
    limitations under the License.
 */
 
-import ScarletUI
-
-let colors = [Color.black, Color.red, Color.orange]
-
-@main
-struct ScarletUIDemo: App {
-    @State private var color = 0
-
-    var body: some Scene {
-        Window(title: "ScarletUI Demo") {
-            Rectangle(color: colors[color])
-                .grow()
-                .onGamepadButtonPress(.dpadUp) {
-                    color += 1
-                }
-                .onGamepadButtonPress(.dpadDown) {
-                    color -= 1
-                }
-
-            Rectangle(color: .blue)
-                .grow()
-        }
-    }
-}
+/// A view with no body.
+///
+/// As this view does not have any content, it does not have
+/// any width or height in the container view or scene axis.
+/// Consequently, you have to use layout modifiers
+/// such as `grow`, `width` or `height` to give it the desired size.
+public struct EmptyView: StatelessLeafView {}

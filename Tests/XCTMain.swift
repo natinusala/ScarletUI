@@ -56,6 +56,7 @@ let specs: [QuickSpec.Type] = [
     EnvironmentUpdatesSpec.QuickSpec.self,
     EnvironmentSameValueSpec.QuickSpec.self,
     EnvironmentStateSpec.QuickSpec.self,
+    MultipleAppendAttributeSpec.QuickSpec.self,
     // ForEachSpecs.self,
 ]
 
