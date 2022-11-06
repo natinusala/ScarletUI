@@ -25,14 +25,20 @@ import Backtrace
 
 // Add every spec file here
 let specs: [QuickSpec.Type] = [
-    // ScarletCoreUnitTests
+    // MARK: ScarletCoreUnitTests
+
     TryEquatableSpec.self,
     ElementEqualsSpec.self,
 
-    // ScarletCoreIntegrationTests
+    // MARK: ScarletCoreIntegrationTests
+
+    // Common views
     UserViewSpec.QuickSpec.self,
     EmptyViewSpec.QuickSpec.self,
     TupleViewSpec.QuickSpec.self,
+    ComplexViewSpec.QuickSpec.self,
+
+    // Conditional views
     BalancedConditionalViewSpec.QuickSpec.self,
     UnbalancedConditionalViewSpec.QuickSpec.self,
     OptionalConditionalViewSpec.QuickSpec.self,
@@ -41,22 +47,31 @@ let specs: [QuickSpec.Type] = [
     TopLevelNestedConditionalViewSpec.QuickSpec.self,
     ConsecutiveConditionalViewSpec.QuickSpec.self,
     ConditionalViewContentUpdateSpec.QuickSpec.self,
+
+    // Optional views
     OptionalViewContentUpdateSpec.QuickSpec.self,
     OptionalViewToggleSpec.QuickSpec.self,
     OptionalViewToggleMultipleSpec.QuickSpec.self,
     NestedOptionalViewSpec.QuickSpec.self,
     NestedOptionalViewContentUpdateSpec.QuickSpec.self,
-    ComplexViewSpec.QuickSpec.self,
+
+    // View modifiers
     ViewModifierBodySpec.QuickSpec.self,
     MultipleViewModifierSpec.QuickSpec.self,
     NestedViewModifierSpec.QuickSpec.self,
     ViewModifierStateSpec.QuickSpec.self,
     ViewModifierTogglingContentSpec.QuickSpec.self,
+
+    // Environment
     EnvironmentValueSpec.QuickSpec.self,
     EnvironmentUpdatesSpec.QuickSpec.self,
     EnvironmentSameValueSpec.QuickSpec.self,
     EnvironmentStateSpec.QuickSpec.self,
+
+    // Attributes
     MultipleAppendAttributeSpec.QuickSpec.self,
+
+    // Dynamic edges
     // ForEachSpecs.self,
 ]
 
