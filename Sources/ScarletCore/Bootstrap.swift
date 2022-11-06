@@ -23,7 +23,7 @@ import ConsoleKit
 public func bootstrap(testing: Bool = false) {
     let arguments: Arguments
     if testing {
-        arguments = .init()
+        arguments = .init(testing: true)
     } else {
         arguments = Arguments.parseOrExit()
     }

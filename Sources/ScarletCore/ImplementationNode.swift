@@ -45,7 +45,9 @@ public extension Implementable {
 ///     - the app runs and eventually the node gets removed
 ///         - the node is removed from its parent node
 ///         - `deinit`
-public protocol ImplementationNode {
+public protocol ImplementationNode: CustomStringConvertible {
+    /// Display name for debugging purposes.
+    /// Contains the name of the underlying element struct.
     var displayName: String { get }
 
     /// Creates a new implementation node.
@@ -59,4 +61,10 @@ public protocol ImplementationNode {
 
     /// Removes the given element from this implementation node.
     func removeChild(at position: Int)
+}
+
+public extension ImplementationNode {
+    var description: String {
+        return self.displayName
+    }
 }

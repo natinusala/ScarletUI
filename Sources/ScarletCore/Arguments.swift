@@ -31,10 +31,14 @@ struct Arguments: ParsableCommand  {
     @Option(help: "Send logs to cutelog on this network address (port: \(Cutelog.defaultPort)).")
     var cutelog: String?
 
-    init() {
-        self.logLevel = .info
-        self.disableLogColors = false
-        self.cutelog = nil
+    init() {}
+
+    init(testing: Bool = false) {
+        if testing {
+            self.logLevel = .info
+            self.disableLogColors = false
+            self.cutelog = nil
+        }
     }
 
     static var _commandName: String {

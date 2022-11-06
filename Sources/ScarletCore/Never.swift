@@ -51,6 +51,10 @@ extension Never: Element {
 }
 
 extension Never: View, Scene, App {
+    public init() {
+        fatalError()
+    }
+
     public var body: Never {
         fatalError()
     }

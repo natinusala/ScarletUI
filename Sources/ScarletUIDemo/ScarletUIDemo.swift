@@ -14,10 +14,13 @@
    limitations under the License.
 */
 
-public protocol App: Element {
-    associatedtype Body: Scene
+import ScarletUI
 
-    init()
-
-    var body: Body { get }
+@main
+struct ScarletUIDemo: App {
+    var body: some Scene {
+        Window(title: "ScarletUI Demo") {
+            
+        }
+    }
 }

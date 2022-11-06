@@ -14,10 +14,5 @@
    limitations under the License.
 */
 
-public protocol App: Element {
-    associatedtype Body: Scene
-
-    init()
-
-    var body: Body { get }
-}
+let targetFrameTime = 0.016666666 // TODO: find a way for users to customize this somehow, put it in the scene?
+let defaultAxis = Axis.column

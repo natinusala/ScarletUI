@@ -301,7 +301,7 @@ extension AttributeSetter {
 
     /// Returns `true` if this attribute can be applied to the given implementation type.
     func applies(to type: any ImplementationNode.Type) -> Bool {
-        return implementationType is Implementation.Type
+        return type is Implementation.Type
     }
 }
 

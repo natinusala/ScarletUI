@@ -14,10 +14,19 @@
    limitations under the License.
 */
 
-public protocol App: Element {
-    associatedtype Body: Scene
+/// A view fill color or gradient.
+public enum Fill {
+    case none
+    case color(Color)
 
-    init()
-
-    var body: Body { get }
+    /// Creates a paint for the fill. The created paint
+    /// must fit inside the given rect.
+    func createPaint(inside rect: Rect) -> Paint? {
+        switch self {
+            case .none:
+                return nil
+            case let .color(color):
+                return Paint(color: color)
+        }
+    }
 }
