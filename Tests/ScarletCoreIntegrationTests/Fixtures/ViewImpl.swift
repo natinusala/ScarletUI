@@ -43,19 +43,44 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
         var id: String? {
             willSet {
                 logger.info("'id' attribute update: \(String(describing: id)) -> \(String(describing: newValue))")
+                self.updated.insert(\.id)
             }
         }
 
         var fill: Color? {
             willSet {
                 logger.info("'fill' attribute update: \(String(describing: fill)) -> \(String(describing: newValue))")
+                self.updated.insert(\.fill)
             }
         }
 
         var grow: Float? {
             willSet {
                 logger.info("'grow' attribute update: \(String(describing: grow)) -> \(String(describing: newValue))")
+                self.updated.insert(\.grow)
             }
+        }
+
+        /// Redefined equality check to ignore ``updated``.
+        static func == (lhs: Self, rhs: Self) -> Bool {
+            return lhs.id == rhs.id && lhs.fill == rhs.fill && lhs.grow == rhs.grow
+        }
+
+        var updated: Set<PartialKeyPath<Self>> = []
+
+        /// Resets the updated flag for all attributes.
+        mutating func reset() {
+            self.updated = []
+        }
+
+        /// Returns `true` if the given attribute has changed since the last ``reset()`` call, `false` otherwise.
+        func changed(_ attribute: PartialKeyPath<Self>) -> Bool {
+            return self.updated.contains(attribute)
+        }
+
+        /// Returns `true` if any attribute has changed since the last ``reset()`` call, `false` otherwise.
+        var anyChanged: Bool {
+            return !self.updated.isEmpty
         }
 
         var description: String {
@@ -68,16 +93,19 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
 
     public let displayName: String
 
-    var attributesChanged = false
-    var attributes = Attributes() {
-        didSet {
-            self.attributesChanged = true
-        }
+    var attributes = Attributes()
+
+    var anyAttributeChanged: Bool {
+        return self.attributes.anyChanged
+    }
+
+    func attributeChanged(_ attribute: PartialKeyPath<Attributes>) -> Bool {
+        return self.attributes.changed(attribute)
     }
 
     /// Resets testing data for the view and all of its children recursively.
     func reset() {
-        self.attributesChanged = false
+        self.attributes.reset()
 
         for child in self.children {
             child.reset()

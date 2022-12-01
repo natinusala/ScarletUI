@@ -59,7 +59,7 @@ class AttributeSpec: ScarletSpec {
                 }
 
                 then("value is set on implementation side") { result in
-                    expect(result.testedChildren[0].attributesChanged).to(beTrue())
+                    expect(result.testedChildren[0].attributeChanged(\.id)).to(beTrue())
                 }
             }
 
@@ -78,7 +78,7 @@ class AttributeSpec: ScarletSpec {
                 }
 
                 then("value is not set on implementation side") { result in
-                    expect(result.testedChildren[0].attributesChanged).to(beFalse())
+                    expect(result.testedChildren[0].attributeChanged(\.id)).to(beFalse())
                 }
             }
         }

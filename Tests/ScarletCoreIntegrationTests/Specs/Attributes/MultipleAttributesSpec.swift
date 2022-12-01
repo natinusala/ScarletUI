@@ -18,7 +18,7 @@ import Nimble
 
 @testable import ScarletCore
 
-class MultipleAttributeSpec: ScarletSpec {
+class MultipleAttributesSpec: ScarletSpec {
     static let describing = "a view with the same attribute applied twice"
 
     struct Tested: TestView {
@@ -61,7 +61,7 @@ class MultipleAttributeSpec: ScarletSpec {
                 }
 
                 then("value is not set on implementation side") { result in
-                    expect(result.testedChildren[0].attributesChanged).to(beFalse())
+                    expect(result.testedChildren[0].attributeChanged(\.id)).to(beFalse())
                 }
             }
 
@@ -80,7 +80,7 @@ class MultipleAttributeSpec: ScarletSpec {
                 }
 
                 then("value is set on implementation side") { result in
-                    expect(result.testedChildren[0].attributesChanged).to(beTrue())
+                    expect(result.testedChildren[0].attributeChanged(\.id)).to(beTrue())
                 }
             }
         }
