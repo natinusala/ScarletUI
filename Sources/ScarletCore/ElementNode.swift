@@ -142,7 +142,7 @@ extension ElementNode {
         // Then split it by implementation type to only get those we need to apply here
         // The rest will stay in the context struct given to our edges
         let (attributesToApply, edgesContext) = context
-            .completingAttributes(from: attributes)
+            .mergingAttributes(from: attributes)
             .withEnvironment(environment, changed: changedEnvironment)
             .poppingAttributes(for: Value.Implementation.self)
 

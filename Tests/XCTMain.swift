@@ -70,6 +70,7 @@ let specs: [QuickSpec.Type] = [
 
     // Attributes
     AttributeSpec.QuickSpec.self,
+    MultipleAttributeSpec.QuickSpec.self,
     // AppendAttributeMutlipleSpec.QuickSpec.self,
 
     // Dynamic edges

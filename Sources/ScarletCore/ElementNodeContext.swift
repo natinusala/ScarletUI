@@ -106,9 +106,9 @@ public struct ElementNodeContext {
     }
 
     /// Returns a copy of the context with additional attributes added.
-    /// Existing attributes will not be overwritten, hence the name "completing".
-    func completingAttributes(from stash: AttributesStash) -> Self {
-        let newStash = stash.merging(with: self.attributes)
+    /// Existing attributes will be overwritten.
+    func mergingAttributes(from stash: AttributesStash) -> Self {
+        let newStash = self.attributes.merging(with: stash)
 
         return Self(
             attributes: newStash,
