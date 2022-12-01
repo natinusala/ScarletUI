@@ -24,11 +24,9 @@ private enum Signal: Int, TestSignal {
 }
 
 // TODO: fix ça
-// TODO: faire un SingleAppendAttribute qui teste un append attribute appliqué qu'une fois
-// TODO: tester single attribute aussi tant qu'on y est, essayer de couvrir au maximum
 // TODO: le cas du multiple environment :eyes: ça ne devrait pas concerner les attributs mais tant qu'y faire... (3 cas: deux fois la même valeur, deux valeurs différentes, deux clés différentes)
 
-class MultipleAppendAttributeSpec: ScarletSpec {
+class AppendAttributeMutlipleSpec: ScarletSpec {
     static let describing = "a view"
 
     struct Tested: TestView {

@@ -49,7 +49,7 @@ public extension Optional {
 /// The value will only be written if it's different than the current value, which makes it
 /// possible to use with `didSet` observers.
 @propertyWrapper
-public struct Attribute<Implementation: ImplementationNode, Value>: AttributeSetter {
+public struct Attribute<Implementation: ImplementationNode, Value>: AttributeSetter, IsPodable {
     public typealias AttributeKeyPath = ReferenceWritableKeyPath<Implementation, Value>
 
     public var wrappedValue: Value {
@@ -67,7 +67,7 @@ public struct Attribute<Implementation: ImplementationNode, Value>: AttributeSet
     }
 
     /// The attribute value.
-    var actualValue: AttributeStorage<Value> = .unset
+    @Podable var actualValue: AttributeStorage<Value> = .unset
 
     /// The path to the attribute in the implementation class.
     let keyPath: AttributeKeyPath
@@ -161,7 +161,7 @@ public struct AttributeList<Value>: Sequence {
 /// The value will only be written if it's different than the current value, which makes it
 /// possible to use with `didSet` observers.
 @propertyWrapper
-public struct AppendAttribute<Implementation: ImplementationNode, Value>: AttributeSetter {
+public struct AppendAttribute<Implementation: ImplementationNode, Value>: AttributeSetter, IsPodable {
     public typealias AttributeKeyPath = ReferenceWritableKeyPath<Implementation, AttributeList<Value>>
 
     public var wrappedValue: Value {
@@ -179,7 +179,7 @@ public struct AppendAttribute<Implementation: ImplementationNode, Value>: Attrib
     }
 
     /// The attribute value.
-    var actualValue: AttributeStorage<Value> = .unset
+    @Podable var actualValue: AttributeStorage<Value> = .unset
 
     /// The path to the attribute in the implementation class.
     let keyPath: AttributeKeyPath

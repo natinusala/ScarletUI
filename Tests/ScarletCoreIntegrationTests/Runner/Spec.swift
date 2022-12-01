@@ -14,6 +14,8 @@
    limitations under the License.
 */
 
+import XCTest
+
 @testable import ScarletCore
 
 struct Specs<Value: Element> {
@@ -68,6 +70,16 @@ struct UpdateResult {
     /// Only works after an update (is always empty after a creation).
     func bodyCalls<T>(of: T.Type) -> Int {
         return bodyCalls[ObjectIdentifier(T.self)] ?? 0
+    }
+
+    /// Children of the `Tested` struct.
+    var testedChildren: [ViewImpl] {
+        guard let implementation else {
+            XCTFail("Expected an implementation with children but got no implementation")
+            return []
+        }
+
+        return implementation.children
     }
 }
 

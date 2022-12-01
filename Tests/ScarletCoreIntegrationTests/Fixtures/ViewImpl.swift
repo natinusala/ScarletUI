@@ -16,8 +16,11 @@
 
 import _StringProcessing
 import RegexBuilder
+import Logging
 
 @testable import ScarletCore
+
+private let logger = Logger(label: "ScarletCoreIntegrationTests.ViewImpl")
 
 private func removeOptional(_ string: String) -> String {
     let match = string.firstMatch(of: Regex {
@@ -37,9 +40,23 @@ private func removeOptional(_ string: String) -> String {
 
 public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
     struct Attributes: Equatable, CustomStringConvertible {
-        var id: String?
-        var fill: Color?
-        var grow: Float?
+        var id: String? {
+            willSet {
+                logger.info("'id' attribute update: \(String(describing: id)) -> \(String(describing: newValue))")
+            }
+        }
+
+        var fill: Color? {
+            willSet {
+                logger.info("'fill' attribute update: \(String(describing: fill)) -> \(String(describing: newValue))")
+            }
+        }
+
+        var grow: Float? {
+            willSet {
+                logger.info("'grow' attribute update: \(String(describing: grow)) -> \(String(describing: newValue))")
+            }
+        }
 
         var description: String {
             return Mirror(reflecting: self).children.map { label, value in
@@ -50,7 +67,23 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
     }
 
     public let displayName: String
-    var attributes = Attributes()
+
+    var attributesChanged = false
+    var attributes = Attributes() {
+        didSet {
+            self.attributesChanged = true
+        }
+    }
+
+    /// Resets testing data for the view and all of its children recursively.
+    func reset() {
+        self.attributesChanged = false
+
+        for child in self.children {
+            child.reset()
+        }
+    }
+
     var children: [ViewImpl] = []
 
     private var ignoreChildren = false

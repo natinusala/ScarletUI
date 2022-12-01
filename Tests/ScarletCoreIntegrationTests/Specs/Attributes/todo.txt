@@ -1,0 +1,18 @@
+Single attributes
+    - un attribut sur une vue (SingleAttributeSpec)
+        - attribute update : set ne doit pas être appelé si l'attribut n'a pas changé
+    - deux fois l'attribut sur une vue
+    - plusieurs attributs sur une vue
+    - l'attribut mis sur le mauvais type doit spread en bas
+    - deux fois le même attribut à 2 niveaux différents: doit écraser
+    - propagation
+
+Append attributes
+    - un append fait une fois
+    - deux fois l'attribut sur une vue (dans MultipleAppendAttributeSpec, cassé)
+    - plusieurs append sur une vue
+    - l'attribut mis sur le mauvais type doit spread en bas
+    - deux fois le même attribut à 2 niveaux différents: doit cumuler
+    - propagation
+
++ Tester un mix des 2
