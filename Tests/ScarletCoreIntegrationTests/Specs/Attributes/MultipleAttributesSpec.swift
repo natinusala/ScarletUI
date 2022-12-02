@@ -18,7 +18,8 @@ import Nimble
 
 @testable import ScarletCore
 
-class MultipleAttributesSpec: ScarletSpec {
+/// Skipped: having the same attribute twice on a view is currently UB
+class MultipleAttributesSpec: ScarletSpec, Skipped {
     static let describing = "a view with the same attribute applied twice"
 
     struct Tested: TestView {

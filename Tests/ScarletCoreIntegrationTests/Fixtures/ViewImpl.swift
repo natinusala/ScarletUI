@@ -104,7 +104,7 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
     }
 
     /// Resets testing data for the view and all of its children recursively.
-    func reset() {
+    open func reset() {
         self.attributes.reset()
 
         for child in self.children {
@@ -185,6 +185,32 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
 
     open var customAttributesDebugDescription: String {
         return ""
+    }
+
+    func `as`<NewType: ViewImpl>(_ type: NewType.Type) -> NewType {
+        return self as! NewType
+    }
+
+    func findFirst<NewType: ViewImpl>(_ type: NewType.Type) -> NewType {
+        func inner(_ impl: ViewImpl) -> NewType? {
+            if let instance = impl as? NewType {
+                return instance
+            }
+
+            for child in impl.children {
+                if let instance = inner(child) {
+                    return instance
+                }
+            }
+
+            return nil
+        }
+
+        guard let found = inner(self) else {
+            fatalError("Did not find any view with type '\(NewType.self)'")
+        }
+
+        return found
     }
 
     public var description: String {

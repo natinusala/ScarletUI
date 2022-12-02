@@ -30,6 +30,13 @@ struct Text: StatelessLeafView {
 
 class TextImpl: ViewImpl {
     var text: String = ""
+    var textColor = Color.black {
+        didSet {
+            textColorChanged = true
+        }
+    }
+
+    var textColorChanged = false
 
     /// Initializer used by ScarletCore.
     public required init(displayName: String) {
@@ -37,17 +44,24 @@ class TextImpl: ViewImpl {
     }
 
     /// Initializer used for test assertions.
-    init(text: String) {
+    init(text: String, textColor: Color = .black) {
         self.text = text
+        self.textColor = textColor
         super.init(displayName: "Text")
+    }
+
+    override func reset() {
+        super.reset()
+
+        self.textColorChanged = false
     }
 
     override open func equals(to other: ViewImpl) -> Bool {
         guard let other = other as? TextImpl else { return false }
-        return self.text == other.text
+        return self.text == other.text && self.textColor == other.textColor
     }
 
     override var customAttributesDebugDescription: String {
-        return "text=\"\(self.text)\""
+        return "text=\"\(self.text)\" textColor=\"\(self.textColor)\""
     }
 }

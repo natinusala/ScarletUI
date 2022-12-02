@@ -81,6 +81,15 @@ struct UpdateResult {
 
         return implementation.children
     }
+
+    /// Traverses the view tree and returns the first view with the given type.
+    func findFirst<NewType: ViewImpl>(_ type: NewType.Type) -> NewType {
+        guard let implementation else {
+            fatalError("Expected an implementation with children but got no implementation")
+        }
+
+        return implementation.findFirst(type)
+    }
 }
 
 extension TestView {

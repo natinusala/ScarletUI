@@ -23,10 +23,19 @@ protocol ScarletSpec {
     associatedtype Tested: TestView
 
     static var describing: String { get }
+
+    static var skipped: Bool { get }
 }
 
 extension ScarletSpec {
     typealias QuickSpec = ScarletSpecRunner<Self>
+    static var skipped: Bool { false }
+}
+
+protocol Skipped: ScarletSpec {}
+
+extension Skipped {
+    static var skipped: Bool { true }
 }
 
 class ScarletSpecRunner<Spec: ScarletSpec>: QuickSpec {
@@ -37,6 +46,11 @@ class ScarletSpecRunner<Spec: ScarletSpec>: QuickSpec {
     var bodyAccessor: BodyAccessorMock!
 
     override func spec() {
+        // Skip the whole test case if needed
+        if Spec.skipped {
+            return
+        }
+
         // We can build specs from `Spec.testing.spec()` directly as
         // the spec itself doesn't alter the view, running the cases inside
         // the `it` closure will
