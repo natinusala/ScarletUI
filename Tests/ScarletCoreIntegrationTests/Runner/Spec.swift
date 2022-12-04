@@ -90,6 +90,16 @@ struct UpdateResult {
 
         return implementation.findFirst(type)
     }
+
+    /// Traverses the view tree recursively and returns all views of the given type.
+    /// Will fail the test if it did not find exactly ``expectedCount`` views.
+    func findAll<NewType: ViewImpl>(_ type: NewType.Type, expectedCount: Int) -> [NewType] {
+        guard let implementation else {
+            fatalError("Expected an implementation with children but got no implementation")
+        }
+
+        return implementation.findAll(type, expectedCount: expectedCount)
+    }
 }
 
 extension TestView {

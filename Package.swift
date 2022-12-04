@@ -48,7 +48,7 @@ let package = Package(
 
         // Testing
         .package(url: "https://github.com/Quick/Quick.git", .upToNextMajor(from: "4.0.0")),
-        .package(url: "https://github.com/Quick/Nimble.git", .upToNextMajor(from: "9.2.1")),
+        .package(url: "https://github.com/Quick/Nimble.git", .upToNextMajor(from: "11.2.1")),
     ],
     targets: [
         // ScarletUI: contains scenes, views, attributes, modifiers as well as the actual rendering runtime

@@ -73,6 +73,7 @@ let specs: [QuickSpec.Type] = [
     MultipleAttributesSpec.QuickSpec.self,
     DifferentAttributesSpec.QuickSpec.self,
     AttributeOverrideSpec.QuickSpec.self,
+    AttributePropagationSpec.QuickSpec.self,
     // AppendAttributeMutlipleSpec.QuickSpec.self,
 
     // Dynamic edges

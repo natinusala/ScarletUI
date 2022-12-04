@@ -17,6 +17,7 @@
 import _StringProcessing
 import RegexBuilder
 import Logging
+import XCTest
 
 @testable import ScarletCore
 
@@ -208,6 +209,27 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
 
         guard let found = inner(self) else {
             fatalError("Did not find any view with type '\(NewType.self)'")
+        }
+
+        return found
+    }
+
+    func findAll<NewType: ViewImpl>(_ type: NewType.Type, expectedCount: Int) -> [NewType] {
+        func inner(_ impl: ViewImpl) -> [NewType] {
+            if let instance = impl as? NewType {
+                return [instance]
+            }
+
+            return impl.children.map {
+                inner($0)
+            }.reduce([], +)
+        }
+
+        let found = inner(self)
+
+        guard found.count == expectedCount else {
+            XCTFail("Expected to find \(expectedCount) \(NewType.self), found \(found.count)")
+            return []
         }
 
         return found

@@ -62,11 +62,11 @@ class ViewModifierTogglingContentSpec: ScarletSpec {
                 }
 
                 then("modifier body is called") { result in
-                    expect(result.bodyCalled(of: SomeModifier.self)).to(be(true))
+                    expect(result.bodyCalled(of: SomeModifier.self)).to(beTrue())
                 }
 
                 then("modified view body is called") { result in
-                    expect(result.bodyCalled(of: Modified.self)).to(be(true))
+                    expect(result.bodyCalled(of: Modified.self)).to(beTrue())
                 }
 
                 then("implementation is updated") { result in
@@ -93,11 +93,11 @@ class ViewModifierTogglingContentSpec: ScarletSpec {
                 }
 
                 then("modifier body is called") { result in
-                    expect(result.bodyCalled(of: SomeModifier.self)).to(be(true))
+                    expect(result.bodyCalled(of: SomeModifier.self)).to(beTrue())
                 }
 
                 then("modified view body is called") { result in
-                    expect(result.bodyCalled(of: Modified.self)).to(be(true))
+                    expect(result.bodyCalled(of: Modified.self)).to(beTrue())
                 }
 
                 then("implementation is updated") { result in
@@ -118,11 +118,11 @@ class ViewModifierTogglingContentSpec: ScarletSpec {
                 }
 
                 then("modifier body is called") { result in
-                    expect(result.bodyCalled(of: SomeModifier.self)).to(be(true))
+                    expect(result.bodyCalled(of: SomeModifier.self)).to(beTrue())
                 }
 
                 then("modified view body is called") { result in
-                    expect(result.bodyCalled(of: Modified.self)).to(be(true))
+                    expect(result.bodyCalled(of: Modified.self)).to(beTrue())
                 }
 
                 then("implementation is updated") { result in
@@ -151,11 +151,11 @@ class ViewModifierTogglingContentSpec: ScarletSpec {
                 }
 
                 then("modifier body is called") { result in
-                    expect(result.bodyCalled(of: SomeModifier.self)).to(be(true))
+                    expect(result.bodyCalled(of: SomeModifier.self)).to(beTrue())
                 }
 
                 then("modified view body is called") { result in
-                    expect(result.bodyCalled(of: Modified.self)).to(be(true))
+                    expect(result.bodyCalled(of: Modified.self)).to(beTrue())
                 }
 
                 then("implementation is updated") { result in
