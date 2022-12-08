@@ -47,7 +47,7 @@ public protocol Element: CustomDebugStringConvertible, IsPodable {
     static func make(_ element: Self, input: Input) -> Output
 
     /// Returns all attributes of the element.
-    static func collectAttributes(of element: Self) -> AttributesStash
+    static func collectAttributes(of element: Self, source: AnyHashable) -> AttributesStash
 }
 
 public extension Element {
@@ -62,8 +62,11 @@ public extension Element {
 
     /// Default way of collecting attributes: use a Mirror on the element directly
     /// to gather `@Attribute` property wrappers.
-    static func collectAttributes(of element: Self) -> AttributesStash {
-        return Self.collectAttributesUsingMirror(of: element)
+    static func collectAttributes(of element: Self, source: AnyHashable) -> AttributesStash {
+        return AttributesStash(
+            from: Self.collectAttributesUsingMirror(of: element),
+            source: source
+        )
     }
 
     /// Uses a Mirror to collect all attributes of the given element.

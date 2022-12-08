@@ -119,7 +119,10 @@ extension ElementNode {
         // Update value, collect attributes and environment
         if let element {
             self.storeValue(element)
-            attributes = Value.collectAttributes(of: element)
+
+            let source = ObjectIdentifier(self)
+            attributesLogger.trace("Collecting attributes of \(Self.Value.self.displayName) using source \(source)")
+            attributes = Value.collectAttributes(of: element, source: source)
 
             (environment, changedEnvironment) = self.compareEnvironment(of: element, using: context)
         } else {
@@ -141,25 +144,38 @@ extension ElementNode {
         // Take the context from the parent, add our attributes
         // Then split it by implementation type to only get those we need to apply here
         // The rest will stay in the context struct given to our edges
-        let (attributesToApply, edgesContext) = context
+        let (discardingAttributes, appendingAttributes, edgesContext) = context
             .completingAttributes(from: attributes)
             .withEnvironment(environment, changed: changedEnvironment)
             .poppingAttributes(for: Value.Implementation.self)
 
         if !attributes.isEmpty {
+            let attributesToApply = discardingAttributes + appendingAttributes.map { $0.1 }
+
             attributesLogger.trace("     Attributes to apply on \(Value.displayName): \(attributesToApply.count)")
+            attributesToApply.forEach { attribute in
+                attributesLogger.trace("         - \(attribute.debugDescription)")
+            }
         }
         attributesLogger.trace("Remaining attributes for \(Value.displayName)'s edges: \(edgesContext.attributes.count)")
 
         // Apply attributes
-        for attribute in attributesToApply {
+        if !discardingAttributes.isEmpty || !appendingAttributes.isEmpty {
             guard let implementation = self.implementation else {
-                fatalError("Invalid `ElementNode` state: expected an implementation node of type \(Value.Implementation.self) to be set")
+                fatalError("Invalid 'ElementNode' state: expected an implementation node of type \(Value.Implementation.self) to be set to apply attributes on")
             }
 
-            attributesLogger.trace("Applying attribute on \(Value.displayName)")
-            attribute.anySet(on: implementation, identifiedBy: ObjectIdentifier(self))
+            for attribute in discardingAttributes {
+                attributesLogger.trace("Applying attribute \(attribute) on \(Value.displayName)")
+                attribute.anySet(on: implementation, identifiedBy: ObjectIdentifier(self))
+            }
+
+            for (key, attribute) in appendingAttributes {
+                attributesLogger.trace("Applying attribute \(attribute) on \(Value.displayName)")
+                attribute.anySet(on: implementation, identifiedBy: key)
+            }
         }
+
 
         // Make the element and make edges
         let output = element.map { self.make(element: $0) }

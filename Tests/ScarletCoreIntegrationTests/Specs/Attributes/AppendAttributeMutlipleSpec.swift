@@ -23,9 +23,6 @@ private enum Signal: Int, TestSignal {
     case decrement
 }
 
-// TODO: fix ça
-// TODO: le cas du multiple environment :eyes: ça ne devrait pas concerner les attributs mais tant qu'y faire... (3 cas: deux fois la même valeur, deux valeurs différentes, deux clés différentes)
-
 class AppendAttributeMutlipleSpec: ScarletSpec {
     static let describing = "a view"
 

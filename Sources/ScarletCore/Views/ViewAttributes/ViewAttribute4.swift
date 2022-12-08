@@ -35,13 +35,16 @@ public struct ViewAttribute4<Content: View, A0: AttributeSetter, A1: AttributeSe
         fatalError()
     }
 
-    public static func collectAttributes(of element: Self) -> AttributesStash {
-        return [
-            element.a0.target: element.a0,
-            element.a1.target: element.a1,
-            element.a2.target: element.a2,
-            element.a3.target: element.a3,
-        ]
+    public static func collectAttributes(of element: Self, source: AnyHashable) -> AttributesStash {
+        return AttributesStash(
+            from: [
+                element.a0.target: element.a0,
+                element.a1.target: element.a1,
+                element.a2.target: element.a2,
+                element.a3.target: element.a3,
+            ],
+            source: source
+        )
     }
 
     public static func makeNode(

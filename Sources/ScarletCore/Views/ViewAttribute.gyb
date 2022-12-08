@@ -42,12 +42,15 @@ public struct ViewAttribute${IDX}<Content: View, ${A_TYPES}>: View {
         fatalError()
     }
 
-    public static func collectAttributes(of element: Self) -> AttributesStash {
-        return [
+    public static func collectAttributes(of element: Self, source: AnyHashable) -> AttributesStash {
+        return AttributesStash(
+            from: [
 % for i in range(0, IDX):
-            element.a${i}.target: element.a${i},
+                element.a${i}.target: element.a${i},
 % end
-        ]
+            ],
+            source: source
+        )
     }
 
     public static func makeNode(

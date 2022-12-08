@@ -77,6 +77,8 @@ public struct Attribute<Implementation: ImplementationNode, Value>: AttributeSet
 
     public let target: AttributeTarget
 
+    public let strategy = AttributeStrategy.discard
+
     /// Creates a new attribute for the given `keyPath`.
     ///
     /// If `propagate` is `true`, the attribute will be propagated to all nodes in the graph
@@ -189,6 +191,8 @@ public struct AppendAttribute<Implementation: ImplementationNode, Value>: Attrib
 
     public let target: AttributeTarget
 
+    public let strategy = AttributeStrategy.append
+
     /// Creates a new attribute for the given `keyPath`.
     ///
     /// If `propagate` is `true`, the attribute will be propagated to all nodes in the graph
@@ -237,13 +241,13 @@ public struct AppendAttribute<Implementation: ImplementationNode, Value>: Attrib
         // Otherwise just set it
         if let existingValue = list.values[key] {
             if !elementEquals(lhs: existingValue, rhs: value) {
-                attributesLogger.trace("Appending attribute identified by \(key) on \(implementation.displayName)")
+                attributesLogger.trace("Appending attribute identified by \(key) on \(implementation.displayName): value is different")
                 implementation[keyPath: self.keyPath].values[key] = value
             } else {
                 attributesLogger.trace("Skipping appending attribute identified by \(key) on \(implementation.displayName): value hasn't changed")
             }
         } else {
-            attributesLogger.trace("Appending attribute identified by \(key) on \(implementation.displayName)")
+            attributesLogger.trace("Appending attribute identified by \(key) on \(implementation.displayName): attribute is set for the first time")
             implementation[keyPath: self.keyPath].values[key] = value
         }
     }
@@ -266,7 +270,7 @@ public struct AppendAttribute<Implementation: ImplementationNode, Value>: Attrib
 ///
 /// Using a specialized element like `ViewAttribute` without property wrappers allows collecting
 /// attributes in a type-safe and faster way.
-public protocol AttributeSetter<Implementation> {
+public protocol AttributeSetter<Implementation>: CustomDebugStringConvertible {
     /// The implementation node type this attribute is bound to.
     associatedtype Implementation: ImplementationNode
 
@@ -290,6 +294,9 @@ public protocol AttributeSetter<Implementation> {
     /// The identifier represents the unique element holding the attribute,
     /// using structural identity.
     func set(on implementation: Implementation, identifiedBy: AnyHashable)
+
+    /// What strategy to use when applying this attribute?
+    var strategy: AttributeStrategy { get }
 }
 
 extension AttributeSetter {
@@ -309,25 +316,183 @@ extension AttributeSetter {
     func applies(to type: any ImplementationNode.Type) -> Bool {
         return type is Implementation.Type
     }
+
+    public var debugDescription: String {
+        return "\(self.strategy): \(self.target)"
+    }
 }
 
-/// Represents thet target key path of an attribute.
+/// What strategy to use when applying an attribute?
+public enum AttributeStrategy {
+    /// Discard the attribute if it's already been set by any parent element.
+    case discard
+
+    /// Append the attribute to the target ``AttributeList``, never discarding
+    /// any value.
+    case append
+}
+
+/// Represents the target key path of an attribute inside the
+/// target element implementation class.
 public typealias AttributeTarget = AnyKeyPath
 
 /// An attributes "stash" holds attributes while the graph is traversed.
-public typealias AttributesStash = [AttributeTarget: any AttributeSetter]
+public struct AttributesStash {
+    /// Key for one entry of the "appending" attributes dictionary.
+    struct AppendKey: Hashable {
+        /// Source element applying the attribute (element node object identifier hash).
+        let source: AnyHashable
 
-extension AttributesStash {
+        /// Attribute target.
+        let target: AttributeTarget
+    }
+
+    /// "Discarding" attributes are attribute with one and only one value per element.
+    /// Once the value is set anywhere in the tree, it will never be overridden by children
+    /// elements, making the top-most value the applied one.
+    var discardingAttributes: [AttributeTarget: any AttributeSetter]
+
+    /// "Appending" attributes are applied to a list of values on the target (``AttributeList``).
+    /// Each append attribute value is bound to the source element node (usually the ``ViewAttribute`` setter)
+    /// to be able to replace the correct value in the target list when it changes.
+    var appendingAttributes: [AppendKey: any AttributeSetter]
+
+    /// Creates a new attributes stash from the given list of attributes.
+    init(from attributes: [AttributeTarget: any AttributeSetter], source: AnyHashable) {
+        self.discardingAttributes = [:]
+        self.appendingAttributes = [:]
+
+        for (key, attribute) in attributes {
+            switch attribute.strategy {
+                case .discard:
+                    self.discardingAttributes[key] = attribute
+                case .append:
+                    let key = AppendKey(source: source, target: key)
+                    self.appendingAttributes[key] = attribute
+            }
+        }
+    }
+
+    /// Creates an empty attribute stash.
+    init() {
+        self.discardingAttributes = [:]
+        self.appendingAttributes = [:]
+    }
+
     /// Returns a new attributes stash containing all attributes of this stash
     /// plus all those of the given stash.
     /// Attributes from the given stash will be used if there are duplicates.
     func merging(with other: AttributesStash) -> AttributesStash {
         var newStash = self
 
-        for (key, value) in other {
-            newStash[key] = value
+        // Merge discarding attributes
+        for (key, value) in other.discardingAttributes {
+            newStash.discardingAttributes[key] = value
         }
 
+        // Merge append attributes
+        attributesLogger.trace("Appending attributes count before merging: \(newStash.appendingAttributes.count)")
+        for (key, value) in other.appendingAttributes {
+            newStash.appendingAttributes[key] = value
+        }
+        attributesLogger.trace("Appending attributes count after merging: \(newStash.appendingAttributes.count)")
+
+        attributesLogger.trace("Total attributes count after merging: \(newStash.count)")
+
         return newStash
+    }
+
+    var isEmpty: Bool {
+        return self.discardingAttributes.isEmpty && self.appendingAttributes.isEmpty
+    }
+
+    var count: Int {
+        return self.discardingAttributes.count + self.appendingAttributes.count
+    }
+}
+
+extension ElementNodeContext {
+    /// Creates a copy of the context popping the attributes corresponding to the given implementation type,
+    /// returning them along the context copy.
+    func poppingAttributes<Implementation: ImplementationNode>(
+        for implementationType: Implementation.Type
+    ) -> (discarding: [any AttributeSetter], appending: [(AnyHashable, any AttributeSetter)], context: Self) {
+        attributesLogger.trace("Searching for attributes to apply on \(Implementation.self)")
+
+        // If we request attributes for `Never` just return empty attributes and the untouched context since
+        // we can never have attributes for a `Never` implementation type
+        if Implementation.self == Never.self {
+            return (
+                discarding: [],
+                appending: [],
+                context: self
+            )
+        }
+
+        // Create a new attributes stash containing only the corresponding attributes
+        // then return that, as well as a new context containing all remaining attributes
+        var discardingAttributes: [any AttributeSetter] = []
+        var appendingAttributes: [(AnyHashable, any AttributeSetter)] = []
+        var remainingAttributes = AttributesStash()
+
+        // Discarding attributes
+        for (target, attribute) in self.attributes.discardingAttributes {
+            if attribute.applies(to: implementationType) {
+                attributesLogger.trace("Selected discarding attribute for applying")
+                discardingAttributes.append(attribute)
+
+                // If the attribute needs to be propagated, put it back in the remaining attributes
+                if attribute.propagate {
+                    attributesLogger.trace("     Discarding attribute is propagated, putting it back for the edges")
+                    remainingAttributes.discardingAttributes[target] = attribute
+                }
+            } else {
+                attributesLogger.trace("Selected discarding attribute for the edges (\(attribute.implementationType) isn't applyable on \(Implementation.self))")
+                remainingAttributes.discardingAttributes[target] = attribute
+            }
+        }
+
+        // Appending attributes
+        for (key, attribute) in self.attributes.appendingAttributes {
+            if attribute.applies(to: implementationType) {
+                attributesLogger.trace("Selected appending attribute for applying")
+                appendingAttributes.append((key.source, attribute))
+
+                // If the attribute needs to be propagated, put it back in the remaining attributes
+                if attribute.propagate {
+                    attributesLogger.trace("     Appending attribute is propagated, putting it back for the edges")
+                    remainingAttributes.appendingAttributes[key] = attribute
+                }
+            } else {
+                attributesLogger.trace("Selected appending attribute for the edges (\(attribute.implementationType) isn't applyable on \(Implementation.self))")
+                remainingAttributes.appendingAttributes[key] = attribute
+            }
+        }
+
+        return (
+            discarding: discardingAttributes,
+            appending: appendingAttributes,
+            context: Self(
+                attributes: remainingAttributes,
+                vmcStack: self.vmcStack,
+                hasStateChanged: self.hasStateChanged,
+                environment: self.environment,
+                changedEnvironment: self.changedEnvironment
+            )
+        )
+    }
+
+    /// Returns a copy of the context with additional attributes added.
+    /// Existing attributes will not be overwritten, hence the name "completing".
+    func completingAttributes(from stash: AttributesStash) -> Self {
+        let newStash = stash.merging(with: self.attributes)
+
+        return Self(
+            attributes: newStash,
+            vmcStack: self.vmcStack,
+            hasStateChanged: self.hasStateChanged,
+            environment: self.environment,
+            changedEnvironment: self.changedEnvironment
+        )
     }
 }

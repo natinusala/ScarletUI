@@ -56,69 +56,6 @@ public struct ElementNodeContext {
         )
     }
 
-    /// Creates a copy of the context popping the attributes corresponding to the given implementation type,
-    /// returning them along the context copy.
-    func poppingAttributes<Implementation: ImplementationNode>(
-        for implementationType: Implementation.Type
-    ) -> (attributes: [any AttributeSetter], context: Self) {
-        attributesLogger.trace("Searching for attributes to apply on \(Implementation.self)")
-
-        // If we request attributes for `Never` just return empty attributes and the untouched context since
-        // we can never have attributes for a `Never` implementation type
-        if Implementation.self == Never.self {
-            return (
-                attributes: [],
-                context: self
-            )
-        }
-
-        // Create a new attributes stash containing only the corresponding attributes
-        // then return that, as well as a new context containing all remaining attributes
-        var newStash: [any AttributeSetter] = []
-        var remainingAttributes = AttributesStash()
-
-        for (target, attribute) in self.attributes {
-            if attribute.applies(to: implementationType) {
-                attributesLogger.trace("Selected attribute for applying")
-                newStash.append(attribute)
-
-                // If the attribute needs to be propagated, put it back in the remaining attributes
-                if attribute.propagate {
-                    attributesLogger.trace("     Attribute is propagated, putting it back for the edges")
-                    remainingAttributes[target] = attribute
-                }
-            } else {
-                attributesLogger.trace("Selected attribute for the edges (\(attribute.implementationType) isn't applyable on \(Implementation.self))")
-                remainingAttributes[target] = attribute
-            }
-        }
-
-        return (
-            attributes: newStash,
-            context: Self(
-                attributes: remainingAttributes,
-                vmcStack: self.vmcStack,
-                hasStateChanged: self.hasStateChanged,
-                environment: self.environment,
-                changedEnvironment: self.changedEnvironment
-            )
-        )
-    }
-
-    /// Returns a copy of the context with additional attributes added.
-    /// Existing attributes will not be overwritten, hence the name "completing".
-    func completingAttributes(from stash: AttributesStash) -> Self {
-        let newStash = stash.merging(with: self.attributes)
-
-        return Self(
-            attributes: newStash,
-            vmcStack: self.vmcStack,
-            hasStateChanged: self.hasStateChanged,
-            environment: self.environment,
-            changedEnvironment: self.changedEnvironment
-        )
-    }
-
     /// Returns a copy of the context with the state change flag cleared.
     func clearingStateChange() -> Self {
         return Self(
