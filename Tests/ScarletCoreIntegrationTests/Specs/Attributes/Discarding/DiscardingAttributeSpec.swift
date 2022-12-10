@@ -18,8 +18,8 @@ import Nimble
 
 @testable import ScarletCore
 
-class AttributeSpec: ScarletSpec {
-    static let describing = "a view with a single attribute"
+class DiscardingAttributeSpec: ScarletSpec {
+    static let describing = "a view with a single discarding attribute"
 
     struct Tested: TestView {
         let rectangleId: String

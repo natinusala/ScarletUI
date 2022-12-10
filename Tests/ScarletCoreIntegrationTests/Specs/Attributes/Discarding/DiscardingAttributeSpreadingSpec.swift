@@ -18,8 +18,8 @@ import Nimble
 
 @testable import ScarletCore
 
-class AttributeSpreadingSpec: ScarletSpec {
-    static let describing = "a view with an attribute spread to multiple views"
+class DiscardingAttributeSpreadingSpec: ScarletSpec {
+    static let describing = "a view with a discarding attribute spread to multiple views"
 
     struct Texts: View {
         var body: some View {

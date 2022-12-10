@@ -18,8 +18,8 @@ import Nimble
 
 @testable import ScarletCore
 
-class AttributeOverrideSpec: ScarletSpec {
-    static let describing = "a view with an attribute overridden by the parent"
+class DiscardingAttributeOverrideSpec: ScarletSpec {
+    static let describing = "a view with a discarding attribute overridden by the parent"
 
     struct ColoredContent: View {
         let color: Color

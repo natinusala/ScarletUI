@@ -23,7 +23,7 @@ private enum Signal: Int, TestSignal {
     case decrement
 }
 
-class AppendAttributeMutlipleSpec: ScarletSpec {
+class AppendingAttributeMutlipleSpec: ScarletSpec {
     static let describing = "a view"
 
     struct Tested: TestView {
