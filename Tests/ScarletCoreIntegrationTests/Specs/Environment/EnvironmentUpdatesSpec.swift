@@ -78,8 +78,6 @@ class EnvironmentUpdatesSpec: ScarletSpec {
         let first: Int
         let second: String
 
-        let changeToken: Int
-
         var body: some View {
             Row {
                 UsesNone()
@@ -94,7 +92,7 @@ class EnvironmentUpdatesSpec: ScarletSpec {
         static func spec() -> Spec {
             when("the tree is created") {
                 given {
-                    Tested(first: 10, second: "world", changeToken: 1)
+                    Tested(first: 10, second: "world")
                 }
 
                 then("implementation is created") { result in
@@ -132,8 +130,8 @@ class EnvironmentUpdatesSpec: ScarletSpec {
 
             when("no environment values change") {
                 given {
-                    Tested(first: 10, second: "world", changeToken: 1)
-                    Tested(first: 10, second: "world", changeToken: 2)
+                    Tested(first: 10, second: "world")
+                    Tested(first: 10, second: "world")
                 }
 
                 then("tested body is called") { result in
@@ -184,8 +182,8 @@ class EnvironmentUpdatesSpec: ScarletSpec {
 
             when("first environment values changes") {
                 given {
-                    Tested(first: 10, second: "world", changeToken: 1)
-                    Tested(first: 20, second: "world", changeToken: 1)
+                    Tested(first: 10, second: "world")
+                    Tested(first: 20, second: "world")
                 }
 
                 then("tested body is called") { result in
@@ -236,8 +234,8 @@ class EnvironmentUpdatesSpec: ScarletSpec {
 
             when("second environment values changes") {
                 given {
-                    Tested(first: 10, second: "world", changeToken: 1)
-                    Tested(first: 10, second: "foobarbaz", changeToken: 1)
+                    Tested(first: 10, second: "world")
+                    Tested(first: 10, second: "foobarbaz")
                 }
 
                 then("tested body is called") { result in
@@ -288,8 +286,8 @@ class EnvironmentUpdatesSpec: ScarletSpec {
 
             when("both environment values change") {
                 given {
-                    Tested(first: 10, second: "world", changeToken: 1)
-                    Tested(first: 20, second: "foobarbaz", changeToken: 1)
+                    Tested(first: 10, second: "world")
+                    Tested(first: 20, second: "foobarbaz")
                 }
 
                 then("tested body is called") { result in

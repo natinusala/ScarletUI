@@ -33,8 +33,6 @@ class ViewModifierBodySpec: ScarletSpec {
         let text: String
         let color: String
 
-        let changeToken: Int
-
         var body: some View {
             Modified(color: color)
                 .someModifier(text: text)
@@ -43,7 +41,7 @@ class ViewModifierBodySpec: ScarletSpec {
         static func spec() -> Specs {
             when("the view is created") {
                 given {
-                    Tested(text: "some text", color: "orange", changeToken: 0)
+                    Tested(text: "some text", color: "orange")
                 }
 
                 then("implementation is created") { result in
@@ -63,8 +61,8 @@ class ViewModifierBodySpec: ScarletSpec {
 
             when("the modifier changes") {
                 given {
-                    Tested(text: "some text", color: "orange", changeToken: 0)
-                    Tested(text: "some other text", color: "orange", changeToken: 0)
+                    Tested(text: "some text", color: "orange")
+                    Tested(text: "some other text", color: "orange")
                 }
 
                 then("implementation is updated") { result in
@@ -96,8 +94,8 @@ class ViewModifierBodySpec: ScarletSpec {
 
             when("content changes") {
                 given {
-                    Tested(text: "some text", color: "orange", changeToken: 0)
-                    Tested(text: "some text", color: "blue", changeToken: 0)
+                    Tested(text: "some text", color: "orange")
+                    Tested(text: "some text", color: "blue")
                 }
 
                 then("implementation is updated") { result in
@@ -129,8 +127,8 @@ class ViewModifierBodySpec: ScarletSpec {
 
             when("both content and modifier change") {
                 given {
-                    Tested(text: "some text", color: "orange", changeToken: 0)
-                    Tested(text: "some other text", color: "blue", changeToken: 0)
+                    Tested(text: "some text", color: "orange")
+                    Tested(text: "some other text", color: "blue")
                 }
 
                 then("implementation is unchanged") { result in
@@ -162,8 +160,8 @@ class ViewModifierBodySpec: ScarletSpec {
 
             when("nothing changes") {
                 given {
-                    Tested(text: "some text", color: "orange", changeToken: 0)
-                    Tested(text: "some text", color: "orange", changeToken: 1)
+                    Tested(text: "some text", color: "orange")
+                    Tested(text: "some text", color: "orange")
                 }
 
                 then("implementation is unchanged") { result in

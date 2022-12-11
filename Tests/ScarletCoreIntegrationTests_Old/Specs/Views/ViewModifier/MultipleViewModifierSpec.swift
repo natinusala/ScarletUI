@@ -34,8 +34,6 @@ class MultipleViewModifierSpec: ScarletSpec {
         let someModifierText: String
         let anotherModifierIcon: String
 
-        let changeToken: Int
-
         var body: some View {
             Modified(color: modifiedColor)
                 .someModifier(text: someModifierText)
@@ -45,7 +43,7 @@ class MultipleViewModifierSpec: ScarletSpec {
         static func spec() -> Specs {
             when("the view is created") {
                 given {
-                    Tested(modifiedColor: "yellow", someModifierText: "some modifier", anotherModifierIcon: "info", changeToken: 0)
+                    Tested(modifiedColor: "yellow", someModifierText: "some modifier", anotherModifierIcon: "info")
                 }
 
                 then("implementation is created") { result in
@@ -71,8 +69,8 @@ class MultipleViewModifierSpec: ScarletSpec {
 
             when("nothing changes") {
                 given {
-                    Tested(modifiedColor: "yellow", someModifierText: "some modifier", anotherModifierIcon: "info", changeToken: 0)
-                    Tested(modifiedColor: "yellow", someModifierText: "some modifier", anotherModifierIcon: "info", changeToken: 1)
+                    Tested(modifiedColor: "yellow", someModifierText: "some modifier", anotherModifierIcon: "info")
+                    Tested(modifiedColor: "yellow", someModifierText: "some modifier", anotherModifierIcon: "info")
                 }
 
                 then("implementation is untouched") { result in
@@ -114,8 +112,8 @@ class MultipleViewModifierSpec: ScarletSpec {
 
             when("modified view is modified") {
                 given {
-                    Tested(modifiedColor: "yellow", someModifierText: "some modifier", anotherModifierIcon: "info", changeToken: 0)
-                    Tested(modifiedColor: "orange", someModifierText: "some modifier", anotherModifierIcon: "info", changeToken: 0)
+                    Tested(modifiedColor: "yellow", someModifierText: "some modifier", anotherModifierIcon: "info")
+                    Tested(modifiedColor: "orange", someModifierText: "some modifier", anotherModifierIcon: "info")
                 }
 
                 then("implementation is updated") { result in
@@ -157,8 +155,8 @@ class MultipleViewModifierSpec: ScarletSpec {
 
             when("modifier 1 is modified") {
                 given {
-                    Tested(modifiedColor: "yellow", someModifierText: "some modifier", anotherModifierIcon: "info", changeToken: 0)
-                    Tested(modifiedColor: "yellow", someModifierText: "some changed modifier", anotherModifierIcon: "info", changeToken: 0)
+                    Tested(modifiedColor: "yellow", someModifierText: "some modifier", anotherModifierIcon: "info")
+                    Tested(modifiedColor: "yellow", someModifierText: "some changed modifier", anotherModifierIcon: "info")
                 }
 
                 then("implementation is updated") { result in
@@ -200,8 +198,8 @@ class MultipleViewModifierSpec: ScarletSpec {
 
             when("modifier 2 is modified") {
                 given {
-                    Tested(modifiedColor: "yellow", someModifierText: "some modifier", anotherModifierIcon: "info", changeToken: 0)
-                    Tested(modifiedColor: "yellow", someModifierText: "some changed modifier", anotherModifierIcon: "info", changeToken: 0)
+                    Tested(modifiedColor: "yellow", someModifierText: "some modifier", anotherModifierIcon: "info")
+                    Tested(modifiedColor: "yellow", someModifierText: "some changed modifier", anotherModifierIcon: "info")
                 }
 
                 then("implementation is updated") { result in
