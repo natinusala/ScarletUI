@@ -100,6 +100,15 @@ struct UpdateResult {
 
         return implementation.findAll(type, expectedCount: expectedCount)
     }
+
+    /// Returns a flat list of all views of the result.
+    func allViews() -> [ViewImpl] {
+        guard let implementation else {
+            fatalError("Expected an implementation but got no implementation")
+        }
+
+        return [implementation] + implementation.allChildren()
+    }
 }
 
 extension TestView {

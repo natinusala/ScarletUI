@@ -85,9 +85,12 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
         }
 
         var description: String {
-            return Mirror(reflecting: self).children.map { label, value in
+            return Mirror(reflecting: self).children.compactMap { label, value in
+                let label = label ?? "nil"
+                guard !label.contains("updated") else { return nil }
+
                 let valueStr = removeOptional("\(value)")
-                return "\(label ?? "nil")=\"\(valueStr)\""
+                return "\(label)=\"\(valueStr)\""
             }.joined(separator: " ")
         }
     }
@@ -222,7 +225,7 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
 
             return impl.children.map {
                 inner($0)
-            }.reduce([], +)
+            }.chained()
         }
 
         let found = inner(self)
@@ -233,6 +236,10 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
         }
 
         return found
+    }
+
+    func allChildren() -> [ViewImpl] {
+        return self.children + self.children.map { $0.allChildren() }.chained()
     }
 
     public var description: String {

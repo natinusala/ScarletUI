@@ -28,3 +28,9 @@ extension Array {
         }
     }
 }
+
+extension Array where Element: Sequence {
+    func chained() -> [Element.Element] {
+        return self.reduce([], +)
+    }
+}

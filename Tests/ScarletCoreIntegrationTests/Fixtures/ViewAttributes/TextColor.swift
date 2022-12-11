@@ -19,7 +19,7 @@ import ScarletCore
 extension View {
     func textColor(_ color: Color) -> some View {
         return self.attributed(
-            Attribute(\TextImpl.textColor, value: color)
+            Attribute(\TextImpl.textColor, value: color, propagate: true)
         )
     }
 }
