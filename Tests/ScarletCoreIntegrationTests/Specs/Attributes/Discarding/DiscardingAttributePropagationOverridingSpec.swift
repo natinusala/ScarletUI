@@ -83,7 +83,7 @@ class DiscardingAttributePropagationOverridingSpec: ScarletSpec {
                 }
 
                 then("attributes are not set on the implementation side") { result in
-                    expect(result.findAll(TextImpl.self, expectedCount: 3)).to(allPass {
+                    expect(result.all(TextImpl.self, expectedCount: 3)).to(allPass {
                         $0.textColorChanged == false
                     })
                 }
@@ -129,7 +129,7 @@ class DiscardingAttributePropagationOverridingSpec: ScarletSpec {
                 }
 
                 then("attributes are not set on the implementation side") { result in
-                    expect(result.findAll(TextImpl.self, expectedCount: 3)).to(allPass {
+                    expect(result.all(TextImpl.self, expectedCount: 3)).to(allPass {
                         $0.textColorChanged == false
                     })
                 }

@@ -77,7 +77,7 @@ class DiscardingAttributeOverrideSpec: ScarletSpec {
                 }
 
                 then("value is not set on implementation side") { result in
-                    expect(result.findFirst(TextImpl.self).textColorChanged).to(beFalse())
+                    expect(result.first(TextImpl.self).textColorChanged).to(beFalse())
                 }
             }
 
@@ -114,7 +114,7 @@ class DiscardingAttributeOverrideSpec: ScarletSpec {
                 }
 
                 then("value is set on implementation side") { result in
-                    expect(result.findFirst(TextImpl.self).textColorChanged).to(beTrue())
+                    expect(result.first(TextImpl.self).textColorChanged).to(beTrue())
                 }
             }
 
@@ -135,7 +135,7 @@ class DiscardingAttributeOverrideSpec: ScarletSpec {
                 }
 
                 then("value is not set on implementation side") { result in
-                    expect(result.findFirst(TextImpl.self).textColorChanged).to(beFalse())
+                    expect(result.first(TextImpl.self).textColorChanged).to(beFalse())
                 }
             }
 
@@ -156,7 +156,7 @@ class DiscardingAttributeOverrideSpec: ScarletSpec {
                 }
 
                 then("value is set on implementation side") { result in
-                    expect(result.findFirst(TextImpl.self).textColorChanged).to(beTrue())
+                    expect(result.first(TextImpl.self).textColorChanged).to(beTrue())
                 }
             }
 
@@ -177,7 +177,7 @@ class DiscardingAttributeOverrideSpec: ScarletSpec {
                 }
 
                 then("value is set on implementation side") { result in
-                    expect(result.findFirst(TextImpl.self).textColorChanged).to(beTrue())
+                    expect(result.first(TextImpl.self).textColorChanged).to(beTrue())
                 }
             }
         }

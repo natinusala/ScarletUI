@@ -151,7 +151,7 @@ class DiscardingAttributePropagationSpec: ScarletSpec {
                 }
 
                 then("attributes are not updated on the implementation side") { result in
-                    expect(result.findAll(TextImpl.self, expectedCount: 5)).to(allPass {
+                    expect(result.all(TextImpl.self, expectedCount: 5)).to(allPass {
                         $0.textColorChanged == false
                     })
 
@@ -210,7 +210,7 @@ class DiscardingAttributePropagationSpec: ScarletSpec {
                 }
 
                 then("unchanged attribute is not updated on the implementation side") { result in
-                    expect(result.findAll(TextImpl.self, expectedCount: 5)).to(allPass {
+                    expect(result.all(TextImpl.self, expectedCount: 5)).to(allPass {
                         $0.textColorChanged == false
                     })
                 }
@@ -255,7 +255,7 @@ class DiscardingAttributePropagationSpec: ScarletSpec {
                 }
 
                 then("changed attribute is updated on the implementation side") { result in
-                    expect(result.findAll(TextImpl.self, expectedCount: 5)).to(allPass {
+                    expect(result.all(TextImpl.self, expectedCount: 5)).to(allPass {
                         $0.textColorChanged == true
                     })
                 }
@@ -306,7 +306,7 @@ class DiscardingAttributePropagationSpec: ScarletSpec {
                 }
 
                 then("changed attributes are updated on the implementation side") { result in
-                    expect(result.findAll(TextImpl.self, expectedCount: 5)).to(allPass {
+                    expect(result.all(TextImpl.self, expectedCount: 5)).to(allPass {
                         $0.textColorChanged == true
                     })
 

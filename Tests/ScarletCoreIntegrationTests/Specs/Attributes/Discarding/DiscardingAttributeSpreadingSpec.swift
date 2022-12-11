@@ -72,7 +72,7 @@ class DiscardingAttributeSpreadingSpec: ScarletSpec {
                 }
 
                 then("attributes are not set on the implementation side") { result in
-                    let views = result.findAll(TextImpl.self, expectedCount: 2)
+                    let views = result.all(TextImpl.self, expectedCount: 2)
                     expect(views).to(allPass {
                         $0.textColorChanged == false
                     })
@@ -97,7 +97,7 @@ class DiscardingAttributeSpreadingSpec: ScarletSpec {
                 }
 
                 then("attributes are not set on the implementation side") { result in
-                    let views = result.findAll(TextImpl.self, expectedCount: 2)
+                    let views = result.all(TextImpl.self, expectedCount: 2)
                     expect(views).to(allPass {
                         $0.textColorChanged == true
                     })
