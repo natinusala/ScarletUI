@@ -137,12 +137,18 @@ public struct Attribute<Implementation: ImplementationNode, Value>: AttributeSet
 }
 
 /// Used by implementation nodes to store an attribute with multiple values. Used with ``AppendAttribute``.
-public struct AttributeList<Value>: Sequence {
+/// Values order is not guaranteed or meaningful since they are stored in a dictionary, keys being the originating attribute setter element nodes.
+/// A convenience `Equatable` conformance is given if ``Value`` conforms to `Hashable` to efficiently compare the values in an unordered manner.
+public struct AttributeList<Value>: Sequence, CustomStringConvertible, CustomDebugStringConvertible {
     public typealias Values = [AnyHashable: Value]
 
     var values: Values = [:]
 
     public init() {}
+
+    public init<S>(uniqueKeysWithValues keysAndValues: S) where S : Sequence, S.Element == (Values.Key, Values.Value) {
+        self.values = .init(uniqueKeysWithValues: keysAndValues)
+    }
 
     public func makeIterator() -> Values.Values.Iterator {
         return self.values.values.makeIterator()
@@ -150,6 +156,20 @@ public struct AttributeList<Value>: Sequence {
 
     public var isEmpty: Bool {
         return self.values.isEmpty
+    }
+
+    public var description: String {
+        return self.values.values.description
+    }
+
+    public var debugDescription: String {
+        return self.values.values.debugDescription
+    }
+}
+
+extension AttributeList: Equatable where Value: Equatable, Value: Hashable {
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        return Set(lhs.values.values) == Set(rhs.values.values)
     }
 }
 

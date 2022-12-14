@@ -44,10 +44,11 @@ class TextImpl: ViewImpl {
     }
 
     /// Initializer used for test assertions.
-    init(text: String, textColor: Color = .black) {
+    convenience init(text: String, textColor: Color = .black, tags: [String] = []) {
+        self.init("Text", tags: tags)
+
         self.text = text
         self.textColor = textColor
-        super.init(displayName: "Text")
     }
 
     override func reset() {

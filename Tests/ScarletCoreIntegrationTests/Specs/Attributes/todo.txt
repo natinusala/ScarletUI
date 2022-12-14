@@ -1,6 +1,3 @@
-Single attribute:
-    - Propagation
-
 compléter les tests
 refacto pour réduire la duplication
     anySet n'a plus de sens d'exister ? ObjectIdentifier est utilisé que dans un cas

@@ -62,9 +62,16 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
             }
         }
 
+        var tags = AttributeList<String>() {
+            willSet {
+                logger.info("'tags' attribute update: \(String(describing: tags)) -> \(String(describing: newValue))")
+                self.updated.insert(\.tags)
+            }
+        }
+
         /// Redefined equality check to ignore ``updated``.
         static func == (lhs: Self, rhs: Self) -> Bool {
-            return lhs.id == rhs.id && lhs.fill == rhs.fill && lhs.grow == rhs.grow
+            return lhs.id == rhs.id && lhs.fill == rhs.fill && lhs.grow == rhs.grow && lhs.tags == rhs.tags
         }
 
         var updated: Set<PartialKeyPath<Self>> = []
@@ -156,6 +163,7 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
         id: String? = nil,
         fill: Color? = nil,
         grow: Float? = nil,
+        tags: [String] = [],
         @ViewImplChildrenBuilder children: () -> [ViewImpl] = { [] }
     ) {
         self.init(displayName: displayName)
@@ -163,6 +171,7 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
         self.attributes.id = id
         self.attributes.fill = fill
         self.attributes.grow = grow
+        self.attributes.tags = .init(uniqueKeysWithValues: tags.map { (UUID(), $0) })
 
         self.children = children()
     }

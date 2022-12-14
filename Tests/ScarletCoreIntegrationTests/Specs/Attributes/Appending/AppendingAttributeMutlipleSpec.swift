@@ -18,41 +18,29 @@ import Nimble
 
 @testable import ScarletCore
 
-private enum Signal: Int, TestSignal {
-    case increment
-    case decrement
-}
-
 class AppendingAttributeMutlipleSpec: ScarletSpec {
-    static let describing = "a view"
+    static let describing = "a view with appending attributes"
 
     struct Tested: TestView {
-        @State private var counter = 0
+        let firstTag: String
+        let secondTag: String
 
         var body: some View {
-            Text("Counter: \(counter)")
-                .onTestSignal(Signal.increment) {
-                    counter += 1
-                }
-                .onTestSignal(Signal.decrement) {
-                    counter -= 1
-                }
+            Text("Some text")
+                .tag(firstTag)
+                .tag(secondTag)
         }
 
         static func spec() -> Spec {
             when("the same attribute is applied multiple times") {
                 given {
-                    Tested()
-
-                    signal(Signal.increment)
-                    signal(Signal.increment)
-                    signal(Signal.decrement)
+                    Tested(firstTag: "first", secondTag: "second")
                 }
 
                 then("all attributes are applied") { result in
                     expect(result.implementation).to(equal(
                         ViewImpl("Tested") {
-                            TextImpl(text: "Counter: 1")
+                            TextImpl(text: "Some text", tags: ["first", "second"])
                         }
                     ))
                 }
