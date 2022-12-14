@@ -47,7 +47,7 @@ let package = Package(
         .package(url: "https://github.com/swift-server/swift-backtrace.git", .upToNextMajor(from: "1.3.1")),
 
         // Testing
-        .package(url: "https://github.com/Quick/Quick.git", .upToNextMajor(from: "4.0.0")),
+        .package(url: "https://github.com/natinusala/Quick.git", branch: "linux-xctest"),
         .package(url: "https://github.com/Quick/Nimble.git", .upToNextMajor(from: "11.2.1")),
     ],
     targets: [

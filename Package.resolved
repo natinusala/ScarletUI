@@ -57,10 +57,10 @@
     {
       "identity" : "quick",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Quick/Quick.git",
+      "location" : "https://github.com/natinusala/Quick.git",
       "state" : {
-        "revision" : "bd86ca0141e3cfb333546de5a11ede63f0c4a0e6",
-        "version" : "4.0.0"
+        "branch" : "linux-xctest",
+        "revision" : "204b8559d539d819eeabe72685922d05c19006a9"
       }
     },
     {
