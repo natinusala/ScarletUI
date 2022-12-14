@@ -75,7 +75,15 @@ public class EnvironmentLocation<Value>: Location {
 @propertyWrapper
 public struct Environment<Value>: EnvironmentProperty {
     let keyPath: WritableKeyPath<EnvironmentValues, Value>
-    public var location: (any Location<Value>)?
+    public var location: (any Location)?
+
+    var typedLocation: (any Location<Value>)? {
+        guard let location = self.location as? (any Location<Value>)? else {
+            fatalError("Expected to find location with type \(Value.self), got \(type(of: self.location))")
+        }
+
+        return location
+    }
 
     public init(_ keyPath: WritableKeyPath<EnvironmentValues, Value>) {
         self.keyPath = keyPath
@@ -88,7 +96,7 @@ public struct Environment<Value>: EnvironmentProperty {
 
     public var wrappedValue: Value {
         get {
-            guard let location else {
+            guard let location = self.typedLocation else {
                 fatalError("Tried to get value on non installed environment property")
             }
 
@@ -117,7 +125,7 @@ public struct Environment<Value>: EnvironmentProperty {
     }
 
     public func setValue(from values: EnvironmentValues) {
-        self.location?.set(values[keyPath: self.keyPath])
+        self.typedLocation?.set(values[keyPath: self.keyPath])
     }
 }
 

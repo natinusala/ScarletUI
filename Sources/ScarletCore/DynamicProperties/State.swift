@@ -65,14 +65,22 @@ public struct State<Value>: StateProperty {
     let defaultValue: Value
 
     /// Location of the state value.
-    var location: (any Location<Value>)?
+    var location: (any Location)?
+
+    var typedLocation: (any Location<Value>)? {
+        guard let location = self.location as? (any Location<Value>)? else {
+            fatalError("Expected to find location with type \(Value.self), got \(type(of: self.location))")
+        }
+
+        return location
+    }
 
     public var wrappedValue: Value {
         get {
-            return self.location?.get() ?? self.defaultValue
+            return self.typedLocation?.get() ?? self.defaultValue
         }
         nonmutating set {
-            guard let location = self.location else {
+            guard let location = self.typedLocation else {
                 fatalError("Tried to set value on non installed state property")
             }
 
