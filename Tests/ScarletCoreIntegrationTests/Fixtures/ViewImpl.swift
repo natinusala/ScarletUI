@@ -45,6 +45,7 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
             willSet {
                 logger.info("'id' attribute update: \(String(describing: id)) -> \(String(describing: newValue))")
                 self.updated.insert(\.id)
+                self.updatesCount += 1
             }
         }
 
@@ -52,6 +53,7 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
             willSet {
                 logger.info("'fill' attribute update: \(String(describing: fill)) -> \(String(describing: newValue))")
                 self.updated.insert(\.fill)
+                self.updatesCount += 1
             }
         }
 
@@ -59,6 +61,7 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
             willSet {
                 logger.info("'grow' attribute update: \(String(describing: grow)) -> \(String(describing: newValue))")
                 self.updated.insert(\.grow)
+                self.updatesCount += 1
             }
         }
 
@@ -66,19 +69,22 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
             willSet {
                 logger.info("'tags' attribute update: \(String(describing: tags)) -> \(String(describing: newValue))")
                 self.updated.insert(\.tags)
+                self.updatesCount += 1
             }
         }
 
-        /// Redefined equality check to ignore ``updated``.
+        /// Redefined equality check to ignore ``updated`` and ``updatesCount``.
         static func == (lhs: Self, rhs: Self) -> Bool {
             return lhs.id == rhs.id && lhs.fill == rhs.fill && lhs.grow == rhs.grow && lhs.tags == rhs.tags
         }
 
         var updated: Set<PartialKeyPath<Self>> = []
+        var updatesCount = 0
 
         /// Resets the updated flag for all attributes.
         mutating func reset() {
             self.updated = []
+            self.updatesCount = 0
         }
 
         /// Returns `true` if the given attribute has changed since the last ``reset()`` call, `false` otherwise.
@@ -95,6 +101,7 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
             return Mirror(reflecting: self).children.compactMap { label, value in
                 let label = label ?? "nil"
                 guard !label.contains("updated") else { return nil }
+                guard !label.contains("updatesCount") else { return nil }
 
                 let valueStr = removeOptional("\(value)")
                 return "\(label)=\"\(valueStr)\""
@@ -112,6 +119,10 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
 
     func attributeChanged(_ attribute: PartialKeyPath<Attributes>) -> Bool {
         return self.attributes.changed(attribute)
+    }
+
+    var attributesUpdatesCount: Int {
+        return self.attributes.updatesCount
     }
 
     /// Resets testing data for the view and all of its children recursively.

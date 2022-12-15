@@ -45,6 +45,82 @@ class AppendingAttributeMutlipleSpec: ScarletSpec {
                     ))
                 }
             }
+
+            when("the first attribute gets updated") {
+                given {
+                    Tested(firstTag: "first", secondTag: "second")
+                    Tested(firstTag: "another-first", secondTag: "second")
+                }
+
+                then("the attribute is updated on the implementation side") { result in
+                    expect(result.implementation).to(equal(
+                        ViewImpl("Tested") {
+                            TextImpl(text: "Some text", tags: ["another-first", "second"])
+                        }
+                    ))
+                }
+
+                then("only the changed attribute is changed") { result in
+                    expect(result.first(TextImpl.self).attributesUpdatesCount).to(equal(1))
+                }
+            }
+
+            when("the second attribute gets updated") {
+                given {
+                    Tested(firstTag: "first", secondTag: "second")
+                    Tested(firstTag: "first", secondTag: "another-second")
+                }
+
+                then("the attribute is updated on the implementation side") { result in
+                    expect(result.implementation).to(equal(
+                        ViewImpl("Tested") {
+                            TextImpl(text: "Some text", tags: ["first", "another-second"])
+                        }
+                    ))
+                }
+
+                then("only the changed attribute is changed") { result in
+                    expect(result.first(TextImpl.self).attributesUpdatesCount).to(equal(1))
+                }
+            }
+
+            when("both attributes get updated") {
+                given {
+                    Tested(firstTag: "first", secondTag: "second")
+                    Tested(firstTag: "another-first", secondTag: "another-second")
+                }
+
+                then("the attribute is updated on the implementation side") { result in
+                    expect(result.implementation).to(equal(
+                        ViewImpl("Tested") {
+                            TextImpl(text: "Some text", tags: ["another-first", "another-second"])
+                        }
+                    ))
+                }
+
+                then("both attributes are changed") { result in
+                    expect(result.first(TextImpl.self).attributesUpdatesCount).to(equal(2))
+                }
+            }
+
+            when("nothing changes") {
+                given {
+                    Tested(firstTag: "first", secondTag: "second")
+                    Tested(firstTag: "first", secondTag: "second")
+                }
+
+                then("the attribute is updated on the implementation side") { result in
+                    expect(result.implementation).to(equal(
+                        ViewImpl("Tested") {
+                            TextImpl(text: "Some text", tags: ["first", "second"])
+                        }
+                    ))
+                }
+
+                then("no attributes are changed") { result in
+                    expect(result.first(TextImpl.self).anyAttributeChanged).to(beFalse())
+                }
+            }
         }
     }
 }
