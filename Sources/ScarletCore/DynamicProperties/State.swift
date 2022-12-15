@@ -14,15 +14,6 @@
    limitations under the License.
 */
 
-protocol StateProperty<Value>: DynamicProperty {
-    associatedtype Value
-
-    var location: (any Location)? { get }
-
-    func withLocation(_ location: any Location) -> Self
-    func makeLocation(node: any StatefulElementNode) -> any Location
-}
-
 /// Serves as storage for state properties.
 class StateLocation<Value>: Location {
     @Podable var value: Value
@@ -61,26 +52,17 @@ class StateLocation<Value>: Location {
 }
 
 @propertyWrapper
-public struct State<Value>: StateProperty {
+public struct State<Value> {
     let defaultValue: Value
 
-    /// Location of the state value.
-    var location: (any Location)?
-
-    var typedLocation: (any Location<Value>)? {
-        guard let location = self.location as? (any Location<Value>)? else {
-            fatalError("Expected to find location with type \(Value.self), got \(type(of: self.location))")
-        }
-
-        return location
-    }
+    var location: StateLocation<Value>?
 
     public var wrappedValue: Value {
         get {
-            return self.typedLocation?.get() ?? self.defaultValue
+            return self.location?.get() ?? self.defaultValue
         }
         nonmutating set {
-            guard let location = self.typedLocation else {
+            guard let location else {
                 fatalError("Tried to set value on non installed state property")
             }
 
@@ -92,26 +74,8 @@ public struct State<Value>: StateProperty {
         self.defaultValue = wrappedValue
     }
 
-    private init(defaultValue: Value, location: (any Location<Value>)?) {
+    private init(defaultValue: Value, location: StateLocation<Value>?) {
         self.defaultValue = defaultValue
         self.location = location
-    }
-
-    func withLocation(_ location: any Location) -> Self {
-        guard let location = location as? (any Location<Value>) else {
-            fatalError("Cannot install state property: was given a location of wrong type")
-        }
-
-        return Self(
-            defaultValue: self.defaultValue,
-            location: location
-        )
-    }
-
-    func makeLocation(node: any StatefulElementNode) -> any Location {
-        return StateLocation(
-            value: self.defaultValue,
-            node: node
-        )
     }
 }

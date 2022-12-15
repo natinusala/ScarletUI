@@ -28,24 +28,3 @@ import Runtime
 ///| **Stateful non-POD**  | Field by field mirror, ignoring dynamic properties                   | Can be done after comparison since dynamic properties are ignored in comparison | Store whole value, it's fine since dynamic properties are ignored in comparison | Stored directly in value, avoids duplication with whole value storage |
 ///| **Stateless non-POD** | _Undefined - not supported_                                          | _Undefined_                                                                     | _Undefined_                                                                     | _Undefined_                                                           |
 public protocol DynamicProperty {}
-
-extension Element {
-    /// Visits dynamic properties of the element and runs the closure for every one of them.
-    /// The property will be replaced by the returned value if different from `nil`.
-    mutating func visitDynamicProperties(
-        visitor: (String, Int, any DynamicProperty, PropertyInfo) throws -> (any DynamicProperty)?
-    ) throws {
-        stateLogger.trace("-> Visiting dynamic properties of \(Self.self)")
-
-        let elementInfo = try typeInfo(of: Self.self)
-
-        for (offset, property) in elementInfo.properties.enumerated() {
-            if let stateValue = try property.get(from: self) as? DynamicProperty {
-                if let newStateValue = try visitor(property.name, offset, stateValue, property) {
-                    stateLogger.trace("Setting \(type(of: newStateValue)) dynamic property on \(Self.self)")
-                    try property.set(value: newStateValue, on: &self)
-                }
-            }
-        }
-    }
-}

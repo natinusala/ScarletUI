@@ -111,20 +111,6 @@ public extension StatefulElementNode {
     }
 
     func install(element: inout Value, using context: ElementNodeContext) {
-        func installStateProperty(metadata: PropertyInfo) throws -> any DynamicProperty {
-            // Take the existing state property, setup a new location if needed and return that
-            let existingState: any StateProperty = try metadata.get(from: self.value)
-
-            if existingState.location == nil {
-                stateLogger.trace("State location not found, making a new one")
-                let location = existingState.makeLocation(node: self)
-                return existingState.withLocation(location)
-            } else {
-                stateLogger.trace("Using existing state location")
-                return existingState
-            }
-        }
-
         func installEnvironmentProperty(
             property: any EnvironmentProperty,
             values: EnvironmentValues,
@@ -151,25 +137,8 @@ public extension StatefulElementNode {
             return existingEnvironment
         }
 
-        do {
-            try element.visitDynamicProperties { name, offset, property, metadata in
-                switch property {
-                    case is any StateProperty:
-                        return try installStateProperty(metadata: metadata)
-                    case let environmentProperty as any EnvironmentProperty:
-                        return try installEnvironmentProperty(
-                            property: environmentProperty,
-                            values: context.environment,
-                            diff: context.changedEnvironment,
-                            metadata: metadata
-                        )
-                    default:
-                        fatalError("Cannot install dynamic properties of \(Self.self): unsupported type \(type(of: property))")
-                }
-            }
-        } catch {
-            fatalError("Cannot install dynamic properties of \(Self.self): \(error)")
-        }
+        var visitor = DynamicPropertiesInstaller(node: self)
+        Value.accept(visitor: &visitor, on: &element)
     }
 
     /// Called when a state property has a value change.
@@ -178,5 +147,26 @@ public extension StatefulElementNode {
         // Set context state change
         let context = self.context.settingStateChange()
         _ = self.update(with: self.value, implementationPosition: self.implementationPosition, using: context)
+    }
+}
+
+/// Visitor used to install dynamic properties on elements.
+private struct DynamicPropertiesInstaller<Visited: Element, Node: StatefulElementNode>: ElementVisitor where Node.Value == Visited {
+    let node: Node
+
+    func visitStateProperty<Value>( keyPath: WritableKeyPath<Visited, State<Value>>, on element: inout Visited) {
+        // Take the existing state property, setup a new location if needed and set the new location
+        // in the target element
+        let existingState = self.node.value[keyPath: keyPath]
+
+        if existingState.location == nil {
+            stateLogger.trace("State location not found, making a new one")
+
+            let location = StateLocation(value: element[keyPath: keyPath].defaultValue, node: self.node)
+            element[keyPath: keyPath].location = location
+        } else {
+            stateLogger.trace("Using existing state location")
+            element[keyPath: keyPath].location = existingState.location
+        }
     }
 }
