@@ -29,6 +29,11 @@ let package = Package(
             name: "ScarletUIDemo",
             targets: ["ScarletUIDemo"]
         ),
+        .plugin(name: "ScarletCodegen", targets: ["ScarletCodegen"]),
+        .executable(
+            name: "Archtype",
+            targets: ["Archtype"]
+        ),
     ],
     dependencies: [
         // Core dependencies
@@ -45,6 +50,9 @@ let package = Package(
 
         // Linux compat
         .package(url: "https://github.com/swift-server/swift-backtrace.git", .upToNextMajor(from: "1.3.1")),
+
+        // Code generation
+        .package(url: "https://github.com/stencilproject/Stencil.git", .upToNextMajor(from: "0.15.1")),
 
         // Testing
         .package(url: "https://github.com/natinusala/Quick.git", branch: "linux-xctest"),
@@ -90,7 +98,23 @@ let package = Package(
         // ScarletUIDemo: simple ScarletUI demo app
         .executableTarget(
             name: "ScarletUIDemo",
-            dependencies: ["ScarletUI"]
+            dependencies: ["ScarletUI"],
+            plugins: [
+                .plugin(name: "ScarletCodegen"),
+            ]
+        ),
+        // ScarletCodegen: code generation plugin
+        .plugin(
+            name: "ScarletCodegen",
+            capability: .buildTool(),
+            dependencies: [
+                "Archtype",
+            ]
+        ),
+        // Archtype: code metadata generation engine
+        .executableTarget(
+            name: "Archtype",
+            dependencies: ["Stencil"]
         ),
         // Test targets
         .testTarget(
