@@ -1,4 +1,8 @@
 compléter les tests
+refacto pour utiliser le mécanisme d'Environment
+
+ou sinon
+
 refacto pour réduire la duplication
     anySet n'a plus de sens d'exister ? ObjectIdentifier est utilisé que dans un cas
     c'est bizarre d'avoir un enum + 2 types différents
@@ -6,8 +10,7 @@ refacto pour réduire la duplication
 
 Append attributes
     - un append fait une fois
-    - deux fois l'attribut sur une vue (dans MultipleAppendAttributeSpec, cassé)
-    - plusieurs append sur une vue
+    - plusieurs append d'un attribut différent sur une vue
     - l'attribut mis sur le mauvais type doit spread en bas
     - deux fois le même attribut à 2 niveaux différents: doit cumuler
     - propagation
