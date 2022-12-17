@@ -14,17 +14,15 @@
    limitations under the License.
 */
 
-@main
-struct ScarletCodegen: ArchtypePlugin {
-    static var rules: [Rule] = [
-        .rule(
-            named: "Metadata",
-            type: .struct,
-            conformingTo: ["App", "Scene", "View", "ViewModifier"],
-            stencil: "Element.stencil",
-            displayName: { fileName in
-                "Generating metadata for \(fileName)..."
-            }
-        )
-    ]
+import Foundation
+
+let traceEnvFlag = "ARCHTYPE_TRACE"
+
+/// Simple tracing function.
+func trace(_ message: @autoclosure () -> String) {
+    guard traceEnabled else { return }
+
+    print("[TRACE] \(message())")
 }
+
+let traceEnabled = ProcessInfo.processInfo.environment[traceEnvFlag] == "1"

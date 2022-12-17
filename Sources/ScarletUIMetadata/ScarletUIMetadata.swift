@@ -14,9 +14,21 @@
    limitations under the License.
 */
 
+import Archtype
+import Foundation
+
 @main
-struct Archtype {
-    static func main() {
-        
-    }
+struct ScarletUIMetadata: CodeGenerator {
+    static var name = "ScarletUIMetadata"
+
+    static var rules: [Rule] = [
+        .rule(
+            named: "Metadata",
+            type: .struct,
+            conformingTo: ["App", "Scene", "View", "ViewModifier"],
+            template: "Metadata.stencil"
+        )
+    ]
+
+    static var bundle = Bundle.module
 }

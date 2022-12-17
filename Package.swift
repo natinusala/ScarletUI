@@ -1,4 +1,4 @@
-// swift-tools-version: 5.6
+// swift-tools-version: 5.7
 
 /*
    Copyright 2022 natinusala
@@ -29,30 +29,31 @@ let package = Package(
             name: "ScarletUIDemo",
             targets: ["ScarletUIDemo"]
         ),
-        .plugin(name: "ScarletCodegen", targets: ["ScarletCodegen"]),
+        .plugin(name: "ScarletUICodegen", targets: ["ScarletUICodegen"]),
         .executable(
-            name: "Archtype",
-            targets: ["Archtype"]
+            name: "ScarletUIMetadata",
+            targets: ["ScarletUIMetadata"]
         ),
     ],
     dependencies: [
         // Core dependencies
-        .package(url: "https://github.com/wickwirew/Runtime.git", .upToNextMajor(from: "2.2.4")),
+        .package(url: "https://github.com/wickwirew/Runtime.git", .upToNextMajor(from: "2.2.4")), // TODO: yeet
         .package(url: "https://github.com/OpenCombine/OpenCombine.git", .upToNextMajor(from: "0.13.0")),
-        .package(url: "https://github.com/apple/swift-argument-parser.git", .upToNextMajor(from: "1.1.4")),
+        .package(url: "https://github.com/apple/swift-argument-parser.git", .upToNextMajor(from: "1.2.0")),
 
         // Logging
         .package(url: "https://github.com/vapor/console-kit.git", .upToNextMajor(from: "4.5.0")),
         .package(url: "https://github.com/natinusala/swift-cutelog.git", .upToNextMajor(from: "1.0.0")),
 
         // Utils
-        .package(url: "https://github.com/davdroman/swift-builders.git", .upToNextMajor(from: "0.2.0")),
+        .package(url: "https://github.com/davdroman/swift-builders.git", .upToNextMajor(from: "0.3.1")),
 
         // Linux compat
-        .package(url: "https://github.com/swift-server/swift-backtrace.git", .upToNextMajor(from: "1.3.1")),
+        .package(url: "https://github.com/swift-server/swift-backtrace.git", .upToNextMajor(from: "1.3.3")),
 
         // Code generation
         .package(url: "https://github.com/stencilproject/Stencil.git", .upToNextMajor(from: "0.15.1")),
+        .package(url: "https://github.com/apple/swift-syntax.git", branch: "main"), // TODO: align with 5.8 once it's out
 
         // Testing
         .package(url: "https://github.com/natinusala/Quick.git", branch: "linux-xctest"),
@@ -100,21 +101,34 @@ let package = Package(
             name: "ScarletUIDemo",
             dependencies: ["ScarletUI"],
             plugins: [
-                .plugin(name: "ScarletCodegen"),
+                .plugin(name: "ScarletUICodegen"),
             ]
         ),
-        // ScarletCodegen: code generation plugin
+        // ScarletUICodegen: plugin to call various codegen tools
         .plugin(
-            name: "ScarletCodegen",
+            name: "ScarletUICodegen",
             capability: .buildTool(),
             dependencies: [
-                "Archtype",
+                "ScarletUIMetadata",
             ]
         ),
-        // Archtype: code metadata generation engine
+        // ScarletUIMetadata: view metadata code generation tool
         .executableTarget(
+            name: "ScarletUIMetadata",
+            dependencies: ["Archtype"],
+            resources: [
+                .process("Metadata.stencil")
+            ]
+        ),
+        // Archtype: framework to make code generation tools, best used with SPM plugins
+        .target(
             name: "Archtype",
-            dependencies: ["Stencil"]
+            dependencies: [
+                .product(name: "SwiftSyntax", package: "swift-syntax"),
+                .product(name: "SwiftParser", package: "swift-syntax"),
+                "Stencil",
+                .product(name: "Backtrace", package: "swift-backtrace"),
+            ]
         ),
         // Test targets
         .testTarget(
