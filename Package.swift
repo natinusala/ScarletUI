@@ -32,7 +32,7 @@ let package = Package(
     ],
     dependencies: [
         // Core dependencies
-        .package(url: "https://github.com/wickwirew/Runtime.git", .upToNextMajor(from: "2.2.4")), // TODO: yeet
+        .package(url: "https://github.com/wickwirew/Runtime.git", .upToNextMajor(from: "2.2.4")),
         .package(url: "https://github.com/OpenCombine/OpenCombine.git", .upToNextMajor(from: "0.13.0")),
         .package(url: "https://github.com/apple/swift-argument-parser.git", .upToNextMajor(from: "1.2.0")),
 
@@ -45,10 +45,6 @@ let package = Package(
 
         // Linux compat
         .package(url: "https://github.com/swift-server/swift-backtrace.git", .upToNextMajor(from: "1.3.3")),
-
-        // Code generation
-        .package(url: "https://github.com/stencilproject/Stencil.git", .upToNextMajor(from: "0.15.1")),
-        .package(url: "https://github.com/apple/swift-syntax.git", branch: "main"), // TODO: align with 5.8 once it's out
 
         // Testing
         .package(url: "https://github.com/natinusala/Quick.git", branch: "linux-xctest"),
