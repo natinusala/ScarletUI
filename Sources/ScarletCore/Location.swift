@@ -17,7 +17,7 @@
 /// Represents the location of a variable that can be read or write.
 /// Used as state properties storage, bindings and values coming from the implementation
 /// to the elements.
-public protocol Location<Value>: AnyObject {
+protocol Location<Value>: AnyObject {
     associatedtype Value
 
     func get() -> Value

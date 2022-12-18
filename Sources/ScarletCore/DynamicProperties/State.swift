@@ -14,6 +14,8 @@
    limitations under the License.
 */
 
+import Runtime
+
 /// Serves as storage for state properties.
 class StateLocation<Value>: Location {
     @Podable var value: Value
@@ -52,10 +54,9 @@ class StateLocation<Value>: Location {
 }
 
 @propertyWrapper
-public struct State<Value> {
+public struct State<Value>: DynamicProperty {
     let defaultValue: Value
-
-    var location: StateLocation<Value>?
+    let location: StateLocation<Value>?
 
     public var wrappedValue: Value {
         get {
@@ -72,10 +73,24 @@ public struct State<Value> {
 
     public init(wrappedValue: Value) {
         self.defaultValue = wrappedValue
+        self.location = nil
     }
 
     private init(defaultValue: Value, location: StateLocation<Value>?) {
         self.defaultValue = defaultValue
         self.location = location
+    }
+
+    func withLocation(_ location: StateLocation<Value>?) -> Self {
+        return Self(defaultValue: self.defaultValue, location: location)
+    }
+
+    func accept<Visitor: ElementVisitor>(
+        visitor: Visitor,
+        in property: PropertyInfo,
+        target: inout Visitor.Visited,
+        using context: ElementNodeContext
+    ) throws {
+        try visitor.visitStateProperty(property, current: self, target: &target, type: Value.self)
     }
 }

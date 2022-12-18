@@ -27,4 +27,13 @@ import Runtime
 ///| **Stateless POD**     | memcmp                                                               | Can be done after comparison as there are no dynamic properties anyway          | Store whole value for memcmp                                                    | Stored directly in value, doesn't change anything                     |
 ///| **Stateful non-POD**  | Field by field mirror, ignoring dynamic properties                   | Can be done after comparison since dynamic properties are ignored in comparison | Store whole value, it's fine since dynamic properties are ignored in comparison | Stored directly in value, avoids duplication with whole value storage |
 ///| **Stateless non-POD** | _Undefined - not supported_                                          | _Undefined_                                                                     | _Undefined_                                                                     | _Undefined_                                                           |
-public protocol DynamicProperty {}
+protocol DynamicProperty {
+    /// Accepts the given visitor into the property.
+    /// Should call the appropriate `visit` methode of the visitor.
+    func accept<Visitor: ElementVisitor>(
+        visitor: Visitor,
+        in property: PropertyInfo,
+        target: inout Visitor.Visited,
+        using context: ElementNodeContext
+    ) throws
+}

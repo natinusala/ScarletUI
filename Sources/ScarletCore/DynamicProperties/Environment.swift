@@ -14,6 +14,8 @@
    limitations under the License.
 */
 
+import Runtime
+
 /// Identifies an environment value.
 public protocol EnvironmentKey {
     associatedtype Value
@@ -43,17 +45,7 @@ public struct EnvironmentValues {
     }
 }
 
-public protocol EnvironmentProperty: DynamicProperty {
-    var location: (any Location)? { get }
-    var partialKeyPath: PartialKeyPath<EnvironmentValues> { get }
-
-    func changed(using diff: EnvironmentDiff) -> Bool
-    func makeLocation(values: EnvironmentValues) -> any Location
-    func withLocation(_ location: any Location) -> Self
-    func setValue(from values: EnvironmentValues)
-}
-
-public class EnvironmentLocation<Value>: Location {
+class EnvironmentLocation<Value>: Location {
     let keyPath: WritableKeyPath<EnvironmentValues, Value>
 
     var value: Value
@@ -63,40 +55,37 @@ public class EnvironmentLocation<Value>: Location {
         self.value = value
     }
 
-    public func get() -> Value {
+    func get() -> Value {
         return self.value
     }
 
-    public func set(_ value: Value) {
+    func set(_ value: Value) {
         self.value = value
     }
+}
+
+protocol EnvironmentProperty: DynamicProperty {
+    var partialKeyPath: PartialKeyPath<EnvironmentValues> { get }
 }
 
 @propertyWrapper
 public struct Environment<Value>: EnvironmentProperty {
     let keyPath: WritableKeyPath<EnvironmentValues, Value>
-    public var location: (any Location)?
-
-    var typedLocation: (any Location<Value>)? {
-        guard let location = self.location as? (any Location<Value>)? else {
-            fatalError("Expected to find location with type \(Value.self), got \(type(of: self.location))")
-        }
-
-        return location
-    }
+    let location: EnvironmentLocation<Value>?
 
     public init(_ keyPath: WritableKeyPath<EnvironmentValues, Value>) {
         self.keyPath = keyPath
+        self.location = nil
     }
 
-    private init(keyPath: WritableKeyPath<EnvironmentValues, Value>, location: any Location<Value>) {
+    private init(keyPath: WritableKeyPath<EnvironmentValues, Value>, location: EnvironmentLocation<Value>?) {
         self.keyPath = keyPath
         self.location = location
     }
 
     public var wrappedValue: Value {
         get {
-            guard let location = self.typedLocation else {
+            guard let location = self.location else {
                 fatalError("Tried to get value on non installed environment property")
             }
 
@@ -104,28 +93,41 @@ public struct Environment<Value>: EnvironmentProperty {
         }
     }
 
-    public func changed(using diff: EnvironmentDiff) -> Bool {
+    // TODO: what's to keep here?
+    // TODO: remove all useless public members
+    // TODO: make sure to update docs and document everything new
+    // TODO: read full diff before merging
+
+    func changed(using diff: EnvironmentDiff) -> Bool {
         return diff[self.keyPath] ?? false
     }
 
-    public func makeLocation(values: EnvironmentValues) -> any Location {
-        return EnvironmentLocation(keyPath: self.keyPath, value: values[keyPath: self.keyPath])
-    }
-
-    public func withLocation(_ location: any Location) -> Self {
-        guard let location = location as? (any Location<Value>) else {
-            fatalError("Cannot install environment property: was given a location of wrong type")
-        }
-
+    func withLocation(_ location: EnvironmentLocation<Value>?) -> Self {
         return Self(keyPath: keyPath, location: location)
     }
 
-    public var partialKeyPath: PartialKeyPath<EnvironmentValues> {
+    var partialKeyPath: PartialKeyPath<EnvironmentValues> {
         return keyPath
     }
 
-    public func setValue(from values: EnvironmentValues) {
-        self.typedLocation?.set(values[keyPath: self.keyPath])
+    func setValue(from values: EnvironmentValues) {
+        self.location?.set(values[keyPath: self.keyPath])
+    }
+
+    func accept<Visitor: ElementVisitor>(
+        visitor: Visitor,
+        in property: PropertyInfo,
+        target: inout Visitor.Visited,
+        using context: ElementNodeContext
+    ) throws {
+        try visitor.visitEnvironmentProperty(
+            property,
+            current: self,
+            target: &target,
+            type: Value.self,
+            values: context.environment,
+            diff: context.changedEnvironment
+        )
     }
 }
 

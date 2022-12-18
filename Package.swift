@@ -101,7 +101,7 @@ let package = Package(
             name: "ScarletUIDemo",
             dependencies: ["ScarletUI"],
             plugins: [
-                .plugin(name: "ScarletUICodegen"),
+                // .plugin(name: "ScarletUICodegen"),
             ]
         ),
         // ScarletUICodegen: plugin to call various codegen tools

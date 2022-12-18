@@ -111,34 +111,31 @@ public extension StatefulElementNode {
     }
 
     func install(element: inout Value, using context: ElementNodeContext) {
-        func installEnvironmentProperty(
-            property: any EnvironmentProperty,
-            values: EnvironmentValues,
-            diff: EnvironmentDiff,
-            metadata: PropertyInfo
-        ) throws -> any DynamicProperty {
-            let existingEnvironment: any EnvironmentProperty = try metadata.get(from: self.value)
+        // Iterate over all properties and accept the visitor into each dynamic one
+        do {
+            let visitor = DynamicPropertiesInstaller(node: self)
 
-            // If the environment property is not installed, set the initial value and install it
-            if existingEnvironment.location == nil {
-                stateLogger.trace("Environment location not found, making a new one")
-                let location = property.makeLocation(values: values)
-                return existingEnvironment.withLocation(location)
+            // TODO: Setup cache for info to avoid metadata lookup at every call
+            let info = try typeInfo(of: Value.self)
+
+            for property in info.properties {
+                let current = try property.get(from: self.value)
+
+                switch current {
+                    case let currentState as DynamicProperty:
+                        try currentState.accept(
+                            visitor: visitor,
+                            in: property,
+                            target: &element,
+                            using: context
+                        )
+                    default:
+                        break
+                }
             }
-
-            stateLogger.trace("Using existing environment location")
-
-            // If the value changed, set the new value
-            // Otherwise just copy over the previous environment we had
-            if property.changed(using: diff) {
-                existingEnvironment.setValue(from: values)
-            }
-
-            return existingEnvironment
+        } catch {
+            fatalError("Error while visiting dynamic properties: \(error)")
         }
-
-        var visitor = DynamicPropertiesInstaller(node: self)
-        Value.accept(visitor: &visitor, on: &element)
     }
 
     /// Called when a state property has a value change.
@@ -151,22 +148,56 @@ public extension StatefulElementNode {
 }
 
 /// Visitor used to install dynamic properties on elements.
-private struct DynamicPropertiesInstaller<Visited: Element, Node: StatefulElementNode>: ElementVisitor where Node.Value == Visited {
+private class DynamicPropertiesInstaller<Visited: Element, Node: StatefulElementNode>: ElementVisitor where Node.Value == Visited {
     let node: Node
 
-    func visitStateProperty<Value>(keyPath: WritableKeyPath<Visited, State<Value>>, on element: inout Visited) {
+    init(node: Node) {
+        self.node = node
+    }
+
+    func visitStateProperty<Value>(_ property: PropertyInfo, current: State<Value>, target: inout Visited, type: Value.Type) throws {
         // Take the existing state property, setup a new location if needed and set the new location
         // in the target element
-        let existingState = self.node.value[keyPath: keyPath]
-
-        if existingState.location == nil {
+        if current.location == nil {
             stateLogger.trace("State location not found, making a new one")
 
-            let location = StateLocation(value: element[keyPath: keyPath].defaultValue, node: self.node)
-            element[keyPath: keyPath].location = location
+            let location = StateLocation(value: current.defaultValue, node: self.node)
+            try property.set(value: current.withLocation(location), on: &target)
         } else {
             stateLogger.trace("Using existing state location")
-            element[keyPath: keyPath].location = existingState.location
+            try property.set(value: current, on: &target)
         }
+    }
+
+    func visitEnvironmentProperty<Value>(
+        _ property: PropertyInfo,
+        current: Environment<Value>,
+        target: inout Visited,
+        type: Value.Type,
+        values: EnvironmentValues,
+        diff: EnvironmentDiff
+    ) throws {
+        // If the environment property is not installed, set the initial value and install it
+        if current.location == nil {
+            stateLogger.trace("Environment location not found, making a new one")
+            let location = EnvironmentLocation(keyPath: current.keyPath, value: values[keyPath: current.keyPath])
+            try property.set(value: current.withLocation(location), on: &target)
+            return
+        }
+
+        stateLogger.trace("Using existing environment location")
+
+        // Previously installed value
+        guard let previousValue = try property.get(from: target) as? Environment<Value> else {
+            fatalError("Expected to find environment value with type Environment<\(Value.self)>")
+        }
+
+        // If the value changed, set the new value
+        // Otherwise just copy over the previous environment we had
+        if previousValue.changed(using: diff) {
+            current.setValue(from: values)
+        }
+
+        try property.set(value: current, on: &target)
     }
 }

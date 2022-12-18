@@ -48,10 +48,6 @@ public protocol Element: CustomDebugStringConvertible, IsPodable {
 
     /// Returns all attributes of the element.
     static func collectAttributes(of element: Self, source: AnyHashable) -> AttributesStash
-
-    /// Accepts the given visitor and mutates the element accordingly.
-    /// Should call `visitor.visit` on all dynamic properties.
-    static func accept<Visitor: ElementVisitor<Self>>(visitor: inout Visitor, on element: inout Self)
 }
 
 public extension Element {
@@ -86,10 +82,6 @@ public extension Element {
         }
 
         return attributes
-    }
-
-    static func accept<Visitor: ElementVisitor<Self>>(visitor: inout Visitor, on element: inout Self) {
-        fatalError("'\(Self.self).accept(visitor:)' is unimplemented, is the ScarletCodegen plugin properly running?")
     }
 }
 

@@ -27,6 +27,4 @@ public struct Rectangle: View {
             .fill(color: color)
             .grow(1.0)
     }
-
-    public static func accept<Visitor>(visitor: inout Visitor, on element: inout Rectangle) where Rectangle == Visitor.Visited, Visitor : ElementVisitor {}
 }
