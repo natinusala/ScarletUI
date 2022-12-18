@@ -18,9 +18,7 @@ extension Array where Element == MatchingType {
     /// Turns the types list in a usable Stencil context.
     var context: [String: Any] {
         return [
-            "types": [
-                self.map { $0.type }
-            ]
+            "types": self.map { $0.type }
         ]
     }
 }
@@ -50,6 +48,9 @@ enum Attribute {
 
 /// A property in a type.
 struct Property {
+    /// The property name. Doesn't include the underscore if it's a wrapped property.
+    let name: String
+
     /// @ prefixed attributes (includes property wrappers).
     let attributes: [Attribute]
 

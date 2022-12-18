@@ -21,6 +21,7 @@
 
 import Foundation
 import Backtrace
+import Stencil
 
 /// Entry point for Archtype code generator. Represents a code generator
 /// with a list of rules to apply on each target file.
@@ -71,6 +72,9 @@ public extension CodeGenerator {
             try render(rules: Array(rules), in: output, using: result.context, for: self.name, from: self.bundle)
         } catch let error as ArchtypeError {
             print("Error while running \(self.name): \(error.rawValue)")
+            exit(-1)
+        } catch let error as TemplateSyntaxError {
+            print("Syntax error in template: \(error)")
             exit(-1)
         } catch {
             print("Error while running \(self.name): \(error)")

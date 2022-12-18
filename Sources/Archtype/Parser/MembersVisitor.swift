@@ -64,6 +64,7 @@ class MembersVisitor: SyntaxVisitor {
 
             self.properties.append(
                 Property(
+                    name: identifierPatternSyntax.identifier.text,
                     attributes: attributes,
                     accessModifier: accessModifier
                 )

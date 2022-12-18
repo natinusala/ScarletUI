@@ -36,11 +36,11 @@ func render(rules: [Rule], in output: URL, using context: [String: Any], for too
     try handle.writeLine(makeHeader(for: toolName))
 
     // Run each rule's stencil
-    let context = Context(dictionary: context, environment: nil)
+    let context = Context(dictionary: context, environment: getEnvironment())
     for rule in rules {
         try renderRule(rule, to: handle, using: context, from: bundle)
     }
-    
+
     // Close handle
     try handle.close()
 }

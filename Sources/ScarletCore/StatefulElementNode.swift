@@ -154,7 +154,7 @@ public extension StatefulElementNode {
 private struct DynamicPropertiesInstaller<Visited: Element, Node: StatefulElementNode>: ElementVisitor where Node.Value == Visited {
     let node: Node
 
-    func visitStateProperty<Value>( keyPath: WritableKeyPath<Visited, State<Value>>, on element: inout Visited) {
+    func visitStateProperty<Value>(keyPath: WritableKeyPath<Visited, State<Value>>, on element: inout Visited) {
         // Take the existing state property, setup a new location if needed and set the new location
         // in the target element
         let existingState = self.node.value[keyPath: keyPath]

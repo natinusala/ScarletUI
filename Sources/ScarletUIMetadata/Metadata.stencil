@@ -1,1 +1,19 @@
-Hello world!
+#if canImport(ScarletUI)
+import ScarletUI
+#elseif canImport(ScarletCore)
+import ScarletCore
+#else
+#error("Cannot import ScarletUI or ScarletCore, is ScarletUI a dependency of the target?")
+#endif
+
+{% for type in types %}
+extension {{ type.identifier }} {
+    static func accept<Visitor>(visitor: inout Visitor, on element: inout Self) where Visitor.Visited == Self, Visitor: ElementVisitor {
+        {% for property in type.properties %}
+        {% if property|wrappedBy:"State" %}
+        visitor.visitStateProperty(keyPath: \._{{ property.name }}, on: &element)
+        {% endif %}
+        {% endfor %}
+    }
+}
+{% endfor %}

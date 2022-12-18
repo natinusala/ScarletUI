@@ -37,8 +37,4 @@ struct ScarletUIDemo: App {
                 .grow()
         }
     }
-
-    static func accept<Visitor>(visitor: inout Visitor, on element: inout ScarletUIDemo) where ScarletUIDemo == Visitor.Visited, Visitor : ElementVisitor {
-        visitor.visitStateProperty(keyPath: \._color, on: &element)
-    }
 }

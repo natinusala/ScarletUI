@@ -31,6 +31,10 @@ struct ScarletUICodegen: BuildToolPlugin {
         return target.sourceFiles.map { sourceFile in
             let output = context.pluginWorkDirectory.appending("\(sourceFile.path.stem)_ScarletUIMetadata.swift")
 
+            // XXX: SPM doesn't invalidate the executable when a resource file changes so manually add it to inputs for now
+            // Can be removed when https://github.com/apple/swift-package-manager/issues/5982 is fixed
+            let metadataStencilPath = tool.path.removingLastComponent().appending("ScarletUI_ScarletUIMetadata.resources").appending("Metadata.stencil")
+
             return Command.buildCommand(
                 displayName: "Generating metadata for \(sourceFile.path.lastComponent)...",
                 executable: tool.path,
@@ -38,7 +42,7 @@ struct ScarletUICodegen: BuildToolPlugin {
                     sourceFile.path.string,
                     output.string,
                 ],
-                inputFiles: [sourceFile.path],
+                inputFiles: [metadataStencilPath, sourceFile.path],
                 outputFiles: [output]
             )
         }
