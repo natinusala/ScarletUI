@@ -30,10 +30,34 @@ import Runtime
 protocol DynamicProperty {
     /// Accepts the given visitor into the property.
     /// Should call the appropriate `visit` methode of the visitor.
-    func accept<Visitor: ElementVisitor>(
+    func accept<Visitor: DynamicPropertiesVisitor>(
         visitor: Visitor,
         in property: PropertyInfo,
         target: inout Visitor.Visited,
         using context: ElementNodeContext
+    ) throws
+}
+
+/// Visits various dynamic properties of a given element.
+/// Used by calling ``DynamicProperty/accept()`` on the visited property.
+protocol DynamicPropertiesVisitor<Visited>: AnyObject {
+    associatedtype Visited: Element
+
+    /// Visit a state property.
+    func visitStateProperty<Value>(
+        _ property: PropertyInfo,
+        current: State<Value>,
+        target: inout Visited,
+        type: Value.Type
+    ) throws
+
+    /// Visit an environment property.
+    func visitEnvironmentProperty<Value>(
+        _ property: PropertyInfo,
+        current: Environment<Value>,
+        target: inout Visited,
+        type: Value.Type,
+        values: EnvironmentValues,
+        diff: EnvironmentDiff
     ) throws
 }

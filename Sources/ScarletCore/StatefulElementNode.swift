@@ -148,7 +148,7 @@ public extension StatefulElementNode {
 }
 
 /// Visitor used to install dynamic properties on elements.
-private class DynamicPropertiesInstaller<Visited: Element, Node: StatefulElementNode>: ElementVisitor where Node.Value == Visited {
+private class DynamicPropertiesInstaller<Visited: Element, Node: StatefulElementNode>: DynamicPropertiesVisitor where Node.Value == Visited {
     let node: Node
 
     init(node: Node) {

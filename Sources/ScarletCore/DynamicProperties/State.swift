@@ -85,7 +85,7 @@ public struct State<Value>: DynamicProperty {
         return Self(defaultValue: self.defaultValue, location: location)
     }
 
-    func accept<Visitor: ElementVisitor>(
+    func accept<Visitor: DynamicPropertiesVisitor>(
         visitor: Visitor,
         in property: PropertyInfo,
         target: inout Visitor.Visited,

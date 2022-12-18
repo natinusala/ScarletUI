@@ -93,10 +93,6 @@ public struct Environment<Value>: EnvironmentProperty {
         }
     }
 
-    // TODO: remove all useless public members
-    // TODO: make sure to update docs and document everything new
-    // TODO: read full diff before merging
-
     func changed(using diff: EnvironmentDiff) -> Bool {
         return diff[self.keyPath] ?? false
     }
@@ -113,7 +109,7 @@ public struct Environment<Value>: EnvironmentProperty {
         self.location?.set(values[keyPath: self.keyPath])
     }
 
-    func accept<Visitor: ElementVisitor>(
+    func accept<Visitor: DynamicPropertiesVisitor>(
         visitor: Visitor,
         in property: PropertyInfo,
         target: inout Visitor.Visited,

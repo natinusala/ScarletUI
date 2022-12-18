@@ -202,7 +202,7 @@ struct SomeDynamicProperty: DynamicProperty, ExpressibleByIntegerLiteral {
         self.dynamicValue = integerLiteral
     }
 
-    func accept<Visitor: ElementVisitor>(
+    func accept<Visitor: DynamicPropertiesVisitor>(
         visitor: Visitor,
         in property: PropertyInfo,
         target: inout Visitor.Visited,
