@@ -29,11 +29,6 @@ let package = Package(
             name: "ScarletUIDemo",
             targets: ["ScarletUIDemo"]
         ),
-        .plugin(name: "ScarletUICodegen", targets: ["ScarletUICodegen"]),
-        .executable(
-            name: "ScarletUIMetadata",
-            targets: ["ScarletUIMetadata"]
-        ),
     ],
     dependencies: [
         // Core dependencies
@@ -99,36 +94,7 @@ let package = Package(
         // ScarletUIDemo: simple ScarletUI demo app
         .executableTarget(
             name: "ScarletUIDemo",
-            dependencies: ["ScarletUI"],
-            plugins: [
-                // .plugin(name: "ScarletUICodegen"),
-            ]
-        ),
-        // ScarletUICodegen: plugin to call various codegen tools
-        .plugin(
-            name: "ScarletUICodegen",
-            capability: .buildTool(),
-            dependencies: [
-                "ScarletUIMetadata",
-            ]
-        ),
-        // ScarletUIMetadata: view metadata code generation tool
-        .executableTarget(
-            name: "ScarletUIMetadata",
-            dependencies: ["Archtype"],
-            resources: [
-                .process("Metadata.stencil")
-            ]
-        ),
-        // Archtype: framework to make code generation tools, best used with SPM plugins
-        .target(
-            name: "Archtype",
-            dependencies: [
-                .product(name: "SwiftSyntax", package: "swift-syntax"),
-                .product(name: "SwiftParser", package: "swift-syntax"),
-                "Stencil",
-                .product(name: "Backtrace", package: "swift-backtrace"),
-            ]
+            dependencies: ["ScarletUI"]
         ),
         // Test targets
         .testTarget(
