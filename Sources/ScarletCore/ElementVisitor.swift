@@ -16,7 +16,7 @@
 
 import Runtime
 
-public protocol ElementVisitor<Visited>: AnyObject {
+protocol ElementVisitor<Visited>: AnyObject {
     associatedtype Visited: Element
 
     func visitStateProperty<Value>(

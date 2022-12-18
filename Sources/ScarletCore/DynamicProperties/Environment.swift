@@ -93,7 +93,6 @@ public struct Environment<Value>: EnvironmentProperty {
         }
     }
 
-    // TODO: what's to keep here?
     // TODO: remove all useless public members
     // TODO: make sure to update docs and document everything new
     // TODO: read full diff before merging
