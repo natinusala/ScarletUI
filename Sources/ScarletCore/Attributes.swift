@@ -284,9 +284,9 @@ public struct AppendAttribute<Implementation: ImplementationNode, Value>: Attrib
 
 /// Sets an attribute value to any implementation.
 ///
-/// By default, attributes of an element are collected using a Mirror on the element itself
+/// By default, attributes of an element are collected using runtime metadata on the element itself
 /// to gather all `@Attribute` property wrappers.
-/// However this is quite slow due to the Mirror.
+/// However this is quite slow due to runtime metadata lookup.
 ///
 /// Using a specialized element like `ViewAttribute` without property wrappers allows collecting
 /// attributes in a type-safe and faster way.

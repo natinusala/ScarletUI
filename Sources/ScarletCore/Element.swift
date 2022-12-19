@@ -60,28 +60,34 @@ public extension Element {
         return Implementation(displayName: element.displayName)
     }
 
-    /// Default way of collecting attributes: use a Mirror on the element directly
+    /// Default way of collecting attributes: use runtime metadata on the element directly
     /// to gather `@Attribute` property wrappers.
     static func collectAttributes(of element: Self, source: AnyHashable) -> AttributesStash {
         return AttributesStash(
-            from: Self.collectAttributesUsingMirror(of: element),
+            from: Self.collectAttributesUsingTypeInfo(of: element),
             source: source
         )
     }
 
-    /// Uses a Mirror to collect all attributes of the given element.
-    static func collectAttributesUsingMirror(of element: Self) -> [AttributeTarget: any AttributeSetter] {
-        let mirror = Mirror(reflecting: element)
+    /// Uses runtime metadata to collect all attributes of the given element.
+    static func collectAttributesUsingTypeInfo(of element: Self) -> [AttributeTarget: any AttributeSetter] {
+        do {
+            let typeInfo = try cachedTypeInfo(of: Self.self)
 
-        var attributes: [AttributeTarget: any AttributeSetter] = [:]
+            var attributes: [AttributeTarget: any AttributeSetter] = [:]
 
-        for child in mirror.children {
-            if let attribute = child.value as? any AttributeSetter {
-                attributes[attribute.target] = attribute
+            metadataLogger.debug("Collecting attributes of \(Self.self) using type info")
+            for property in typeInfo.properties {
+                let value = try property.get(from: element)
+                if let attribute = value as? any AttributeSetter {
+                    attributes[attribute.target] = attribute
+                }
             }
-        }
 
-        return attributes
+            return attributes
+        } catch {
+            fatalError("Unable to collect attributes of \(Self.self): \(error)")
+        }
     }
 }
 

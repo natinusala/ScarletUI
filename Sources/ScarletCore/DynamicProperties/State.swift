@@ -14,8 +14,6 @@
    limitations under the License.
 */
 
-import Runtime
-
 /// Serves as storage for state properties.
 class StateLocation<Value>: Location {
     @Podable var value: Value

@@ -14,8 +14,6 @@
    limitations under the License.
 */
 
-import Runtime
-
 /// Identifies an environment value.
 public protocol EnvironmentKey {
     associatedtype Value
@@ -179,17 +177,23 @@ class EnvironmentMetadataCache {
         self.cache[key] = value
     }
 
+    /// Discovers all environment properties of an element type using runtime metadata.
     private func discoverEnvironmentProperties<E: Element>(of element: E) -> Set<PartialKeyPath<EnvironmentValues>> {
-        let mirror = Mirror(reflecting: element)
+        do {
+            let typeInfo = try cachedTypeInfo(of: E.self)
 
-        return Set(
-            mirror.children.compactMap { label, value -> PartialKeyPath<EnvironmentValues>? in
+            let keyPaths = try typeInfo.properties.compactMap { property -> PartialKeyPath<EnvironmentValues>? in
+                let value = try property.get(from: element)
                 guard let value = value as? EnvironmentProperty else {
                     return nil
                 }
 
                 return value.partialKeyPath
             }
-        )
+
+            return Set(keyPaths)
+        } catch {
+            fatalError("Error while discovering environment properties on \(E.self): \(error)")
+        }
     }
 }

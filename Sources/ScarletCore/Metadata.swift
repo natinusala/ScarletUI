@@ -16,13 +16,21 @@
 
 import Runtime
 
+typealias TypeInfo = Runtime.TypeInfo
+typealias PropertyInfo = Runtime.PropertyInfo
+
 /// Returns cached type info.
-func cachedTypeInfo<T>(of type: T.Type) throws -> TypeInfo {
+func cachedTypeInfo(of type: Any.Type) throws -> TypeInfo {
+    metadataLogger.debug("Requesting type info of \(type)")
+
     let key = ObjectIdentifier(type)
 
     if let info = cache[key] {
+        metadataLogger.debug("  Found in cache")
         return info
     }
+
+    metadataLogger.debug("  Missing from cache, resolving from metadata")
 
     let info = try typeInfo(of: type)
     cache[key] = info

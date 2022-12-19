@@ -14,8 +14,6 @@
    limitations under the License.
 */
 
-import Runtime
-
 /// A node for "stateful" elements. Stateful elements are elements that:
 /// - may have dynamic properties
 /// - need to be compared before updating (equality check)

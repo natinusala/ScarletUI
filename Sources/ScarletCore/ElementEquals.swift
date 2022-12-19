@@ -25,6 +25,7 @@ import Foundation
 ///     2. `memcmp` if type is POD
 ///     3. `AnyClass` conformance (compare references)
 ///     4. Recursive field by field comparison using a Mirror
+/// Note: use a mirror instead of faster `cachedTypeInfo` because of lists, tuples and dicts
 func elementEquals(lhs: Any, rhs: Any) -> Bool {
     var lhs = lhs
     var rhs = rhs

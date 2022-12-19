@@ -19,3 +19,4 @@ import Logging
 let attributesLogger = Logger(label: "ScarletCore.Attributes")
 let implementationLogger = Logger(label: "ScarletCore.Implementation")
 let stateLogger = Logger(label: "ScarletCore.State")
+let metadataLogger = Logger(label: "ScarletCore.Metadata")

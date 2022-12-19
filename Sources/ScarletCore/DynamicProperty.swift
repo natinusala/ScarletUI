@@ -14,8 +14,6 @@
    limitations under the License.
 */
 
-import Runtime
-
 /// A property which storage is managed by ScarletUI.
 ///
 /// The table below describes how different elements behave depending on if they are stateless or stateful and if they are a POD or not.
@@ -25,7 +23,7 @@ import Runtime
 ///|-----------------------|----------------------------------------------------------------------|---------------------------------------------------------------------------------|---------------------------------------------------------------------------------|-----------------------------------------------------------------------|
 ///| **Stateful POD**      | _Undefined - all dynamic properties have objects and cannot be PODs_ | _Undefined_                                                                     | _Undefined_                                                                     | _Undefined_                                                           |
 ///| **Stateless POD**     | memcmp                                                               | Can be done after comparison as there are no dynamic properties anyway          | Store whole value for memcmp                                                    | Stored directly in value, doesn't change anything                     |
-///| **Stateful non-POD**  | Field by field mirror, ignoring dynamic properties                   | Can be done after comparison since dynamic properties are ignored in comparison | Store whole value, it's fine since dynamic properties are ignored in comparison | Stored directly in value, avoids duplication with whole value storage |
+///| **Stateful non-POD**  | Field by field runtime metadata, ignoring dynamic properties         | Can be done after comparison since dynamic properties are ignored in comparison | Store whole value, it's fine since dynamic properties are ignored in comparison | Stored directly in value, avoids duplication with whole value storage |
 ///| **Stateless non-POD** | _Undefined - not supported_                                          | _Undefined_                                                                     | _Undefined_                                                                     | _Undefined_                                                           |
 protocol DynamicProperty {
     /// Accepts the given visitor into the property.
