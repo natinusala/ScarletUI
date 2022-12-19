@@ -59,8 +59,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/natinusala/Quick.git",
       "state" : {
-        "branch" : "linux-xctest",
-        "revision" : "204b8559d539d819eeabe72685922d05c19006a9"
+        "revision" : "d18bb92651caba3a97e2c08d9d7c4f44f8dfd0f3",
+        "version" : "1.0.0"
       }
     },
     {
@@ -84,10 +84,10 @@
     {
       "identity" : "swift-backtrace",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/swift-server/swift-backtrace.git",
+      "location" : "https://github.com/natinusala/swift-backtrace.git",
       "state" : {
-        "revision" : "f25620d5d05e2f1ba27154b40cafea2b67566956",
-        "version" : "1.3.3"
+        "revision" : "c3d60fe020e980902994397d87f54c34b8937787",
+        "version" : "1.0.0"
       }
     },
     {
