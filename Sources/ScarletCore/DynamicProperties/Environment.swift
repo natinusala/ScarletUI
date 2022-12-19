@@ -179,7 +179,7 @@ class EnvironmentMetadataCache {
 
     /// Discovers all environment properties of an element type using runtime metadata.
     private func discoverEnvironmentProperties<E: Element>(of element: E) -> Set<PartialKeyPath<EnvironmentValues>> {
-        do {
+        return fatalAttempt(to: "discover environment properties on \(E.self)") {
             let typeInfo = try cachedTypeInfo(of: E.self)
 
             let keyPaths = try typeInfo.properties.compactMap { property -> PartialKeyPath<EnvironmentValues>? in
@@ -192,8 +192,6 @@ class EnvironmentMetadataCache {
             }
 
             return Set(keyPaths)
-        } catch {
-            fatalError("Error while discovering environment properties on \(E.self): \(error)")
         }
     }
 }

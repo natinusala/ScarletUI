@@ -71,7 +71,7 @@ public extension Element {
 
     /// Uses runtime metadata to collect all attributes of the given element.
     static func collectAttributesUsingTypeInfo(of element: Self) -> [AttributeTarget: any AttributeSetter] {
-        do {
+        return fatalAttempt(to: "collect attributes of \(Self.self)") {
             let typeInfo = try cachedTypeInfo(of: Self.self)
 
             var attributes: [AttributeTarget: any AttributeSetter] = [:]
@@ -85,8 +85,6 @@ public extension Element {
             }
 
             return attributes
-        } catch {
-            fatalError("Unable to collect attributes of \(Self.self): \(error)")
         }
     }
 }

@@ -121,3 +121,17 @@ public func breakpoint() {
     raise(SIGINT)
   #endif
 }
+
+/// Makes an attempt at running the given throwing block. If it fails, the program will crash with the
+/// given meaningful error message.
+@discardableResult
+func fatalAttempt<T>(
+    to errorMessage: @autoclosure () -> String,
+    _ block: () throws -> T
+) -> T {
+    do {
+        return try block()
+    } catch {
+        fatalError("Failed to \(errorMessage()): \(error)")
+    }
+}

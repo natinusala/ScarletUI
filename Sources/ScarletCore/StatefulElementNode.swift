@@ -110,7 +110,7 @@ public extension StatefulElementNode {
 
     func install(element: inout Value, using context: ElementNodeContext) {
         // Iterate over all properties and accept the visitor into each dynamic one
-        do {
+        fatalAttempt(to: "visit dynamic properties of \(Value.self)") {
             let visitor = DynamicPropertiesInstaller(node: self)
 
             let info = try cachedTypeInfo(of: Value.self)
@@ -130,8 +130,6 @@ public extension StatefulElementNode {
                         break
                 }
             }
-        } catch {
-            fatalError("Error while visiting dynamic properties: \(error)")
         }
     }
 
