@@ -115,8 +115,7 @@ public extension StatefulElementNode {
         do {
             let visitor = DynamicPropertiesInstaller(node: self)
 
-            // TODO: Setup cache for info to avoid metadata lookup at every call
-            let info = try typeInfo(of: Value.self)
+            let info = try cachedTypeInfo(of: Value.self)
 
             for property in info.properties {
                 let current = try property.get(from: self.value)
