@@ -15,6 +15,7 @@
 */
 
 import ScarletCore
+import Foundation
 
 struct Image: StatelessLeafView {
     @Attribute(\ImageImpl.source)
@@ -28,8 +29,19 @@ struct Image: StatelessLeafView {
     }
 }
 
+enum Filter {
+    case sepia
+    case blackAndWhite
+    case stereoscopic
+}
+
 class ImageImpl: ViewImpl {
     var source: String = ""
+    var filters = AttributeList<Filter>() {
+        didSet {
+            self.filtersChanged = true
+        }
+    }
 
     /// Initializer used by ScarletCore.
     public required init(displayName: String) {
@@ -37,14 +49,24 @@ class ImageImpl: ViewImpl {
     }
 
     /// Initializer used for test assertions.
-    init(source: String) {
+    init(source: String, filters: [Filter] = []) {
         self.source = source
+        self.filters = .init(uniqueKeysWithValues: filters.map { (UUID(), $0) })
+
         super.init(displayName: "Image")
+    }
+
+    var filtersChanged = false
+
+    override func reset() {
+        super.reset()
+
+        self.filtersChanged = false
     }
 
     override open func equals(to other: ViewImpl) -> Bool {
         guard let other = other as? ImageImpl else { return false }
-        return self.source == other.source
+        return self.source == other.source && self.filters == other.filters
     }
 
     override var customAttributesDebugDescription: String {
