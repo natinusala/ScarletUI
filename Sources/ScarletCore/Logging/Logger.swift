@@ -125,13 +125,33 @@ public func breakpoint() {
 /// Makes an attempt at running the given throwing block. If it fails, the program will crash with the
 /// given meaningful error message.
 @discardableResult
-func fatalAttempt<T>(
+func fatalAttempt<Result>(
     to errorMessage: @autoclosure () -> String,
-    _ block: () throws -> T
-) -> T {
+    _ block: () throws -> Result
+) -> Result {
     do {
         return try block()
     } catch {
         fatalError("Failed to \(errorMessage()): \(error)")
+    }
+}
+
+extension Logger {
+    /// If the log level is greater or equal than debug, run the block and log how long it took to complete.
+    /// If not, run the block without timing or logging anything.
+    func time<Result>(_ what: @autoclosure () -> String, _ block: () throws -> Result) rethrows -> Result {
+        if self.logLevel >= .debug {
+            let begin = Date()
+
+            let result = try block()
+
+            let after = begin.distance(to: Date())
+
+            self.debug("\(what()) took \(after.milliseconds)ms")
+
+            return result
+        } else {
+            return try block()
+        }
     }
 }

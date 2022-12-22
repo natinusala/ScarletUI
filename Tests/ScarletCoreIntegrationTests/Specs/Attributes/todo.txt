@@ -9,7 +9,6 @@ refacto pour réduire la duplication
     revoir le flow entier
 
 Append attributes
-    - un append fait une fois
     - plusieurs append d'un attribut différent sur une vue
     - l'attribut mis sur le mauvais type doit spread en bas
     - deux fois le même attribut à 2 niveaux différents: doit cumuler et remplacer le bon dans la liste
