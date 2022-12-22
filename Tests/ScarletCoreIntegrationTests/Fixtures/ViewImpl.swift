@@ -23,6 +23,14 @@ import XCTest
 
 private let logger = Logger(label: "ScarletCoreIntegrationTests.ViewImpl")
 
+private func log(_ message: @autoclosure () -> Logger.Message) {
+    let loggingEnv = "SCARLET_TESTS_LOG"
+
+    if ProcessInfo.processInfo.environment[loggingEnv] == "1" {
+        logger.info(message())
+    }
+}
+
 private func removeOptional(_ string: String) -> String {
     let match = string.firstMatch(of: Regex {
         "Optional("
@@ -43,7 +51,7 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
     struct Attributes: Equatable, CustomStringConvertible {
         var id: String? {
             willSet {
-                logger.info("'id' attribute update: \(String(describing: id)) -> \(String(describing: newValue))")
+                log("'id' attribute update: \(String(describing: id)) -> \(String(describing: newValue))")
                 self.updated.insert(\.id)
                 self.updatesCount += 1
             }
@@ -51,7 +59,7 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
 
         var fill: Color? {
             willSet {
-                logger.info("'fill' attribute update: \(String(describing: fill)) -> \(String(describing: newValue))")
+                log("'fill' attribute update: \(String(describing: fill)) -> \(String(describing: newValue))")
                 self.updated.insert(\.fill)
                 self.updatesCount += 1
             }
@@ -59,7 +67,7 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
 
         var grow: Float? {
             willSet {
-                logger.info("'grow' attribute update: \(String(describing: grow)) -> \(String(describing: newValue))")
+                log("'grow' attribute update: \(String(describing: grow)) -> \(String(describing: newValue))")
                 self.updated.insert(\.grow)
                 self.updatesCount += 1
             }
@@ -67,15 +75,23 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
 
         var tags = AttributeList<String>() {
             willSet {
-                logger.info("'tags' attribute update: \(String(describing: tags)) -> \(String(describing: newValue))")
+                log("'tags' attribute update: \(String(describing: tags)) -> \(String(describing: newValue))")
                 self.updated.insert(\.tags)
+                self.updatesCount += 1
+            }
+        }
+
+        var flags = AttributeList<Flag>() {
+            willSet {
+                log("'flags' attribute update: \(String(describing: flags)) -> \(String(describing: newValue))")
+                self.updated.insert(\.flags)
                 self.updatesCount += 1
             }
         }
 
         /// Redefined equality check to ignore ``updated`` and ``updatesCount``.
         static func == (lhs: Self, rhs: Self) -> Bool {
-            return lhs.id == rhs.id && lhs.fill == rhs.fill && lhs.grow == rhs.grow && lhs.tags == rhs.tags
+            return lhs.id == rhs.id && lhs.fill == rhs.fill && lhs.grow == rhs.grow && lhs.tags == rhs.tags && lhs.flags == rhs.flags
         }
 
         var updated: Set<PartialKeyPath<Self>> = []
@@ -175,6 +191,7 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
         fill: Color? = nil,
         grow: Float? = nil,
         tags: [String] = [],
+        flags: [Flag] = [],
         @ViewImplChildrenBuilder children: () -> [ViewImpl] = { [] }
     ) {
         self.init(displayName: displayName)
@@ -183,6 +200,7 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
         self.attributes.fill = fill
         self.attributes.grow = grow
         self.attributes.tags = .init(uniqueKeysWithValues: tags.map { (UUID(), $0) })
+        self.attributes.flags = .init(uniqueKeysWithValues: flags.map { (UUID(), $0) })
 
         self.children = children()
     }
@@ -273,6 +291,12 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
         <\(self.displayName) \(self.attributes) \(self.customAttributesDebugDescription)>\(children)</\(self.displayName)>
         """
     }
+}
+
+enum Flag {
+    case focusable
+    case clickable
+    case accessible
 }
 
 extension View {

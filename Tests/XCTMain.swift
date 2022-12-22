@@ -78,6 +78,7 @@ let specs: [QuickSpec.Type] = [
     DiscardingAttributePropagationOverridingSpec.QuickSpec.self,
     AppendingAttributeMutlipleSpec.QuickSpec.self,
     AppendingAttributeSpec.QuickSpec.self,
+    AppendingAttributeMultipleDifferentSpec.QuickSpec.self,
 
     // Dynamic edges
     // ForEachSpecs.self,
