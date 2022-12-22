@@ -31,6 +31,9 @@ struct Arguments: ParsableCommand  {
     @Option(help: "Send logs to cutelog on this network address (port: \(Cutelog.defaultPort)).")
     var cutelog: String?
 
+    @Flag(help: "Enable benchmarking logs?")
+    var benchmark = false
+
     init() {}
 
     init(testing: Bool = false) {
@@ -38,6 +41,7 @@ struct Arguments: ParsableCommand  {
             self.logLevel = .info
             self.disableLogColors = false
             self.cutelog = nil
+            self.benchmark = false
         }
     }
 

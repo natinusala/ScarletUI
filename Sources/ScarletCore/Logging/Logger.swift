@@ -26,7 +26,13 @@ let logLevelEnv = "SCARLET_LOG_LEVEL"
 // TODO: add option to log to file (is rotation needed?)
 // TODO: maybe remove ConsoleKit to either use something that also has log file rotation, or a manual solution (useless dependency)
 
+/// Global state: is benchmark mode enabled?
+private var benchmarkEnabled = false
+
 func bootstrapLogger(arguments: Arguments) {
+    // Setup global state
+    benchmarkEnabled = arguments.benchmark
+
     // Get log level address either from CLI arguments or
     // from the environment variable for testing
     let logLevel: Logger.Level
@@ -136,22 +142,21 @@ func fatalAttempt<Result>(
     }
 }
 
-extension Logger {
-    /// If the log level is greater or equal than debug, run the block and log how long it took to complete.
-    /// If not, run the block without timing or logging anything.
-    func time<Result>(_ what: @autoclosure () -> String, _ block: () throws -> Result) rethrows -> Result {
-        if self.logLevel >= .debug {
-            let begin = Date()
+/// If benchmarking is enabled, run the block and log how long it took to complete.
+/// If disabled, run the block without timing or logging anything.
+/// Uses the benchmark internal logger. Enable with `--benchmark`.
+func benchmark<Result>(_ what: @autoclosure () -> String, _ block: () throws -> Result) rethrows -> Result {
+    if benchmarkEnabled {
+        let begin = Date()
 
-            let result = try block()
+        let result = try block()
 
-            let after = begin.distance(to: Date())
+        let after = begin.distance(to: Date())
 
-            self.debug("\(what()) took \(after.milliseconds)ms")
+        benchmarkLogger.info("Benchmark: \(what()) finished in \(after.milliseconds)ms")
 
-            return result
-        } else {
-            return try block()
-        }
+        return result
+    } else {
+        return try block()
     }
 }

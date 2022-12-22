@@ -137,7 +137,7 @@ public extension StatefulElementNode {
     func notifyStateChange() {
         // Take the stored value and make it again as it is
         // Set context state change
-        stateLogger.time("'\(Value.self)' state update") {
+        benchmark("'\(Value.self)' state update") {
             let context = self.context.settingStateChange()
             _ = self.update(with: self.value, implementationPosition: self.implementationPosition, using: context)
         }
