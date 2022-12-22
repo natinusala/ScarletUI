@@ -39,6 +39,12 @@ public extension StatefulElementNode {
     /// Default implementation for stored element nodes: compare the stored value
     /// with the new one.
     func shouldUpdate(with element: Value, using context: ElementNodeContext) -> Bool {
+        // If the view is a container, don't check it since it's redundant
+        // with checking its content
+        if let _ = element as? any ContainerView {
+            return true
+        }
+
         return !elementEquals(lhs: self.value, rhs: element)
     }
 

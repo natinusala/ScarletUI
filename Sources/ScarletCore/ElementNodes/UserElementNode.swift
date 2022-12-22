@@ -77,13 +77,6 @@ public class UserElementNode<Value, Edge>: StatefulElementNode where Value: Elem
         return Value.make(element, input: input)
     }
 
-    public func shouldUpdate(with element: Value, using context: ElementNodeContext) -> Bool where Value: ContainerView {
-        // If the view is a container, don't check it since it's redundant
-        // with checking its content
-        // TODO: test that it works
-        return true
-    }
-
     public var allEdges: [(any ElementNode)?] {
         return [
             self.edge
