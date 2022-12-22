@@ -14,11 +14,11 @@
    limitations under the License.
 */
 
-public struct UserMakeInput<Value>: MakeInput where Value: Element {
+public struct UserMakeInput<Value>: ElementInput where Value: Element {
 
 }
 
-public struct UserMakeOutput<Value, Edge>: MakeOutput where Value: Element, Edge: Element {
+public struct UserMakeOutput<Value, Edge>: ElementOutput where Value: Element, Edge: Element {
     let edge: Edge
 }
 

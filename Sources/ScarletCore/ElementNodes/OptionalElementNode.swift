@@ -14,11 +14,11 @@
    limitations under the License.
 */
 
-public struct OptionalMakeInput<Value>: MakeInput where Value: Element {
+public struct OptionalMakeInput<Value>: ElementInput where Value: Element {
 
 }
 
-public struct OptionalMakeOutput<Value, Wrapped>: MakeOutput where Value: Element, Wrapped: Element {
+public struct OptionalMakeOutput<Value, Wrapped>: ElementOutput where Value: Element, Wrapped: Element {
     let edge: Wrapped?
 }
 

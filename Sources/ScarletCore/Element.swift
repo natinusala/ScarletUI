@@ -14,13 +14,13 @@
    limitations under the License.
 */
 
-// TODO: Rename to ElementInput and all implementations to XXXInput
-public protocol MakeInput<Value> {
+/// Input of the `make` method of an element.
+public protocol ElementInput<Value> {
     associatedtype Value: Element
 }
 
-// TODO: Rename to ElementOutput and all implementations to XXXOutput
-public protocol MakeOutput<Value> {
+/// Output of the `make` method of an element.
+public protocol ElementOutput<Value> {
     associatedtype Value: Element
 }
 
@@ -32,8 +32,8 @@ public protocol Element: CustomDebugStringConvertible, IsPodable {
     /// Type of input for this element. Used as a pivot to infer the node and output types,
     /// hence the default value (for user views). Other element types must explicitely
     /// typealias both input and output types to prevent ambiguous `makeNode()` resolution.
-    associatedtype Input: MakeInput<Self> = UserMakeInput<Self>
-    associatedtype Output: MakeOutput<Self>
+    associatedtype Input: ElementInput<Self> = UserMakeInput<Self>
+    associatedtype Output: ElementOutput<Self>
 
     /// Type of implementation node for this element.
     associatedtype Implementation: ImplementationNode

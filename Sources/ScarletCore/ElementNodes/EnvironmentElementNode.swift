@@ -14,11 +14,11 @@
    limitations under the License.
 */
 
-public struct EnvironmentMakeInput<Value>: MakeInput where Value: Element {
+public struct EnvironmentMakeInput<Value>: ElementInput where Value: Element {
 
 }
 
-public struct EnvironmentMakeOutput<Value, E0>: MakeOutput where Value: Element, E0: Element {
+public struct EnvironmentMakeOutput<Value, E0>: ElementOutput where Value: Element, E0: Element {
     var e0: E0
 }
 

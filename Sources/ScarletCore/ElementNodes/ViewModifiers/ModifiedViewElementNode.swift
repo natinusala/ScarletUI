@@ -14,11 +14,11 @@
    limitations under the License.
 */
 
-public struct ModifiedViewMakeInput<Content, Modifier>: MakeInput where Content: View, Modifier: ViewModifier {
+public struct ModifiedViewMakeInput<Content, Modifier>: ElementInput where Content: View, Modifier: ViewModifier {
     public typealias Value = ModifiedContent<Content, Modifier>
 }
 
-public struct ModifiedViewMakeOutput<Content, Modifier>: MakeOutput where Content: View, Modifier: ViewModifier {
+public struct ModifiedViewMakeOutput<Content, Modifier>: ElementOutput where Content: View, Modifier: ViewModifier {
     public typealias Value = ModifiedContent<Content, Modifier>
 
     let content: Content

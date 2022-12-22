@@ -37,7 +37,7 @@ public struct Column<Content>: View where Content: View {
         }
     }
 
-    public static func make(view: Self?, input: MakeInput) -> MakeOutput {
+    public static func make(view: Self?, input: ElementInput) -> MakeOutput {
         let contentStorage = input.storage?.edges.staticAt(0, for: Content.self)
         let contentInput = MakeInput(storage: contentStorage, implementationPosition: Self.substantial ? 0 : input.implementationPosition, context: input.context)
         let contentOutput = Content.make(view: view?.content, input: contentInput)

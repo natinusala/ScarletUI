@@ -14,11 +14,11 @@
    limitations under the License.
 */
 
-public struct ViewModifierContentMakeInput<Value>: MakeInput where Value: View {
+public struct ViewModifierContentMakeInput<Value>: ElementInput where Value: View {
 
 }
 
-public struct ViewModifierContentMakeOutput<Value>: MakeOutput where Value: View {
+public struct ViewModifierContentMakeOutput<Value>: ElementOutput where Value: View {
 
 }
 

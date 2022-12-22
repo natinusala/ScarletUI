@@ -14,11 +14,11 @@
    limitations under the License.
 */
 
-public struct StatelessLeafViewMakeInput<Value>: MakeInput where Value: Element {
+public struct StatelessLeafViewMakeInput<Value>: ElementInput where Value: Element {
 
 }
 
-public struct StatelessLeafViewMakeOutput<Value>: MakeOutput where Value: Element {
+public struct StatelessLeafViewMakeOutput<Value>: ElementOutput where Value: Element {
 
 }
 

@@ -14,11 +14,11 @@
    limitations under the License.
 */
 
-public struct ConditionalMakeInput<Value>: MakeInput where Value: Element {
+public struct ConditionalMakeInput<Value>: ElementInput where Value: Element {
 
 }
 
-public enum ConditionalMakeOutput<Value, First, Second>: MakeOutput where Value: Element, First: Element, Second: Element {
+public enum ConditionalMakeOutput<Value, First, Second>: ElementOutput where Value: Element, First: Element, Second: Element {
     case first(First)
     case second(Second)
 }

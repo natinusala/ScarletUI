@@ -14,11 +14,11 @@
    limitations under the License.
 */
 
-public struct LeafSceneMakeInput<Value>: MakeInput where Value: Element {
+public struct LeafSceneMakeInput<Value>: ElementInput where Value: Element {
 
 }
 
-public struct LeafSceneMakeOutput<Value, Edge>: MakeOutput where Value: Element, Edge: Element {
+public struct LeafSceneMakeOutput<Value, Edge>: ElementOutput where Value: Element, Edge: Element {
     let edge: Edge
 }
 

@@ -14,7 +14,7 @@
    limitations under the License.
 */
 
-extension Never: MakeInput, MakeOutput {
+extension Never: ElementInput, ElementOutput {
     public typealias Value = Never
 }
 

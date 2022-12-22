@@ -14,11 +14,11 @@
    limitations under the License.
 */
 
-public struct UserViewModifierMakeInput<Value>: MakeInput where Value: ViewModifier {
+public struct UserViewModifierMakeInput<Value>: ElementInput where Value: ViewModifier {
     let content: Value.Content
 }
 
-public struct UserViewModifierMakeOutput<Value, Edge>: MakeOutput where Value: ViewModifier, Edge: Element {
+public struct UserViewModifierMakeOutput<Value, Edge>: ElementOutput where Value: ViewModifier, Edge: Element {
     let edge: Edge
 }
 

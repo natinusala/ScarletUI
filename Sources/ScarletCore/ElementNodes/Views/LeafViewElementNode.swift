@@ -14,11 +14,11 @@
    limitations under the License.
 */
 
-public struct LeafViewMakeInput<Value>: MakeInput where Value: Element {
+public struct LeafViewMakeInput<Value>: ElementInput where Value: Element {
 
 }
 
-public struct LeafViewMakeOutput<Value>: MakeOutput where Value: Element {
+public struct LeafViewMakeOutput<Value>: ElementOutput where Value: Element {
 
 }
 
