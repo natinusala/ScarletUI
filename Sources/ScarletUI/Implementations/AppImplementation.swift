@@ -31,6 +31,12 @@ open class AppImplementation: ImplementationNode {
     /// Current platform handle
     let platform: any Platform
 
+    /// Should the app stop running?
+    var exitRequested = false
+
+    /// Signal sources retained by the app.
+    var signalSources: [DispatchSourceSignal] = []
+
     public required init(displayName: String) {
         self.displayName = displayName
 
@@ -90,9 +96,23 @@ open class AppImplementation: ImplementationNode {
 
     /// Runs the app until closed by the user.
     func run() {
+        // Handle stop signals
+        for signal in [SIGINT, SIGTERM] {
+            let source = DispatchSource.makeSignalSource(signal: signal, queue: .main)
+            source.setEventHandler { [weak self] in
+                guard let self else { return }
+
+                print()
+                self.exitRequested = true
+            }
+            source.resume()
+
+            self.signalSources.append(source)
+        }
+
         while true {
             // Run one frame
-            let (frameBegin, frameTime, exit) = stopwatch {
+            let (frameBegin, frameTime, windowClosed) = stopwatch {
                 self.frame()
             }
 
@@ -110,8 +130,7 @@ open class AppImplementation: ImplementationNode {
             }
 
             // Exit if necessary
-            // TODO: Handle SIGINT here as well
-            if exit {
+            if windowClosed || self.exitRequested {
                 appLogger.info("Exiting...")
                 break
             }
