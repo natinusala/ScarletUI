@@ -157,6 +157,14 @@ public extension App {
 
         let app = Self.init()
 
+        // Handle arguments
+        if arguments.listPreviews {
+            discoveredPreviews.forEach {
+                print($0.name)
+            }
+            exit(0)
+        }
+
         // If running in preview mode, run a custom app and window with the preview inside
         // Otherwise make the app node normally and let it do its thing
         if let previewing = arguments.preview {

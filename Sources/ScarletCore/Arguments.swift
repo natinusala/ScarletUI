@@ -38,6 +38,10 @@ public struct Arguments: ParsableCommand {
     @Option(help: "Run the app in preview mode, previewing a view conforming to `Preview`.")
     public var preview: String?
 
+    // TODO: Move this option to ScarletUI somehow
+    @Flag(help: "List all available previews in stdout and exit.")
+    public var listPreviews = false
+
     public init() {}
 
     init(testing: Bool = false) {
@@ -47,6 +51,7 @@ public struct Arguments: ParsableCommand {
             self.cutelog = nil
             self.benchmark = false
             self.preview = nil
+            self.listPreviews = false
         }
     }
 
