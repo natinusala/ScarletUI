@@ -153,15 +153,53 @@ public extension App {
 public extension App {
     static func main() {
         Backtrace.install()
-        ScarletCore.bootstrap()
+        let arguments = ScarletCore.bootstrap()
 
         let app = Self.init()
-        let root = Self.makeNode(of: app, in: nil, implementationPosition: 0, using: .root())
 
-        guard let implementation = root.implementation as? AppImplementation else {
-            fatalError("No implementation found for app node or got implementation of the wrong type")
+        // If running in preview mode, run a custom app and window with the preview inside
+        // Otherwise make the app node normally and let it do its thing
+        if let previewing = arguments.preview {
+            // Try to find the view to preview
+            guard let preview = getPreview(named: previewing) else {
+                appLogger.error("Did not find preview named '\(previewing)', does it conform to 'Preview'?")
+                if discoveredPreviews.isEmpty {
+                    appLogger.error("No previews are currently available")
+                } else {
+                    appLogger.error("Available previews: \(discoveredPreviews.map { $0.name }.joined(separator: ", "))")
+                }
+
+                exit(-1)
+            }
+
+            // Wrap the view in a custom made app and window
+            let app = AppImplementation(displayName: "PreviewApp")
+            let window = WindowImplementation(displayName: "PreviewWindow")
+            window.title = "Preview \(preview.name)"
+            window.mode = .windowed(1280, 720) // TODO: allow customizing that in preview and/or make it automatic
+            window.axis = defaultAxis
+
+            app.insertChild(window, at: 0)
+
+            // Make the preview and insert it in the window
+            let root = preview.makeNode()
+
+            guard let implementation = root.implementation as? ViewImplementation else {
+                fatalError("No implementation found for preview node or got implementation of the wrong type")
+            }
+
+            implementation.grow = 1.0 // make the view take the whole window
+            window.insertChild(implementation, at: 0)
+
+            app.run()
+        } else {
+            let root = Self.makeNode(of: app, in: nil, implementationPosition: 0, using: .root())
+
+            guard let implementation = root.implementation as? AppImplementation else {
+                fatalError("No implementation found for app node or got implementation of the wrong type")
+            }
+
+            implementation.run()
         }
-
-        implementation.run()
     }
 }

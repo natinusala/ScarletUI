@@ -22,6 +22,10 @@ let colors = [Color.black, Color.red, Color.orange]
 struct ScarletUIDemo: App {
     @State private var color = 0
 
+    init() {
+        _ = PreviewDiscovery(attachedTo: SomeView.self)
+    }
+
     var body: some Scene {
         Window(title: "ScarletUI Demo") {
             Rectangle(color: colors[color])
@@ -36,5 +40,12 @@ struct ScarletUIDemo: App {
             Rectangle(color: .blue)
                 .grow()
         }
+    }
+}
+
+struct SomeView: Preview {
+    var body: some View {
+        Rectangle(color: .blue)
+            .grow()
     }
 }

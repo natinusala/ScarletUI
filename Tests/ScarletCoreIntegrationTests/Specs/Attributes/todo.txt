@@ -1,5 +1,6 @@
 compléter les tests
 refacto pour utiliser le mécanisme d'Environment
+    - est-ce qu'on peut récupérer le fait que propagate peut marcher sur un attribut venant de 2 root différents ? (axis scene -> view)
 
 ou sinon
 

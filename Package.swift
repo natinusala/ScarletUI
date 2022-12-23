@@ -1,4 +1,4 @@
-// swift-tools-version: 5.7
+// swift-tools-version: 5.8
 
 /*
    Copyright 2022 natinusala
@@ -63,6 +63,9 @@ let package = Package(
                 "Glad",
                 "Skia",
                 .product(name: "Backtrace", package: "swift-backtrace"),
+            ],
+            swiftSettings: [
+                .enableExperimentalFeature("RuntimeDiscoverableAttrs")
             ]
         ),
         // ScarletCore: core library containing the DSL and graph / state management code
@@ -90,7 +93,10 @@ let package = Package(
         // ScarletUIDemo: simple ScarletUI demo app
         .executableTarget(
             name: "ScarletUIDemo",
-            dependencies: ["ScarletUI"]
+            dependencies: ["ScarletUI"],
+            swiftSettings: [
+                .enableExperimentalFeature("RuntimeDiscoverableAttrs")
+            ]
         ),
         // Test targets
         .testTarget(

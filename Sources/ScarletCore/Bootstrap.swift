@@ -20,7 +20,8 @@ import ConsoleKit
 /// Bootstraps ScarletCore and all of its systems.
 /// Must be called by the implementation library on `main`, before creating the app.
 /// If running from a test environment, specify `testing` to disable arguments parsing (that would clash with XCTest's own arguments).
-public func bootstrap(testing: Bool = false) {
+@discardableResult
+public func bootstrap(testing: Bool = false) -> Arguments {
     let arguments: Arguments
     if testing {
         arguments = .init(testing: true)
@@ -29,6 +30,8 @@ public func bootstrap(testing: Bool = false) {
     }
 
     bootstrapLogger(arguments: arguments)
+
+    return arguments
 }
 
 /// Tears down ScarletCore and all of its systems.

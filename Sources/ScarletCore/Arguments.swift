@@ -21,7 +21,7 @@ import Cutelog
 
 // TODO: how to allow adding user arguments too while merging `--help` messages?
 
-struct Arguments: ParsableCommand  {
+public struct Arguments: ParsableCommand {
     @Flag(help: "Log level. If using debug or trace, originating file name and line will be displayed with every message.")
     var logLevel = Logger.Level.info
 
@@ -34,7 +34,11 @@ struct Arguments: ParsableCommand  {
     @Flag(help: "Enable benchmarking logs?")
     var benchmark = false
 
-    init() {}
+    // TODO: Move this option to ScarletUI somehow
+    @Option(help: "Run the app in preview mode, previewing a view conforming to `Preview`.")
+    public var preview: String?
+
+    public init() {}
 
     init(testing: Bool = false) {
         if testing {
@@ -42,10 +46,11 @@ struct Arguments: ParsableCommand  {
             self.disableLogColors = false
             self.cutelog = nil
             self.benchmark = false
+            self.preview = nil
         }
     }
 
-    static var _commandName: String {
+    public static var _commandName: String {
         let executablePath = CommandLine.arguments[0]
         let url = URL(fileURLWithPath: executablePath)
 

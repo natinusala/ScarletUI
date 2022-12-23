@@ -225,6 +225,8 @@ open class ViewImplementation: LayoutImplementationNode, GamepadButtonEventImple
         // Set default layout values to make it so that views take
         // all available space by default
         self.desiredSize = Size(width: .auto, height: .auto)
+
+        self.axis = defaultAxis
     }
 
     deinit {
