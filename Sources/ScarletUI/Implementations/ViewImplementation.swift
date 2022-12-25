@@ -89,9 +89,9 @@ open class ViewImplementation: LayoutImplementationNode, GamepadButtonEventImple
     }
 
     /// The view padding, aka. the space between this view and its children.
-    var padding: EdgesValues {
+    var padding: LayoutEdgesValues {
         get {
-            return EdgesValues(
+            return LayoutEdgesValues(
                 top: .fromYGValue(YGNodeStyleGetPadding(self.ygNode, YGEdgeTop)),
                 right: .fromYGValue(YGNodeStyleGetPadding(self.ygNode, YGEdgeRight)),
                 bottom: .fromYGValue(YGNodeStyleGetPadding(self.ygNode, YGEdgeBottom)),
@@ -150,7 +150,7 @@ open class ViewImplementation: LayoutImplementationNode, GamepadButtonEventImple
     ///
     /// The actual width after layout may or may not be the desired width,
     /// however it cannot be less than the desired width.
-    var desiredWidth: Value {
+    var desiredWidth: LayoutValue {
         get {
             return .fromYGValue(YGNodeStyleGetWidth(self.ygNode))
         }
@@ -177,7 +177,7 @@ open class ViewImplementation: LayoutImplementationNode, GamepadButtonEventImple
     ///
     /// The actual height after layout may or may not be the desired height,
     /// however it cannot be less than the desired height.
-    var desiredHeight: Value {
+    var desiredHeight: LayoutValue {
         get {
             return .fromYGValue(YGNodeStyleGetHeight(self.ygNode))
         }

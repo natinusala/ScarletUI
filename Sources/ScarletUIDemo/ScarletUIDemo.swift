@@ -24,7 +24,7 @@ struct ScarletUIDemo: App {
 
     init() {
 #if DEBUG
-        _ = PreviewDiscovery(attachedTo: SomeView.self)
+        _ = PreviewDiscovery(attachedTo: SomePreview.self)
 #endif
     }
 
@@ -45,9 +45,10 @@ struct ScarletUIDemo: App {
     }
 }
 
-struct SomeView: Preview {
+struct SomePreview: Preview {
     var body: some View {
         Rectangle(color: .blue)
-            .grow()
+            .width(100)
+            .height(200)
     }
 }

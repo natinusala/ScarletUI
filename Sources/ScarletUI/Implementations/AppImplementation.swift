@@ -208,10 +208,7 @@ public extension App {
             let app = AppImplementation(displayName: "PreviewApp")
             let window = WindowImplementation(displayName: "PreviewWindow")
             window.title = "Preview \(preview.name)"
-            window.mode = .windowed(1280, 720) // TODO: allow customizing that in preview and/or make it automatic
-            window.axis = defaultAxis
-
-            app.insertChild(window, at: 0)
+            window.axis = preview.axis
 
             // Make the preview node and insert it in the window
             let root = preview.makeNode()
@@ -221,8 +218,27 @@ public extension App {
             }
 
             implementation.grow = 1.0 // make the view take the whole window
-            window.insertChild(implementation, at: 0)
+            implementation.axis = preview.axis
 
+            // Setup window size: use provided mode or layout the preview and fit the window
+            if let windowMode = preview.windowMode {
+                window.mode = windowMode
+            } else {
+                implementation.layoutIfNeeded()
+
+                if implementation.layout.width == 0 || implementation.layout.height == 0 {
+                    appLogger.error("Cannot create a window for a preview with no width or height.")
+                    appLogger.error("Please set a window size by adding a 'windowMode' property to '\(preview.name)'.")
+                    exit(-1)
+                }
+
+                appLogger.debug("Calculated preview size: \(implementation.layout)")
+
+                window.mode = .windowed(width: implementation.layout.width, height: implementation.layout.height)
+            }
+
+            window.insertChild(implementation, at: 0)
+            app.insertChild(window, at: 0)
             app.run()
             return true
         }

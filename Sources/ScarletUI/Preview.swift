@@ -23,11 +23,15 @@ let previewLogger = Logger(label: "ScarletUI.Preview")
 struct DiscoveredPreview: Hashable {
     let type: ObjectIdentifier
     let name: String
+    let windowMode: WindowMode?
+    let axis: Axis
     let makeNode: () -> any ElementNode
 
     init<Previewed: Preview>(from preview: Previewed.Type) {
         self.type = ObjectIdentifier(Previewed.self)
         self.name = String(describing: Previewed.self)
+        self.windowMode = Previewed.windowMode
+        self.axis = Previewed.axis
 
         self.makeNode = {
             return Previewed.makeNode(of: Previewed(), in: nil, implementationPosition: 0, using: .root())
@@ -60,6 +64,28 @@ public struct PreviewDiscovery<Previewed: Preview> {
 // @PreviewDiscovery
 public protocol Preview: View {
     init()
+
+    /// Window mode for the preview.
+    ///
+    /// If unspecified, the window will try to be as small as possible
+    /// to fit its content.
+    static var windowMode: WindowMode? { get }
+
+    /// Axis to use when laying out the preview.
+    ///
+    /// Only useful if there is no top-level row or column in the preview itself
+    /// or the previewed content.
+    static var axis: Axis { get }
+}
+
+public extension Preview {
+    static var windowMode: WindowMode? {
+        return nil
+    }
+
+    static var axis: Axis {
+        return defaultAxis
+    }
 }
 
 /// Returns the preview for the given name if found.

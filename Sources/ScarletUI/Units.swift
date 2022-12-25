@@ -22,7 +22,7 @@ postfix operator %
 public extension IntegerLiteralType {
     /// Integer percentage "literal", converts any 0 to 100 integer to a
     /// percentage value.
-    static postfix func % (int: Int) -> Value {
+    static postfix func % (int: Int) -> LayoutValue {
         return .percentage(value: Float(int))
     }
 }
@@ -30,21 +30,21 @@ public extension IntegerLiteralType {
 public extension FloatLiteralType {
     /// Float percentage "literal", converts any 0 to 100 integer to a
     /// percentage value.
-    static postfix func % (double: Double) -> Value {
+    static postfix func % (double: Double) -> LayoutValue {
         return .percentage(value: Float(double))
     }
 }
 
 /// Contains values for all 4 edges of a view.
-public struct EdgesValues: Equatable {
-    let top: Value
-    let right: Value
-    let bottom: Value
-    let left: Value
+public struct LayoutEdgesValues: Equatable {
+    let top: LayoutValue
+    let right: LayoutValue
+    let bottom: LayoutValue
+    let left: LayoutValue
 }
 
 /// Represents a value of a specific unit.
-public enum Value: Equatable, ExpressibleByIntegerLiteral, ExpressibleByFloatLiteral {
+public enum LayoutValue: Equatable, ExpressibleByIntegerLiteral, ExpressibleByFloatLiteral {
     /// Let the framework decide the value to have a
     /// balanced layout.
     case auto
@@ -81,7 +81,7 @@ public enum Value: Equatable, ExpressibleByIntegerLiteral, ExpressibleByFloatLit
         }
     }
 
-    static func fromYGValue(_ value: YGValue) -> Value {
+    static func fromYGValue(_ value: YGValue) -> LayoutValue {
         switch value.unit {
             case YGUnitUndefined:
                 return .undefined
@@ -99,18 +99,18 @@ public enum Value: Equatable, ExpressibleByIntegerLiteral, ExpressibleByFloatLit
 
 /// Width and height of a view.
 public struct Size: Equatable {
-    let width: Value
-    let height: Value
+    let width: LayoutValue
+    let height: LayoutValue
 }
 
 public extension Float {
     /// Converts a `Float` to a `Value` with `dip` unit.
-    var dip: Value {
+    var dip: LayoutValue {
         return .dip(value: self)
     }
 
     /// Converts a `Float` to a `Value` with `percentage` unit.
-    var percentage: Value {
+    var percentage: LayoutValue {
         return .percentage(value: self)
     }
 }

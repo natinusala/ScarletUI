@@ -82,7 +82,7 @@ public protocol NativeWindow {
 /// The mode of a window.
 public enum WindowMode: Equatable {
     /// Windowed window with given initial width and height.
-    case windowed(Float, Float)
+    case windowed(width: Float, height: Float)
 
     /// Fullscreen borderless window.
     case borderless
@@ -91,7 +91,7 @@ public enum WindowMode: Equatable {
     case fullscreen
 
     public static func getDefault() -> WindowMode {
-        return .windowed(1280, 720)
+        return .windowed(width: 1280, height: 720)
     }
 
     /// Full, human-redable name.
