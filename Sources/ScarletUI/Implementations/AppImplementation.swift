@@ -157,15 +157,36 @@ public extension App {
 
         let app = Self.init()
 
-        // Handle debug arguments and preview
 #if DEBUG
+        // Handle debug arguments and preview
         appLogger.info("Running in debug configuration")
 
+        if Self.runForPreviewIfNeeded(arguments: arguments) {
+            return
+        }
+#endif
+
+        // Run the app normally by making the app node at top level
+        let root = Self.makeNode(of: app, in: nil, implementationPosition: 0, using: .root())
+
+        guard let implementation = root.implementation as? AppImplementation else {
+            fatalError("No implementation found for app node or got implementation of the wrong type")
+        }
+
+        implementation.run()
+    }
+}
+
+public extension App {
+    /// Parses arguments and runs the app in preview mode if requested.
+    /// Will return `true` if the preview was executed.
+    static func runForPreviewIfNeeded(arguments: Arguments) -> Bool {
+        /// List previews if requested
         if arguments.listPreviews {
             discoveredPreviews.forEach {
                 print($0.name)
             }
-            exit(0)
+            return true
         }
 
         // If running in preview mode, wrap the preview view in a premade made app and window
@@ -203,17 +224,9 @@ public extension App {
             window.insertChild(implementation, at: 0)
 
             app.run()
-            return
-        }
-#endif // DEBUG
-
-        // Run the app normally by making the app node at top level
-        let root = Self.makeNode(of: app, in: nil, implementationPosition: 0, using: .root())
-
-        guard let implementation = root.implementation as? AppImplementation else {
-            fatalError("No implementation found for app node or got implementation of the wrong type")
+            return true
         }
 
-        implementation.run()
+        return false
     }
 }
