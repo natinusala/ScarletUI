@@ -35,12 +35,16 @@ public struct Arguments: ParsableCommand {
     var benchmark = false
 
     // TODO: Move this option to ScarletUI somehow
-    @Option(help: "Run the app in preview mode, previewing a view conforming to `Preview`.")
+#if DEBUG
+    @Option(help: "Run the app in preview mode, previewing a view conforming to `Preview`. Only available in debug configuration.")
     public var preview: String?
+#endif
 
     // TODO: Move this option to ScarletUI somehow
-    @Flag(help: "List all available previews in stdout and exit.")
+#if DEBUG
+    @Flag(help: "List all available previews in stdout and exit. Only available in debug configuration.")
     public var listPreviews = false
+#endif
 
     public init() {}
 
@@ -50,8 +54,10 @@ public struct Arguments: ParsableCommand {
             self.disableLogColors = false
             self.cutelog = nil
             self.benchmark = false
+#if DEBUG
             self.preview = nil
             self.listPreviews = false
+#endif
         }
     }
 

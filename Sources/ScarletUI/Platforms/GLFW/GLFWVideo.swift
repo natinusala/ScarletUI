@@ -114,7 +114,7 @@ class GLFWWindow: NativeWindow {
             case .gl:
                 gladLoadGLLoaderFromGLFW()
 
-                #if DEBUG_GRAPHICS_BACKEND
+#if DEBUG_GRAPHICS_BACKEND
                     glEnable(GLenum(GL_DEBUG_OUTPUT))
                     glDebugMessageCallback(
                         { _, type, id, severity, _, message, _ in
@@ -122,7 +122,7 @@ class GLFWWindow: NativeWindow {
                         },
                         nil
                     )
-                #endif
+#endif
         }
 
         // Enable sRGB if requested

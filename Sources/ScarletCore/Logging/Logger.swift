@@ -46,7 +46,7 @@ func bootstrapLogger(arguments: Arguments) {
 
     // Create one Cutelog logger for the target address and reuse it in
     // multiple handlers in the factory
-    #if DEBUG
+#if DEBUG
     let cutelogLogger: CutelogLogger?
 
     // Get cutelog address either from CLI arguments or
@@ -84,7 +84,7 @@ func bootstrapLogger(arguments: Arguments) {
     } else {
         cutelogLogger = nil
     }
-    #endif
+#endif
 
     // Executed for every new logger to create its handlers
     LoggingSystem.bootstrap { label in
@@ -100,11 +100,11 @@ func bootstrapLogger(arguments: Arguments) {
 
         // Final handlers list
         let handlers: [LogHandler] = .init {
-            #if DEBUG
+#if DEBUG
             if let cutelogLogger {
                 cutelogLogger.makeHandler(label: label, logLevel: logLevel)
             }
-            #endif
+#endif
 
             terminalHandler
         }
@@ -123,9 +123,9 @@ private var teardownHandlers: [() -> ()] = []
 
 /// Enters an LLDB breakpoint programmatically.
 public func breakpoint() {
-  #if DEBUG
-    raise(SIGINT)
-  #endif
+    #if DEBUG
+      raise(SIGINT)
+    #endif
 }
 
 /// Makes an attempt at running the given throwing block. If it fails, the program will crash with the

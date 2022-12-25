@@ -18,6 +18,12 @@
 
 import PackageDescription
 
+let experimentalFeatures = [
+    "RuntimeDiscoverableAttrs",
+]
+
+let swiftSettings = experimentalFeatures.map { SwiftSetting.enableExperimentalFeature($0) }
+
 let package = Package(
     name: "ScarletUI",
     products: [
@@ -64,9 +70,7 @@ let package = Package(
                 "Skia",
                 .product(name: "Backtrace", package: "swift-backtrace"),
             ],
-            swiftSettings: [
-                .enableExperimentalFeature("RuntimeDiscoverableAttrs")
-            ]
+            swiftSettings: swiftSettings
         ),
         // ScarletCore: core library containing the DSL and graph / state management code
         .target(
@@ -83,7 +87,8 @@ let package = Package(
                 "ElementNodes/StaticElementNode.gyb",
                 "Views/TupleView.gyb",
                 "Views/ViewAttribute.gyb",
-            ]
+            ],
+            swiftSettings: swiftSettings
         ),
         // ScarletNative: native code companion to ScarletUI
         .target(
@@ -94,9 +99,7 @@ let package = Package(
         .executableTarget(
             name: "ScarletUIDemo",
             dependencies: ["ScarletUI"],
-            swiftSettings: [
-                .enableExperimentalFeature("RuntimeDiscoverableAttrs")
-            ]
+            swiftSettings: swiftSettings
         ),
         // Test targets
         .testTarget(
@@ -106,7 +109,8 @@ let package = Package(
                 "Quick",
                 "Nimble",
                 .product(name: "Backtrace", package: "swift-backtrace"),
-            ]
+            ],
+            swiftSettings: swiftSettings
         ),
         .testTarget(
             name: "ScarletCoreIntegrationTests",
@@ -115,7 +119,8 @@ let package = Package(
                 "Quick",
                 "Nimble",
                 .product(name: "Backtrace", package: "swift-backtrace"),
-            ]
+            ],
+            swiftSettings: swiftSettings
         ),
         // Embedded native libraries
         .target(

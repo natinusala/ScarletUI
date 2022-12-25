@@ -157,7 +157,10 @@ public extension App {
 
         let app = Self.init()
 
-        // Handle arguments
+        // Handle debug arguments and preview
+#if DEBUG
+        appLogger.info("Running in debug configuration")
+
         if arguments.listPreviews {
             discoveredPreviews.forEach {
                 print($0.name)
@@ -165,8 +168,8 @@ public extension App {
             exit(0)
         }
 
-        // If running in preview mode, run a custom app and window with the preview inside
-        // Otherwise make the app node normally and let it do its thing
+        // If running in preview mode, wrap the preview view in a premade made app and window
+        // The preview becomes the top-level node instead of the app
         if let previewing = arguments.preview {
             // Try to find the view to preview
             guard let preview = getPreview(named: previewing) else {
@@ -180,7 +183,7 @@ public extension App {
                 exit(-1)
             }
 
-            // Wrap the view in a custom made app and window
+            // Make an app and window node
             let app = AppImplementation(displayName: "PreviewApp")
             let window = WindowImplementation(displayName: "PreviewWindow")
             window.title = "Preview \(preview.name)"
@@ -189,7 +192,7 @@ public extension App {
 
             app.insertChild(window, at: 0)
 
-            // Make the preview and insert it in the window
+            // Make the preview node and insert it in the window
             let root = preview.makeNode()
 
             guard let implementation = root.implementation as? ViewImplementation else {
@@ -200,14 +203,17 @@ public extension App {
             window.insertChild(implementation, at: 0)
 
             app.run()
-        } else {
-            let root = Self.makeNode(of: app, in: nil, implementationPosition: 0, using: .root())
-
-            guard let implementation = root.implementation as? AppImplementation else {
-                fatalError("No implementation found for app node or got implementation of the wrong type")
-            }
-
-            implementation.run()
+            return
         }
+#endif // DEBUG
+
+        // Run the app normally by making the app node at top level
+        let root = Self.makeNode(of: app, in: nil, implementationPosition: 0, using: .root())
+
+        guard let implementation = root.implementation as? AppImplementation else {
+            fatalError("No implementation found for app node or got implementation of the wrong type")
+        }
+
+        implementation.run()
     }
 }

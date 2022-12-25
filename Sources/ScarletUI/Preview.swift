@@ -16,9 +16,9 @@
 
 import Logging
 
-// TODO: guard preview under DEBUG everywhere
-
 let previewLogger = Logger(label: "ScarletUI.Preview")
+
+#if DEBUG
 
 struct DiscoveredPreview: Hashable {
     let type: ObjectIdentifier
@@ -48,6 +48,7 @@ var discoveredPreviews: Set<DiscoveredPreview> = []
 @runtimeMetadata
 public struct PreviewDiscovery<Previewed: Preview> {
     public init(attachedTo preview: Previewed.Type) {
+        // TODO: is it necessary to check for duplicates?
         let entry = DiscoveredPreview(from: Previewed.self)
         let (inserted, _) = discoveredPreviews.insert(entry)
         if inserted {
@@ -66,24 +67,12 @@ func getPreview(named name: String) -> DiscoveredPreview? {
     return discoveredPreviews.first { $0.name == name }
 }
 
-// /// App responsible for running a preview.
-// struct PreviewApp: App {
-//     var previewing: DiscoveredPreview!
+#else
 
-//     init() {}
+/// Shim version of `Preview` for release configurations where
+/// previews are disabled.
+public protocol Preview: View {
+    init()
+}
 
-//     var body: some Scene {
-//         PreviewWindow(previewing: previewing)
-//     }
-// }
-
-// /// Window containing the previewed view.
-// struct PreviewWindow: Scene {
-//     let previewing: DiscoveredPreview
-
-//     var body: some Scene {
-//         Window(title: "Preview: \(previewing.name)") {
-//             // Content will be inserted by `App.main()`
-//         }
-//     }
-// }
+#endif
