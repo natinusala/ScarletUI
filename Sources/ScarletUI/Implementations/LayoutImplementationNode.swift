@@ -17,7 +17,7 @@
 import Yoga
 
 /// An implementation node that has layout properties.
-public protocol LayoutImplementationNode: ImplementationNode, AnyObject {
+public protocol _LayoutImplementationNode: ImplementationNode, AnyObject {
     /// Underlying Yoga node.
     var ygNode: YGNodeRef { get }
 
@@ -25,15 +25,15 @@ public protocol LayoutImplementationNode: ImplementationNode, AnyObject {
     var layout: Rect { get set }
 
     /// Node parent as a `LayoutImplementationNode`.
-    var layoutParent: LayoutImplementationNode? { get }
+    var layoutParent: _LayoutImplementationNode? { get }
 
     /// Node children as `LayoutImplementationNode`.
-    var layoutChildren: [LayoutImplementationNode] { get }
+    var layoutChildren: [_LayoutImplementationNode] { get }
 
     var axis: Axis { get set }
 }
 
-public extension LayoutImplementationNode {
+public extension _LayoutImplementationNode {
     /// Runs a layout pass if the node is dirty.
     /// Should be called every frame before drawing the node.
     func layoutIfNeeded() {

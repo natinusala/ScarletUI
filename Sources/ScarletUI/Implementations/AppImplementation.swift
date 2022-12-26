@@ -19,17 +19,17 @@ import ScarletCore
 import Foundation
 
 /// Implementation for all apps.
-open class AppImplementation: ImplementationNode {
+open class _AppImplementation: ImplementationNode {
     public let displayName: String
 
     /// Children of this app.
-    var children: [SceneImplementation] = []
+    var children: [_SceneImplementation] = []
 
     /// Run loop responsible for consuming and/or draining events.
     let runLoop = RunLoop.main
 
     /// Current platform handle
-    let platform: any Platform
+    let platform: any _Platform
 
     /// Should the app stop running?
     var exitRequested = false
@@ -61,8 +61,8 @@ open class AppImplementation: ImplementationNode {
     }
 
     public func insertChild(_ child: ImplementationNode, at position: Int) {
-        guard let child = child as? SceneImplementation else {
-            fatalError("Cannot add \(type(of: child)) as child of `AppImplementation`")
+        guard let child = child as? _SceneImplementation else {
+            fatalError("Cannot add \(type(of: child)) as child of '_AppImplementation'")
         }
 
         self.children.insert(child, at: position)
@@ -147,7 +147,7 @@ open class AppImplementation: ImplementationNode {
 
 public extension App {
     /// Default implementation type for scenes.
-    typealias Implementation = AppImplementation
+    typealias Implementation = _AppImplementation
 }
 
 public extension App {
@@ -169,7 +169,7 @@ public extension App {
         // Run the app normally by making the app node at top level
         let root = Self.makeNode(of: app, in: nil, implementationPosition: 0, using: .root())
 
-        guard let implementation = root.implementation as? AppImplementation else {
+        guard let implementation = root.implementation as? _AppImplementation else {
             fatalError("No implementation found for app node or got implementation of the wrong type")
         }
 
@@ -206,15 +206,15 @@ public extension App {
             }
 
             // Make an app and window node
-            let app = AppImplementation(displayName: "PreviewApp")
-            let window = WindowImplementation(displayName: "PreviewWindow")
+            let app = _AppImplementation(displayName: "PreviewApp")
+            let window = _WindowImplementation(displayName: "PreviewWindow")
             window.title = "Preview \(preview.name)"
             window.axis = preview.axis
 
             // Make the preview node and insert it in the window
             let root = preview.makeNode()
 
-            guard let implementation = root.implementation as? ViewImplementation else {
+            guard let implementation = root.implementation as? _ViewImplementation else {
                 fatalError("No implementation found for preview node or got implementation of the wrong type")
             }
 
@@ -259,7 +259,7 @@ public extension App {
     /// Saves preview position to a temporary directory.
     /// Format is `{x}\n{y}`.
     /// See ``previewPositionTempPath`` for file location.
-    static func savePreviewPosition(of window: WindowImplementation) {
+    static func savePreviewPosition(of window: _WindowImplementation) {
         if let windowPosition = window.handle?.position {
             try? "\(windowPosition.x)\n\(windowPosition.y)".write(to: Self.previewPositionTempPath, atomically: false, encoding: .utf8)
             appLogger.debug("Window position \(windowPosition) saved to \(Self.previewPositionTempPath)")
@@ -268,7 +268,7 @@ public extension App {
 
     /// Attempts to load preview position from temporary file.
     /// See ``savePreviewPosition`` for format and location.
-    static func loadPreviewPosition(in window: WindowImplementation) {
+    static func loadPreviewPosition(in window: _WindowImplementation) {
         guard let content = try? String(contentsOf: Self.previewPositionTempPath) else {
             appLogger.debug("Cannot load last preview position: I/O error")
             return

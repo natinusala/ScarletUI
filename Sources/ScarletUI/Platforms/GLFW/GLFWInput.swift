@@ -69,11 +69,11 @@ extension GamepadButton {
 }
 
 extension GLFWWindow {
-    func pollGamepad() -> GamepadState {
+    func pollGamepad() -> _GamepadState {
         var glfwState = GLFWgamepadstate()
         glfwGetGamepadState(GLFW_JOYSTICK_1, &glfwState)
 
-        return GamepadState(
+        return _GamepadState(
             buttons: GamepadButton.allCases.map {
                 // No `glfwButton` == virtual button
                 if let glfwButton = $0.glfwButton {

@@ -20,12 +20,12 @@ import GLFW
 
 import ScarletNative
 
-class GLFWWindow: NativeWindow {
+class GLFWWindow: _NativeWindow {
     let handle: OpaquePointer?
 
     let size: WindowSize
 
-    let context: GraphicsContext
+    let context: _GraphicsContext
 
     var position: (x: Int, y: Int)? {
         get {
@@ -159,7 +159,7 @@ class GLFWWindow: NativeWindow {
         self.size = WindowSize(width: Float(actualWindowWidth), height: Float(actualWindowHeight))
 
         // Initialize context
-        self.context = try GraphicsContext(
+        self.context = try _GraphicsContext(
             width: self.size.width,
             height: self.size.height,
             backend: backend,

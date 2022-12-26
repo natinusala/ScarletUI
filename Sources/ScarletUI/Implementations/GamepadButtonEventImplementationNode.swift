@@ -14,12 +14,12 @@
    limitations under the License.
 */
 
-public typealias GamepadButtonPressCallback = (GamepadButton) -> Bool
+public typealias _GamepadButtonPressCallback = (GamepadButton) -> Bool
 
 /// A node with "button pressed" and "button released" events.
-protocol GamepadButtonEventImplementationNode {
+protocol _GamepadButtonEventImplementationNode {
     /// The children array, used to propagate the event.
-    var children: [ViewImplementation] { get }
+    var children: [_ViewImplementation] { get }
 
     /// Called every time a gamepad button is pressed.
     /// Must return `true` if the event was consumed, `false` if the event
@@ -32,7 +32,7 @@ protocol GamepadButtonEventImplementationNode {
     func gamepadButtonDidRelease(_ button: GamepadButton) -> Bool
 }
 
-extension GamepadButtonEventImplementationNode {
+extension _GamepadButtonEventImplementationNode {
     /// Must be called to start a "button pressed" event on the view.
     func pressGamepadButton(_ button: GamepadButton) {
         if self.gamepadButtonDidPress(button) {

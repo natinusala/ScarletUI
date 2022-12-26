@@ -14,9 +14,9 @@
    limitations under the License.
 */
 
-extension GamepadState {
+extension _GamepadState {
     /// Adds virtual buttons, performs axis translation...
-    func toVirtual() -> GamepadState {
+    func toVirtual() -> _GamepadState {
         // TODO: Add virtual buttons
         // TODO: Perform axis translation
 
@@ -25,13 +25,13 @@ extension GamepadState {
 }
 
 /// State of a gamepad.
-public struct GamepadState {
+public struct _GamepadState {
     /// Buttons state.
     /// `true` means pressed, `false` means released.
     /// The index is the button index inside `GamepadButton`.
     let buttons: [Bool]
 
     /// Gamepad state with no buttons pressed and all axis to neutral.
-    static let neutral = GamepadState(buttons: [Bool](repeating: false, count: GamepadButton.allCases.count))
+    static let neutral = _GamepadState(buttons: [Bool](repeating: false, count: GamepadButton.allCases.count))
 }
 

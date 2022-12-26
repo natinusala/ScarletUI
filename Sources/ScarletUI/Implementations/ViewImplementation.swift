@@ -19,12 +19,12 @@ import Yoga
 import ScarletCore
 
 /// Implementation for all views.
-open class ViewImplementation: LayoutImplementationNode, GamepadButtonEventImplementationNode {
+open class _ViewImplementation: _LayoutImplementationNode, _GamepadButtonEventImplementationNode {
     /// View display name for debugging purposes.
     public let displayName: String
 
     /// Children of this view.
-    var children: [ViewImplementation] = []
+    var children: [_ViewImplementation] = []
 
     /// The view Yoga node.
     public let ygNode: YGNodeRef
@@ -37,7 +37,7 @@ open class ViewImplementation: LayoutImplementationNode, GamepadButtonEventImple
     }
 
     /// The parent scene or view implementation.
-    var parent: LayoutImplementationNode?
+    var parent: _LayoutImplementationNode?
 
     /// The view fill, aka. its background color or gradient.
     var fill: Fill = .none {
@@ -55,7 +55,7 @@ open class ViewImplementation: LayoutImplementationNode, GamepadButtonEventImple
 
     /// Called when a gamepad button is pressed.
     /// The event will be consumed if set.
-    var gamepadButtonPressAction = AttributeList<GamepadButtonPressCallback>()
+    var gamepadButtonPressAction = AttributeList<_GamepadButtonPressCallback>()
 
     /// The view grow factor, aka. the percentage of remaining space to give this view.
     var grow: Float {
@@ -89,9 +89,9 @@ open class ViewImplementation: LayoutImplementationNode, GamepadButtonEventImple
     }
 
     /// The view padding, aka. the space between this view and its children.
-    var padding: LayoutEdgesValues {
+    var padding: EdgesLayoutValues {
         get {
-            return LayoutEdgesValues(
+            return EdgesLayoutValues(
                 top: .fromYGValue(YGNodeStyleGetPadding(self.ygNode, YGEdgeTop)),
                 right: .fromYGValue(YGNodeStyleGetPadding(self.ygNode, YGEdgeRight)),
                 bottom: .fromYGValue(YGNodeStyleGetPadding(self.ygNode, YGEdgeBottom)),
@@ -234,8 +234,8 @@ open class ViewImplementation: LayoutImplementationNode, GamepadButtonEventImple
     }
 
     public func insertChild(_ child: ImplementationNode, at position: Int) {
-        guard let child = child as? ViewImplementation else {
-            fatalError("Cannot add \(type(of: child)) as child of `ViewImplementation`")
+        guard let child = child as? _ViewImplementation else {
+            fatalError("Cannot add \(type(of: child)) as child of `_ViewImplementation`")
         }
 
         YGNodeInsertChild(self.ygNode, child.ygNode, UInt32(position))
@@ -306,16 +306,16 @@ open class ViewImplementation: LayoutImplementationNode, GamepadButtonEventImple
         }
     }
 
-    public var layoutParent: LayoutImplementationNode? {
+    public var layoutParent: _LayoutImplementationNode? {
         return self.parent
     }
 
-    public var layoutChildren: [LayoutImplementationNode] {
-        return self.children.map { $0 as LayoutImplementationNode }
+    public var layoutChildren: [_LayoutImplementationNode] {
+        return self.children.map { $0 as _LayoutImplementationNode }
     }
 }
 
 public extension View {
     /// Default implementation for user views.
-    typealias Implementation = ViewImplementation
+    typealias Implementation = _ViewImplementation
 }

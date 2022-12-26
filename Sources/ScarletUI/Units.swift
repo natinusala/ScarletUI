@@ -36,7 +36,7 @@ public extension FloatLiteralType {
 }
 
 /// Contains values for all 4 edges of a view.
-public struct LayoutEdgesValues: Equatable {
+public struct EdgesLayoutValues: Equatable {
     let top: LayoutValue
     let right: LayoutValue
     let bottom: LayoutValue

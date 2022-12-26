@@ -28,7 +28,7 @@ public protocol Canvas {
     )
 }
 
-public class SkiaCanvas: Canvas {
+class _SkiaCanvas: Canvas {
     let handle: OpaquePointer
 
     init(handle: OpaquePointer) {

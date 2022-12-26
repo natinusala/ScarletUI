@@ -21,7 +21,7 @@ public extension View {
     /// Opposite of grow.
     func shrink(_ shrink: Float) -> some View {
         return self.attributed(
-            Attribute(\ViewImplementation.shrink, value: shrink)
+            Attribute(\_ViewImplementation.shrink, value: shrink)
         )
     }
 }

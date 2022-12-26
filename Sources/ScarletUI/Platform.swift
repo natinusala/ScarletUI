@@ -17,11 +17,11 @@
 /// Result of a platform "poll" call.
 struct PollResult {
     /// The state of the gamepad at the time of the poll.
-    let gamepadState: GamepadState
+    let gamepadState: _GamepadState
 }
 
 /// Allows interfacing with the platform the app is currently running on.
-public protocol Platform {
+public protocol _Platform {
     init() throws
 
     /// Human readable platform name.
@@ -31,19 +31,19 @@ public protocol Platform {
     func pollEvents()
 
     /// Creates, opens and makes current a new window.
-    func createWindow(title: String, mode: WindowMode, backend: GraphicsBackend, srgb: Bool) throws -> NativeWindow
+    func createWindow(title: String, mode: WindowMode, backend: GraphicsBackend, srgb: Bool) throws -> _NativeWindow
 }
 
-fileprivate var currentPlatform: Platform?
+private var currentPlatform: _Platform?
 
 /// Creates and returns the current platform handle.
-func createPlatform() throws -> Platform? {
+func createPlatform() throws -> _Platform? {
     // TODO: only return GLFW if actually available
     return try GLFWPlatform()
 }
 
 /// A native, platform-dependent window.
-public protocol NativeWindow {
+public protocol _NativeWindow {
     typealias WindowSize = (width: Float, height: Float)
 
     /// Should return true if the platform requested the window to close.
@@ -56,7 +56,7 @@ public protocol NativeWindow {
     var size: WindowSize { get }
 
     /// Graphics context for this window.
-    var context: GraphicsContext { get }
+    var context: _GraphicsContext { get }
 
     /// Swap graphic buffers ("flush" the canvas).
     func swapBuffers()
@@ -79,7 +79,7 @@ public protocol NativeWindow {
     /// - check for buttons that were pressed or released since the last poll
     /// - this gives a list of buttons that are "pressed" at the current frame but were not at the previous one
     /// - make events out of that list
-    func pollGamepad() -> GamepadState
+    func pollGamepad() -> _GamepadState
 }
 
 /// The mode of a window.

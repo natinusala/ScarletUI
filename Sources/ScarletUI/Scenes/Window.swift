@@ -20,18 +20,18 @@ import Foundation
 /// A desktop window.
 /// Views are arranged in a column by default.
 public struct Window<Content>: StatelessLeafScene where Content: View {
-    public typealias Implementation = WindowImplementation
+    public typealias Implementation = _WindowImplementation
 
-    @Attribute(\WindowImplementation.title)
+    @Attribute(\_WindowImplementation.title)
     var title
 
-    @Attribute(\WindowImplementation.mode)
+    @Attribute(\_WindowImplementation.mode)
     var mode
 
-    @Attribute(\WindowImplementation.axis, propagate: true)
+    @Attribute(\_WindowImplementation.axis, propagate: true)
     var windowAxis
 
-    @Attribute(\ViewImplementation.axis, propagate: true)
+    @Attribute(\_ViewImplementation.axis, propagate: true)
     var viewsAxis
 
     public let content: Content
@@ -51,7 +51,7 @@ public struct Window<Content>: StatelessLeafScene where Content: View {
     }
 }
 
-public class WindowImplementation: SceneImplementation {
+public class _WindowImplementation: _SceneImplementation {
     /// The window title.
     var title = ""
 
@@ -65,14 +65,14 @@ public class WindowImplementation: SceneImplementation {
     var srgb: Bool = false
 
     /// The native window handle.
-    var handle: NativeWindow?
+    var handle: _NativeWindow?
 
     /// The canvas used by all views to draw themselves.
     var canvas: Canvas? {
         return self.handle?.context.canvas
     }
 
-    public override func create(platform: Platform) {
+    public override func create(platform: _Platform) {
         do {
             // Create the native window
             let handle = try platform.createWindow(
@@ -122,7 +122,7 @@ public class WindowImplementation: SceneImplementation {
         }
     }
 
-    public override func pollGamepad() -> GamepadState {
+    public override func pollGamepad() -> _GamepadState {
         if let handle = self.handle {
             return handle.pollGamepad()
         }

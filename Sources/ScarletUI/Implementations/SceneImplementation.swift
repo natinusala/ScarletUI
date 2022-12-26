@@ -18,11 +18,11 @@ import ScarletCore
 import Yoga
 
 /// Implementation for all scenes.
-open class SceneImplementation: ImplementationNode, LayoutImplementationNode, GamepadButtonEventImplementationNode {
+open class _SceneImplementation: ImplementationNode, _LayoutImplementationNode, _GamepadButtonEventImplementationNode {
     public let displayName: String
 
     /// Children of this scene.
-    var children: [ViewImplementation] = []
+    var children: [_ViewImplementation] = []
 
     /// The scene Yoga node.
     public let ygNode: YGNodeRef
@@ -31,17 +31,17 @@ open class SceneImplementation: ImplementationNode, LayoutImplementationNode, Ga
     public var layout = Rect()
 
     /// The parent app implementation.
-    var parent: AppImplementation?
+    var parent: _AppImplementation?
 
     /// The gamepad state of the previous frame.
-    var previousGamepadState = GamepadState.neutral
+    var previousGamepadState = _GamepadState.neutral
 
-    public var layoutParent: LayoutImplementationNode? {
-        return self.parent as? LayoutImplementationNode
+    public var layoutParent: _LayoutImplementationNode? {
+        return self.parent as? _LayoutImplementationNode
     }
 
-    public var layoutChildren: [LayoutImplementationNode] {
-        return self.children.map { $0 as LayoutImplementationNode }
+    public var layoutChildren: [_LayoutImplementationNode] {
+        return self.children.map { $0 as _LayoutImplementationNode }
     }
 
     /// The node axis.
@@ -113,7 +113,7 @@ open class SceneImplementation: ImplementationNode, LayoutImplementationNode, Ga
 
     /// Called by the parent app when the scene is ready to be created.
     /// This should be the time to initialize any native resources such as windows or graphics context.
-    open func create(platform: Platform) {
+    open func create(platform: _Platform) {
         // Nothing by default
     }
 
@@ -153,7 +153,7 @@ open class SceneImplementation: ImplementationNode, LayoutImplementationNode, Ga
     }
 
     /// Called every frame to poll inputs. Must be overridden by subclasses.
-    open func pollGamepad() -> GamepadState {
+    open func pollGamepad() -> _GamepadState {
         fatalError("Scene \(self) does not override` pollGamepad()`")
     }
 
@@ -162,8 +162,8 @@ open class SceneImplementation: ImplementationNode, LayoutImplementationNode, Ga
     }
 
     open func insertChild(_ child: ImplementationNode, at position: Int) {
-        guard let child = child as? ViewImplementation else {
-            fatalError("Cannot add \(type(of: child)) as child of `SceneImplementation`")
+        guard let child = child as? _ViewImplementation else {
+            fatalError("Cannot add \(type(of: child)) as child of '_SceneImplementation'")
         }
 
         YGNodeInsertChild(self.ygNode, child.ygNode, UInt32(position))
@@ -184,5 +184,5 @@ open class SceneImplementation: ImplementationNode, LayoutImplementationNode, Ga
 
 public extension Scene {
     /// Default implementation type for scenes.
-    typealias Implementation = SceneImplementation
+    typealias Implementation = _SceneImplementation
 }

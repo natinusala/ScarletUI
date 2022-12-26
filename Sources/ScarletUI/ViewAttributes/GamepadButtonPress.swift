@@ -18,29 +18,29 @@ public extension View {
     /// Adds an action to perform when a gamepad button is pressed while this view is on screen.
     /// The action must return `true` if the event has been consumed. Otherwise it will be passed to the view's children.
     /// Note: the action will be performed even if the view is out of sight.
-    func onGamepadButtonPress(perform action: @escaping GamepadButtonPressCallback) -> some View {
+    func onGamepadButtonPress(perform action: @escaping _GamepadButtonPressCallback) -> some View {
         return self.attributed(
-            AppendAttribute(\ViewImplementation.gamepadButtonPressAction, value: action)
+            AppendAttribute(\_ViewImplementation.gamepadButtonPressAction, value: action)
         )
     }
 
     /// Adds an action to perform when a gamepad button is pressed while this view is on screen.
     /// Note: the action will be performed even if the view is out of sight.
     func onGamepadButtonPress(perform action: @escaping () -> Void) -> some View {
-        let callback: GamepadButtonPressCallback = { pressedButton in
+        let callback: _GamepadButtonPressCallback = { pressedButton in
             action()
             return true
         }
 
         return self.attributed(
-            AppendAttribute(\ViewImplementation.gamepadButtonPressAction, value: callback)
+            AppendAttribute(\_ViewImplementation.gamepadButtonPressAction, value: callback)
         )
     }
 
     /// Adds an action to perform when the given gamepad button is pressed while this view is on screen.
     /// Note: the action will be performed even if the view is out of sight.
     func onGamepadButtonPress(_ button: GamepadButton, perform action: @escaping () -> Void) -> some View {
-        let callback: GamepadButtonPressCallback = { pressedButton in
+        let callback: _GamepadButtonPressCallback = { pressedButton in
             if pressedButton == button {
                 action()
                 return true
@@ -50,7 +50,7 @@ public extension View {
         }
 
         return self.attributed(
-            AppendAttribute(\ViewImplementation.gamepadButtonPressAction, value: callback)
+            AppendAttribute(\_ViewImplementation.gamepadButtonPressAction, value: callback)
         )
     }
 }

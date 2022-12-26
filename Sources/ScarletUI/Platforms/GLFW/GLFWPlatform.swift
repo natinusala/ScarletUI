@@ -21,7 +21,7 @@ import GLFW
 import ScarletNative
 
 /// GLFW as a platform.
-class GLFWPlatform: Platform {
+class GLFWPlatform: _Platform {
     required init() throws {
         // Set error callback
         glfwSetErrorCallback {code, error in
@@ -40,7 +40,7 @@ class GLFWPlatform: Platform {
         glfwPollEvents()
     }
 
-    func createWindow(title: String, mode: WindowMode, backend: GraphicsBackend, srgb: Bool) throws -> NativeWindow {
+    func createWindow(title: String, mode: WindowMode, backend: GraphicsBackend, srgb: Bool) throws -> _NativeWindow {
         return try GLFWWindow(title: title, mode: mode, backend: backend, srgb: srgb)
     }
 
