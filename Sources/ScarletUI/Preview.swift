@@ -52,9 +52,7 @@ private var discoveredPreviews: Set<DiscoveredPreview> = []
 /// Registers a preview.
 /// TODO: remove manual discovery and use @runtimeAttribute to make automated discovery once https://forums.swift.org/t/pitch-custom-metadata-attributes/62016 is available (debug only too)
 public func registerPreview<T: Preview>(_ preview: T.Type) {
-#if DEBUG
     discoveredPreviews.insert(DiscoveredPreview(from: T.self))
-#endif
 }
 
 /// Returns discovered previews.
@@ -100,5 +98,9 @@ func getPreview(named name: String) -> DiscoveredPreview? {
 public protocol Preview: View {
     init()
 }
+
+/// Shim version of `registerPreview(_:)` for release configurations where
+/// previews are disabled.
+public func registerPreview<T: Preview>(_ preview: T.Type) {}
 
 #endif
