@@ -14,4 +14,6 @@
    limitations under the License.
 */
 
+// TODO: check exported ScarletCore documentation once https://github.com/apple/swift-docc/issues/179 is closed
+
 @_exported import ScarletCore
