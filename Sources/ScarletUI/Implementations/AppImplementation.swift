@@ -15,7 +15,6 @@
 */
 
 import Backtrace
-import ScarletCore
 import Foundation
 
 /// Implementation for all apps.

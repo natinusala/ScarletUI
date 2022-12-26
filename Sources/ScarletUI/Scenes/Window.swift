@@ -14,7 +14,6 @@
    limitations under the License.
 */
 
-import ScarletCore
 import Foundation
 
 /// A desktop window.

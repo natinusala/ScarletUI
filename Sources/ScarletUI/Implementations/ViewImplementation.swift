@@ -16,8 +16,6 @@
 
 import Yoga
 
-import ScarletCore
-
 /// Implementation for all views.
 open class _ViewImplementation: _LayoutImplementationNode, _GamepadButtonEventImplementationNode {
     /// View display name for debugging purposes.

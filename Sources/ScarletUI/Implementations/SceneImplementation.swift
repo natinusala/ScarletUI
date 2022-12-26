@@ -14,7 +14,6 @@
    limitations under the License.
 */
 
-import ScarletCore
 import Yoga
 
 /// Implementation for all scenes.
