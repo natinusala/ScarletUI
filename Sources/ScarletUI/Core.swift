@@ -14,6 +14,6 @@
    limitations under the License.
 */
 
-// TODO: check exported ScarletCore documentation once https://github.com/apple/swift-docc/issues/179 is closed
+// TODO: check exported ScarletCore documentation inside ScarletUI once https://github.com/apple/swift-docc/issues/179 is closed - underscore all the things except those that need to be visible in ScarletUI's own documentation?
 
 @_exported import ScarletCore
