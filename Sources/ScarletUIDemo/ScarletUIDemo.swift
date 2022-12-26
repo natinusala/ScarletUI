@@ -23,9 +23,7 @@ struct ScarletUIDemo: App {
     @State private var color = 0
 
     init() {
-#if DEBUG
-        _ = PreviewDiscovery(attachedTo: SomePreview.self)
-#endif
+        registerPreview(SomePreview.self)
     }
 
     var body: some Scene {

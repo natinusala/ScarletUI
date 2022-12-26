@@ -184,7 +184,7 @@ public extension App {
     static func runForPreviewIfNeeded(arguments: Arguments) -> Bool {
         /// List previews if requested
         if arguments.listPreviews {
-            discoveredPreviews.forEach {
+            getDiscoveredPreviews().forEach {
                 print($0.name)
             }
             return true
@@ -196,10 +196,10 @@ public extension App {
             // Try to find the view to preview
             guard let preview = getPreview(named: previewing) else {
                 appLogger.error("Did not find preview named '\(previewing)', does it conform to 'Preview'?")
-                if discoveredPreviews.isEmpty {
+                if getDiscoveredPreviews().isEmpty {
                     appLogger.error("No previews are currently available")
                 } else {
-                    appLogger.error("Available previews: \(discoveredPreviews.map { $0.name }.joined(separator: ", "))")
+                    appLogger.error("Available previews: \(getDiscoveredPreviews().map { $0.name }.joined(separator: ", "))")
                 }
 
                 exit(-1)

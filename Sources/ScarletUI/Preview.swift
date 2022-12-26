@@ -47,21 +47,21 @@ struct DiscoveredPreview: Hashable {
     }
 }
 
-var discoveredPreviews: Set<DiscoveredPreview> = []
+private var discoveredPreviews: Set<DiscoveredPreview> = []
 
-@runtimeMetadata
-public struct PreviewDiscovery<Previewed: Preview> {
-    public init(attachedTo preview: Previewed.Type) {
-        // TODO: is it necessary to check for duplicates?
-        let entry = DiscoveredPreview(from: Previewed.self)
-        let (inserted, _) = discoveredPreviews.insert(entry)
-        if inserted {
-            previewLogger.debug("Registered preview: '\(Previewed.self)'")
-        }
-    }
+/// Registers a preview.
+/// TODO: remove manual discovery and use @runtimeAttribute to make automated discovery once https://forums.swift.org/t/pitch-custom-metadata-attributes/62016 is available (debug only too)
+public func registerPreview<T: Preview>(_ preview: T.Type) {
+#if DEBUG
+    discoveredPreviews.insert(DiscoveredPreview(from: T.self))
+#endif
 }
 
-// @PreviewDiscovery
+/// Returns discovered previews.
+func getDiscoveredPreviews() -> Set<DiscoveredPreview> {
+    return discoveredPreviews
+}
+
 public protocol Preview: View {
     init()
 
