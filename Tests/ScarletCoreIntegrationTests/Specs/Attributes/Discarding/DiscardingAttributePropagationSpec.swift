@@ -112,7 +112,7 @@ class DiscardingAttributePropagationSpec: ScarletSpec {
                 }
             }
 
-            when("no attributes change") {
+            when("no attribute change") {
                 given {
                     Tested(textColor: .orange, grow: 1.0)
                     Tested(textColor: .orange, grow: 1.0)

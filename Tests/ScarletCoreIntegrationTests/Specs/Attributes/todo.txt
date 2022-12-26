@@ -10,7 +10,6 @@ refacto pour réduire la duplication
     revoir le flow entier
 
 Append attributes
-    - deux fois le même attribut à 2 niveaux différents: doit cumuler et remplacer le bon dans la liste
     - propagation
 
 + Tester un mix des 2

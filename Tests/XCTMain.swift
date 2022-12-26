@@ -82,6 +82,7 @@ let specs: [QuickSpec.Type] = [
     AppendingAttributeWrongTypeSpec.QuickSpec.self,
     AppendingAttributeMultipleWrongTypeSpec.QuickSpec.self,
     AppendingAttributeAccumulationSpec.QuickSpec.self,
+    AppendingAttributePropagationSpec.QuickSpec.self,
 
     // Dynamic edges
     // ForEachSpecs.self,

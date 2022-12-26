@@ -15,6 +15,7 @@
 */
 
 import ScarletCore
+import Foundation
 
 struct Text: StatelessLeafView {
     @Attribute(\TextImpl.text)
@@ -28,6 +29,14 @@ struct Text: StatelessLeafView {
     }
 }
 
+enum TextDecoration {
+    case italic
+    case underline
+    case strikethrough
+    case bold
+    case uppercased
+}
+
 class TextImpl: ViewImpl {
     var text: String = ""
     var textColor = Color.black {
@@ -36,7 +45,14 @@ class TextImpl: ViewImpl {
         }
     }
 
+    var decorations = AttributeList<TextDecoration>() {
+        didSet {
+            decorationsChanged = true
+        }
+    }
+
     var textColorChanged = false
+    var decorationsChanged = false
 
     /// Initializer used by ScarletCore.
     public required init(displayName: String) {
@@ -44,25 +60,27 @@ class TextImpl: ViewImpl {
     }
 
     /// Initializer used for test assertions.
-    convenience init(text: String, textColor: Color = .black, tags: [String] = []) {
+    convenience init(text: String, textColor: Color = .black, decorations: [TextDecoration] = [], tags: [String] = []) {
         self.init("Text", tags: tags)
 
         self.text = text
         self.textColor = textColor
+        self.decorations = .init(uniqueKeysWithValues: decorations.map { (UUID(), $0) })
     }
 
     override func reset() {
         super.reset()
 
         self.textColorChanged = false
+        self.decorationsChanged = false
     }
 
     override open func equals(to other: ViewImpl) -> Bool {
         guard let other = other as? TextImpl else { return false }
-        return self.text == other.text && self.textColor == other.textColor
+        return self.text == other.text && self.textColor == other.textColor && self.decorations == other.decorations
     }
 
     override var customAttributesDebugDescription: String {
-        return "text=\"\(self.text)\" textColor=\"\(self.textColor)\""
+        return "text=\"\(self.text)\" textColor=\"\(self.textColor)\" decorations=\"\(self.decorations)\""
     }
 }
