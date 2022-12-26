@@ -60,6 +60,10 @@ func getDiscoveredPreviews() -> Set<DiscoveredPreview> {
     return discoveredPreviews
 }
 
+/// Allows running the app in "preview mode", displaying a smaller window with only the
+/// preview content inside.
+/// Use by giving `--preview` with the preview name.
+/// Only available in debug configuration.
 public protocol Preview: View {
     init()
 
