@@ -49,6 +49,9 @@ public protocol NativeWindow {
     /// Should return true if the platform requested the window to close.
     var shouldClose: Bool { get }
 
+    /// The window position. Only available when running in windowed.
+    var position: (x: Int, y: Int)? { get set }
+
     /// Window dimensions.
     var size: WindowSize { get }
 

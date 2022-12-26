@@ -27,6 +27,25 @@ class GLFWWindow: NativeWindow {
 
     let context: GraphicsContext
 
+    var position: (x: Int, y: Int)? {
+        get {
+            var x: Int32 = 0
+            var y: Int32 = 0
+            glfwGetWindowPos(self.handle, &x, &y)
+
+            // GLFW will return (0, 0) if the window is fullscreen
+            if x != 0 && y != 0 {
+                return (x: Int(x), y: Int(y))
+            } else {
+                return nil
+            }
+        }
+        set {
+            guard let newValue else { return }
+            glfwSetWindowPos(self.handle, Int32(newValue.x), Int32(newValue.y))
+        }
+    }
+
     var skContext: OpaquePointer {
         return self.context.skContext
     }

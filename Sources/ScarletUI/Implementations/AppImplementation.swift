@@ -177,6 +177,7 @@ public extension App {
     }
 }
 
+#if DEBUG
 public extension App {
     /// Parses arguments and runs the app in preview mode if requested.
     /// Will return `true` if the preview was executed.
@@ -237,12 +238,65 @@ public extension App {
                 window.mode = .windowed(width: implementation.layout.width, height: implementation.layout.height)
             }
 
+            // Glue everything together
             window.insertChild(implementation, at: 0)
             app.insertChild(window, at: 0)
+
+            // Load previous window position once the window is created and run the app until exit
+            Self.loadPreviewPosition(in: window)
             app.run()
+
+            // Try to get and save the window position to store it for next time
+            // TODO: add a --reset-preview-position option to prevent softlocks
+            Self.savePreviewPosition(of: window)
+
             return true
         }
 
         return false
     }
+
+    /// Saves preview position to a temporary directory.
+    /// Format is `{x}\n{y}`.
+    /// See ``previewPositionTempPath`` for file location.
+    static func savePreviewPosition(of window: WindowImplementation) {
+        if let windowPosition = window.handle?.position {
+            try? "\(windowPosition.x)\n\(windowPosition.y)".write(to: Self.previewPositionTempPath, atomically: false, encoding: .utf8)
+            appLogger.debug("Window position \(windowPosition) saved to \(Self.previewPositionTempPath)")
+        }
+    }
+
+    /// Attempts to load preview position from temporary file.
+    /// See ``savePreviewPosition`` for format and location.
+    static func loadPreviewPosition(in window: WindowImplementation) {
+        guard let content = try? String(contentsOf: Self.previewPositionTempPath) else {
+            appLogger.debug("Cannot load last preview position: I/O error")
+            return
+        }
+
+        let split = content.split(separator: "\n")
+
+        guard split.count == 2 else {
+            appLogger.debug("Cannot load last preview position: bad format")
+            return
+        }
+
+        guard let x = Int(split[0]), let y = Int(split[1]) else {
+            appLogger.debug("Cannot load last preview position: bad format")
+            return
+        }
+
+        guard var handle = window.handle else {
+            appLogger.debug("Cannot load last preview position: native handle not available")
+            return
+        }
+
+        handle.position = (x: x, y: y)
+        appLogger.debug("Preview window position set to \((x: x, y: y))")
+    }
+
+    static var previewPositionTempPath: URL {
+        return FileManager.default.temporaryDirectory / "\(Self.self)_PreviewPosition"
+    }
 }
+#endif
