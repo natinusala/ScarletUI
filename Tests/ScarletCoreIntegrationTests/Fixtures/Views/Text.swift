@@ -31,7 +31,7 @@ struct Text: StatelessLeafView {
 
 enum TextDecoration {
     case italic
-    case underline
+    case underlined
     case strikethrough
     case bold
     case uppercased
