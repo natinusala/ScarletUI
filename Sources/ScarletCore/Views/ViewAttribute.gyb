@@ -26,7 +26,7 @@
 
 /// A view that applies ${IDX} attributes to its content in an efficient way.
 /// Behaves similarly to a view modifier by wrapping its content.
-/// Use with ``View.attributed(_:)`` like you would use ``View.modified(by:)`` for view modifiers.
+/// Use with ``View/attributed(_:)`` like you would use ``View/modified(by:)`` for view modifiers.
 public struct ViewAttribute${IDX}<Content: View, ${A_TYPES}>: View {
     public typealias Input = StaticMakeInput1<Self>
     public typealias Output = StaticMakeOutput1<Self, Content>
@@ -73,6 +73,7 @@ public struct ViewAttribute${IDX}<Content: View, ${A_TYPES}>: View {
 }
 
 public extension View {
+    /// Returns a version of that view with the given attribute set.
     func attributed<${A_TYPES}>(${A_PARAMS}) -> ViewAttribute${IDX}<Self, ${A_NAMES}> {
         return ViewAttribute${IDX}<Self, ${A_NAMES}>(content: self, ${A_VALUES})
     }

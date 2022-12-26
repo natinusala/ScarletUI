@@ -138,7 +138,7 @@ public struct Attribute<Implementation: ImplementationNode, Value>: AttributeSet
 
 /// Used by implementation nodes to store an attribute with multiple values. Used with ``AppendAttribute``.
 /// Values order is not guaranteed or meaningful since they are stored in a dictionary, keys being the originating attribute setter element nodes.
-/// A convenience `Equatable` conformance is given if ``Value`` conforms to `Hashable` to efficiently compare the values in an unordered manner.
+/// A convenience `Equatable` conformance is given if `Value` conforms to `Hashable` to efficiently compare the values in an unordered manner.
 public struct AttributeList<Value>: Sequence, CustomStringConvertible, CustomDebugStringConvertible {
     public typealias Values = [AnyHashable: Value]
 

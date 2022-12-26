@@ -15,7 +15,7 @@
 */
 
 /// Special protocol for scenes which content is a view, without any dynamic properties.
-/// Uses the ``content`` property instead of ``body``.
+/// Uses the `content` property instead of ``body``.
 /// Attributes are not dynamic properties.
 public protocol StatelessLeafScene: Scene where Body == Never {
     associatedtype Content: View

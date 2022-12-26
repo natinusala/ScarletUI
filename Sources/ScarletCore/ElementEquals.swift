@@ -107,7 +107,7 @@ extension Equatable {
     }
 }
 
-/// Implements the ``isPod()`` method.
+/// Allows using POD and memory layout features in a type-erased way.
 public protocol IsPodable {
     /// Returns `true` if the object is a "Plain Old Data" object.
     func isPod() -> Bool
@@ -139,7 +139,7 @@ public extension IsPodable {
 /// since `Podable<Value>` will be POD if `Value` is POD too.
 /// Allows using ``elementEquals(lhs:rhs:)`` efficiently on stored values.
 @propertyWrapper
-public struct Podable<Value>: IsPodable {
+struct Podable<Value>: IsPodable {
     public var wrappedValue: Value
 
     public init(wrappedValue: Value) {

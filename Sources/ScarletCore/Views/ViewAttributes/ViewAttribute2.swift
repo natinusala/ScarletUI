@@ -18,7 +18,7 @@
 
 /// A view that applies 2 attributes to its content in an efficient way.
 /// Behaves similarly to a view modifier by wrapping its content.
-/// Use with ``View.attributed(_:)`` like you would use ``View.modified(by:)`` for view modifiers.
+/// Use with ``View/attributed(_:)`` like you would use ``View/modified(by:)`` for view modifiers.
 public struct ViewAttribute2<Content: View, A0: AttributeSetter, A1: AttributeSetter>: View {
     public typealias Input = StaticMakeInput1<Self>
     public typealias Output = StaticMakeOutput1<Self, Content>
@@ -63,6 +63,7 @@ public struct ViewAttribute2<Content: View, A0: AttributeSetter, A1: AttributeSe
 }
 
 public extension View {
+    /// Returns a version of that view with the given attribute set.
     func attributed<A0: AttributeSetter, A1: AttributeSetter>(_ a0: A0, _ a1: A1) -> ViewAttribute2<Self, A0, A1> {
         return ViewAttribute2<Self, A0, A1>(content: self, a0: a0, a1: a1)
     }
