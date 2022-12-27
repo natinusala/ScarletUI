@@ -91,6 +91,15 @@ struct UpdateResult {
         return implementation.findFirst(type)
     }
 
+    /// Traverses the view tree and returns the first view with the given display name.
+    func first(_ displayName: String) -> ViewImpl {
+        guard let implementation else {
+            fatalError("Expected an implementation with children but got no implementation")
+        }
+
+        return implementation.findFirst(displayName)
+    }
+
     /// Traverses the view tree recursively and returns all views of the given type.
     /// Will fail the test if it did not find exactly ``expectedCount`` views.
     func all<NewType: ViewImpl>(_ type: NewType.Type, expectedCount: Int) -> [NewType] {

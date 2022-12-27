@@ -76,6 +76,7 @@ let specs: [QuickSpec.Type] = [
     DiscardingAttributeSpreadingSpec.QuickSpec.self,
     DiscardingAttributePropagationSpec.QuickSpec.self,
     DiscardingAttributePropagationOverridingSpec.QuickSpec.self,
+    DiscardingAttributeNonPropagationSpec.QuickSpec.self,
     AppendingAttributeMutlipleSpec.QuickSpec.self,
     AppendingAttributeSpec.QuickSpec.self,
     AppendingAttributeMultipleDifferentSpec.QuickSpec.self,
