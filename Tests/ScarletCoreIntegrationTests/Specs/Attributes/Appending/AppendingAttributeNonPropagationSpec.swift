@@ -18,15 +18,15 @@ import Nimble
 
 @testable import ScarletCore
 
-class DiscardingAttributeNonPropagationSpec: ScarletSpec {
-    static let describing = "a view tree with a non-propagating discarding attribute on the top-level"
+class AppendingAttributeNonPropagationSpec: ScarletSpec {
+    static let describing = "a view tree with a non-propagating appending attribute on the top-level"
 
     struct Avatar: View {
         let user: String
 
         var body: some View {
             Image(source: "avatar://\(user)")
-                .id("avatar-\(user)")
+                .tag("avatar-\(user)")
         }
     }
 
@@ -41,25 +41,25 @@ class DiscardingAttributeNonPropagationSpec: ScarletSpec {
 
     struct Tested: TestView {
         let user: String
-        let headerId: String
+        let headerTag: String
 
         var body: some View {
             Header(user: user)
-                .id(headerId)
+                .tag(headerTag)
         }
 
         static func spec() -> Spec {
             when("the view is created") {
                 given {
-                    Tested(user: "Kirby", headerId: "main-content-header")
+                    Tested(user: "Kirby", headerTag: "main-content-header")
                 }
 
                 then("the implementation tree is created") { result in
                     expect(result.implementation).to(equal(
                         ViewImpl("Tested") {
-                            ViewImpl("Header", id: "main-content-header") {
+                            ViewImpl("Header", tags: ["main-content-header"]) {
                                 ViewImpl("Avatar") {
-                                    ImageImpl(source: "avatar://Kirby", id: "avatar-Kirby")
+                                    ImageImpl(source: "avatar://Kirby", tags: ["avatar-Kirby"])
                                 }
 
                                 TextImpl(text: "Kirby")
@@ -71,16 +71,16 @@ class DiscardingAttributeNonPropagationSpec: ScarletSpec {
 
             when("nothing changes") {
                 given {
-                    Tested(user: "Kirby", headerId: "main-content-header")
-                    Tested(user: "Kirby", headerId: "main-content-header")
+                    Tested(user: "Kirby", headerTag: "main-content-header")
+                    Tested(user: "Kirby", headerTag: "main-content-header")
                 }
 
                 then("the implementation tree is untouched") { result in
                     expect(result.implementation).to(equal(
                         ViewImpl("Tested") {
-                            ViewImpl("Header", id: "main-content-header") {
+                            ViewImpl("Header", tags: ["main-content-header"]) {
                                 ViewImpl("Avatar") {
-                                    ImageImpl(source: "avatar://Kirby", id: "avatar-Kirby")
+                                    ImageImpl(source: "avatar://Kirby", tags: ["avatar-Kirby"])
                                 }
 
                                 TextImpl(text: "Kirby")
@@ -98,16 +98,16 @@ class DiscardingAttributeNonPropagationSpec: ScarletSpec {
 
             when("the attribute changes") {
                 given {
-                    Tested(user: "Kirby", headerId: "main-content-header")
-                    Tested(user: "Kirby", headerId: "main-content-header-invalidated")
+                    Tested(user: "Kirby", headerTag: "main-content-header")
+                    Tested(user: "Kirby", headerTag: "main-content-header-invalidated")
                 }
 
                 then("the implementation tree is updated") { result in
                     expect(result.implementation).to(equal(
                         ViewImpl("Tested") {
-                            ViewImpl("Header", id: "main-content-header-invalidated") {
+                            ViewImpl("Header", tags: ["main-content-header-invalidated"]) {
                                 ViewImpl("Avatar") {
-                                    ImageImpl(source: "avatar://Kirby", id: "avatar-Kirby")
+                                    ImageImpl(source: "avatar://Kirby", tags: ["avatar-Kirby"])
                                 }
 
                                 TextImpl(text: "Kirby")
@@ -117,7 +117,7 @@ class DiscardingAttributeNonPropagationSpec: ScarletSpec {
                 }
 
                 then("attribute is set on the implementation side") { result in
-                    expect(result.first("Header").attributeChanged(\.id)).to(beTrue())
+                    expect(result.first("Header").attributeChanged(\.tags)).to(beTrue())
                 }
             }
         }

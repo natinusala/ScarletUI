@@ -49,13 +49,11 @@ class ImageImpl: ViewImpl {
     }
 
     /// Initializer used for test assertions.
-    convenience init(source: String, id: String? = nil, filters: [Filter] = []) {
-        self.init("Image", id: id)
+    convenience init(source: String, id: String? = nil, filters: [Filter] = [], tags: [String] = []) {
+        self.init("Image", id: id, tags: tags)
 
         self.source = source
         self.filters = .init(uniqueKeysWithValues: filters.map { (UUID(), $0) })
-
-        
     }
 
     var filtersChanged = false

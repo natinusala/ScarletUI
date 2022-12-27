@@ -255,6 +255,28 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
         return found
     }
 
+    func findFirst(_ displayName: String) -> ViewImpl {
+        func inner(_ impl: ViewImpl) -> ViewImpl? {
+            if impl.displayName == displayName {
+                return impl
+            }
+
+            for child in impl.children {
+                if let instance = inner(child) {
+                    return instance
+                }
+            }
+
+            return nil
+        }
+
+        guard let found = inner(self) else {
+            fatalError("Did not find any view with display name '\(displayName)'")
+        }
+
+        return found
+    }
+
     func findAll<NewType: ViewImpl>(_ type: NewType.Type, expectedCount: Int) -> [NewType] {
         func inner(_ impl: ViewImpl) -> [NewType] {
             if let instance = impl as? NewType {
