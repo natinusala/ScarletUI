@@ -57,7 +57,7 @@ class OptionalViewToggleSpec: ScarletSpec {
                 }
             }
 
-            when("the optional is flipped to off") {
+            when("the optional is set to off") {
                 given {
                     Tested(flip: true)
                     Tested(flip: false)
@@ -70,7 +70,7 @@ class OptionalViewToggleSpec: ScarletSpec {
                 }
             }
 
-            when("the optional is flipped to on") {
+            when("the optional is set to on") {
                 given {
                     Tested(flip: false)
                     Tested(flip: true)
