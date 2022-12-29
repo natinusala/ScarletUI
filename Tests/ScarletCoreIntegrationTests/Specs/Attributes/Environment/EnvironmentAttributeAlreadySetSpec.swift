@@ -18,7 +18,7 @@ import Nimble
 
 @testable import ScarletCore
 
-/// Child environment takes precedence over the parent ("override").
+/// Child environment takes precedence over the parent (parent tries to "override").
 class EnvironmentAttributeAlreadySetSpec: ScarletSpec {
     static let describing = "a view with an environment attribute already by the parent"
 
