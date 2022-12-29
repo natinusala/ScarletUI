@@ -130,7 +130,6 @@ public struct Attribute<Implementation: ImplementationNode, Value>: AttributeSet
 
     public func set(on implementation: Implementation, identifiedBy: AnyHashable) {
         // If the attribute is unset, get it over with immediately
-        // Return `true` to have it removed from the stash
         guard case let .set(value) = self.actualValue else {
             return
         }

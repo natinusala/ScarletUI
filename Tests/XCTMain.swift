@@ -80,7 +80,7 @@ let specs: [QuickSpec.Type] = [
     AccumulatingAttributeWrongTypeSpec.QuickSpec.self,
     AccumulatingAttributeMultipleWrongTypeSpec.QuickSpec.self,
     AccumulatingAttributeAccumulationSpec.QuickSpec.self,
-    AccumulatingAttributePropagationSpec.QuickSpec.self,
+    AccumulatingAttributeSpreadingSpec.QuickSpec.self,
     AccumulatingAttributeMultiplePropagationSpec.QuickSpec.self,
     AccumulatingAttributeNonPropagationSpec.QuickSpec.self,
     EnvironmentAttributePropagationSpec.QuickSpec.self,

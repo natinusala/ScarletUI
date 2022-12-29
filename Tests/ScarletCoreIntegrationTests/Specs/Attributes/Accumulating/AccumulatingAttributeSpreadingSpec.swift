@@ -18,8 +18,8 @@ import Nimble
 
 @testable import ScarletCore
 
-class AccumulatingAttributePropagationSpec: ScarletSpec {
-    static let describing = "a view tree with one propagating accumulating attribute"
+class AccumulatingAttributeSpreadingSpec: ScarletSpec {
+    static let describing = "a view tree with one spreading accumulating attribute"
 
     struct UserInfo: View {
         var body: some View {
