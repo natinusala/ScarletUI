@@ -159,13 +159,13 @@ extension ElementNode {
         // Take the context from the parent, add our attributes
         // Then split it by implementation type to only get those we need to apply here
         // The rest will stay in the context struct given to our edges
-        let (discardingAttributes, appendingAttributes, edgesContext) = context
+        let (singleAttributes, accumulatingAttributes, edgesContext) = context
             .completingAttributes(from: attributes)
             .withEnvironment(environment, changed: changedEnvironment)
             .poppingAttributes(for: Value.Implementation.self)
 
-        if !attributes.isEmpty {
-            let attributesToApply = discardingAttributes + appendingAttributes.map { $0.1 }
+        if !singleAttributes.isEmpty {
+            let attributesToApply = singleAttributes + accumulatingAttributes.map { $0.1 }
 
             attributesLogger.trace("     Attributes to apply on \(Value.displayName): \(attributesToApply.count)")
             attributesToApply.forEach { attribute in
@@ -175,17 +175,17 @@ extension ElementNode {
         attributesLogger.trace("Remaining attributes for \(Value.displayName)'s edges: \(edgesContext.attributes.count)")
 
         // Apply attributes
-        if !discardingAttributes.isEmpty || !appendingAttributes.isEmpty {
+        if !singleAttributes.isEmpty || !accumulatingAttributes.isEmpty {
             guard let implementation = self.implementation else {
                 fatalError("Invalid 'ElementNode' state: expected an implementation node of type \(Value.Implementation.self) to be set to apply attributes on")
             }
 
-            for attribute in discardingAttributes {
+            for attribute in singleAttributes {
                 attributesLogger.trace("Applying attribute \(attribute) on \(Value.displayName)")
                 attribute.anySet(on: implementation, identifiedBy: ObjectIdentifier(self))
             }
 
-            for (key, attribute) in appendingAttributes {
+            for (key, attribute) in accumulatingAttributes {
                 attributesLogger.trace("Applying attribute \(attribute) on \(Value.displayName)")
                 attribute.anySet(on: implementation, identifiedBy: key)
             }

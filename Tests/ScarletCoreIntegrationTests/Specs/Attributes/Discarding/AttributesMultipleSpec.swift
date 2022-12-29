@@ -20,8 +20,8 @@ import Nimble
 
 /// Skipped: having the same attribute twice on a view is currently UB
 /// Must be completed with more cases if unskipped (nothing changes, both change)
-class MultipleDiscardingAttributesSpec: ScarletSpec, Skipped {
-    static let describing = "a view with the same discarding attribute applied twice"
+class AttributesMultipleSpec: ScarletSpec, Skipped {
+    static let describing = "a view with the same attribute applied twice"
 
     struct Tested: TestView {
         let firstValue: String

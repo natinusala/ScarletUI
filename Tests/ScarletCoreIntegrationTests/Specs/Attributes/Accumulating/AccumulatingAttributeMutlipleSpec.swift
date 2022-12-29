@@ -18,8 +18,8 @@ import Nimble
 
 @testable import ScarletCore
 
-class AppendingAttributeMutlipleSpec: ScarletSpec {
-    static let describing = "a view with appending attributes"
+class AccumulatingAttributeMutlipleSpec: ScarletSpec {
+    static let describing = "a view with accumulating attributes"
 
     struct Tested: TestView {
         let firstTag: String

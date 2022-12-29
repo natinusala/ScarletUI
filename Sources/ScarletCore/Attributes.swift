@@ -40,6 +40,39 @@ public extension Optional {
     }
 }
 
+/// Sets an attribute value to any implementation.
+///
+/// By default, attributes of an element are collected using runtime metadata on the element itself
+/// to gather all `@Attribute` property wrappers.
+/// However this is quite slow due to runtime metadata lookup.
+///
+/// Using a specialized element like `ViewAttribute` without property wrappers allows collecting
+/// attributes in a type-safe and faster way.
+public protocol AttributeSetter<Implementation>: CustomDebugStringConvertible {
+    /// The implementation node type this attribute is bound to.
+    associatedtype Implementation: ImplementationNode
+
+    /// Type of the attribute value.
+    associatedtype Value
+
+    /// The attribute target.
+    ///
+    /// Represents the attribute key path on the implementation node side,
+    /// used to identify an attribute. This is not the same as identifying an attribute
+    /// *setter*, which is done with structural identity through the `identifiedBy` parameter.
+    ///
+    /// The value type is not necessarily ``Value`` as the
+    /// attribute on the implementation side can be wrapped.
+    var target: AttributeTarget { get }
+
+    /// Set the value to the given implementation.
+    /// The identifier represents the unique element holding the attribute,
+    /// using structural identity.
+    func set(on implementation: Implementation, identifiedBy: AnyHashable)
+
+    /// Adds the attribute to the given stash.
+    func add(to stash: inout AttributesStash, source: AnyHashable, key: AttributeTarget)
+}
 
 /// Contains the value to give an attribute of an eventual implementation node.
 ///
@@ -73,8 +106,6 @@ public struct Attribute<Implementation: ImplementationNode, Value>: AttributeSet
     let keyPath: AttributeKeyPath
 
     public let target: AttributeTarget
-
-    public let strategy = AttributeStrategy.discard
 
     /// Creates a new attribute for the given `keyPath`.
     public init(_ keyPath: AttributeKeyPath) {
@@ -116,6 +147,10 @@ public struct Attribute<Implementation: ImplementationNode, Value>: AttributeSet
         if let value = value {
             self.wrappedValue = value
         }
+    }
+
+    public func add(to stash: inout AttributesStash, source: AnyHashable, key: AttributeTarget) {
+        stash.attributes[key] = self
     }
 }
 
@@ -191,8 +226,6 @@ public struct AppendAttribute<Implementation: ImplementationNode, Value>: Attrib
 
     public let target: AttributeTarget
 
-    public let strategy = AttributeStrategy.append
-
     /// Creates a new attribute for the given `keyPath`.
     public init(_ keyPath: AttributeKeyPath) {
         self.keyPath = keyPath
@@ -227,13 +260,13 @@ public struct AppendAttribute<Implementation: ImplementationNode, Value>: Attrib
         // Otherwise just set it
         if let existingValue = list.values[key] {
             if !elementEquals(lhs: existingValue, rhs: value) {
-                attributesLogger.trace("Appending attribute identified by \(key) on \(implementation.displayName): value is different")
+                attributesLogger.trace("Accumulating attribute identified by \(key) on \(implementation.displayName): value is different")
                 implementation[keyPath: self.keyPath].values[key] = value
             } else {
-                attributesLogger.trace("Skipping appending attribute identified by \(key) on \(implementation.displayName): value hasn't changed")
+                attributesLogger.trace("Skipping accumulating attribute identified by \(key) on \(implementation.displayName): value hasn't changed")
             }
         } else {
-            attributesLogger.trace("Appending attribute identified by \(key) on \(implementation.displayName): attribute is set for the first time")
+            attributesLogger.trace("Accumulating attribute identified by \(key) on \(implementation.displayName): attribute is set for the first time")
             implementation[keyPath: self.keyPath].values[key] = value
         }
     }
@@ -246,40 +279,11 @@ public struct AppendAttribute<Implementation: ImplementationNode, Value>: Attrib
             self.wrappedValue = value
         }
     }
-}
 
-/// Sets an attribute value to any implementation.
-///
-/// By default, attributes of an element are collected using runtime metadata on the element itself
-/// to gather all `@Attribute` property wrappers.
-/// However this is quite slow due to runtime metadata lookup.
-///
-/// Using a specialized element like `ViewAttribute` without property wrappers allows collecting
-/// attributes in a type-safe and faster way.
-public protocol AttributeSetter<Implementation>: CustomDebugStringConvertible {
-    /// The implementation node type this attribute is bound to.
-    associatedtype Implementation: ImplementationNode
-
-    /// Type of the attribute value.
-    associatedtype Value
-
-    /// The attribute target.
-    ///
-    /// Represents the attribute key path on the implementation node side,
-    /// used to identify an attribute. This is not the same as identifying an attribute
-    /// *setter*, which is done with structural identity through the `identifiedBy` parameter.
-    ///
-    /// The value type is not necessarily ``Value`` as the
-    /// attribute on the implementation side can be wrapped.
-    var target: AttributeTarget { get }
-
-    /// Set the value to the given implementation.
-    /// The identifier represents the unique element holding the attribute,
-    /// using structural identity.
-    func set(on implementation: Implementation, identifiedBy: AnyHashable)
-
-    /// What strategy to use when applying this attribute?
-    var strategy: AttributeStrategy { get }
+    public func add(to stash: inout AttributesStash, source: AnyHashable, key: AttributeTarget) {
+        let key: AccumulatingAttributeKey = AccumulatingAttributeKey(source: source, target: key)
+        stash.accumulatingAttributes[key] = self
+    }
 }
 
 extension AttributeSetter {
@@ -301,65 +305,50 @@ extension AttributeSetter {
     }
 
     public var debugDescription: String {
-        return "\(self.strategy): \(self.target)"
+        return "\(Self.self): \(self.target)"
     }
-}
-
-/// What strategy to use when applying an attribute?
-public enum AttributeStrategy {
-    /// Discard the attribute if it's already been set by any parent element.
-    case discard
-
-    /// Append the attribute to the target ``AttributeList``, never discarding
-    /// any value.
-    case append
 }
 
 /// Represents the target key path of an attribute inside the
 /// target element implementation class.
 public typealias AttributeTarget = AnyKeyPath
 
+/// Key for one entry of the "accumulating" attributes dictionary.
+struct AccumulatingAttributeKey: Hashable {
+    /// Source element applying the attribute (element node object identifier hash).
+    let source: AnyHashable
+
+    /// Attribute target.
+    let target: AttributeTarget
+}
+
 /// An attributes "stash" holds attributes while the graph is traversed.
 public struct AttributesStash {
-    /// Key for one entry of the "appending" attributes dictionary.
-    struct AppendKey: Hashable {
-        /// Source element applying the attribute (element node object identifier hash).
-        let source: AnyHashable
-
-        /// Attribute target.
-        let target: AttributeTarget
-    }
-
-    /// "Discarding" attributes are attribute with one and only one value per element.
+    /// Regular attributes are attribute with one and only one value per element.
     /// Once the value is set anywhere in the tree, it will never be overridden by children
-    /// elements, making the top-most value the applied one.
-    var discardingAttributes: [AttributeTarget: any AttributeSetter]
+    /// elements, making the top-most value the applied one (parent takes precedence).
+    /// TODO: should we reverse this as this is inconsistent with environment values?
+    var attributes: [AttributeTarget: any AttributeSetter]
 
-    /// "Appending" attributes are applied to a list of values on the target (``AttributeList``).
+    /// "Accumulating" attributes are applied to a list of values on the target (``AttributeList``).
     /// Each append attribute value is bound to the source element node (usually the ``ViewAttribute`` setter)
     /// to be able to replace the correct value in the target list when it changes.
-    var appendingAttributes: [AppendKey: any AttributeSetter]
+    var accumulatingAttributes: [AccumulatingAttributeKey: any AttributeSetter]
 
     /// Creates a new attributes stash from the given list of attributes.
     init(from attributes: [AttributeTarget: any AttributeSetter], source: AnyHashable) {
-        self.discardingAttributes = [:]
-        self.appendingAttributes = [:]
+        self.attributes = [:]
+        self.accumulatingAttributes = [:]
 
         for (key, attribute) in attributes {
-            switch attribute.strategy {
-                case .discard:
-                    self.discardingAttributes[key] = attribute
-                case .append:
-                    let key = AppendKey(source: source, target: key)
-                    self.appendingAttributes[key] = attribute
-            }
+            attribute.add(to: &self, source: source, key: key)
         }
     }
 
     /// Creates an empty attribute stash.
     init() {
-        self.discardingAttributes = [:]
-        self.appendingAttributes = [:]
+        self.attributes = [:]
+        self.accumulatingAttributes = [:]
     }
 
     /// Returns a new attributes stash containing all attributes of this stash
@@ -368,17 +357,17 @@ public struct AttributesStash {
     func merging(with other: AttributesStash) -> AttributesStash {
         var newStash = self
 
-        // Merge discarding attributes
-        for (key, value) in other.discardingAttributes {
-            newStash.discardingAttributes[key] = value
+        // Merge attributes
+        for (key, value) in other.attributes {
+            newStash.attributes[key] = value
         }
 
-        // Merge append attributes
-        attributesLogger.trace("Appending attributes count before merging: \(newStash.appendingAttributes.count)")
-        for (key, value) in other.appendingAttributes {
-            newStash.appendingAttributes[key] = value
+        // Merge accumulating attributes
+        attributesLogger.trace("Accumulating attributes count before merging: \(newStash.accumulatingAttributes.count)")
+        for (key, value) in other.accumulatingAttributes {
+            newStash.accumulatingAttributes[key] = value
         }
-        attributesLogger.trace("Appending attributes count after merging: \(newStash.appendingAttributes.count)")
+        attributesLogger.trace("Accumulating attributes count after merging: \(newStash.accumulatingAttributes.count)")
 
         attributesLogger.trace("Total attributes count after merging: \(newStash.count)")
 
@@ -386,11 +375,11 @@ public struct AttributesStash {
     }
 
     var isEmpty: Bool {
-        return self.discardingAttributes.isEmpty && self.appendingAttributes.isEmpty
+        return self.attributes.isEmpty && self.accumulatingAttributes.isEmpty
     }
 
     var count: Int {
-        return self.discardingAttributes.count + self.appendingAttributes.count
+        return self.attributes.count + self.accumulatingAttributes.count
     }
 }
 
@@ -399,50 +388,50 @@ extension ElementNodeContext {
     /// returning them along the context copy.
     func poppingAttributes<Implementation: ImplementationNode>(
         for implementationType: Implementation.Type
-    ) -> (discarding: [any AttributeSetter], appending: [(AnyHashable, any AttributeSetter)], context: Self) {
+    ) -> (attributes: [any AttributeSetter], accumulating: [(AnyHashable, any AttributeSetter)], context: Self) {
         attributesLogger.trace("Searching for attributes to apply on \(Implementation.self)")
 
         // If we request attributes for `Never` just return empty attributes and the untouched context since
         // we can never have attributes for a `Never` implementation type
         if Implementation.self == Never.self {
             return (
-                discarding: [],
-                appending: [],
+                attributes: [],
+                accumulating: [],
                 context: self
             )
         }
 
         // Create a new attributes stash containing only the corresponding attributes
         // then return that, as well as a new context containing all remaining attributes
-        var discardingAttributes: [any AttributeSetter] = []
-        var appendingAttributes: [(AnyHashable, any AttributeSetter)] = []
+        var attributes: [any AttributeSetter] = []
+        var accumulatingAttributes: [(AnyHashable, any AttributeSetter)] = []
         var remainingAttributes = AttributesStash()
 
-        // Discarding attributes
-        for (target, attribute) in self.attributes.discardingAttributes {
+        // Attributes
+        for (target, attribute) in self.attributes.attributes {
             if attribute.applies(to: implementationType) {
-                attributesLogger.trace("Selected discarding attribute for applying")
-                discardingAttributes.append(attribute)
+                attributesLogger.trace("Selected attribute for applying")
+                attributes.append(attribute)
             } else {
-                attributesLogger.trace("Selected discarding attribute for the edges (\(attribute.implementationType) isn't applyable on \(Implementation.self))")
-                remainingAttributes.discardingAttributes[target] = attribute
+                attributesLogger.trace("Selected attribute for the edges (\(attribute.implementationType) isn't applyable on \(Implementation.self))")
+                remainingAttributes.attributes[target] = attribute
             }
         }
 
-        // Appending attributes
-        for (key, attribute) in self.attributes.appendingAttributes {
+        // Accumulating attributes
+        for (key, attribute) in self.attributes.accumulatingAttributes {
             if attribute.applies(to: implementationType) {
-                attributesLogger.trace("Selected appending attribute for applying")
-                appendingAttributes.append((key.source, attribute))
+                attributesLogger.trace("Selected accumulating attribute for applying")
+                accumulatingAttributes.append((key.source, attribute))
             } else {
-                attributesLogger.trace("Selected appending attribute for the edges (\(attribute.implementationType) isn't applyable on \(Implementation.self))")
-                remainingAttributes.appendingAttributes[key] = attribute
+                attributesLogger.trace("Selected accumulating attribute for the edges (\(attribute.implementationType) isn't applyable on \(Implementation.self))")
+                remainingAttributes.accumulatingAttributes[key] = attribute
             }
         }
 
         return (
-            discarding: discardingAttributes,
-            appending: appendingAttributes,
+            attributes: attributes,
+            accumulating: accumulatingAttributes,
             context: Self(
                 attributes: remainingAttributes,
                 vmcStack: self.vmcStack,

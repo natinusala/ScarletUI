@@ -18,8 +18,8 @@ import Nimble
 
 @testable import ScarletCore
 
-class DifferentDiscardingAttributesSpec: ScarletSpec {
-    static let describing = "a view with the multiple different discarding attributes applied"
+class AttributesDifferentSpec: ScarletSpec {
+    static let describing = "a view with the multiple different attributes applied"
 
     struct Tested: TestView {
         let fill: Color

@@ -18,8 +18,8 @@ import Nimble
 
 @testable import ScarletCore
 
-class AppendingAttributeWrongTypeSpec: ScarletSpec {
-    static let describing = "a view with an appending attribute applied of on the wrong implementation type"
+class AccumulatingAttributeWrongTypeSpec: ScarletSpec {
+    static let describing = "a view with an accumulating attribute applied of on the wrong implementation type"
 
     struct Avatar: View {
         let user: String

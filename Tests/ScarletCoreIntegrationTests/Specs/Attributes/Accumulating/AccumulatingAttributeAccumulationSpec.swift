@@ -18,8 +18,8 @@ import Nimble
 
 @testable import ScarletCore
 
-class AppendingAttributeAccumulationSpec: ScarletSpec {
-    static let describing = "a view with multiple appending attributes accumulated on different levels"
+class AccumulatingAttributeAccumulationSpec: ScarletSpec {
+    static let describing = "a view with multiple accumulating attributes accumulated on different levels"
 
     struct FilteredImage: View {
         let filter: Filter
