@@ -63,7 +63,7 @@ class AttributeSpec: ScarletSpec {
                 }
             }
 
-            when("view is updated but the attribute value doesn't change") {
+            when("the attribute value doesn't change") {
                 given {
                     Tested(rectangleId: "some-rectangle")
                     Tested(rectangleId: "some-rectangle")
