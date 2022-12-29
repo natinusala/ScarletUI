@@ -35,22 +35,26 @@ public class EnvironmentElementNode<Value, E0>: ElementNode where Value: Element
     public var implementationCount = 0
     public var attributes = AttributesStash()
 
+    let partialKeyPath: PartialKeyPath<EnvironmentValues>
+
     var e0: E0.Node?
 
     /// Previous known value for the environment value.
     var environmentValue: EnvironmentValue
 
     init(making element: Value, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) {
+        // TODO: find a way to not collect twice (once here, once in `update()` below)
         let environment = Value.collectEnvironment(of: element)
 
         self.parent = parent
         self.environmentValue = environment.value
+        self.partialKeyPath = element.partialKeyPath
 
         // Create the implementation node
         self.implementation = Value.makeImplementation(of: element)
 
         // Start a first update without comparing (since we update the value with itself)
-        let result = self.update(with: element, implementationPosition: implementationPosition, using: context)
+        let result = self.update(with: element, implementationPosition: implementationPosition, using: context, initial: true)
 
         // Attach the implementation once everything is ready
         self.insertImplementationInParent(position: result.implementationPosition)
@@ -100,8 +104,11 @@ public class EnvironmentElementNode<Value, E0>: ElementNode where Value: Element
     }
 
     public func compareEnvironment(of element: Value, using context: ElementNodeContext) -> (values: EnvironmentValues, changed: EnvironmentDiff) {
+        // TODO: Somehow test this is called ONCE by environment change, and not once by view the environment is applied on
         let newEnvironment = Value.collectEnvironment(of: element)
         let changed = !elementEquals(lhs: self.environmentValue, rhs: newEnvironment.value)
+
+        environmentLogger.trace("Comparing environment \(Self.self)")
 
         // Update state
         self.environmentValue = newEnvironment.value
@@ -118,5 +125,11 @@ public class EnvironmentElementNode<Value, E0>: ElementNode where Value: Element
             values: values,
             changed: changedEnvironment
         )
+    }
+
+    public func resetEnvironmentDiff(from diff: EnvironmentDiff) -> EnvironmentDiff {
+        var diff = diff
+        diff[self.partialKeyPath] = false
+        return diff
     }
 }

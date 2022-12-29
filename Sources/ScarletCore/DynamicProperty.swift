@@ -39,7 +39,7 @@ protocol DynamicProperty {
 /// Visits various dynamic properties of a given element.
 /// Used by calling ``DynamicProperty/accept()`` on the visited property.
 protocol DynamicPropertiesVisitor<Visited>: AnyObject {
-    associatedtype Visited: Element
+    associatedtype Visited
 
     /// Visit a state property.
     func visitStateProperty<Value>(
@@ -58,4 +58,27 @@ protocol DynamicPropertiesVisitor<Visited>: AnyObject {
         values: EnvironmentValues,
         diff: EnvironmentDiff
     ) throws
+}
+
+extension DynamicPropertiesVisitor {
+    /// Uses runtime metadata to visit all dynamic properties of the given element.
+    func walk(_ element: Visited, target: inout Visited, using context: ElementNodeContext) throws {
+        let info = try cachedTypeInfo(of: Visited.self)
+
+        for property in info.properties {
+            let current = try property.get(from: element)
+
+            switch current {
+                case let current as DynamicProperty:
+                    try current.accept(
+                        visitor: self,
+                        in: property,
+                        target: &target,
+                        using: context
+                    )
+                default:
+                    break
+            }
+        }
+    }
 }

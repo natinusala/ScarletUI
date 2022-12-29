@@ -14,22 +14,21 @@
    limitations under the License.
 */
 
-import ScarletCore
+/// A view that arranges its children in a column.
+public struct Column<Content>: ContainerView where Content: View {
+    public typealias Implementation = Never
 
-private struct TextColorEnvironmentKey: AttributeEnvironmentKey {
-    static let defaultValue = Color.black
-    static let target = \TextImpl.textColor
-}
+    let content: Content
 
-extension EnvironmentValues {
-    var textColor: Color {
-        get { self[TextColorEnvironmentKey.self] }
-        set { self[TextColorEnvironmentKey.self] = newValue }
+    public init(@ViewBuilder content: () -> Content) {
+        self.content = content()
+    }
+
+    public var body: some View {
+        ScarletUI.Node {
+            content
+        }
+            .environment(\.axis, value: .column)
     }
 }
 
-extension View {
-    func textColor(_ color: Color) -> some View {
-        return self.environment(\.textColor, value: color)
-    }
-}

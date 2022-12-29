@@ -18,8 +18,8 @@ import Nimble
 
 @testable import ScarletCore
 
-class DiscardingAttributePropagationOverridingSpec: ScarletSpec {
-    static let describing = "a view tree with overridden propagating discarding attributes"
+class EnvironmentAttributePropagationOverridingSpec: ScarletSpec {
+    static let describing = "a view tree with overridden environment attributes"
 
     struct Overridden: View {
         let defaultColor: Color
@@ -56,7 +56,7 @@ class DiscardingAttributePropagationOverridingSpec: ScarletSpec {
 
                             ViewImpl("Overridden") {
                                 TextImpl(text: "Some text", textColor: .yellow)
-                                TextImpl(text: "Some other text", textColor: .yellow)
+                                TextImpl(text: "Some other text", textColor: .blue)
                             }
                         }
                     ))
@@ -69,23 +69,17 @@ class DiscardingAttributePropagationOverridingSpec: ScarletSpec {
                     Tested(overriddenColor: .yellow, defaultColor: .red)
                 }
 
-                then("the implementation is untouched") { result in
+                then("the implementation is updated") { result in
                     expect(result.implementation).to(equal(
                         ViewImpl("Tested") {
                             TextImpl(text: "More text", textColor: .black)
 
                             ViewImpl("Overridden") {
                                 TextImpl(text: "Some text", textColor: .yellow)
-                                TextImpl(text: "Some other text", textColor: .yellow)
+                                TextImpl(text: "Some other text", textColor: .red)
                             }
                         }
                     ))
-                }
-
-                then("attributes are not set on the implementation side") { result in
-                    expect(result.all(TextImpl.self, expectedCount: 3)).to(allPass {
-                        $0.textColorChanged == false
-                    })
                 }
             }
 
@@ -102,7 +96,7 @@ class DiscardingAttributePropagationOverridingSpec: ScarletSpec {
 
                             ViewImpl("Overridden") {
                                 TextImpl(text: "Some text", textColor: .red)
-                                TextImpl(text: "Some other text", textColor: .red)
+                                TextImpl(text: "Some other text", textColor: .blue)
                             }
                         }
                     ))
@@ -122,7 +116,7 @@ class DiscardingAttributePropagationOverridingSpec: ScarletSpec {
 
                             ViewImpl("Overridden") {
                                 TextImpl(text: "Some text", textColor: .yellow)
-                                TextImpl(text: "Some other text", textColor: .yellow)
+                                TextImpl(text: "Some other text", textColor: .blue)
                             }
                         }
                     ))

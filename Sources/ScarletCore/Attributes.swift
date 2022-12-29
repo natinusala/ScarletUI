@@ -72,33 +72,20 @@ public struct Attribute<Implementation: ImplementationNode, Value>: AttributeSet
     /// The path to the attribute in the implementation class.
     let keyPath: AttributeKeyPath
 
-    /// Should the value be propagated to every node in the graph?
-    public let propagate: Bool
-
     public let target: AttributeTarget
 
     public let strategy = AttributeStrategy.discard
 
     /// Creates a new attribute for the given `keyPath`.
-    ///
-    /// If `propagate` is `true`, the attribute will be propagated to all nodes in the graph
-    /// even if they don't have the attribute. This is useful for attributes that should be set
-    /// on the whole hierarchy if it's set on one parent node.
-    public init(_ keyPath: AttributeKeyPath, propagate: Bool = false) {
+    public init(_ keyPath: AttributeKeyPath) {
         self.keyPath = keyPath
-        self.propagate = propagate
 
         self.target = keyPath
     }
 
     /// Creates a new attribute for the given `keyPath` and initial value.
-    ///
-    /// If `propagate` is `true`, the attribute will be propagated to all nodes in the graph
-    /// even if they don't have the attribute. This is useful for attributes that should be set
-    /// on the whole hierarchy if it's set on one parent node.
-    public init(_ keyPath: AttributeKeyPath, value: AttributeStorage<Value>, propagate: Bool = false) {
+    public init(_ keyPath: AttributeKeyPath, value: AttributeStorage<Value>) {
         self.keyPath = keyPath
-        self.propagate = propagate
 
         self.target = keyPath
 
@@ -106,12 +93,8 @@ public struct Attribute<Implementation: ImplementationNode, Value>: AttributeSet
     }
 
     /// Creates a new attribute for the given `keyPath` and initial value.
-    ///
-    /// If `propagate` is `true`, the attribute will be propagated to all nodes in the graph
-    /// even if they don't have the attribute. This is useful for attributes that should be set
-    /// on the whole hierarchy if it's set on one parent node.
-    public init(_ keyPath: AttributeKeyPath, value: Value, propagate: Bool = false) {
-        self.init(keyPath, value: .set(value: value), propagate: propagate)
+    public init(_ keyPath: AttributeKeyPath, value: Value) {
+        self.init(keyPath, value: .set(value: value))
     }
 
     public func set(on implementation: Implementation, identifiedBy: AnyHashable) {
@@ -206,33 +189,20 @@ public struct AppendAttribute<Implementation: ImplementationNode, Value>: Attrib
     /// The path to the attribute in the implementation class.
     let keyPath: AttributeKeyPath
 
-    /// Should the value be propagated to every node in the graph?
-    public let propagate: Bool
-
     public let target: AttributeTarget
 
     public let strategy = AttributeStrategy.append
 
     /// Creates a new attribute for the given `keyPath`.
-    ///
-    /// If `propagate` is `true`, the attribute will be propagated to all nodes in the graph
-    /// even if they don't have the attribute. This is useful for attributes that should be set
-    /// on the whole hierarchy if it's set on one parent node.
-    public init(_ keyPath: AttributeKeyPath, propagate: Bool = false) {
+    public init(_ keyPath: AttributeKeyPath) {
         self.keyPath = keyPath
-        self.propagate = propagate
 
         self.target = keyPath
     }
 
     /// Creates a new attribute for the given `keyPath` and initial value.
-    ///
-    /// If `propagate` is `true`, the attribute will be propagated to all nodes in the graph
-    /// even if they don't have the attribute. This is useful for attributes that should be set
-    /// on the whole hierarchy if it's set on one parent node.
-    public init(_ keyPath: AttributeKeyPath, value: AttributeStorage<Value>, propagate: Bool = false) {
+    public init(_ keyPath: AttributeKeyPath, value: AttributeStorage<Value>) {
         self.keyPath = keyPath
-        self.propagate = propagate
 
         self.target = keyPath
 
@@ -240,12 +210,8 @@ public struct AppendAttribute<Implementation: ImplementationNode, Value>: Attrib
     }
 
     /// Creates a new attribute for the given `keyPath` and initial value.
-    ///
-    /// If `propagate` is `true`, the attribute will be propagated to all nodes in the graph
-    /// even if they don't have the attribute. This is useful for attributes that should be set
-    /// on the whole hierarchy if it's set on one parent node.
-    public init(_ keyPath: AttributeKeyPath, value: Value, propagate: Bool = false) {
-        self.init(keyPath, value: .set(value: value), propagate: propagate)
+    public init(_ keyPath: AttributeKeyPath, value: Value) {
+        self.init(keyPath, value: .set(value: value))
     }
 
     public func set(on implementation: Implementation, identifiedBy key: AnyHashable) {
@@ -306,9 +272,6 @@ public protocol AttributeSetter<Implementation>: CustomDebugStringConvertible {
     /// The value type is not necessarily ``Value`` as the
     /// attribute on the implementation side can be wrapped.
     var target: AttributeTarget { get }
-
-    /// Should the attribute be propagated to all nodes in the graph?
-    var propagate: Bool { get }
 
     /// Set the value to the given implementation.
     /// The identifier represents the unique element holding the attribute,
@@ -460,12 +423,6 @@ extension ElementNodeContext {
             if attribute.applies(to: implementationType) {
                 attributesLogger.trace("Selected discarding attribute for applying")
                 discardingAttributes.append(attribute)
-
-                // If the attribute needs to be propagated, put it back in the remaining attributes
-                if attribute.propagate {
-                    attributesLogger.trace("     Discarding attribute is propagated, putting it back for the edges")
-                    remainingAttributes.discardingAttributes[target] = attribute
-                }
             } else {
                 attributesLogger.trace("Selected discarding attribute for the edges (\(attribute.implementationType) isn't applyable on \(Implementation.self))")
                 remainingAttributes.discardingAttributes[target] = attribute
@@ -477,12 +434,6 @@ extension ElementNodeContext {
             if attribute.applies(to: implementationType) {
                 attributesLogger.trace("Selected appending attribute for applying")
                 appendingAttributes.append((key.source, attribute))
-
-                // If the attribute needs to be propagated, put it back in the remaining attributes
-                if attribute.propagate {
-                    attributesLogger.trace("     Appending attribute is propagated, putting it back for the edges")
-                    remainingAttributes.appendingAttributes[key] = attribute
-                }
             } else {
                 attributesLogger.trace("Selected appending attribute for the edges (\(attribute.implementationType) isn't applyable on \(Implementation.self))")
                 remainingAttributes.appendingAttributes[key] = attribute

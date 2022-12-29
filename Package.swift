@@ -50,7 +50,7 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.0.0"),
 
         // Testing
-        .package(url: "https://github.com/natinusala/Quick.git", .upToNextMajor(from: "1.0.0")),
+        .package(url: "https://github.com/natinusala/Quick.git", .upToNextMajor(from: "1.0.1")),
         .package(url: "https://github.com/Quick/Nimble.git", .upToNextMajor(from: "11.2.1")),
     ],
     targets: [

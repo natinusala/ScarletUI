@@ -18,8 +18,9 @@ import Nimble
 
 @testable import ScarletCore
 
-class DiscardingAttributeOverrideSpec: ScarletSpec {
-    static let describing = "a view with a discarding attribute overridden by the parent"
+/// Child environment takes precedence over the parent ("override").
+class EnvironmentAttributeAlreadySetSpec: ScarletSpec {
+    static let describing = "a view with an environment attribute already by the parent"
 
     struct ColoredContent: View {
         let color: Color
@@ -90,7 +91,7 @@ class DiscardingAttributeOverrideSpec: ScarletSpec {
                     expect(result.implementation).to(equal(
                         ViewImpl("Tested") {
                             ViewImpl("ColoredContent") {
-                                TextImpl(text: "Content text", textColor: .yellow)
+                                TextImpl(text: "Content text", textColor: .white)
                             }
                         }
                     ))
@@ -107,14 +108,14 @@ class DiscardingAttributeOverrideSpec: ScarletSpec {
                     expect(result.implementation).to(equal(
                         ViewImpl("Tested") {
                             ViewImpl("ColoredContent") {
-                                TextImpl(text: "Content text", textColor: .blue)
+                                TextImpl(text: "Content text", textColor: .white)
                             }
                         }
                     ))
                 }
 
-                then("value is set on implementation side") { result in
-                    expect(result.first(TextImpl.self).textColorChanged).to(beTrue())
+                then("value is not set on implementation side") { result in
+                    expect(result.first(TextImpl.self).textColorChanged).to(beFalse())
                 }
             }
 
@@ -128,7 +129,7 @@ class DiscardingAttributeOverrideSpec: ScarletSpec {
                     expect(result.implementation).to(equal(
                         ViewImpl("Tested") {
                             ViewImpl("ColoredContent") {
-                                TextImpl(text: "Content text", textColor: .yellow)
+                                TextImpl(text: "Content text", textColor: .white)
                             }
                         }
                     ))
@@ -170,7 +171,7 @@ class DiscardingAttributeOverrideSpec: ScarletSpec {
                     expect(result.implementation).to(equal(
                         ViewImpl("Tested") {
                             ViewImpl("ColoredContent") {
-                                TextImpl(text: "Content text", textColor: .blue)
+                                TextImpl(text: "Content text", textColor: .white)
                             }
                         }
                     ))

@@ -68,6 +68,9 @@ public protocol ElementNode<Value>: AnyObject {
     /// Returns a new environment storage as well as the list of all changed key paths.
     func compareEnvironment(of element: Value, using context: ElementNodeContext) -> (values: EnvironmentValues, changed: EnvironmentDiff)
 
+    /// Takes the given environment diff and sets environment values of this node to `false`, if any.
+    func resetEnvironmentDiff(from diff: EnvironmentDiff) -> EnvironmentDiff
+
     func storeValue(_ value: Value)
     func storeContext(_ context: Context)
     func storeImplementationPosition(_ position: Int)
@@ -83,6 +86,11 @@ public extension ElementNode {
     /// Default implementation: no comparison, no installation, just update the node.
     func compareAndUpdate(with element: Value?, implementationPosition: Int, using context: Context) -> UpdateResult {
         return self.update(with: element, implementationPosition: implementationPosition, using: context)
+    }
+
+    /// Default implementation: this is not an environment node, don't reset anything.
+    func resetEnvironmentDiff(from diff: EnvironmentDiff) -> EnvironmentDiff {
+        return diff
     }
 
     func storeValue(_ value: Value) {}
@@ -109,7 +117,7 @@ extension ElementNode {
     /// since the edges may have changed depending on context.
     ///
     /// Returns the node implementation count.
-    func update(with element: Value?, implementationPosition: Int, using context: Context) -> UpdateResult {
+    func update(with element: Value?, implementationPosition: Int, using context: Context, initial: Bool = false) -> UpdateResult {
         implementationLogger.trace("Updating \(Value.self) with implementation position \(implementationPosition)")
 
         let attributes: AttributesStash
@@ -124,11 +132,18 @@ extension ElementNode {
             attributesLogger.trace("Collecting attributes of \(Self.Value.self.displayName) using source \(source)")
             attributes = Value.collectAttributes(of: element, source: source)
 
+            environmentLogger.trace("Comparing environment of \(Value.self)")
             (environment, changedEnvironment) = self.compareEnvironment(of: element, using: context)
         } else {
             attributes = self.attributes
             environment = context.environment
-            changedEnvironment = context.changedEnvironment
+
+            // Only applies when this is an environment node:
+            // When there is no element, assume the environment value to be unchanged compared to the previous
+            // value so reset the diff
+            changedEnvironment = self.resetEnvironmentDiff(from: context.changedEnvironment)
+
+            environmentLogger.trace("Not comparing environment of \(Value.self): element is unchanged")
         }
 
         if !attributes.isEmpty {
@@ -176,6 +191,10 @@ extension ElementNode {
             }
         }
 
+        // Apply environment attributes
+        // Give edges context here since it contains the correct environment values and diff (`context` is our parent's context)
+        // TODO: is this necessary? it shouldn't matter
+        self.setEnvironmentAttributes(initial: initial, using: edgesContext)
 
         // Make the element and make edges
         let output = element.map { self.make(element: $0) }
@@ -197,17 +216,23 @@ extension ElementNode {
         self.storeContext(context.clearingEnvironment())
         self.storeImplementationPosition(implementationPosition)
 
-        // Override implementation count if the element is substantial since it has ieone implementation: itself
+        // Override implementation count if the element is substantial since it has one implementation: itself
         if self.substantial {
             self.implementationCount = 1
         }
 
-        // Return result
+        // Make result
         let result = UpdateResult(
             implementationPosition: implementationPosition,
             implementationCount: self.implementationCount
         )
         implementationLogger.trace("Update result of \(Value.self): \(result)")
+
+        // Handle initial update
+        if initial {
+            self.implementation?.attributesDidSet()
+        }
+
         return result
     }
 
@@ -224,6 +249,35 @@ extension ElementNode {
         }
 
         return self.compareAndUpdate(with: typedElement, implementationPosition: implementationPosition, using: context)
+    }
+
+    /// Sets environment attributes on the element node.
+    func setEnvironmentAttributes(initial: Bool, using context: ElementNodeContext) {
+        guard self.substantial else {
+            return
+        }
+
+        guard let implementation = self.implementation else {
+            fatalError("Invalid 'ElementNode' state: expected an implementation node of type \(Value.Implementation.self) to be set to apply environment on")
+        }
+
+        environmentLogger.trace("Setting environment attributes on \(Value.Implementation.self) (\(implementation)), initial: \(initial)")
+
+        for changedEnvironment in context.changedEnvironment where changedEnvironment.value || initial {
+            let value = context.environment[keyPath: changedEnvironment.key]
+
+            guard let key = context.environment.lastReadEnvironmentKey() else {
+                fatalError("Could not get last accessed environment key")
+            }
+
+            guard let key = key as? any AttributeEnvironmentKey.Type else {
+                // Not an attribute, skipping
+                return
+            }
+
+            environmentLogger.trace("Setting environment attribute \(key) on \(Value.Implementation.self) to \(value)")
+            key.set(value, on: implementation)
+        }
     }
 }
 

@@ -27,12 +27,6 @@ public struct Window<Content>: StatelessLeafScene where Content: View {
     @Attribute(\_WindowImplementation.mode)
     var mode
 
-    @Attribute(\_WindowImplementation.axis, propagate: true)
-    var windowAxis
-
-    @Attribute(\_ViewImplementation.axis, propagate: true)
-    var viewsAxis
-
     public let content: Content
 
     public init(
@@ -44,9 +38,6 @@ public struct Window<Content>: StatelessLeafScene where Content: View {
 
         self.$title.setFromOptional(title)
         self.$mode.setFromOptional(mode)
-
-        self.windowAxis = defaultAxis
-        self.viewsAxis = defaultAxis
     }
 }
 

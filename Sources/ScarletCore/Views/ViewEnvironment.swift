@@ -44,7 +44,12 @@ public struct ViewEnvironment<Content: View, Value>: View, EnvironmentCollectabl
     }
 
     public static func collectEnvironment(of element: Self) -> (keyPath: WritableKeyPath<EnvironmentValues, Value>, value: Value) {
+        environmentLogger.trace("Collecting environment of \(Self.self)")
         return (keyPath: element.keyPath, value: element.value)
+    }
+
+    public var partialKeyPath: PartialKeyPath<EnvironmentValues> {
+        return self.keyPath
     }
 }
 

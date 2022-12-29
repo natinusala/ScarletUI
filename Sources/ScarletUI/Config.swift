@@ -15,4 +15,7 @@
 */
 
 let targetFrameTime = 0.016666666 // TODO: find a way for users to customize this somehow, put it in the scene?
-let defaultAxis = Axis.column
+
+public extension Axis {
+    static let `default` = Axis.column
+}

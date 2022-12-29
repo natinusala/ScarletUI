@@ -18,8 +18,8 @@ import Nimble
 
 @testable import ScarletCore
 
-class DiscardingAttributePropagationSpec: ScarletSpec {
-    static let describing = "a view tree with propagating discarding attributes"
+class EnvironmentAttributePropagationSpec: ScarletSpec {
+    static let describing = "a view tree with environment attributes"
 
     struct UserInfo: View {
         var body: some View {

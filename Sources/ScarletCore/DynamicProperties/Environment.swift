@@ -21,16 +21,53 @@ public protocol EnvironmentKey {
     static var defaultValue: Value { get }
 }
 
+/// An environment value that can be set as an attribute to an implementation node.
+public protocol AttributeEnvironmentKey: EnvironmentKey {
+    associatedtype Implementation
+
+    /// The target key path to write the value to.
+    ///
+    /// Swift infers class writable key paths to `ReferenceWritableKeyPath` so we need to use that type
+    /// here or it will break protocol conformance.
+    static var target: ReferenceWritableKeyPath<Implementation, Value> { get }
+}
+
+extension AttributeEnvironmentKey {
+    static func set(_ value: Any, on implementation: ImplementationNode) {
+        guard let implementation = implementation as? Implementation else {
+            return
+        }
+
+        guard let value = value as? Value else {
+            fatalError("Cannot set environment attribute: got value of wrong type")
+        }
+
+        implementation[keyPath: Self.target] = value
+    }
+}
+
 public typealias EnvironmentDiff = [PartialKeyPath<EnvironmentValues>: Bool]
 
+/// Cookie used to store the last read environment key.
+/// Used to go from an `EnvironmentValues` key path to its associated
+/// `EnvironmentKey`.
+class EnvironmentKeyCookie {
+    var lastReadEnvironmentKey: (any EnvironmentKey.Type)?
+}
+
 /// Serves as storage for environment values.
-public struct EnvironmentValues {
+public struct EnvironmentValues: CustomDebugStringConvertible {
     /// Key is an `EnvironmentKey.Type` identifier.
     private var values: [ObjectIdentifier: Any] = [:]
 
+    private let keyCookie = EnvironmentKeyCookie()
+
     /// Subscript used by users to get and set a value from its key.
-    subscript<Key>(key: Key.Type) -> Key.Value where Key: EnvironmentKey {
+    /// Reading it will update ``lastReadEnvironmentKey()``.
+    public subscript<Key>(key: Key.Type) -> Key.Value where Key: EnvironmentKey {
         get {
+            self.keyCookie.lastReadEnvironmentKey = key
+
             if let value = self.values[ObjectIdentifier(key)] as? Key.Value {
                 return value
             } else {
@@ -40,6 +77,18 @@ public struct EnvironmentValues {
         set {
             self.values[ObjectIdentifier(key)] = newValue
         }
+    }
+
+    static func defaultValue<Value>(of keyPath: KeyPath<Self, Value>) -> Value {
+        return Self()[keyPath: keyPath]
+    }
+
+    func lastReadEnvironmentKey() -> (any EnvironmentKey.Type)? {
+        return self.keyCookie.lastReadEnvironmentKey
+    }
+
+    public var debugDescription: String {
+        return String(describing: self.values)
     }
 }
 
@@ -126,6 +175,8 @@ public struct Environment<Value>: EnvironmentProperty {
 
 public protocol EnvironmentCollectable {
     associatedtype Value
+
+    var partialKeyPath: PartialKeyPath<EnvironmentValues> { get }
 
     static func collectEnvironment(of element: Self) -> (keyPath: WritableKeyPath<EnvironmentValues, Value>, value: Value)
 }

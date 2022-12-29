@@ -86,7 +86,7 @@ public extension Preview {
     }
 
     static var axis: Axis {
-        return defaultAxis
+        return .default
     }
 }
 

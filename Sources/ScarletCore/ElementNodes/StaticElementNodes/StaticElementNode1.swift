@@ -44,7 +44,7 @@ public class StaticElementNode1<Value, E0>: ElementNode where Value: Element, E0
         self.implementation = Value.makeImplementation(of: element)
 
         // Start a first update without comparing (since we update the value with itself)
-        let result = self.update(with: element, implementationPosition: implementationPosition, using: context)
+        let result = self.update(with: element, implementationPosition: implementationPosition, using: context, initial: true)
 
         // Attach the implementation once everything is ready
         self.insertImplementationInParent(position: result.implementationPosition)

@@ -51,7 +51,7 @@ public class UserElementNode<Value, Edge>: StatefulElementNode where Value: Elem
         self.implementation = Value.makeImplementation(of: element)
 
         // Start a first update without comparing (since we update the value with itself)
-        let result = self.update(with: element, implementationPosition: implementationPosition, using: context)
+        let result = self.update(with: element, implementationPosition: implementationPosition, using: context, initial: true)
 
         // Attach the implementation once everything is ready
         self.insertImplementationInParent(position: result.implementationPosition)

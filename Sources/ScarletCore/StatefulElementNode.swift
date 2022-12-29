@@ -118,24 +118,7 @@ public extension StatefulElementNode {
         // Iterate over all properties and accept the visitor into each dynamic one
         fatalAttempt(to: "visit dynamic properties of \(Value.self)") {
             let visitor = DynamicPropertiesInstaller(node: self)
-
-            let info = try cachedTypeInfo(of: Value.self)
-
-            for property in info.properties {
-                let current = try property.get(from: self.value)
-
-                switch current {
-                    case let currentState as DynamicProperty:
-                        try currentState.accept(
-                            visitor: visitor,
-                            in: property,
-                            target: &element,
-                            using: context
-                        )
-                    default:
-                        break
-                }
-            }
+            try visitor.walk(self.value, target: &element, using: context)
         }
     }
 

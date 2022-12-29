@@ -59,8 +59,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/natinusala/Quick.git",
       "state" : {
-        "revision" : "d18bb92651caba3a97e2c08d9d7c4f44f8dfd0f3",
-        "version" : "1.0.0"
+        "revision" : "204b8559d539d819eeabe72685922d05c19006a9",
+        "version" : "1.0.1"
       }
     },
     {

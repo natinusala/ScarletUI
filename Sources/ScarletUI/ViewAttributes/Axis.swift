@@ -14,22 +14,20 @@
    limitations under the License.
 */
 
-import ScarletCore
-
-private struct TextColorEnvironmentKey: AttributeEnvironmentKey {
-    static let defaultValue = Color.black
-    static let target = \TextImpl.textColor
+private struct AxisEnvironmentKey: AttributeEnvironmentKey {
+    static let defaultValue = Axis.default
+    static let target = \_LayoutImplementationNode.axis
 }
 
-extension EnvironmentValues {
-    var textColor: Color {
-        get { self[TextColorEnvironmentKey.self] }
-        set { self[TextColorEnvironmentKey.self] = newValue }
+public extension EnvironmentValues {
+    var axis: Axis {
+        get { self[AxisEnvironmentKey.self] }
+        set { self[AxisEnvironmentKey.self] = newValue }
     }
 }
 
-extension View {
-    func textColor(_ color: Color) -> some View {
-        return self.environment(\.textColor, value: color)
+public extension View {
+    func axis(_ axis: Axis) -> some View {
+        return self.environment(\.axis, value: axis)
     }
 }

@@ -14,22 +14,14 @@
    limitations under the License.
 */
 
-import ScarletCore
+public struct Node<Content>: ContainerView where Content: View {
+    let content: Content
 
-private struct TextColorEnvironmentKey: AttributeEnvironmentKey {
-    static let defaultValue = Color.black
-    static let target = \TextImpl.textColor
-}
-
-extension EnvironmentValues {
-    var textColor: Color {
-        get { self[TextColorEnvironmentKey.self] }
-        set { self[TextColorEnvironmentKey.self] = newValue }
+    init(@ViewBuilder content: () -> Content) {
+        self.content = content()
     }
-}
 
-extension View {
-    func textColor(_ color: Color) -> some View {
-        return self.environment(\.textColor, value: color)
+    public var body: some View {
+        content
     }
 }

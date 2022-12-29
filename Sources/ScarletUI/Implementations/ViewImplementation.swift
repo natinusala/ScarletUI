@@ -224,7 +224,7 @@ open class _ViewImplementation: _LayoutImplementationNode, _GamepadButtonEventIm
         // all available space by default
         self.desiredSize = Size(width: .auto, height: .auto)
 
-        self.axis = defaultAxis
+        self.axis = .default
     }
 
     deinit {
