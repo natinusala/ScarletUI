@@ -50,7 +50,7 @@ public extension Optional {
 /// attributes in a type-safe and faster way.
 public protocol AttributeSetter<Implementation>: CustomDebugStringConvertible {
     /// The implementation node type this attribute is bound to.
-    associatedtype Implementation: ImplementationNode
+    associatedtype Implementation
 
     /// Type of the attribute value.
     associatedtype Value
@@ -82,7 +82,7 @@ public protocol AttributeSetter<Implementation>: CustomDebugStringConvertible {
 /// The value will only be written if it's different than the current value, which makes it
 /// possible to use with `didSet` observers.
 @propertyWrapper
-public struct Attribute<Implementation: ImplementationNode, Value>: AttributeSetter, IsPodable {
+public struct Attribute<Implementation, Value>: AttributeSetter, IsPodable {
     public typealias AttributeKeyPath = ReferenceWritableKeyPath<Implementation, Value>
 
     public var wrappedValue: Value {
@@ -286,7 +286,7 @@ public struct AppendAttribute<Implementation: ImplementationNode, Value>: Attrib
 }
 
 extension AttributeSetter {
-    var implementationType: any ImplementationNode.Type {
+    var implementationType: Any.Type {
         return Implementation.self
     }
 
@@ -299,8 +299,12 @@ extension AttributeSetter {
     }
 
     /// Returns `true` if this attribute can be applied to the given implementation type.
-    func applies(to type: any ImplementationNode.Type) -> Bool {
-        return type is Implementation.Type
+    func applies(to implementation: any ImplementationNode) -> Bool {
+        if let _ = implementation as? Implementation {
+            return true
+        }
+
+        return false
     }
 
     public var debugDescription: String {
@@ -386,7 +390,7 @@ extension ElementNodeContext {
     /// Creates a copy of the context popping the attributes corresponding to the given implementation type,
     /// returning them along the context copy.
     func poppingAttributes<Implementation: ImplementationNode>(
-        for implementationType: Implementation.Type
+        for implementation: Implementation?
     ) -> (attributes: [any AttributeSetter], accumulating: [(AnyHashable, any AttributeSetter)], context: Self) {
         attributesLogger.trace("Searching for attributes to apply on \(Implementation.self)")
 
@@ -408,7 +412,7 @@ extension ElementNodeContext {
 
         // Attributes
         for (target, attribute) in self.attributes.attributes {
-            if attribute.applies(to: implementationType) {
+            if implementation.map({ attribute.applies(to: $0) }) ?? false {
                 attributesLogger.trace("Selected attribute for applying")
                 attributes.append(attribute)
             } else {
@@ -419,7 +423,7 @@ extension ElementNodeContext {
 
         // Accumulating attributes
         for (key, attribute) in self.attributes.accumulatingAttributes {
-            if attribute.applies(to: implementationType) {
+            if implementation.map({ attribute.applies(to: $0) }) ?? false {
                 attributesLogger.trace("Selected accumulating attribute for applying")
                 accumulatingAttributes.append((key.source, attribute))
             } else {

@@ -17,7 +17,7 @@
 import Yoga
 
 /// Implementation for all views.
-open class _ViewImplementation: _LayoutImplementationNode, _GamepadButtonEventImplementationNode {
+open class _ViewImplementation: _LayoutImplementationNode, _GamepadButtonEventImplementationNode, _TagImplementationNode {
     /// View display name for debugging purposes.
     public let displayName: String
 
@@ -215,6 +215,8 @@ open class _ViewImplementation: _LayoutImplementationNode, _GamepadButtonEventIm
         }
     }
 
+    public var tag: String?
+
     public required init(displayName: String) {
         self.displayName = displayName
 
@@ -310,6 +312,10 @@ open class _ViewImplementation: _LayoutImplementationNode, _GamepadButtonEventIm
 
     public var layoutChildren: [_LayoutImplementationNode] {
         return self.children.map { $0 as _LayoutImplementationNode }
+    }
+
+    public var tagChildren: [any _TagImplementationNode] {
+        return self.children.map { $0 as any _TagImplementationNode }
     }
 }
 

@@ -20,17 +20,18 @@ import Backtrace
 @testable import ScarletCore
 
 // Add every test target here
-@testable import ScarletCoreUnitTests
-@testable import ScarletCoreIntegrationTests
+@testable import CoreUnitTests
+@testable import CoreIntegrationTests
+@testable import UITests
 
 // Add every spec file here
 let specs: [QuickSpec.Type] = [
-    // MARK: ScarletCoreUnitTests
+    // MARK: CoreUnitTests
 
     TryEquatableSpec.self,
     ElementEqualsSpec.self,
 
-    // MARK: ScarletCoreIntegrationTests
+    // MARK: CoreIntegrationTests
 
     // Common views
     UserViewSpec.QuickSpec.self,
@@ -89,6 +90,9 @@ let specs: [QuickSpec.Type] = [
 
     // Dynamic edges
     // ForEachSpecs.self,
+
+    // MARK: UITests
+    RowUITests.self,
 ]
 
 // XXX: A main struct will be required as long as top-level code

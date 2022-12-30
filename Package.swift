@@ -25,6 +25,10 @@ let package = Package(
             name: "ScarletUI",
             targets: ["ScarletUI"]
         ),
+        .library(
+            name: "ScarletUITests",
+            targets: ["ScarletUITests"]
+        ),
         .executable(
             name: "ScarletUIDemo",
             targets: ["ScarletUIDemo"]
@@ -90,14 +94,20 @@ let package = Package(
             name: "ScarletNative",
             dependencies: ["GLFW", "CGlad"]
         ),
+        // ScarletUITests: UI testing runner for ScarletUI apps
+        .target(
+            name: "ScarletUITests",
+            dependencies: ["ScarletUI"]
+        ),
         // ScarletUIDemo: simple ScarletUI demo app
         .executableTarget(
             name: "ScarletUIDemo",
             dependencies: ["ScarletUI"]
         ),
         // Test targets
+        // ScarletCore unit tests
         .testTarget(
-            name: "ScarletCoreUnitTests",
+            name: "CoreUnitTests",
             dependencies: [
                 "ScarletCore",
                 "Quick",
@@ -105,14 +115,20 @@ let package = Package(
                 .product(name: "Backtrace", package: "swift-backtrace"),
             ]
         ),
+        // ScarletCore integration tests
         .testTarget(
-            name: "ScarletCoreIntegrationTests",
+            name: "CoreIntegrationTests",
             dependencies: [
                 "ScarletCore",
                 "Quick",
                 "Nimble",
                 .product(name: "Backtrace", package: "swift-backtrace"),
             ]
+        ),
+        // ScarletUI UI tests
+        .testTarget(
+            name: "UITests",
+            dependencies: ["ScarletUITests", "Quick", "Nimble"]
         ),
         // Embedded native libraries
         .target(

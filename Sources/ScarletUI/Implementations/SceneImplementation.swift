@@ -17,7 +17,7 @@
 import Yoga
 
 /// Implementation for all scenes.
-open class _SceneImplementation: ImplementationNode, _LayoutImplementationNode, _GamepadButtonEventImplementationNode {
+open class _SceneImplementation: ImplementationNode, _LayoutImplementationNode, _GamepadButtonEventImplementationNode, _TagImplementationNode {
     public let displayName: String
 
     /// Children of this scene.
@@ -35,12 +35,18 @@ open class _SceneImplementation: ImplementationNode, _LayoutImplementationNode, 
     /// The gamepad state of the previous frame.
     var previousGamepadState = _GamepadState.neutral
 
+    public var tag: String?
+
     public var layoutParent: _LayoutImplementationNode? {
         return self.parent as? _LayoutImplementationNode
     }
 
     public var layoutChildren: [_LayoutImplementationNode] {
         return self.children.map { $0 as _LayoutImplementationNode }
+    }
+
+    public var tagChildren: [any _TagImplementationNode] {
+        return self.children.map { $0 as any _TagImplementationNode }
     }
 
     /// The node axis.

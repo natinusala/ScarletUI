@@ -162,7 +162,7 @@ extension ElementNode {
         let (singleAttributes, accumulatingAttributes, edgesContext) = context
             .completingAttributes(from: attributes)
             .withEnvironment(environment, changed: changedEnvironment)
-            .poppingAttributes(for: Value.Implementation.self)
+            .poppingAttributes(for: self.implementation)
 
         if !singleAttributes.isEmpty {
             let attributesToApply = singleAttributes + accumulatingAttributes.map { $0.1 }
