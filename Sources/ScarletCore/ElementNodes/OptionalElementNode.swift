@@ -24,7 +24,7 @@ public struct OptionalMakeOutput<Value, Wrapped>: ElementOutput where Value: Ele
 
 /// Node for optional elements. Doesn't perform equaliyty check on itself.
 public class OptionalElementNode<Value, Wrapped>: ElementNode where Value: Element, Wrapped: Element, Value.Input == OptionalMakeInput<Value>, Value.Output == OptionalMakeOutput<Value, Wrapped> {
-    public var parent: (any ElementNode)?
+    public weak var parent: (any ElementNode)?
     public var implementation: Value.Implementation?
     public var implementationCount = 0
     public var attributes = AttributesStash()

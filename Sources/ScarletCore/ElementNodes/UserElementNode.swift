@@ -25,7 +25,7 @@ public struct UserMakeOutput<Value, Edge>: ElementOutput where Value: Element, E
 /// Element nodes for "user" elements with a body (apps, scenes, views, view modifiers...). Always performs equality checks.
 public class UserElementNode<Value, Edge>: StatefulElementNode where Value: Element, Value.Input == UserMakeInput<Value>, Value.Output == UserMakeOutput<Value, Edge>, Edge: Element {
     public var value: Value
-    public var parent: (any ElementNode)?
+    public weak var parent: (any ElementNode)?
     public var implementation: Value.Implementation?
     public var implementationCount = 0
     public var attributes = AttributesStash()

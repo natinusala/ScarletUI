@@ -27,7 +27,7 @@ public struct UserViewModifierMakeOutput<Value, Edge>: ElementOutput where Value
 /// The pattern is `ModifiedContent -> ViewModifier -> ViewModifier.Body -> [...] -> ViewModifierContent -> ViewModifier.Content`.
 public class UserViewModifierElementNode<Value, Edge>: StatefulElementNode where Value: ViewModifier, Value.Input == UserViewModifierMakeInput<Value>, Value.Output == UserViewModifierMakeOutput<Value, Edge>, Edge: Element, Value.Body == Edge {
     public var value: Value
-    public var parent: (any ElementNode)?
+    public weak var parent: (any ElementNode)?
     public var implementation: Value.Implementation?
     public var implementationCount = 0
     public var attributes = AttributesStash()

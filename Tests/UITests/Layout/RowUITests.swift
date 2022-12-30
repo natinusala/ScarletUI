@@ -25,6 +25,8 @@ class RowUITests: QuickSpec {
         let grow3: Float
         let width: LayoutValue
 
+        @State private var hideRectangle2 = false
+
         var body: some View {
             Row {
                 Rectangle(color: .red)
@@ -32,10 +34,12 @@ class RowUITests: QuickSpec {
                     .width(width)
                     .tag("rectangle1")
 
-                Rectangle(color: .green)
-                    .grow(grow2)
-                    .width(width)
-                    .tag("rectangle2")
+                if !hideRectangle2 {
+                    Rectangle(color: .green)
+                        .grow(grow2)
+                        .width(width)
+                        .tag("rectangle2")
+                }
 
                 Rectangle(color: .blue)
                     .grow(grow3)
@@ -55,14 +59,34 @@ class RowUITests: QuickSpec {
                 )
             }
 
-            it("lays out rectangles equally") {
-                let rectangle1 = await app.view(tagged: "rectangle1")
-                let rectangle2 = await app.view(tagged: "rectangle2")
-                let rectangle3 = await app.view(tagged: "rectangle3")
+            context("when creating the row") {
+                it("lays out rectangles equally") {
+                    let rectangle1 = await app.view(tagged: "rectangle1")
+                    let rectangle2 = await app.view(tagged: "rectangle2")
+                    let rectangle3 = await app.view(tagged: "rectangle3")
 
-                expect(rectangle1?.layout).to(equal(Rect(x: 0, y: 0, width: 200, height: 600)))
-                expect(rectangle2?.layout).to(equal(Rect(x: 200, y: 0, width: 200, height: 600)))
-                expect(rectangle3?.layout).to(equal(Rect(x: 400, y: 0, width: 200, height: 600)))
+                    expect(rectangle1?.layout).to(equal(Rect(x: 0, y: 0, width: 200, height: 600)))
+                    expect(rectangle2?.layout).to(equal(Rect(x: 200, y: 0, width: 200, height: 600)))
+                    expect(rectangle3?.layout).to(equal(Rect(x: 400, y: 0, width: 200, height: 600)))
+                }
+            }
+
+            context("when a rectangle is hidden") {
+                beforeEach {
+                    await app.setState("hideRectangle2", to: true)
+                }
+
+                it("hides the rectangle") {
+                    expect(app).to(notHaveView(tagged: "rectangle2"))
+                }
+
+                it("updates layout") {
+                    let rectangle1 = await app.view(tagged: "rectangle1")
+                    let rectangle3 = await app.view(tagged: "rectangle3")
+
+                    expect(rectangle1?.layout).to(equal(Rect(x: 0, y: 0, width: 300, height: 600)))
+                    expect(rectangle3?.layout).to(equal(Rect(x: 300, y: 0, width: 300, height: 600)))
+                }
             }
         }
 
@@ -75,14 +99,34 @@ class RowUITests: QuickSpec {
                 )
             }
 
-            it("lays out rectangles with fixed width") {
-                let rectangle1 = await app.view(tagged: "rectangle1")
-                let rectangle2 = await app.view(tagged: "rectangle2")
-                let rectangle3 = await app.view(tagged: "rectangle3")
+            context("when creating the row") {
+                it("lays out rectangles with fixed width") {
+                    let rectangle1 = await app.view(tagged: "rectangle1")
+                    let rectangle2 = await app.view(tagged: "rectangle2")
+                    let rectangle3 = await app.view(tagged: "rectangle3")
 
-                expect(rectangle1?.layout).to(equal(Rect(x: 0, y: 0, width: 100, height: 600)))
-                expect(rectangle2?.layout).to(equal(Rect(x: 100, y: 0, width: 100, height: 600)))
-                expect(rectangle3?.layout).to(equal(Rect(x: 200, y: 0, width: 100, height: 600)))
+                    expect(rectangle1?.layout).to(equal(Rect(x: 0, y: 0, width: 100, height: 600)))
+                    expect(rectangle2?.layout).to(equal(Rect(x: 100, y: 0, width: 100, height: 600)))
+                    expect(rectangle3?.layout).to(equal(Rect(x: 200, y: 0, width: 100, height: 600)))
+                }
+            }
+
+            context("when a rectangle is hidden") {
+                beforeEach {
+                    await app.setState("hideRectangle2", to: true)
+                }
+
+                it("hides the rectangle") {
+                    expect(app).to(notHaveView(tagged: "rectangle2"))
+                }
+
+                it("updates layout") {
+                    let rectangle1 = await app.view(tagged: "rectangle1")
+                    let rectangle3 = await app.view(tagged: "rectangle3")
+
+                    expect(rectangle1?.layout).to(equal(Rect(x: 0, y: 0, width: 100, height: 600)))
+                    expect(rectangle3?.layout).to(equal(Rect(x: 100, y: 0, width: 100, height: 600)))
+                }
             }
         }
 
@@ -95,14 +139,34 @@ class RowUITests: QuickSpec {
                 )
             }
 
-            it("lays out rectangles with parent relative width") {
-                let rectangle1 = await app.view(tagged: "rectangle1")
-                let rectangle2 = await app.view(tagged: "rectangle2")
-                let rectangle3 = await app.view(tagged: "rectangle3")
+            context("when creating the row") {
+                it("lays out rectangles with parent relative width") {
+                    let rectangle1 = await app.view(tagged: "rectangle1")
+                    let rectangle2 = await app.view(tagged: "rectangle2")
+                    let rectangle3 = await app.view(tagged: "rectangle3")
 
-                expect(rectangle1?.layout).to(equal(Rect(x: 0, y: 0, width: 60, height: 600)))
-                expect(rectangle2?.layout).to(equal(Rect(x: 60, y: 0, width: 60, height: 600)))
-                expect(rectangle3?.layout).to(equal(Rect(x: 120, y: 0, width: 60, height: 600)))
+                    expect(rectangle1?.layout).to(equal(Rect(x: 0, y: 0, width: 60, height: 600)))
+                    expect(rectangle2?.layout).to(equal(Rect(x: 60, y: 0, width: 60, height: 600)))
+                    expect(rectangle3?.layout).to(equal(Rect(x: 120, y: 0, width: 60, height: 600)))
+                }
+            }
+
+            context("when a rectangle is hidden") {
+                beforeEach {
+                    await app.setState("hideRectangle2", to: true)
+                }
+
+                it("hides the rectangle") {
+                    expect(app).to(notHaveView(tagged: "rectangle2"))
+                }
+
+                it("updates layout") {
+                    let rectangle1 = await app.view(tagged: "rectangle1")
+                    let rectangle3 = await app.view(tagged: "rectangle3")
+
+                    expect(rectangle1?.layout).to(equal(Rect(x: 0, y: 0, width: 60, height: 600)))
+                    expect(rectangle3?.layout).to(equal(Rect(x: 60, y: 0, width: 60, height: 600)))
+                }
             }
         }
 
@@ -115,14 +179,34 @@ class RowUITests: QuickSpec {
                 )
             }
 
-            it("lays out rectangles according to growth factor") {
-                let rectangle1 = await app.view(tagged: "rectangle1")
-                let rectangle2 = await app.view(tagged: "rectangle2")
-                let rectangle3 = await app.view(tagged: "rectangle3")
+            context("when creating the row") {
+                it("lays out rectangles according to growth factor") {
+                    let rectangle1 = await app.view(tagged: "rectangle1")
+                    let rectangle2 = await app.view(tagged: "rectangle2")
+                    let rectangle3 = await app.view(tagged: "rectangle3")
 
-                expect(rectangle1?.layout).to(equal(Rect(x: 0, y: 0, width: 120, height: 600)))
-                expect(rectangle2?.layout).to(equal(Rect(x: 120, y: 0, width: 360, height: 600)))
-                expect(rectangle3?.layout).to(equal(Rect(x: 480, y: 0, width: 120, height: 600)))
+                    expect(rectangle1?.layout).to(equal(Rect(x: 0, y: 0, width: 120, height: 600)))
+                    expect(rectangle2?.layout).to(equal(Rect(x: 120, y: 0, width: 360, height: 600)))
+                    expect(rectangle3?.layout).to(equal(Rect(x: 480, y: 0, width: 120, height: 600)))
+                }
+            }
+
+            context("when a rectangle is hidden") {
+                beforeEach {
+                    await app.setState("hideRectangle2", to: true)
+                }
+
+                it("hides the rectangle") {
+                    expect(app).to(notHaveView(tagged: "rectangle2"))
+                }
+
+                it("updates layout") {
+                    let rectangle1 = await app.view(tagged: "rectangle1")
+                    let rectangle3 = await app.view(tagged: "rectangle3")
+
+                    expect(rectangle1?.layout).to(equal(Rect(x: 0, y: 0, width: 120, height: 600)))
+                    expect(rectangle3?.layout).to(equal(Rect(x: 120, y: 0, width: 120, height: 600)))
+                }
             }
         }
     }

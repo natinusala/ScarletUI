@@ -173,6 +173,10 @@ class GLFWWindow: _NativeWindow {
         // TODO: Setup resize callback
     }
 
+    deinit {
+        glfwDestroyWindow(self.handle)
+    }
+
     var shouldClose: Bool {
         return glfwWindowShouldClose(self.handle) == 1
     }

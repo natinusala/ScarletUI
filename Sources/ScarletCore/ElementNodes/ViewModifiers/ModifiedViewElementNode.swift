@@ -32,7 +32,7 @@ public class ModifiedViewElementNode<Content, Modifier>: ElementNode where Conte
     public typealias Value = ModifiedContent<Content, Modifier>
 
     public var value: ModifiedContent<Content, Modifier>
-    public var parent: (any ElementNode)?
+    public weak var parent: (any ElementNode)?
     public var implementation: Value.Implementation?
     public var implementationCount = 0
     public var attributes = AttributesStash()

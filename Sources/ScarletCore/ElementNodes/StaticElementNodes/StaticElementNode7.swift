@@ -36,7 +36,7 @@ public class StaticElementNode7<Value, E0, E1, E2, E3, E4, E5, E6>: ElementNode 
     typealias Input = StaticMakeInput7<Value>
     typealias Output = StaticMakeOutput7<Value, E0, E1, E2, E3, E4, E5, E6>
 
-    public var parent: (any ElementNode)?
+    public weak var parent: (any ElementNode)?
     public var implementation: Value.Implementation?
     public var implementationCount = 0
     public var attributes = AttributesStash()

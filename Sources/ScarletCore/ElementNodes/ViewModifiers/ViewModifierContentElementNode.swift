@@ -24,7 +24,7 @@ public struct ViewModifierContentMakeOutput<Value>: ElementOutput where Value: V
 
 /// Element node for view modifier content placeholder. Does not perform equality check on itself.
 public class ViewModifierContentElementNode<Value>: ElementNode where Value: View, Value.Input == ViewModifierContentMakeInput<Value>, Value.Output == ViewModifierContentMakeOutput<Value> {
-    public var parent: (any ElementNode)?
+    public weak var parent: (any ElementNode)?
     public var implementation: Value.Implementation?
     public var implementationCount = 0
     public var attributes = AttributesStash()

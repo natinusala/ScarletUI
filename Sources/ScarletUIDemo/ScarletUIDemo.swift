@@ -20,7 +20,7 @@ let colors = [Color.black, Color.red, Color.orange]
 
 @main
 struct ScarletUIDemo: App {
-    @State private var color = 0
+    @State private var flip = false
 
     init() {
         registerPreview(SomePreview.self)
@@ -28,17 +28,16 @@ struct ScarletUIDemo: App {
 
     var body: some Scene {
         Window(title: "ScarletUI Demo") {
-            Rectangle(color: colors[color])
+            Rectangle(color: .yellow)
                 .grow()
                 .onGamepadButtonPress(.dpadUp) {
-                    color += 1
-                }
-                .onGamepadButtonPress(.dpadDown) {
-                    color -= 1
+                    flip.toggle()
                 }
 
-            Rectangle(color: .blue)
-                .grow()
+            if flip {
+                Rectangle(color: .blue)
+                    .grow()
+            }
         }
     }
 }

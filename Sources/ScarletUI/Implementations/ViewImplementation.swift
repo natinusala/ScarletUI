@@ -35,7 +35,7 @@ open class _ViewImplementation: _LayoutImplementationNode, _GamepadButtonEventIm
     }
 
     /// The parent scene or view implementation.
-    var parent: _LayoutImplementationNode?
+    weak var parent: _LayoutImplementationNode?
 
     /// The view fill, aka. its background color or gradient.
     var fill: Fill = .none {

@@ -33,7 +33,7 @@ public class StaticElementNode4<Value, E0, E1, E2, E3>: ElementNode where Value:
     typealias Input = StaticMakeInput4<Value>
     typealias Output = StaticMakeOutput4<Value, E0, E1, E2, E3>
 
-    public var parent: (any ElementNode)?
+    public weak var parent: (any ElementNode)?
     public var implementation: Value.Implementation?
     public var implementationCount = 0
     public var attributes = AttributesStash()

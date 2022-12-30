@@ -26,7 +26,7 @@ public enum ConditionalMakeOutput<Value, First, Second>: ElementOutput where Val
 /// Node for conditional elements, which edge can be one type or the other depending on the path the conditional takes.
 /// Does not perform equality check on itself.
 public class ConditionalElementNode<Value, First, Second>: ElementNode where Value: Element, First: Element, Second: Element, Value.Input == ConditionalMakeInput<Value>, Value.Output == ConditionalMakeOutput<Value, First, Second> {
-    public var parent: (any ElementNode)?
+    public weak var parent: (any ElementNode)?
     public var implementation: Value.Implementation?
     public var implementationCount = 0
     public var attributes = AttributesStash()

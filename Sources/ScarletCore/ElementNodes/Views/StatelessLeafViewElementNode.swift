@@ -25,7 +25,7 @@ public struct StatelessLeafViewMakeOutput<Value>: ElementOutput where Value: Ele
 /// Element nodes for stateless leaf views that have no edges and no dynamic properties.
 /// Performs an equality check on the element (see ``shouldUpdate(with:using:)``).
 public class StatelessLeafViewElementNode<Value>: ElementNode where Value: Element, Value.Input == StatelessLeafViewMakeInput<Value>, Value.Output == StatelessLeafViewMakeOutput<Value> {
-    public var parent: (any ElementNode)?
+    public weak var parent: (any ElementNode)?
     public var implementation: Value.Implementation?
     public var implementationCount = 0
     public var value: Value

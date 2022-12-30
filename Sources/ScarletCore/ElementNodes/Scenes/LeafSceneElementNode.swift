@@ -24,7 +24,7 @@ public struct LeafSceneMakeOutput<Value, Edge>: ElementOutput where Value: Eleme
 
 /// Element nodes for scenes that have a view as content. Does not perform equality check.
 public class LeafSceneElementNode<Value, Edge>: ElementNode where Value: Element, Value.Input == UserMakeInput<Value>, Value.Output == UserMakeOutput<Value, Edge>, Edge: Element {
-    public var parent: (any ElementNode)?
+    public weak var parent: (any ElementNode)?
     public var implementation: Value.Implementation?
     public var implementationCount = 0
     public var attributes = AttributesStash()

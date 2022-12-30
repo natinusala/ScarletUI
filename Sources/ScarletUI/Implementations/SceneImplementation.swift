@@ -30,7 +30,7 @@ open class _SceneImplementation: ImplementationNode, _LayoutImplementationNode, 
     public var layout = Rect()
 
     /// The parent app implementation.
-    var parent: _AppImplementation?
+    weak var parent: _AppImplementation?
 
     /// The gamepad state of the previous frame.
     var previousGamepadState = _GamepadState.neutral

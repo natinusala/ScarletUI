@@ -30,7 +30,7 @@ public class EnvironmentElementNode<Value, E0>: ElementNode where Value: Element
 
     typealias EnvironmentValue = Value.Value
 
-    public var parent: (any ElementNode)?
+    public weak var parent: (any ElementNode)?
     public var implementation: Value.Implementation?
     public var implementationCount = 0
     public var attributes = AttributesStash()

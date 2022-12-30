@@ -21,7 +21,6 @@ import XCTest
 
 func findView(tagged tag: String, in node: _TagImplementationNode) -> _ViewImplementation? {
     func inner(node: _TagImplementationNode) -> _ViewImplementation? {
-        print("Trying node \(node.displayName) tagged \(node.tag)")
         if let view = node as? _ViewImplementation, view.tag == tag {
             return view
         } else {

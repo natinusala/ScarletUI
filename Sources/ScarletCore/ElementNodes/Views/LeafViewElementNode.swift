@@ -25,7 +25,7 @@ public struct LeafViewMakeOutput<Value>: ElementOutput where Value: Element {
 /// Element nodes for leaf views that have no edges.
 /// Performs an equality check on the element (see ``shouldUpdate(with:using:)``).
 public class LeafViewElementNode<Value>: StatefulElementNode where Value: Element, Value.Input == LeafViewMakeInput<Value>, Value.Output == LeafViewMakeOutput<Value> {
-    public var parent: (any ElementNode)?
+    public weak var parent: (any ElementNode)?
     public var implementation: Value.Implementation?
     public var implementationCount = 0
     public var value: Value
