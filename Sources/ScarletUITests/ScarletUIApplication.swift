@@ -30,7 +30,9 @@ public class ScarletUIApplication<Tested: Element> where Tested.Node: StatefulEl
     let root: Tested.Node
 
     /// Creates a new runner for a view.
-    /// The view is inserted with grow at 1.0 in a window which size if specified by the `windowMode` parameter.
+    /// The view is inserted with grow at 1.0 in a window which size is
+    /// specified by the `windowMode` parameter.
+    /// Note: headless only works with fixed size windowed mode.
     @MainActor
     public init(
         testing view: Tested,
@@ -40,7 +42,7 @@ public class ScarletUIApplication<Tested: Element> where Tested.Node: StatefulEl
         if headless {
             DefaultPlatformResolver.shared = HeadlessPlatformResolver()
         } else {
-            DefaultPlatformResolver.shared = DefaultPlatformResolver()
+            DefaultPlatformResolver.resetInjection()
         }
 
         let app = _AppImplementation(displayName: "ScarletUITests")

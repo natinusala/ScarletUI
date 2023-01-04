@@ -38,13 +38,7 @@ public extension DebugInjectable {
     /// Shared instance.
     static var shared: Injected {
         get {
-            if let value = values[Self.key] as? Injected {
-                return value
-            } else {
-                let value = Self.defaultValue
-                values[Self.key] = value
-                return value
-            }
+            return (values[Self.key] as? Injected) ?? Self.resetInjection()
         }
         set {
 #if DEBUG
@@ -53,6 +47,14 @@ public extension DebugInjectable {
             // No-op in release configuration
 #endif
         }
+    }
+
+    /// Resets injection to go back to the default value.
+    @discardableResult
+    static func resetInjection() -> Injected {
+        let value = Self.defaultValue
+        values[Self.key] = value
+        return value
     }
 }
 
