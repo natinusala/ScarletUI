@@ -78,6 +78,7 @@ let package = Package(
             dependencies: [
                 "Runtime",
                 "OpenCombine",
+                "Needler",
                 .product(name: "ConsoleKit", package: "console-kit"),
                 .product(name: "Cutelog", package: "swift-cutelog"),
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
@@ -98,6 +99,10 @@ let package = Package(
         .target(
             name: "ScarletUITests",
             dependencies: ["ScarletUI"]
+        ),
+        // Needler: dead simple dependency injection for mocks and stubs
+        .target(
+            name: "Needler"
         ),
         // ScarletUIDemo: simple ScarletUI demo app
         .executableTarget(
@@ -122,6 +127,7 @@ let package = Package(
                 "ScarletCore",
                 "Quick",
                 "Nimble",
+                "Needler",
                 .product(name: "Backtrace", package: "swift-backtrace"),
             ]
         ),

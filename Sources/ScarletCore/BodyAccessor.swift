@@ -14,7 +14,8 @@
    limitations under the License.
 */
 
-/// @mockable(history: makeBody = true; makeBodyOf = true)
+import Needler
+
 protocol BodyAccessor {
     /// Makes the body of the given view.
     func makeBody<V: View>(of view: V) -> V.Body
@@ -48,7 +49,7 @@ struct DefaultBodyAccessor: BodyAccessor {
 }
 
 private struct BodyAccessorDependency: Dependency {
-    static let defaultValue: BodyAccessor = DefaultBodyAccessor()
+    static let value: BodyAccessor = DefaultBodyAccessor()
 }
 
 extension Dependencies {

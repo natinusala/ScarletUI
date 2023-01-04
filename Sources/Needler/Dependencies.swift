@@ -15,32 +15,43 @@
 */
 
 /// An injected dependency.
-protocol Dependency {
+public protocol Dependency {
     /// The type of the dependency.
     associatedtype Value
 
-    /// The default value to use for that dependency when running the
-    /// program in a production environment.
-    static var defaultValue: Value { get }
+    /// The value to use for that dependency when running the
+    /// program in release configuration.
+    ///
+    /// Can be overridden (in debug configuration only) by setting
+    /// a new value in ``Dependencies``.
+    static var value: Value { get }
 }
 
 /// Global, unique container for injected dependencies.
 /// Use it like environment values.
-class Dependencies {
+public class Dependencies {
     private static var values: [ObjectIdentifier: Any] = [:]
 
-    static subscript<K>(key: K.Type) -> K.Value where K: Dependency {
+    public static subscript<K>(key: K.Type) -> K.Value where K: Dependency {
         get {
+#if DEBUG
             if let value = Dependencies.values[ObjectIdentifier(key)] as? K.Value {
                 return value
             } else {
-                let value = K.defaultValue
+                let value = K.value
                 Dependencies.values[ObjectIdentifier(key)] = value
                 return value
             }
+#else
+            return K.value
+#endif
         }
         set {
+#if DEBUG
             Dependencies.values[ObjectIdentifier(key)] = newValue
+#else
+            // No-op
+#endif
         }
     }
 }

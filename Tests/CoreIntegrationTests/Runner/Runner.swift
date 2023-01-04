@@ -16,6 +16,7 @@
 
 import Quick
 import Nimble
+import Needler
 
 @testable import ScarletCore
 

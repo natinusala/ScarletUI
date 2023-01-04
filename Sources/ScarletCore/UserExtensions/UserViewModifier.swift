@@ -14,6 +14,8 @@
    limitations under the License.
 */
 
+import Needler
+
 public extension ViewModifier where Input == UserViewModifierMakeInput<Self>, Output == UserViewModifierMakeOutput<Self, Body> {
     static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) -> UserViewModifierElementNode<Self, Body> {
         return .init(making: element, in: parent, implementationPosition: implementationPosition, using: context)

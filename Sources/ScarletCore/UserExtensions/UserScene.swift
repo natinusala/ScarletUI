@@ -14,6 +14,8 @@
    limitations under the License.
 */
 
+import Needler
+
 public extension Scene where Input == UserMakeInput<Self>, Output == UserMakeOutput<Self, Body> {
     /// Default implementation of `makeNode()` for user scenes with a body: make a node with one edge, the body.
     static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) -> UserElementNode<Self, Body> {
