@@ -14,6 +14,8 @@
    limitations under the License.
 */
 
+// TODO: rework the system to somehow bind the default value to the injected protocol, removing the need for the key + extension boilerplate
+
 /// An injected dependency.
 public protocol Dependency {
     /// The type of the dependency.

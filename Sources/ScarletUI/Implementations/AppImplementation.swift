@@ -16,6 +16,7 @@
 
 import Backtrace
 import Foundation
+import Needler
 
 /// Implementation for all apps.
 open class _AppImplementation: ImplementationNode, _TagImplementationNode {
@@ -43,7 +44,7 @@ open class _AppImplementation: ImplementationNode, _TagImplementationNode {
 
         // Init platform
         do {
-            guard let platform = try createPlatform() else {
+            guard let platform = try Dependencies.platformResolver.createPlatform() else {
                 appLogger.error("No compatible platform found, is your platform supported?")
                 exit(-1)
             }

@@ -14,6 +14,8 @@
    limitations under the License.
 */
 
+import Needler
+
 /// Result of a platform "poll" call.
 struct PollResult {
     /// The state of the gamepad at the time of the poll.
@@ -36,10 +38,27 @@ public protocol _Platform {
 
 private var currentPlatform: _Platform?
 
-/// Creates and returns the current platform handle.
-func createPlatform() throws -> _Platform? {
-    // TODO: only return GLFW if actually available
-    return try GLFWPlatform()
+protocol PlatformResolver {
+    /// Creates and returns the current platform handle.
+    func createPlatform() throws -> _Platform?
+}
+
+struct DefaultPlatformResolver: PlatformResolver {
+    func createPlatform() throws -> _Platform? {
+        // TODO: only return GLFW if actually available
+        return try GLFWPlatform()
+    }
+}
+
+struct PlatformResolverDependency: Dependency {
+    static let value: any PlatformResolver = DefaultPlatformResolver()
+}
+
+extension Dependencies {
+    static var platformResolver: any PlatformResolver {
+        get { self[PlatformResolverDependency.self] }
+        set { self[PlatformResolverDependency.self] = newValue }
+    }
 }
 
 /// A native, platform-dependent window.

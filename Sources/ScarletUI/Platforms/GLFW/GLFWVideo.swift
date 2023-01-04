@@ -25,7 +25,13 @@ class GLFWWindow: _NativeWindow {
 
     let size: WindowSize
 
-    let context: _GraphicsContext
+    var context: _GraphicsContext {
+        return self.skiaContext
+    }
+
+    /// Internal typed graphics context.
+    /// ``context`` is the type-erased version for protocol conformance.
+    let skiaContext: _SkiaContext
 
     var position: (x: Int, y: Int)? {
         get {
@@ -47,7 +53,7 @@ class GLFWWindow: _NativeWindow {
     }
 
     var skContext: OpaquePointer {
-        return self.context.skContext
+        return self.skiaContext.skContext
     }
 
     init(title: String, mode: WindowMode, backend: GraphicsBackend, srgb: Bool) throws {
@@ -159,7 +165,7 @@ class GLFWWindow: _NativeWindow {
         self.size = WindowSize(width: Float(actualWindowWidth), height: Float(actualWindowHeight))
 
         // Initialize context
-        self.context = try _GraphicsContext(
+        self.skiaContext = try _SkiaContext(
             width: self.size.width,
             height: self.size.height,
             backend: backend,

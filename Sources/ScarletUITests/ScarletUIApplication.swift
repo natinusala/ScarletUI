@@ -16,6 +16,7 @@
 
 import Foundation
 import XCTest
+import Needler
 
 @testable import ScarletUI
 
@@ -30,12 +31,18 @@ public class ScarletUIApplication<Tested: Element> where Tested.Node: StatefulEl
 
     /// Creates a new runner for a view.
     /// The view is inserted with grow at 1.0 in a window which size if specified by the `windowMode` parameter.
-    /// TODO: add a headless mode
     @MainActor
     public init(
         testing view: Tested,
-        windowMode: WindowMode
+        windowMode: WindowMode,
+        headless: Bool = true
     ) where Tested: View {
+        if headless {
+            Dependencies.platformResolver = HeadlessPlatformResolver()
+        } else {
+            Dependencies.platformResolver = DefaultPlatformResolver()
+        }
+
         let app = _AppImplementation(displayName: "ScarletUITests")
         let window = _WindowImplementation(displayName: "ScarletUITests Window")
         window.title = "ScarletUITests Window"
@@ -135,4 +142,52 @@ public class ScarletUIApplication<Tested: Element> where Tested.Node: StatefulEl
 
         return false
     }
+}
+
+struct HeadlessPlatformResolver: PlatformResolver {
+    func createPlatform() throws -> _Platform? {
+        return HeadlessPlatform()
+    }
+}
+
+struct HeadlessPlatform: _Platform {
+    let name = "Headless"
+
+    func pollEvents() {}
+
+    func createWindow(title: String, mode: ScarletUI.WindowMode, backend: ScarletUI.GraphicsBackend, srgb: Bool) throws -> _NativeWindow {
+        guard case .windowed(let width, let height) = mode else {
+            fatalError("Headless tests can only be used with windowed mode")
+        }
+
+        return HeadlessWindow(size: (width: width, height: height), context: HeadlessContext())
+    }
+}
+
+struct HeadlessWindow: _NativeWindow {
+    var shouldClose = false
+    var position: (x: Int, y: Int)? = (x: 0, y: 0)
+
+    var size: WindowSize
+    var context: _GraphicsContext
+
+    init(size: WindowSize, context: _GraphicsContext) {
+        self.size = size
+        self.context = context
+    }
+
+    func swapBuffers() {}
+
+    func pollGamepad() -> ScarletUI._GamepadState {
+        return .neutral
+    }
+}
+
+struct HeadlessContext: _GraphicsContext {
+    let canvas: any Canvas = HeadlessCanvas()
+}
+
+struct HeadlessCanvas: Canvas {
+    func drawPaint(_ paint: ScarletUI.Paint) {}
+    func drawRect(_ rect: ScarletUI.Rect, paint: ScarletUI.Paint) {}
 }

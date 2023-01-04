@@ -20,13 +20,17 @@ import Glad
 /// Represents an immutable graphics context tied to a window, with fixed width, height and backend.
 /// The canvas used everywhere by the app is a product of this context.
 /// This is different from the underlying backend context (OpenGL...).
+public protocol _GraphicsContext {
+    /// Canvas to be used to draw on this context.
+    var canvas: Canvas { get }
+}
+
 /// TODO: put stuff that needs teardown in a wrapper class for deinit
-public struct _GraphicsContext {
+public struct _SkiaContext: _GraphicsContext {
     /// Skia context of this graphics context.
     let skContext: OpaquePointer
 
-    /// Canvas to be used to draw on this context.
-    let canvas: Canvas
+    public let canvas: Canvas
 
     /// Graphics backend of this context.
     let backend: GraphicsBackend
