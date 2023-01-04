@@ -25,7 +25,7 @@ public extension App where Input == UserMakeInput<Self>, Output == UserMakeOutpu
     /// Default implementation of `make()` for user apps with a body: make the body edge.
     static func make(_ element: Self, input: UserMakeInput<Self>) -> UserMakeOutput<Self, Body> {
         return .init(
-            edge: Dependencies.bodyAccessor.makeBody(of: element)
+            edge: DefaultBodyAccessor.shared.makeBody(of: element)
         )
     }
 }

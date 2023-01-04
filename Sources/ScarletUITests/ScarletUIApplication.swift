@@ -38,9 +38,9 @@ public class ScarletUIApplication<Tested: Element> where Tested.Node: StatefulEl
         headless: Bool = true
     ) where Tested: View {
         if headless {
-            Dependencies.platformResolver = HeadlessPlatformResolver()
+            DefaultPlatformResolver.shared = HeadlessPlatformResolver()
         } else {
-            Dependencies.platformResolver = DefaultPlatformResolver()
+            DefaultPlatformResolver.shared = DefaultPlatformResolver()
         }
 
         let app = _AppImplementation(displayName: "ScarletUITests")

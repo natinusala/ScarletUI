@@ -44,7 +44,7 @@ open class _AppImplementation: ImplementationNode, _TagImplementationNode {
 
         // Init platform
         do {
-            guard let platform = try Dependencies.platformResolver.createPlatform() else {
+            guard let platform = try DefaultPlatformResolver.shared.createPlatform() else {
                 appLogger.error("No compatible platform found, is your platform supported?")
                 exit(-1)
             }

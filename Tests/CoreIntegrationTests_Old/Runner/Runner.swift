@@ -81,7 +81,7 @@ class ScarletSpecRunner<Spec: ScarletSpec>: QuickSpec {
 
         // Reset dependencies - do it after building the node to reset call counts
         self.bodyAccessor = BodyAccessorMock(wrapping: DefaultBodyAccessor())
-        Dependencies.bodyAccessor = self.bodyAccessor
+        DefaultBodyAccessor.shared = self.bodyAccessor
     }
 }
 

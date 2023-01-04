@@ -92,7 +92,7 @@ class ScarletCoreSpecRunner<Spec: ScarletCoreSpec>: QuickSpec {
 
         // Reset dependencies and implementation flags - do it after building the node to reset call counts
         self.bodyAccessor = BodyAccessorMock(wrapping: DefaultBodyAccessor())
-        Dependencies.bodyAccessor = self.bodyAccessor
+        DefaultBodyAccessor.shared = self.bodyAccessor
 
         guard let implementation = self.node.implementation as? ViewImpl else {
             fatalError("Cannot reset implementation, got '\(type(of: self.node.implementation))' instead of the expected 'ViewImpl'")

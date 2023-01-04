@@ -16,7 +16,7 @@
 
 import Needler
 
-protocol BodyAccessor {
+protocol BodyAccessor: DebugInjectable {
     /// Makes the body of the given view.
     func makeBody<V: View>(of view: V) -> V.Body
 
@@ -28,6 +28,12 @@ protocol BodyAccessor {
 
     /// Makes the body of the given view modifier.
     func makeBody<VM: ViewModifier>(of modifier: VM) -> VM.Body
+}
+
+extension BodyAccessor {
+    static var defaultValue: any BodyAccessor {
+        return DefaultBodyAccessor()
+    }
 }
 
 struct DefaultBodyAccessor: BodyAccessor {
@@ -45,16 +51,5 @@ struct DefaultBodyAccessor: BodyAccessor {
 
     func makeBody<VM: ViewModifier>(of modifier: VM) -> VM.Body {
         return modifier.body(content: VM.Content())
-    }
-}
-
-private struct BodyAccessorDependency: Dependency {
-    static let value: BodyAccessor = DefaultBodyAccessor()
-}
-
-extension Dependencies {
-    static var bodyAccessor: any BodyAccessor {
-        get { Dependencies[BodyAccessorDependency.self] }
-        set { Dependencies[BodyAccessorDependency.self] = newValue }
     }
 }

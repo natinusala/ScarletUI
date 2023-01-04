@@ -38,26 +38,21 @@ public protocol _Platform {
 
 private var currentPlatform: _Platform?
 
-protocol PlatformResolver {
+protocol PlatformResolver: DebugInjectable {
     /// Creates and returns the current platform handle.
     func createPlatform() throws -> _Platform?
+}
+
+extension PlatformResolver {
+    static var defaultValue: any PlatformResolver {
+        return DefaultPlatformResolver()
+    }
 }
 
 struct DefaultPlatformResolver: PlatformResolver {
     func createPlatform() throws -> _Platform? {
         // TODO: only return GLFW if actually available
         return try GLFWPlatform()
-    }
-}
-
-struct PlatformResolverDependency: Dependency {
-    static let value: any PlatformResolver = DefaultPlatformResolver()
-}
-
-extension Dependencies {
-    static var platformResolver: any PlatformResolver {
-        get { self[PlatformResolverDependency.self] }
-        set { self[PlatformResolverDependency.self] = newValue }
     }
 }
 
