@@ -105,7 +105,7 @@ open class _ViewImplementation: _LayoutImplementationNode, _GamepadButtonEventIm
                 case .undefined:
                     YGNodeStyleSetPadding(self.ygNode, YGEdgeTop, YGUndefined)
                 case .auto:
-                    fatalError("Invalid unit \(newValue.top.unitName) for padding")
+                    appLogger.error("Invalid unit \(newValue.top.unitName) for padding")
             }
 
             switch newValue.right {
@@ -116,7 +116,7 @@ open class _ViewImplementation: _LayoutImplementationNode, _GamepadButtonEventIm
                 case .undefined:
                     YGNodeStyleSetPadding(self.ygNode, YGEdgeTop, YGUndefined)
                 case .auto:
-                    fatalError("Invalid unit \(newValue.right.unitName) for padding")
+                    appLogger.error("Invalid unit \(newValue.right.unitName) for padding")
             }
 
             switch newValue.bottom {
@@ -127,7 +127,7 @@ open class _ViewImplementation: _LayoutImplementationNode, _GamepadButtonEventIm
                 case .undefined:
                     YGNodeStyleSetPadding(self.ygNode, YGEdgeTop, YGUndefined)
                 case .auto:
-                    fatalError("Invalid unit \(newValue.bottom.unitName) for padding")
+                    appLogger.error("Invalid unit \(newValue.bottom.unitName) for padding")
             }
 
             switch newValue.left {
@@ -138,7 +138,7 @@ open class _ViewImplementation: _LayoutImplementationNode, _GamepadButtonEventIm
                 case .undefined:
                     YGNodeStyleSetPadding(self.ygNode, YGEdgeTop, YGUndefined)
                 case .auto:
-                    fatalError("Invalid unit \(newValue.left.unitName) for padding")
+                    appLogger.error("Invalid unit \(newValue.left.unitName) for padding")
             }
         }
     }
