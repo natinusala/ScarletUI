@@ -20,6 +20,8 @@ import Needler
 
 @testable import ScarletUI
 
+// TODO: finish layout UI tests - rename Implementation to Target - make TargetContext - make performancemode - make Shared @Singleton - test libretro runner
+
 /// Default timeout when awaiting for elements and interactions of the app, in seconds.
 public let defaultTimeout = 5
 
