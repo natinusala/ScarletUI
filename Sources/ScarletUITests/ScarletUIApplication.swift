@@ -97,7 +97,7 @@ public class ScarletUIApplication<Tested: Element> where Tested.Node: StatefulEl
             let result = try ScarletUITests.setState(named: name, to: value, on: self.root)
 
             if result {
-                // Run the app for a few frames to make sure everything is updated
+                // Run the app for a few frames to make sure everything is updated (including layout, which is lazy)
                 // Since state uses Combine internally, main queue needs to be drained a bit
                 await self.run(for: 5)
             } else {
@@ -126,6 +126,15 @@ public class ScarletUIApplication<Tested: Element> where Tested.Node: StatefulEl
             // to process the rest of the tasks
             await Task.yield()
         }
+    }
+
+    /// Updates the tested element with a new version.
+    @MainActor
+    public func update(with tested: Tested) async {
+        _ = self.root.update(with: tested, implementationPosition: 0, using: root.context)
+
+        // Run the app for a few frames to update layout
+        await self.run(for: 5)
     }
 
     /// Runs the app until the given condition is met or until the timeout expires (in seconds).

@@ -117,7 +117,7 @@ extension ElementNode {
     /// since the edges may have changed depending on context.
     ///
     /// Returns the node implementation count.
-    func update(with element: Value?, implementationPosition: Int, using context: Context, initial: Bool = false) -> UpdateResult {
+    public func update(with element: Value?, implementationPosition: Int, using context: Context, initial: Bool = false) -> UpdateResult {
         implementationLogger.trace("Updating \(Value.self) with implementation position \(implementationPosition)")
 
         let attributes: AttributesStash

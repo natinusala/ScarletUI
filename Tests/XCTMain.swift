@@ -94,6 +94,7 @@ let specs: [QuickSpec.Type] = [
     // MARK: UITests
     RowUITests.self,
     ColumnUITests.self,
+    PaddingUITests.self,
 ]
 
 // XXX: A main struct will be required as long as top-level code
