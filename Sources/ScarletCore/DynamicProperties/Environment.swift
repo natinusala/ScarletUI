@@ -111,7 +111,7 @@ class EnvironmentLocation<Value>: Location {
     }
 }
 
-protocol EnvironmentProperty: DynamicProperty {
+protocol EnvironmentProperty: _DynamicProperty {
     var partialKeyPath: PartialKeyPath<EnvironmentValues> { get }
 }
 
@@ -156,9 +156,9 @@ public struct Environment<Value>: EnvironmentProperty {
         self.location?.set(values[keyPath: self.keyPath])
     }
 
-    func accept<Visitor: DynamicPropertiesVisitor>(
+    public func accept<Visitor: _DynamicPropertiesVisitor>(
         visitor: Visitor,
-        in property: PropertyInfo,
+        in property: _PropertyInfo,
         target: inout Visitor.Visited,
         using context: ElementNodeContext
     ) throws {

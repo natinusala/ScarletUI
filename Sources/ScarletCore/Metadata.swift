@@ -17,7 +17,7 @@
 import Runtime
 
 typealias TypeInfo = Runtime.TypeInfo
-typealias PropertyInfo = Runtime.PropertyInfo
+public typealias _PropertyInfo = Runtime.PropertyInfo
 
 /// Returns cached type info.
 func cachedTypeInfo(of type: Any.Type) throws -> TypeInfo {

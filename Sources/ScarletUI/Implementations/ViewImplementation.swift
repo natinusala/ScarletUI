@@ -56,7 +56,7 @@ open class _ViewImplementation: _LayoutImplementationNode, _GamepadButtonEventIm
     var gamepadButtonPressAction = AttributeList<_GamepadButtonPressCallback>()
 
     /// The view grow factor, aka. the percentage of remaining space to give this view.
-    var grow: Float {
+    public var grow: Float {
         get {
             return YGNodeStyleGetFlexGrow(self.ygNode)
         }

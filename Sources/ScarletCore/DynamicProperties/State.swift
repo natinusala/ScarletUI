@@ -52,7 +52,7 @@ class StateLocation<Value>: Location {
 }
 
 @propertyWrapper
-public struct State<Value>: DynamicProperty {
+public struct State<Value>: _DynamicProperty {
     let defaultValue: Value
     let location: StateLocation<Value>?
 
@@ -83,9 +83,9 @@ public struct State<Value>: DynamicProperty {
         return Self(defaultValue: self.defaultValue, location: location)
     }
 
-    func accept<Visitor: DynamicPropertiesVisitor>(
+    public func accept<Visitor: _DynamicPropertiesVisitor>(
         visitor: Visitor,
-        in property: PropertyInfo,
+        in property: _PropertyInfo,
         target: inout Visitor.Visited,
         using context: ElementNodeContext
     ) throws {

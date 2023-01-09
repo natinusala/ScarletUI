@@ -36,7 +36,7 @@ func elementEquals(lhs: Any, rhs: Any) -> Bool {
     }
 
     // Consider dynamci properties as always equal
-    if lhs is DynamicProperty {
+    if lhs is _DynamicProperty {
         return true
     }
 
@@ -85,7 +85,7 @@ func elementEquals(lhs: Any, rhs: Any) -> Bool {
         let rhs = rhsChild.value
 
         // Ignore dynamic properties.
-        if lhs is DynamicProperty {
+        if lhs is _DynamicProperty {
             return true
         }
 

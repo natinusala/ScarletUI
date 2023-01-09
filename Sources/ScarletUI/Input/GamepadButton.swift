@@ -21,62 +21,65 @@ public enum GamepadButton: Int, CaseIterable {
     case a = 0
 
     /// B button.
-    case b = 1
+    case b
 
     /// X button.
-    case x = 2
+    case x
 
     /// Y button.
-    case y = 3
+    case y
 
     /// DPAD up.
-    case dpadUp = 4
+    case dpadUp
 
     /// DPAD right.
-    case dpadRight = 5
+    case dpadRight
 
     /// DPAD down.
-    case dpadDown = 6
+    case dpadDown
 
     /// DPAD left.
-    case dpadLeft = 7
+    case dpadLeft
 
     /// Start button.
-    case start = 8
+    case start
 
     /// Back button, also called "select".
-    case back = 9
+    case back
 
     /// Guide button (big glowing "X" button in the middle).
-    case guide = 10
+    case guide
 
     /// Left analog thumbstick button.
-    case leftThumb = 11
+    case leftThumb
 
     /// Right analog thumbstick button.
-    case rightThumb = 12
+    case rightThumb
 
     /// Left shoulder bumper button.
     case leftBumper
 
     /// Right shoulder bumper button.
-    case rightBumper = 14
+    case rightBumper
 
     /// Virtual button mapped to the left shoulder trigger axis.
-    case virtualLeftTrigger = 15
+    case virtualLeftTrigger
 
     /// Virtual button mapped to the right shoulder trigger axis.
-    case virtualRightTrigger = 16
+    case virtualRightTrigger
 
     /// Virtual button mapped to DPAD up and the corresponding left analog stick axis.
-    case virtualUp = 17
+    case virtualUp
 
     /// Virtual button mapped to DPAD right and the corresponding left analog stick axis.
-    case virtualRight = 18
+    case virtualRight
 
     /// Virtual button mapped to DPAD down and the corresponding left analog stick axis.
-    case virtualDown = 19
+    case virtualDown
 
     /// Virtual button mapped to DPAD left and the corresponding left analog stick axis.
-    case virtualLeft = 20
+    case virtualLeft
+
+    /// Debug button. Platform specific, not guaranteed to be available on standard controllers.
+    case debug
 }

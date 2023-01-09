@@ -14,6 +14,7 @@
    limitations under the License.
 */
 
+import Foundation
 import GLFW
 
 extension GLFWgamepadstate {
@@ -69,18 +70,38 @@ extension GamepadButton {
 }
 
 extension GLFWWindow {
-    func pollGamepad() -> _GamepadState {
+    // TODO: move that logic out of GLFW, it should only return true / false
+    private func buttonState(pressed: Bool, previousState: ButtonState) -> ButtonState {
+        switch (pressed, previousState) {
+            case (false, .released), (true, .pressed):
+                return previousState
+            case (false, .pressed):
+                return .released
+            case (true, .released):
+                return .pressed(since: Date(), consumed: false)
+        }
+    }
+
+    func pollGamepad(previousState: _GamepadState) -> _GamepadState {
         var glfwState = GLFWgamepadstate()
         glfwGetGamepadState(GLFW_JOYSTICK_1, &glfwState)
 
         return _GamepadState(
-            buttons: GamepadButton.allCases.map {
-                // No `glfwButton` == virtual button
-                if let glfwButton = $0.glfwButton {
-                    return glfwState.buttonsArrays[glfwButton] == GLFW_PRESS || $0.isAssociatedKeyboardKeyPressed(window: self.handle)
+            buttons: GamepadButton.allCases.enumerated().map { idx, button in
+                let pressed: Bool
+                if let glfwButton = button.glfwButton {
+                    pressed = glfwState.buttonsArrays[glfwButton] == GLFW_PRESS || button.isAssociatedKeyboardKeyPressed(window: self.handle)
                 } else {
-                    return false
+                    // No `glfwButton` == virtual button
+                    switch button {
+                        case .debug:
+                            pressed = glfwGetKey(handle, GLFW_KEY_F12) == GLFW_PRESS
+                        default:
+                            pressed = false
+                    }
                 }
+
+                return buttonState(pressed: pressed, previousState: previousState.buttons[idx])
             }
         )
     }

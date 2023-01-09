@@ -123,9 +123,9 @@ open class _SceneImplementation: ImplementationNode, _LayoutImplementationNode, 
     }
 
     /// Polls and updates input state.
-    func updateInputs() {
+    func updateInputs(platform: _Platform) {
         // Poll inputs
-        let state = self.pollGamepad().toVirtual()
+        var state = self.pollGamepad().toVirtual()
 
         assert(
             state.buttons.count == GamepadButton.allCases.count,
@@ -133,12 +133,28 @@ open class _SceneImplementation: ImplementationNode, _LayoutImplementationNode, 
         )
 
         // Compare state with previous frame
-        for (idx, (button, previous)) in zip(state.buttons, self.previousGamepadState.buttons).enumerated() {
-            switch (previous, button) {
-                case (false, true):
-                    self.pressGamepadButton(GamepadButton.allCases[idx])
-                case (true, false):
-                    self.releaseGamepadButton(GamepadButton.allCases[idx])
+        for (idx, (buttonState, previous)) in zip(state.buttons, self.previousGamepadState.buttons).enumerated() {
+            let button = GamepadButton.allCases[idx]
+
+            // Handle debug button
+#if DEBUG
+            if button == .debug, case .pressed(_, let consumed) = buttonState, !consumed {
+                if buttonState.isLongPress {
+                    openYogaPlayground(for: self, platform: platform)
+                    state.consume(idx: idx)
+                }
+
+                continue
+            }
+#endif
+
+            switch (previous, buttonState) {
+                case (.released, .pressed):
+                    self.pressGamepadButton(button)
+                case (.pressed(_, let consumed), .released):
+                    if !consumed {
+                        self.releaseGamepadButton(button)
+                    }
                 default:
                     break
             }

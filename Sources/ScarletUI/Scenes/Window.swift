@@ -43,10 +43,10 @@ public struct Window<Content>: StatelessLeafScene where Content: View {
 
 public class _WindowImplementation: _SceneImplementation {
     /// The window title.
-    var title = ""
+    public var title = ""
 
     /// The window mode.
-    var mode = WindowMode.getDefault()
+    public var mode = WindowMode.getDefault()
 
     /// The window graphics backend.
     var backend = GraphicsBackend.getDefault()
@@ -114,7 +114,7 @@ public class _WindowImplementation: _SceneImplementation {
 
     public override func pollGamepad() -> _GamepadState {
         if let handle = self.handle {
-            return handle.pollGamepad()
+            return handle.pollGamepad(previousState: self.previousGamepadState)
         }
 
         return .neutral

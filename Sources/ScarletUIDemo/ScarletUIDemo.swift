@@ -16,36 +16,23 @@
 
 import ScarletUI
 
-let colors = [Color.black, Color.red, Color.orange]
-
 @main
 struct ScarletUIDemo: App {
-    @State private var flip = false
-
-    init() {
-        registerPreview(SomePreview.self)
-    }
-
     var body: some Scene {
-        Window(title: "ScarletUI Demo") {
-            Rectangle(color: .yellow)
-                .grow()
-                .onGamepadButtonPress(.dpadUp) {
-                    flip.toggle()
-                }
-
-            if flip {
-                Rectangle(color: .blue)
-                    .grow()
+        Window(title: "ScarletUI Demo", mode: .windowed(width: 800, height: 600)) {
+            Row {
+                Rectangle(color: .orange).grow()
+                Rectangle(color: .blue).grow()
+                Rectangle(color: .yellow).grow()
             }
-        }
-    }
-}
+                .padding(50)
+                .grow()
 
-struct SomePreview: Preview {
-    var body: some View {
-        Rectangle(color: .blue)
-            .width(100)
-            .height(200)
+            Column {
+                Rectangle(color: .red).grow()
+                Rectangle(color: .green).grow()
+            }
+                .grow()
+        }
     }
 }

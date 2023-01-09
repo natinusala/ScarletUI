@@ -34,23 +34,26 @@ public protocol _Platform {
 
     /// Creates, opens and makes current a new window.
     func createWindow(title: String, mode: WindowMode, backend: GraphicsBackend, srgb: Bool) throws -> _NativeWindow
+
+    /// Tries to open the system browser and open the given URL.
+    func openBrowser(for url: String) throws
 }
 
 private var currentPlatform: _Platform?
 
-protocol PlatformResolver: DebugInjectable {
+public protocol PlatformResolver: DebugInjectable {
     /// Creates and returns the current platform handle.
     func createPlatform() throws -> _Platform?
 }
 
 extension PlatformResolver {
-    static var defaultValue: any PlatformResolver {
+    public static var defaultValue: any PlatformResolver {
         return DefaultPlatformResolver()
     }
 }
 
-struct DefaultPlatformResolver: PlatformResolver {
-    func createPlatform() throws -> _Platform? {
+public struct DefaultPlatformResolver: PlatformResolver {
+    public func createPlatform() throws -> _Platform? {
         // TODO: only return GLFW if actually available
         return try GLFWPlatform()
     }
@@ -93,7 +96,7 @@ public protocol _NativeWindow {
     /// - check for buttons that were pressed or released since the last poll
     /// - this gives a list of buttons that are "pressed" at the current frame but were not at the previous one
     /// - make events out of that list
-    func pollGamepad() -> _GamepadState
+    func pollGamepad(previousState: _GamepadState) -> _GamepadState
 }
 
 /// The mode of a window.
@@ -108,7 +111,7 @@ public enum WindowMode: Equatable {
     case fullscreen
 
     public static func getDefault() -> WindowMode {
-        return .windowed(width: 1280, height: 720)
+        return .windowed(width: defaultWindowWidth, height: defaultWindowHeight)
     }
 
     /// Full, human-redable name.
@@ -124,3 +127,6 @@ public enum WindowMode: Equatable {
     }
 }
 
+enum PlatformError: String, Error {
+    case unimplemented = "Operation not implemented on this platform"
+}

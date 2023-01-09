@@ -16,6 +16,12 @@
 
 let targetFrameTime = 0.016666666 // TODO: find a way for users to customize this somehow, put it in the scene?
 
+let defaultWindowWidth: Float = 1280.0
+let defaultWindowHeight: Float = 720.0
+
+/// How long to hold a button before it's considered a long press, in seconds.
+let longPressDelay = 0.5
+
 public extension Axis {
     static let `default` = Axis.column
 }

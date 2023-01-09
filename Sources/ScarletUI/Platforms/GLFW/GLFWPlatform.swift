@@ -17,6 +17,7 @@
 import Skia
 import Glad
 import GLFW
+import ShellOut
 
 import ScarletNative
 
@@ -46,6 +47,14 @@ class GLFWPlatform: _Platform {
 
     var name: String {
         return "GLFW"
+    }
+
+    func openBrowser(for url: String) throws {
+#if os(Linux)
+        try shellOut(to: "xdg-open", arguments: [url])
+#else
+        throw PlatformError.unimplemented
+#endif
     }
 }
 

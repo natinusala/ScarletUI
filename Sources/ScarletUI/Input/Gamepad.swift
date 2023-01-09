@@ -14,6 +14,8 @@
    limitations under the License.
 */
 
+import Foundation
+
 extension _GamepadState {
     /// Adds virtual buttons, performs axis translation...
     func toVirtual() -> _GamepadState {
@@ -29,9 +31,37 @@ public struct _GamepadState {
     /// Buttons state.
     /// `true` means pressed, `false` means released.
     /// The index is the button index inside `GamepadButton`.
-    let buttons: [Bool]
+    var buttons: [ButtonState]
 
     /// Gamepad state with no buttons pressed and all axis to neutral.
-    static let neutral = _GamepadState(buttons: [Bool](repeating: false, count: GamepadButton.allCases.count))
+    static let neutral = _GamepadState(buttons: [ButtonState](repeating: .released, count: GamepadButton.allCases.count))
+
+    mutating func consume(idx: Int) {
+        switch self.buttons[idx] {
+            case .pressed(let since, _):
+                self.buttons[idx] = .pressed(since: since, consumed: true)
+            default:
+                break
+        }
+    }
 }
 
+/// State of a gamepad button.
+enum ButtonState {
+    /// The button is released.
+    case released
+
+    /// The button is pressed since the given date.
+    /// `consumed` will be `true` if a long press event has been fired for this
+    /// button _before it was released_.
+    case pressed(since: Date, consumed: Bool)
+
+    var isLongPress: Bool {
+        switch self {
+            case .pressed(let since, _):
+                return abs(Date().distance(to: since)) >= longPressDelay
+            default:
+                return false
+        }
+    }
+}

@@ -49,6 +49,7 @@ let package = Package(
 
         // Linux compat
         .package(url: "https://github.com/natinusala/swift-backtrace.git", .upToNextMajor(from: "1.0.0")),
+        .package(url: "https://github.com/JohnSundell/ShellOut", .upToNextMajor(from: "2.3.0")),
 
         // Documentation
         .package(url: "https://github.com/apple/swift-docc-plugin", from: "1.0.0"),
@@ -70,6 +71,7 @@ let package = Package(
                 "Glad",
                 "Skia",
                 .product(name: "Backtrace", package: "swift-backtrace"),
+                .product(name: "ShellOut", package: "ShellOut")
             ]
         ),
         // ScarletCore: core library containing the DSL and graph / state management code

@@ -17,7 +17,7 @@
 import Foundation
 import XCTest
 
-@testable import ScarletUI
+import ScarletUI
 
 func findView(tagged tag: String, in node: _TagImplementationNode) -> _ViewImplementation? {
     func inner(node: _TagImplementationNode) -> _ViewImplementation? {

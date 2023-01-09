@@ -134,14 +134,14 @@ public extension StatefulElementNode {
 }
 
 /// Visitor used to install dynamic properties on elements.
-private class DynamicPropertiesInstaller<Visited: Element, Node: StatefulElementNode>: DynamicPropertiesVisitor where Node.Value == Visited {
+private class DynamicPropertiesInstaller<Visited: Element, Node: StatefulElementNode>: _DynamicPropertiesVisitor where Node.Value == Visited {
     let node: Node
 
     init(node: Node) {
         self.node = node
     }
 
-    func visitStateProperty<Value>(_ property: PropertyInfo, current: State<Value>, target: inout Visited, type: Value.Type) throws {
+    func visitStateProperty<Value>(_ property: _PropertyInfo, current: State<Value>, target: inout Visited, type: Value.Type) throws {
         // Take the existing state property, setup a new location if needed and set the new location
         // in the target element
         if current.location == nil {
@@ -156,7 +156,7 @@ private class DynamicPropertiesInstaller<Visited: Element, Node: StatefulElement
     }
 
     func visitEnvironmentProperty<Value>(
-        _ property: PropertyInfo,
+        _ property: _PropertyInfo,
         current: Environment<Value>,
         target: inout Visited,
         type: Value.Type,

@@ -75,7 +75,7 @@ open class AppImplementation: ImplementationNode, CustomStringConvertible {
 
     /// Runs the app for one frame.
     /// Returns `true` if the app should exit.
-    func frame() -> Bool {
+    public func frame() -> Bool {
         // Poll events
         self.platform.pollEvents()
 

@@ -91,7 +91,7 @@ public enum WindowMode: Equatable {
     case fullscreen
 
     public static func getDefault() -> WindowMode {
-        return .windowed(1280, 720)
+        return .windowed(defaultWindowWidth, defaultWindowHeight)
     }
 
     /// Full, human-redable name.

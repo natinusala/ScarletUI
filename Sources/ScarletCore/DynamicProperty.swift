@@ -25,12 +25,12 @@
 ///| **Stateless POD**     | memcmp                                                               | Can be done after comparison as there are no dynamic properties anyway          | Store whole value for memcmp                                                    | Stored directly in value, doesn't change anything                     |
 ///| **Stateful non-POD**  | Field by field runtime metadata, ignoring dynamic properties         | Can be done after comparison since dynamic properties are ignored in comparison | Store whole value, it's fine since dynamic properties are ignored in comparison | Stored directly in value, avoids duplication with whole value storage |
 ///| **Stateless non-POD** | _Undefined - not supported_                                          | _Undefined_                                                                     | _Undefined_                                                                     | _Undefined_                                                           |
-protocol DynamicProperty {
+public protocol _DynamicProperty {
     /// Accepts the given visitor into the property.
     /// Should call the appropriate `visit` methode of the visitor.
-    func accept<Visitor: DynamicPropertiesVisitor>(
+    func accept<Visitor: _DynamicPropertiesVisitor>(
         visitor: Visitor,
-        in property: PropertyInfo,
+        in property: _PropertyInfo,
         target: inout Visitor.Visited,
         using context: ElementNodeContext
     ) throws
@@ -38,12 +38,12 @@ protocol DynamicProperty {
 
 /// Visits various dynamic properties of a given element.
 /// Used by calling ``DynamicProperty/accept()`` on the visited property.
-protocol DynamicPropertiesVisitor<Visited>: AnyObject {
+public protocol _DynamicPropertiesVisitor<Visited>: AnyObject {
     associatedtype Visited
 
     /// Visit a state property.
     func visitStateProperty<Value>(
-        _ property: PropertyInfo,
+        _ property: _PropertyInfo,
         current: State<Value>,
         target: inout Visited,
         type: Value.Type
@@ -51,7 +51,7 @@ protocol DynamicPropertiesVisitor<Visited>: AnyObject {
 
     /// Visit an environment property.
     func visitEnvironmentProperty<Value>(
-        _ property: PropertyInfo,
+        _ property: _PropertyInfo,
         current: Environment<Value>,
         target: inout Visited,
         type: Value.Type,
@@ -60,7 +60,7 @@ protocol DynamicPropertiesVisitor<Visited>: AnyObject {
     ) throws
 }
 
-extension DynamicPropertiesVisitor {
+public extension _DynamicPropertiesVisitor {
     /// Uses runtime metadata to visit all dynamic properties of the given element.
     func walk(_ element: Visited, target: inout Visited, using context: ElementNodeContext) throws {
         let info = try cachedTypeInfo(of: Visited.self)
@@ -69,7 +69,7 @@ extension DynamicPropertiesVisitor {
             let current = try property.get(from: element)
 
             switch current {
-                case let current as DynamicProperty:
+                case let current as _DynamicProperty:
                     try current.accept(
                         visitor: self,
                         in: property,

@@ -194,16 +194,16 @@ fileprivate enum UnbalancedEnum {
     case one(String)
 }
 
-struct SomeDynamicProperty: DynamicProperty, ExpressibleByIntegerLiteral {
+struct SomeDynamicProperty: _DynamicProperty, ExpressibleByIntegerLiteral {
     let dynamicValue: Int
 
     init(integerLiteral: Int) {
         self.dynamicValue = integerLiteral
     }
 
-    func accept<Visitor: DynamicPropertiesVisitor>(
+    func accept<Visitor: _DynamicPropertiesVisitor>(
         visitor: Visitor,
-        in property: PropertyInfo,
+        in property: _PropertyInfo,
         target: inout Visitor.Visited,
         using context: ElementNodeContext
     ) throws {}

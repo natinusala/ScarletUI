@@ -80,7 +80,7 @@ open class _AppImplementation: ImplementationNode, _TagImplementationNode {
 
     /// Runs the app for one frame.
     /// Returns `true` if the app should exit.
-    func frame() -> Bool {
+    public func frame() -> Bool {
         // Poll events
         self.platform.pollEvents()
 
@@ -90,7 +90,7 @@ open class _AppImplementation: ImplementationNode, _TagImplementationNode {
         }
 
         // Poll inputs
-        scene.updateInputs()
+        scene.updateInputs(platform: self.platform)
 
         // Run scene frame
         return scene.frame()

@@ -41,6 +41,10 @@ public struct EdgesLayoutValues: Equatable {
     let right: LayoutValue
     let bottom: LayoutValue
     let left: LayoutValue
+
+    static func undefined() -> Self {
+        return Self(top: .undefined, right: .undefined, bottom: .undefined, left: .undefined)
+    }
 }
 
 /// Represents a value of a specific unit.
