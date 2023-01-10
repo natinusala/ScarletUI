@@ -17,6 +17,7 @@
 import Foundation
 import XCTest
 import Dispatch
+import Runtime
 
 import ScarletUI
 import ScarletCore
@@ -38,7 +39,7 @@ private class StateSetterVisitor<Visited>: _DynamicPropertiesVisitor {
         self.value = value
     }
 
-    func visitStateProperty<Value>(_ property: ScarletCore._PropertyInfo, current: ScarletCore.State<Value>, target: inout Visited, type: Value.Type) throws {
+    func visitStateProperty<Value>(_ property: PropertyInfo, current: ScarletCore.State<Value>, target: inout Visited, type: Value.Type) throws {
         if property.name == "_\(self.name)" {
             guard let value = self.value as? Value else {
                 XCTFail("Cannot set state property '\(self.name)' of type '\(Value.self)' to value of type '\(Swift.type(of: value))'")
@@ -55,5 +56,5 @@ private class StateSetterVisitor<Visited>: _DynamicPropertiesVisitor {
         }
     }
 
-    func visitEnvironmentProperty<Value>(_ property: ScarletCore._PropertyInfo, current: ScarletCore.Environment<Value>, target: inout Visited, type: Value.Type, values: ScarletCore.EnvironmentValues, diff: ScarletCore.EnvironmentDiff) throws {}
+    func visitEnvironmentProperty<Value>(_ property: PropertyInfo, current: ScarletCore.Environment<Value>, target: inout Visited, type: Value.Type, values: ScarletCore.EnvironmentValues, diff: ScarletCore.EnvironmentDiff) throws {}
 }

@@ -16,6 +16,7 @@
 
 import Quick
 import Nimble
+import Runtime
 
 @testable import ScarletCore
 
@@ -203,7 +204,7 @@ struct SomeDynamicProperty: _DynamicProperty, ExpressibleByIntegerLiteral {
 
     func accept<Visitor: _DynamicPropertiesVisitor>(
         visitor: Visitor,
-        in property: _PropertyInfo,
+        in property: PropertyInfo,
         target: inout Visitor.Visited,
         using context: ElementNodeContext
     ) throws {}

@@ -14,6 +14,8 @@
    limitations under the License.
 */
 
+import Runtime
+
 /// Serves as storage for state properties.
 class StateLocation<Value>: Location {
     @Podable var value: Value
@@ -85,7 +87,7 @@ public struct State<Value>: _DynamicProperty {
 
     public func accept<Visitor: _DynamicPropertiesVisitor>(
         visitor: Visitor,
-        in property: _PropertyInfo,
+        in property: PropertyInfo,
         target: inout Visitor.Visited,
         using context: ElementNodeContext
     ) throws {

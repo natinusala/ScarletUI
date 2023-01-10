@@ -21,7 +21,6 @@ import Needler
 import ScarletUI
 import ScarletCore
 
-// TODO: try @_spi instead of underscored names, cleanup public mess
 // TODO: rename Implementation to Target - make TargetContext - make performancemode - make Shared @Singleton - test libretro runner
 
 /// Default timeout when awaiting for elements and interactions of the app, in seconds.

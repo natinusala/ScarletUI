@@ -14,6 +14,8 @@
    limitations under the License.
 */
 
+import Runtime
+
 /// A property which storage is managed by ScarletUI.
 ///
 /// The table below describes how different elements behave depending on if they are stateless or stateful and if they are a POD or not.
@@ -30,7 +32,7 @@ public protocol _DynamicProperty {
     /// Should call the appropriate `visit` methode of the visitor.
     func accept<Visitor: _DynamicPropertiesVisitor>(
         visitor: Visitor,
-        in property: _PropertyInfo,
+        in property: PropertyInfo,
         target: inout Visitor.Visited,
         using context: ElementNodeContext
     ) throws
@@ -43,7 +45,7 @@ public protocol _DynamicPropertiesVisitor<Visited>: AnyObject {
 
     /// Visit a state property.
     func visitStateProperty<Value>(
-        _ property: _PropertyInfo,
+        _ property: PropertyInfo,
         current: State<Value>,
         target: inout Visited,
         type: Value.Type
@@ -51,7 +53,7 @@ public protocol _DynamicPropertiesVisitor<Visited>: AnyObject {
 
     /// Visit an environment property.
     func visitEnvironmentProperty<Value>(
-        _ property: _PropertyInfo,
+        _ property: PropertyInfo,
         current: Environment<Value>,
         target: inout Visited,
         type: Value.Type,

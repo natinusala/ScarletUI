@@ -14,6 +14,8 @@
    limitations under the License.
 */
 
+import Runtime
+
 /// A node for "stateful" elements. Stateful elements are elements that:
 /// - may have dynamic properties
 /// - need to be compared before updating (equality check)
@@ -141,7 +143,7 @@ private class DynamicPropertiesInstaller<Visited: Element, Node: StatefulElement
         self.node = node
     }
 
-    func visitStateProperty<Value>(_ property: _PropertyInfo, current: State<Value>, target: inout Visited, type: Value.Type) throws {
+    func visitStateProperty<Value>(_ property: PropertyInfo, current: State<Value>, target: inout Visited, type: Value.Type) throws {
         // Take the existing state property, setup a new location if needed and set the new location
         // in the target element
         if current.location == nil {
@@ -156,7 +158,7 @@ private class DynamicPropertiesInstaller<Visited: Element, Node: StatefulElement
     }
 
     func visitEnvironmentProperty<Value>(
-        _ property: _PropertyInfo,
+        _ property: PropertyInfo,
         current: Environment<Value>,
         target: inout Visited,
         type: Value.Type,

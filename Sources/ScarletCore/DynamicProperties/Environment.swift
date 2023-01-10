@@ -14,6 +14,8 @@
    limitations under the License.
 */
 
+import Runtime
+
 /// Identifies an environment value.
 public protocol EnvironmentKey {
     associatedtype Value
@@ -158,7 +160,7 @@ public struct Environment<Value>: EnvironmentProperty {
 
     public func accept<Visitor: _DynamicPropertiesVisitor>(
         visitor: Visitor,
-        in property: _PropertyInfo,
+        in property: PropertyInfo,
         target: inout Visitor.Visited,
         using context: ElementNodeContext
     ) throws {
