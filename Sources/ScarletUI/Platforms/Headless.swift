@@ -48,7 +48,7 @@ struct HeadlessWindow: _NativeWindow {
 
     func swapBuffers() {}
 
-    func pollGamepad(previousState: _GamepadState) -> ScarletUI._GamepadState {
+    func pollGamepad() -> _PhysicalGamepadState {
         return .neutral
     }
 }

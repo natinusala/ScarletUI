@@ -59,24 +59,8 @@ public protocol NativeWindow {
     func swapBuffers()
 
     /// Polls the gamepad to get input at the current frame.
-    /// Tied to the window and not the platform for keyboard inputs.
-    ///
-    /// Virtual input should all be set to their default value as they are
-    /// automatically set afterwards.
-    //
-    /// Timing can be critical for some app's input processing.
-    /// As such, this function should return the gamepad state at the exact time of calling,
-    /// and result should not be cached from an early poll.
-    ///
-    /// Every frame, the polling cycle is the following:
-    /// - poll events
-    /// - poll gamepad state into a `GamepadState` struct
-    ///     - keyboard to gamepad buttons translation is done by the platform input code if needed
-    /// - translate that state into a `VirtualGamepadState` struct by adding virtual buttons and applying axis to DPAD translation
-    /// - check for buttons that were pressed or released since the last poll
-    /// - this gives a list of buttons that are "pressed" at the current frame but were not at the previous one
-    /// - make events out of that list
-    func pollGamepad() -> GamepadState
+    /// See ``Platform/pollGamepad()``.
+    func pollGamepad() -> _PhysicalGamepadState
 }
 
 /// The mode of a window.

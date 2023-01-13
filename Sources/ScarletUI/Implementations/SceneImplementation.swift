@@ -35,6 +35,9 @@ open class _SceneImplementation: ImplementationNode, _LayoutImplementationNode, 
     /// The gamepad state of the previous frame.
     var previousGamepadState = _GamepadState.neutral
 
+    // Current platform. Available once `create(platform:)` is called.
+    var platform: _Platform?
+
     public var tag: String?
 
     public var layoutParent: _LayoutImplementationNode? {
@@ -119,42 +122,49 @@ open class _SceneImplementation: ImplementationNode, _LayoutImplementationNode, 
     /// Called by the parent app when the scene is ready to be created.
     /// This should be the time to initialize any native resources such as windows or graphics context.
     open func create(platform: _Platform) {
-        // Nothing by default
+        self.platform = platform
     }
 
     /// Polls and updates input state.
-    func updateInputs(platform: _Platform) {
+    func updateInputs() {
         // Poll inputs
-        var state = self.pollGamepad().toVirtual()
+        var state = self.pollGamepad().process(previous: self.previousGamepadState)
 
         assert(
-            state.buttons.count == GamepadButton.allCases.count,
-            "Gamepad button count mismatch - returned \(state.buttons.count) but expected \(GamepadButton.allCases.count)"
+            state.physicalButtons.count == PhysicalGamepadButton.allCases.count,
+            "Physical gamepad button count mismatch - returned \(state.physicalButtons.count) but expected \(PhysicalGamepadButton.allCases.count)"
+        )
+
+        assert(
+            state.virtualButtons.count == VirtualGamepadButton.allCases.count,
+            "Virtual gamepad button count mismatch - returned \(state.virtualButtons.count) but expected \(VirtualGamepadButton.allCases.count)"
         )
 
         // Compare state with previous frame
-        for (idx, (buttonState, previous)) in zip(state.buttons, self.previousGamepadState.buttons).enumerated() {
-            let button = GamepadButton.allCases[idx]
+        let allButtons = PhysicalGamepadButton.allCases.map({ $0.toGamepadButton() }) + VirtualGamepadButton.allCases.map({ $0.toGamepadButton() })
 
-            // Handle debug button
-#if DEBUG
-            if button == .debug, case .pressed(_, let consumed) = buttonState, !consumed {
-                if buttonState.isLongPress {
-                    openYogaPlayground(for: self, platform: platform)
-                    state.consume(idx: idx)
-                }
-
-                continue
+        for (idx, button) in allButtons {
+            let new: _ButtonState
+            let previous: _ButtonState
+            switch button {
+                case .physical:
+                    new = state.physicalButtons[idx]
+                    previous = self.previousGamepadState.physicalButtons[idx]
+                case .virtual:
+                    new = state.virtualButtons[idx]
+                    previous = self.previousGamepadState.virtualButtons[idx]
             }
-#endif
 
-            switch (previous, buttonState) {
+            switch (previous, new) {
                 case (.released, .pressed):
                     self.pressGamepadButton(button)
-                case (.pressed(_, let consumed), .released):
-                    if !consumed {
-                        self.releaseGamepadButton(button)
+                case (.pressed, .pressed(_, let consumed)):
+                    if !consumed && new.isLongPress {
+                        state.consume(button, at: idx)
+                        self.longPressGamepadButton(button)
                     }
+                case (.pressed, .released):
+                    self.releaseGamepadButton(button)
                 default:
                     break
             }
@@ -173,8 +183,25 @@ open class _SceneImplementation: ImplementationNode, _LayoutImplementationNode, 
         return false
     }
 
+    open func gamepadButtonDidLongPress(_ button: GamepadButton) -> Bool {
+#if DEBUG
+        if case .physical(.debug) = button {
+            // Handle debug button
+            guard let platform else {
+                appLogger.error("Cannot open Yoga Playground: platform is not set in scene '\(self.displayName)', was `super.create(platform:)` called?")
+                return true
+            }
+
+            openYogaPlayground(for: self, platform: platform)
+            return true
+        }
+#endif
+
+        return false
+    }
+
     /// Called every frame to poll inputs. Must be overridden by subclasses.
-    open func pollGamepad() -> _GamepadState {
+    open func pollGamepad() -> _PhysicalGamepadState {
         fatalError("Scene \(self) does not override` pollGamepad()`")
     }
 

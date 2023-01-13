@@ -27,7 +27,7 @@ extension GLFWgamepadstate {
     }
 }
 
-extension GamepadButton {
+extension PhysicalGamepadButton {
     /// GLFW button associated to this Scarlet button.
     var glfwButton: Int? {
         switch self {
@@ -46,7 +46,7 @@ extension GamepadButton {
             case .rightThumb: return Int(GLFW_GAMEPAD_BUTTON_RIGHT_THUMB)
             case .leftBumper: return Int(GLFW_GAMEPAD_BUTTON_LEFT_BUMPER)
             case .rightBumper: return Int(GLFW_GAMEPAD_BUTTON_RIGHT_BUMPER)
-            default: return nil
+            case .debug: return nil
         }
     }
 
@@ -58,7 +58,7 @@ extension GamepadButton {
             case .dpadRight: key = Int32(GLFW_KEY_RIGHT)
             case .dpadUp: key = Int32(GLFW_KEY_UP)
             case .dpadDown: key = Int32(GLFW_KEY_DOWN)
-            default: key = nil // TODO: Add other keys
+            default: key = nil // TODO: Add other keys and remove default
         }
 
         if let key = key {
@@ -70,38 +70,24 @@ extension GamepadButton {
 }
 
 extension GLFWWindow {
-    // TODO: move that logic out of GLFW, it should only return true / false
-    private func buttonState(pressed: Bool, previousState: ButtonState) -> ButtonState {
-        switch (pressed, previousState) {
-            case (false, .released), (true, .pressed):
-                return previousState
-            case (false, .pressed):
-                return .released
-            case (true, .released):
-                return .pressed(since: Date(), consumed: false)
-        }
-    }
-
-    func pollGamepad(previousState: _GamepadState) -> _GamepadState {
+    func pollGamepad() -> _PhysicalGamepadState {
         var glfwState = GLFWgamepadstate()
         glfwGetGamepadState(GLFW_JOYSTICK_1, &glfwState)
 
-        return _GamepadState(
-            buttons: GamepadButton.allCases.enumerated().map { idx, button in
-                let pressed: Bool
+        return _PhysicalGamepadState(
+            buttons: PhysicalGamepadButton.allCases.map { button in
+                // Real gamepad buttons associated to a GLFW button
                 if let glfwButton = button.glfwButton {
-                    pressed = glfwState.buttonsArrays[glfwButton] == GLFW_PRESS || button.isAssociatedKeyboardKeyPressed(window: self.handle)
-                } else {
-                    // No `glfwButton` == virtual button
-                    switch button {
-                        case .debug:
-                            pressed = glfwGetKey(handle, GLFW_KEY_F12) == GLFW_PRESS
-                        default:
-                            pressed = false
-                    }
+                    return glfwState.buttonsArrays[glfwButton] == GLFW_PRESS || button.isAssociatedKeyboardKeyPressed(window: self.handle)
                 }
 
-                return buttonState(pressed: pressed, previousState: previousState.buttons[idx])
+                // Special buttons with no associated GLFW button
+                switch button {
+                    case .debug:
+                        return glfwGetKey(handle, GLFW_KEY_F12) == GLFW_PRESS
+                    default:
+                        return false
+                }
             }
         )
     }

@@ -63,6 +63,8 @@ public class _WindowImplementation: _SceneImplementation {
     }
 
     public override func create(platform: _Platform) {
+        super.create(platform: platform)
+
         do {
             // Create the native window
             let handle = try platform.createWindow(
@@ -112,9 +114,9 @@ public class _WindowImplementation: _SceneImplementation {
         }
     }
 
-    public override func pollGamepad() -> _GamepadState {
+    public override func pollGamepad() -> _PhysicalGamepadState {
         if let handle = self.handle {
-            return handle.pollGamepad(previousState: self.previousGamepadState)
+            return handle.pollGamepad()
         }
 
         return .neutral

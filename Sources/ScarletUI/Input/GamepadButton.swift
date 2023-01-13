@@ -14,9 +14,8 @@
    limitations under the License.
 */
 
-/// A button on a gamepad. Matches a standard XInput controller.
-/// "Virtual" buttons are axis turned into buttons for convenience.
-public enum GamepadButton: Int, CaseIterable {
+/// A physical button on a gamepad. Matches a standard XInput controller.
+public enum PhysicalGamepadButton: Int, CaseIterable {
     /// A button.
     case a = 0
 
@@ -62,24 +61,40 @@ public enum GamepadButton: Int, CaseIterable {
     /// Right shoulder bumper button.
     case rightBumper
 
-    /// Virtual button mapped to the left shoulder trigger axis.
-    case virtualLeftTrigger
-
-    /// Virtual button mapped to the right shoulder trigger axis.
-    case virtualRightTrigger
-
-    /// Virtual button mapped to DPAD up and the corresponding left analog stick axis.
-    case virtualUp
-
-    /// Virtual button mapped to DPAD right and the corresponding left analog stick axis.
-    case virtualRight
-
-    /// Virtual button mapped to DPAD down and the corresponding left analog stick axis.
-    case virtualDown
-
-    /// Virtual button mapped to DPAD left and the corresponding left analog stick axis.
-    case virtualLeft
-
     /// Debug button. Platform specific, not guaranteed to be available on standard controllers.
     case debug
+
+    func toGamepadButton() -> (idx: Int, button: GamepadButton) {
+        return (idx: self.rawValue, button: .physical(self))
+    }
+}
+
+/// A virtual gamepad button, usually axis turned into buttons for convenience.
+public enum VirtualGamepadButton: Int, CaseIterable {
+    /// Virtual button mapped to the left shoulder trigger axis.
+    case leftTrigger = 0
+
+    /// Virtual button mapped to the right shoulder trigger axis.
+    case rightTrigger
+
+    /// Virtual button mapped to DPAD up and the corresponding left analog stick axis.
+    case up
+
+    /// Virtual button mapped to DPAD right and the corresponding left analog stick axis.
+    case right
+
+    /// Virtual button mapped to DPAD down and the corresponding left analog stick axis.
+    case down
+
+    /// Virtual button mapped to DPAD left and the corresponding left analog stick axis.
+    case left
+
+    func toGamepadButton() -> (idx: Int, button: GamepadButton) {
+        return (idx: self.rawValue, button: .virtual(self))
+    }
+}
+
+public enum GamepadButton: Equatable {
+    case physical(_ button: PhysicalGamepadButton)
+    case virtual(_ button: VirtualGamepadButton)
 }

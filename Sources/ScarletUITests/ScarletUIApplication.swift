@@ -21,8 +21,6 @@ import Needler
 import ScarletUI
 import ScarletCore
 
-// TODO: use the SwiftUI view inspector to see how the virtual view show up
-// TODO: check SwiftUI and make sure how adding padding works, with a view with one VStack and one with multiple regular views
 // TODO: rename Implementation to Target - make TargetContext - make performancemode - make StateObject / EnvironmentObject - test libretro runner
 
 /// Default timeout when awaiting for elements and interactions of the app, in seconds.

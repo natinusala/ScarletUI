@@ -30,6 +30,13 @@ protocol _GamepadButtonEventImplementationNode {
     /// Must return `true` if the event was consumed, `false` if the event
     /// needs to be propagated to the children views.
     func gamepadButtonDidRelease(_ button: GamepadButton) -> Bool
+
+    /// Called every time a gamepad button is pressed and not released for a moment.
+    /// Must return `true` if the event was consumed, `false` if the event
+    /// needs to be propagated to the children views.
+    /// Be careful as ``gamepadButtonDidPress(_:)`` is also called before this event when the button
+    /// starts being pressed.
+    func gamepadButtonDidLongPress(_ button: GamepadButton) -> Bool
 }
 
 extension _GamepadButtonEventImplementationNode {
@@ -52,6 +59,17 @@ extension _GamepadButtonEventImplementationNode {
 
         for child in self.children {
             child.releaseGamepadButton(button)
+        }
+    }
+
+    /// Must be called to start a "long button pressed" event on the view.
+    func longPressGamepadButton(_ button: GamepadButton) {
+        if self.gamepadButtonDidLongPress(button) {
+            return
+        }
+
+        for child in self.children {
+            child.longPressGamepadButton(button)
         }
     }
 }

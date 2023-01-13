@@ -285,6 +285,11 @@ open class _ViewImplementation: _LayoutImplementationNode, _GamepadButtonEventIm
         return false
     }
 
+    open func gamepadButtonDidLongPress(_ button: GamepadButton) -> Bool {
+        // Nothing by default
+        return false
+    }
+
     /// Draws the view on screen.
     open func draw(in bounds: Rect, canvas: Canvas) {
         // Draw fill

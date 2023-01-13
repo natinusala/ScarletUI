@@ -90,7 +90,7 @@ open class _AppImplementation: ImplementationNode, _TagImplementationNode {
         }
 
         // Poll inputs
-        scene.updateInputs(platform: self.platform)
+        scene.updateInputs()
 
         // Run scene frame
         return scene.frame()

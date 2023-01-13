@@ -18,6 +18,8 @@ import ScarletUI
 
 @main
 struct ScarletUIDemo: App {
+    @State private var toggle = false
+
     var body: some Scene {
         Window(title: "ScarletUI Demo", mode: .windowed(width: 800, height: 600)) {
             Row {
@@ -30,9 +32,15 @@ struct ScarletUIDemo: App {
 
             Column {
                 Rectangle(color: .red).grow()
-                Rectangle(color: .green).grow()
+
+                if toggle {
+                    Rectangle(color: .green).grow()
+                }
             }
                 .grow()
+                .onGamepadButtonPress(.physical(.dpadUp)) {
+                    toggle.toggle()
+                }
         }
     }
 }
