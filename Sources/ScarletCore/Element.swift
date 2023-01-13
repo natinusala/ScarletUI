@@ -35,13 +35,13 @@ public protocol Element: CustomDebugStringConvertible, IsPodable {
     associatedtype Input: ElementInput<Self> = UserMakeInput<Self>
     associatedtype Output: ElementOutput<Self>
 
-    /// Type of implementation node for this element.
-    associatedtype Implementation: ImplementationNode
+    /// Type of target node for this element.
+    associatedtype Target: TargetNode
 
     typealias Context = ElementNodeContext
 
     /// Makes the node for that element.
-    static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) -> Node
+    static func makeNode(of element: Self, in parent: (any ElementNode)?, targetPosition: Int, using context: Context) -> Node
 
     /// Makes the element, usually to get its edges.
     static func make(_ element: Self, input: Input) -> Output
@@ -51,13 +51,13 @@ public protocol Element: CustomDebugStringConvertible, IsPodable {
 }
 
 public extension Element {
-    /// Creates the implementation for the view.
-    static func makeImplementation(of element: Self) -> Implementation? {
-        if Implementation.self == Never.self {
+    /// Creates the target for the view.
+    static func makeTarget(of element: Self) -> Target? {
+        if Target.self == Never.self {
             return nil
         }
 
-        return Implementation(displayName: element.displayName)
+        return Target(displayName: element.displayName)
     }
 
     /// Default way of collecting attributes: use runtime metadata on the element directly
@@ -90,8 +90,8 @@ public extension Element {
 }
 
 public extension Element {
-    func makeAnyNode(in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) -> any ElementNode {
-        return Self.makeNode(of: self, in: parent, implementationPosition: implementationPosition, using: context)
+    func makeAnyNode(in parent: (any ElementNode)?, targetPosition: Int, using context: Context) -> any ElementNode {
+        return Self.makeNode(of: self, in: parent, targetPosition: targetPosition, using: context)
     }
 }
 

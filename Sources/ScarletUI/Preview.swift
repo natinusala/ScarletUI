@@ -35,7 +35,7 @@ struct DiscoveredPreview: Hashable {
         self.axis = Previewed.axis
 
         self.makeNode = {
-            return Previewed.makeNode(of: Previewed(), in: nil, implementationPosition: 0, using: .root())
+            return Previewed.makeNode(of: Previewed(), in: nil, targetPosition: 0, using: .root())
         }
     }
 
@@ -118,38 +118,38 @@ public extension App {
             }
 
             // Make an app and window node
-            let app = _AppImplementation(displayName: "PreviewApp")
-            let window = _WindowImplementation(displayName: "PreviewWindow")
+            let app = _AppTarget(displayName: "PreviewApp")
+            let window = _WindowTarget(displayName: "PreviewWindow")
             window.title = "Preview \(preview.name)"
 
             // Make the preview node and insert it in the window
             let root = preview.makeNode()
 
-            guard let implementation = root.implementation as? _ViewImplementation else {
-                fatalError("No implementation found for preview node or got implementation of the wrong type")
+            guard let target = root.target as? _ViewTarget else {
+                fatalError("No target found for preview node or got target of the wrong type")
             }
 
-            implementation.grow = 1.0 // make the view take the whole window
+            target.grow = 1.0 // make the view take the whole window
 
             // Setup window size: use provided mode or layout the preview and fit the window
             if let windowMode = preview.windowMode {
                 window.mode = windowMode
             } else {
-                implementation.layoutIfNeeded()
+                target.layoutIfNeeded()
 
-                if implementation.layout.width == 0 || implementation.layout.height == 0 {
+                if target.layout.width == 0 || target.layout.height == 0 {
                     appLogger.error("Cannot create a window for a preview with no width or height.")
                     appLogger.error("Please set a window size by adding a 'windowMode' property to '\(preview.name)'.")
                     exit(-1)
                 }
 
-                appLogger.debug("Calculated preview size: \(implementation.layout)")
+                appLogger.debug("Calculated preview size: \(target.layout)")
 
-                window.mode = .windowed(width: implementation.layout.width, height: implementation.layout.height)
+                window.mode = .windowed(width: target.layout.width, height: target.layout.height)
             }
 
             // Glue everything together
-            window.insertChild(implementation, at: 0)
+            window.insertChild(target, at: 0)
             app.insertChild(window, at: 0)
 
             // Load previous window position once the window is created and run the app until exit
@@ -169,7 +169,7 @@ public extension App {
     /// Saves preview position to a temporary directory.
     /// Format is `{x}\n{y}`.
     /// See ``previewPositionTempPath`` for file location.
-    static func savePreviewPosition(of window: _WindowImplementation) {
+    static func savePreviewPosition(of window: _WindowTarget) {
         if let windowPosition = window.handle?.position {
             try? "\(windowPosition.x)\n\(windowPosition.y)".write(to: Self.previewPositionTempPath, atomically: false, encoding: .utf8)
             appLogger.debug("Window position \(windowPosition) saved to \(Self.previewPositionTempPath)")
@@ -178,7 +178,7 @@ public extension App {
 
     /// Attempts to load preview position from temporary file.
     /// See ``savePreviewPosition`` for format and location.
-    static func loadPreviewPosition(in window: _WindowImplementation) {
+    static func loadPreviewPosition(in window: _WindowTarget) {
         guard let content = try? String(contentsOf: Self.previewPositionTempPath) else {
             appLogger.debug("Cannot load last preview position: I/O error")
             return

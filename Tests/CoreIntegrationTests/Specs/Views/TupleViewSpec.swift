@@ -48,37 +48,37 @@ class TupleViewSpec: ScarletCoreSpec {
                     Tested()
                 }
 
-                then("implementation is created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Row") {
-                                ViewImpl("Rectangle") {
-                                    ViewImpl("EmptyView", fill: .black, grow: 1.0)
+                then("target is created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Row") {
+                                ViewTarget("Rectangle") {
+                                    ViewTarget("EmptyView", fill: .black, grow: 1.0)
                                 }
 
-                                ViewImpl("Column") {
-                                    ViewImpl("Rectangle") {
-                                        ViewImpl("EmptyView", fill: .red, grow: 1.0)
+                                ViewTarget("Column") {
+                                    ViewTarget("Rectangle") {
+                                        ViewTarget("EmptyView", fill: .red, grow: 1.0)
                                     }
-                                    ViewImpl("Rectangle") {
-                                        ViewImpl("EmptyView", fill: .green, grow: 1.0)
+                                    ViewTarget("Rectangle") {
+                                        ViewTarget("EmptyView", fill: .green, grow: 1.0)
                                     }
-                                    ViewImpl("Rectangle") {
-                                        ViewImpl("EmptyView", fill: .blue, grow: 1.0)
-                                    }
-                                }
-
-                                ViewImpl("Column") {
-                                    ViewImpl("Rectangle") {
-                                        ViewImpl("EmptyView", fill: .orange, grow: 1.0)
-                                    }
-                                    ViewImpl("Rectangle") {
-                                        ViewImpl("EmptyView", fill: .yellow, grow: 1.0)
+                                    ViewTarget("Rectangle") {
+                                        ViewTarget("EmptyView", fill: .blue, grow: 1.0)
                                     }
                                 }
 
-                                ViewImpl("Rectangle") {
-                                    ViewImpl("EmptyView", fill: .black, grow: 1.0)
+                                ViewTarget("Column") {
+                                    ViewTarget("Rectangle") {
+                                        ViewTarget("EmptyView", fill: .orange, grow: 1.0)
+                                    }
+                                    ViewTarget("Rectangle") {
+                                        ViewTarget("EmptyView", fill: .yellow, grow: 1.0)
+                                    }
+                                }
+
+                                ViewTarget("Rectangle") {
+                                    ViewTarget("EmptyView", fill: .black, grow: 1.0)
                                 }
                             }
                         }

@@ -18,11 +18,11 @@ import ScarletCore
 import Foundation
 
 struct Text: StatelessLeafView {
-    @Attribute(\TextImpl.text)
+    @Attribute(\TextTarget.text)
     var text
 
     typealias Body = Never
-    typealias Implementation = TextImpl
+    typealias Target = TextTarget
 
     init(_ text: String) {
         self.text = text
@@ -37,7 +37,7 @@ enum TextDecoration {
     case uppercased
 }
 
-class TextImpl: ViewImpl {
+class TextTarget: ViewTarget {
     var text: String = ""
     var textColor = Color.black {
         didSet {
@@ -75,8 +75,8 @@ class TextImpl: ViewImpl {
         self.decorationsChanged = false
     }
 
-    override open func equals(to other: ViewImpl) -> Bool {
-        guard let other = other as? TextImpl else { return false }
+    override open func equals(to other: ViewTarget) -> Bool {
+        guard let other = other as? TextTarget else { return false }
         return self.text == other.text && self.textColor == other.textColor && self.decorations == other.decorations
     }
 

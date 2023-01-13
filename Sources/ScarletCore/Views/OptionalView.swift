@@ -20,7 +20,7 @@
 public enum OptionalView<Wrapped>: Element, View where Wrapped: View {
     public typealias Input = OptionalMakeInput<Self>
     public typealias Output = OptionalMakeOutput<Self, Wrapped>
-    public typealias Implementation = Never
+    public typealias Target = Never
 
     case some(wrapped: Wrapped)
     case none
@@ -34,8 +34,8 @@ public enum OptionalView<Wrapped>: Element, View where Wrapped: View {
         }
     }
 
-    public static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) -> OptionalElementNode<Self, Wrapped> {
-        return OptionalElementNode<Self, Wrapped>(making: element, in: parent, implementationPosition: implementationPosition, using: context)
+    public static func makeNode(of element: Self, in parent: (any ElementNode)?, targetPosition: Int, using context: Context) -> OptionalElementNode<Self, Wrapped> {
+        return OptionalElementNode<Self, Wrapped>(making: element, in: parent, targetPosition: targetPosition, using: context)
     }
 
     public static func make(_ element: Self, input: Input) -> Output {

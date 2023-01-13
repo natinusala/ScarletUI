@@ -55,14 +55,14 @@ class EnvironmentValueSpec: ScarletCoreSpec {
                     Tested(value: "hello", unused: "unused")
                 }
 
-                then("implementation is created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            TextImpl(text: "Environment value: default value")
+                then("target is created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            TextTarget(text: "Environment value: default value")
 
-                            ViewImpl("EnvironmentDisplay") {
-                                TextImpl(text: "Environment value: hello")
-                                TextImpl(text: "Immutable environment value: immutable")
+                            ViewTarget("EnvironmentDisplay") {
+                                TextTarget(text: "Environment value: hello")
+                                TextTarget(text: "Immutable environment value: immutable")
                             }
                         }
                     ))
@@ -75,14 +75,14 @@ class EnvironmentValueSpec: ScarletCoreSpec {
                     Tested(value: "world", unused: "unused")
                 }
 
-                then("implementation is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            TextImpl(text: "Environment value: default value")
+                then("target is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            TextTarget(text: "Environment value: default value")
 
-                            ViewImpl("EnvironmentDisplay") {
-                                TextImpl(text: "Environment value: world")
-                                TextImpl(text: "Immutable environment value: immutable")
+                            ViewTarget("EnvironmentDisplay") {
+                                TextTarget(text: "Environment value: world")
+                                TextTarget(text: "Immutable environment value: immutable")
                             }
                         }
                     ))
@@ -101,14 +101,14 @@ class EnvironmentValueSpec: ScarletCoreSpec {
                     Tested(value: "bar", unused: "unused")
                 }
 
-                then("implementation is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            TextImpl(text: "Environment value: default value")
+                then("target is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            TextTarget(text: "Environment value: default value")
 
-                            ViewImpl("EnvironmentDisplay") {
-                                TextImpl(text: "Environment value: bar")
-                                TextImpl(text: "Immutable environment value: immutable")
+                            ViewTarget("EnvironmentDisplay") {
+                                TextTarget(text: "Environment value: bar")
+                                TextTarget(text: "Immutable environment value: immutable")
                             }
                         }
                     ))
@@ -125,14 +125,14 @@ class EnvironmentValueSpec: ScarletCoreSpec {
                     Tested(value: "hello", unused: "unused")
                 }
 
-                then("implementation is unchanged") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            TextImpl(text: "Environment value: default value")
+                then("target is unchanged") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            TextTarget(text: "Environment value: default value")
 
-                            ViewImpl("EnvironmentDisplay") {
-                                TextImpl(text: "Environment value: hello")
-                                TextImpl(text: "Immutable environment value: immutable")
+                            ViewTarget("EnvironmentDisplay") {
+                                TextTarget(text: "Environment value: hello")
+                                TextTarget(text: "Immutable environment value: immutable")
                             }
                         }
                     ))
@@ -149,14 +149,14 @@ class EnvironmentValueSpec: ScarletCoreSpec {
                     Tested(value: "hello", unused: "used!!!")
                 }
 
-                then("implementation is unchanged") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            TextImpl(text: "Environment value: default value")
+                then("target is unchanged") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            TextTarget(text: "Environment value: default value")
 
-                            ViewImpl("EnvironmentDisplay") {
-                                TextImpl(text: "Environment value: hello")
-                                TextImpl(text: "Immutable environment value: immutable")
+                            ViewTarget("EnvironmentDisplay") {
+                                TextTarget(text: "Environment value: hello")
+                                TextTarget(text: "Immutable environment value: immutable")
                             }
                         }
                     ))

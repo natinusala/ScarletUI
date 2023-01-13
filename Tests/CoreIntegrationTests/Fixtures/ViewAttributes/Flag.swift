@@ -19,7 +19,7 @@ import ScarletCore
 extension View {
     func flag(_ flag: Flag) -> some View {
         return self.attributed(
-            AppendAttribute(\ViewImpl.attributes.flags, value: flag)
+            AppendAttribute(\ViewTarget.attributes.flags, value: flag)
         )
     }
 }

@@ -80,19 +80,19 @@ class EnvironmentSameValueSpec: ScarletCoreSpec {
                     Tested(firstEnv: 10, secondEnv: 20, thirdEnv: 10)
                 }
 
-                then("implementation is created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            TextImpl(text: "test=1")
+                then("target is created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            TextTarget(text: "test=1")
 
-                            ViewImpl("FirstView") {
-                                TextImpl(text: "test=10")
+                            ViewTarget("FirstView") {
+                                TextTarget(text: "test=10")
 
-                                ViewImpl("SecondView") {
-                                    TextImpl(text: "test=20")
+                                ViewTarget("SecondView") {
+                                    TextTarget(text: "test=20")
 
-                                    ViewImpl("ThirdView") {
-                                        TextImpl(text: "test=10")
+                                    ViewTarget("ThirdView") {
+                                        TextTarget(text: "test=10")
                                     }
                                 }
                             }
@@ -117,19 +117,19 @@ class EnvironmentSameValueSpec: ScarletCoreSpec {
                     expect(result.bodyCalled(of: ThirdView.self)).to(beFalse())
                 }
 
-                then("implementation is untouched") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            TextImpl(text: "test=1")
+                then("target is untouched") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            TextTarget(text: "test=1")
 
-                            ViewImpl("FirstView") {
-                                TextImpl(text: "test=10")
+                            ViewTarget("FirstView") {
+                                TextTarget(text: "test=10")
 
-                                ViewImpl("SecondView") {
-                                    TextImpl(text: "test=20")
+                                ViewTarget("SecondView") {
+                                    TextTarget(text: "test=20")
 
-                                    ViewImpl("ThirdView") {
-                                        TextImpl(text: "test=10")
+                                    ViewTarget("ThirdView") {
+                                        TextTarget(text: "test=10")
                                     }
                                 }
                             }
@@ -154,19 +154,19 @@ class EnvironmentSameValueSpec: ScarletCoreSpec {
                     expect(result.bodyCalled(of: ThirdView.self)).to(beFalse())
                 }
 
-                then("implementation is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            TextImpl(text: "test=1")
+                then("target is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            TextTarget(text: "test=1")
 
-                            ViewImpl("FirstView") {
-                                TextImpl(text: "test=20")
+                            ViewTarget("FirstView") {
+                                TextTarget(text: "test=20")
 
-                                ViewImpl("SecondView") {
-                                    TextImpl(text: "test=20")
+                                ViewTarget("SecondView") {
+                                    TextTarget(text: "test=20")
 
-                                    ViewImpl("ThirdView") {
-                                        TextImpl(text: "test=10")
+                                    ViewTarget("ThirdView") {
+                                        TextTarget(text: "test=10")
                                     }
                                 }
                             }
@@ -191,19 +191,19 @@ class EnvironmentSameValueSpec: ScarletCoreSpec {
                     expect(result.bodyCalled(of: ThirdView.self)).to(beFalse())
                 }
 
-                then("implementation is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            TextImpl(text: "test=1")
+                then("target is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            TextTarget(text: "test=1")
 
-                            ViewImpl("FirstView") {
-                                TextImpl(text: "test=20")
+                            ViewTarget("FirstView") {
+                                TextTarget(text: "test=20")
 
-                                ViewImpl("SecondView") {
-                                    TextImpl(text: "test=10")
+                                ViewTarget("SecondView") {
+                                    TextTarget(text: "test=10")
 
-                                    ViewImpl("ThirdView") {
-                                        TextImpl(text: "test=10")
+                                    ViewTarget("ThirdView") {
+                                        TextTarget(text: "test=10")
                                     }
                                 }
                             }
@@ -228,19 +228,19 @@ class EnvironmentSameValueSpec: ScarletCoreSpec {
                     expect(result.bodyCalled(of: ThirdView.self)).to(beFalse())
                 }
 
-                then("implementation is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            TextImpl(text: "test=1")
+                then("target is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            TextTarget(text: "test=1")
 
-                            ViewImpl("FirstView") {
-                                TextImpl(text: "test=20")
+                            ViewTarget("FirstView") {
+                                TextTarget(text: "test=20")
 
-                                ViewImpl("SecondView") {
-                                    TextImpl(text: "test=30")
+                                ViewTarget("SecondView") {
+                                    TextTarget(text: "test=30")
 
-                                    ViewImpl("ThirdView") {
-                                        TextImpl(text: "test=10")
+                                    ViewTarget("ThirdView") {
+                                        TextTarget(text: "test=10")
                                     }
                                 }
                             }

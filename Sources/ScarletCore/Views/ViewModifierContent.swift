@@ -16,13 +16,13 @@
 
 /// Placeholder for view modifiers content. Contains one edge: the actual content.
 public struct ViewModifierContent<Modifier>: View where Modifier: ViewModifier {
-    public typealias Implementation = Never
+    public typealias Target = Never
 
     public typealias Input = ViewModifierContentMakeInput<Self>
     public typealias Output = ViewModifierContentMakeOutput<Self>
 
-    public static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) -> ViewModifierContentElementNode<Self> {
-        return ViewModifierContentElementNode<Self>(making: element, in: parent, implementationPosition: implementationPosition, using: context)
+    public static func makeNode(of element: Self, in parent: (any ElementNode)?, targetPosition: Int, using context: Context) -> ViewModifierContentElementNode<Self> {
+        return ViewModifierContentElementNode<Self>(making: element, in: parent, targetPosition: targetPosition, using: context)
     }
 
     public static func make(_ element: Self, input: Input) -> Output {

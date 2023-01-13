@@ -16,12 +16,12 @@
 
 import Yoga
 
-/// Implementation for all scenes.
-open class _SceneImplementation: ImplementationNode, _LayoutImplementationNode, _GamepadButtonEventImplementationNode, _TagImplementationNode {
+/// Target for all scenes.
+open class _SceneTarget: TargetNode, _LayoutTargetNode, _GamepadButtonEventTargetNode, _TagTargetNode {
     public let displayName: String
 
     /// Children of this scene.
-    var children: [_ViewImplementation] = []
+    var children: [_ViewTarget] = []
 
     /// The scene Yoga node.
     public let ygNode: YGNodeRef
@@ -29,8 +29,8 @@ open class _SceneImplementation: ImplementationNode, _LayoutImplementationNode, 
     /// The computed layout of the scene.
     public var layout = Rect()
 
-    /// The parent app implementation.
-    weak var parent: _AppImplementation?
+    /// The parent app target.
+    weak var parent: _AppTarget?
 
     /// The gamepad state of the previous frame.
     var previousGamepadState = _GamepadState.neutral
@@ -40,16 +40,16 @@ open class _SceneImplementation: ImplementationNode, _LayoutImplementationNode, 
 
     public var tag: String?
 
-    public var layoutParent: _LayoutImplementationNode? {
-        return self.parent as? _LayoutImplementationNode
+    public var layoutParent: _LayoutTargetNode? {
+        return self.parent as? _LayoutTargetNode
     }
 
-    public var layoutChildren: [_LayoutImplementationNode] {
-        return self.children.map { $0 as _LayoutImplementationNode }
+    public var layoutChildren: [_LayoutTargetNode] {
+        return self.children.map { $0 as _LayoutTargetNode }
     }
 
-    public var tagChildren: [any _TagImplementationNode] {
-        return self.children.map { $0 as any _TagImplementationNode }
+    public var tagChildren: [any _TagTargetNode] {
+        return self.children.map { $0 as any _TagTargetNode }
     }
 
     /// The node axis.
@@ -209,9 +209,9 @@ open class _SceneImplementation: ImplementationNode, _LayoutImplementationNode, 
 
     }
 
-    open func insertChild(_ child: ImplementationNode, at position: Int) {
-        guard let child = child as? _ViewImplementation else {
-            fatalError("Cannot add \(type(of: child)) as child of '_SceneImplementation'")
+    open func insertChild(_ child: TargetNode, at position: Int) {
+        guard let child = child as? _ViewTarget else {
+            fatalError("Cannot add \(type(of: child)) as child of '_SceneTarget'")
         }
 
         YGNodeInsertChild(self.ygNode, child.ygNode, UInt32(position))
@@ -231,6 +231,6 @@ open class _SceneImplementation: ImplementationNode, _LayoutImplementationNode, 
 }
 
 public extension Scene {
-    /// Default implementation type for scenes.
-    typealias Implementation = _SceneImplementation
+    /// Default target type for scenes.
+    typealias Target = _SceneTarget
 }

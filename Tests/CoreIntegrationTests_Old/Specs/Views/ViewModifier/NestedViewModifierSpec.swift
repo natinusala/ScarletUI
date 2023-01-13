@@ -60,19 +60,19 @@ class NestedViewModifierSpec: ScarletCoreSpec {
                     )
                 }
 
-                then("implementation is created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Row") {
-                                TextImpl(text: "modified modifier")
+                then("target is created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Row") {
+                                TextTarget(text: "modified modifier")
 
-                                ViewImpl("Modified") {
-                                    TextImpl(text: "Color: yellow")
+                                ViewTarget("Modified") {
+                                    TextTarget(text: "Color: yellow")
 
-                                    ViewImpl("Row") {
-                                        TextImpl(text: "modified image")
+                                    ViewTarget("Row") {
+                                        TextTarget(text: "modified image")
 
-                                        ImageImpl(source: "modified-image.png")
+                                        ImageTarget(source: "modified-image.png")
                                     }
                                 }
                             }
@@ -98,19 +98,19 @@ class NestedViewModifierSpec: ScarletCoreSpec {
                     )
                 }
 
-                then("implementation is unchanged") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Row") {
-                                TextImpl(text: "modified modifier")
+                then("target is unchanged") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Row") {
+                                TextTarget(text: "modified modifier")
 
-                                ViewImpl("Modified") {
-                                    TextImpl(text: "Color: yellow")
+                                ViewTarget("Modified") {
+                                    TextTarget(text: "Color: yellow")
 
-                                    ViewImpl("Row") {
-                                        TextImpl(text: "modified image")
+                                    ViewTarget("Row") {
+                                        TextTarget(text: "modified image")
 
-                                        ImageImpl(source: "modified-image.png")
+                                        ImageTarget(source: "modified-image.png")
                                     }
                                 }
                             }
@@ -136,19 +136,19 @@ class NestedViewModifierSpec: ScarletCoreSpec {
                     )
                 }
 
-                then("implementation is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Row") {
-                                TextImpl(text: "modified modifier")
+                then("target is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Row") {
+                                TextTarget(text: "modified modifier")
 
-                                ViewImpl("Modified") {
-                                    TextImpl(text: "Color: blue")
+                                ViewTarget("Modified") {
+                                    TextTarget(text: "Color: blue")
 
-                                    ViewImpl("Row") {
-                                        TextImpl(text: "modified image")
+                                    ViewTarget("Row") {
+                                        TextTarget(text: "modified image")
 
-                                        ImageImpl(source: "modified-image.png")
+                                        ImageTarget(source: "modified-image.png")
                                     }
                                 }
                             }
@@ -186,19 +186,19 @@ class NestedViewModifierSpec: ScarletCoreSpec {
                     )
                 }
 
-                then("implementation is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Row") {
-                                TextImpl(text: "some other modified modifier")
+                then("target is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Row") {
+                                TextTarget(text: "some other modified modifier")
 
-                                ViewImpl("Modified") {
-                                    TextImpl(text: "Color: blue")
+                                ViewTarget("Modified") {
+                                    TextTarget(text: "Color: blue")
 
-                                    ViewImpl("Row") {
-                                        TextImpl(text: "modified image")
+                                    ViewTarget("Row") {
+                                        TextTarget(text: "modified image")
 
-                                        ImageImpl(source: "modified-image.png")
+                                        ImageTarget(source: "modified-image.png")
                                     }
                                 }
                             }
@@ -236,19 +236,19 @@ class NestedViewModifierSpec: ScarletCoreSpec {
                     )
                 }
 
-                then("implementation is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Row") {
-                                TextImpl(text: "some other modified modifier")
+                then("target is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Row") {
+                                TextTarget(text: "some other modified modifier")
 
-                                ViewImpl("Modified") {
-                                    TextImpl(text: "Color: blue")
+                                ViewTarget("Modified") {
+                                    TextTarget(text: "Color: blue")
 
-                                    ViewImpl("Row") {
-                                        TextImpl(text: "modified image")
+                                    ViewTarget("Row") {
+                                        TextTarget(text: "modified image")
 
-                                        ImageImpl(source: "modified-image.png")
+                                        ImageTarget(source: "modified-image.png")
                                     }
                                 }
                             }
@@ -286,19 +286,19 @@ class NestedViewModifierSpec: ScarletCoreSpec {
                     )
                 }
 
-                then("implementation is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Row") {
-                                TextImpl(text: "modified modifier")
+                then("target is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Row") {
+                                TextTarget(text: "modified modifier")
 
-                                ViewImpl("Modified") {
-                                    TextImpl(text: "Color: blue")
+                                ViewTarget("Modified") {
+                                    TextTarget(text: "Color: blue")
 
-                                    ViewImpl("Row") {
-                                        TextImpl(text: "modified image")
+                                    ViewTarget("Row") {
+                                        TextTarget(text: "modified image")
 
-                                        ImageImpl(source: "another-image.png")
+                                        ImageTarget(source: "another-image.png")
                                     }
                                 }
                             }
@@ -336,19 +336,19 @@ class NestedViewModifierSpec: ScarletCoreSpec {
                     )
                 }
 
-                then("implementation is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Row") {
-                                TextImpl(text: "modified modifier")
+                then("target is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Row") {
+                                TextTarget(text: "modified modifier")
 
-                                ViewImpl("Modified") {
-                                    TextImpl(text: "Color: blue")
+                                ViewTarget("Modified") {
+                                    TextTarget(text: "Color: blue")
 
-                                    ViewImpl("Row") {
-                                        TextImpl(text: "another modified image")
+                                    ViewTarget("Row") {
+                                        TextTarget(text: "another modified image")
 
-                                        ImageImpl(source: "another-image.png")
+                                        ImageTarget(source: "another-image.png")
                                     }
                                 }
                             }
@@ -386,19 +386,19 @@ class NestedViewModifierSpec: ScarletCoreSpec {
                     )
                 }
 
-                then("implementation is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Row") {
-                                TextImpl(text: "modified modifier")
+                then("target is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Row") {
+                                TextTarget(text: "modified modifier")
 
-                                ViewImpl("Modified") {
-                                    TextImpl(text: "Color: blue")
+                                ViewTarget("Modified") {
+                                    TextTarget(text: "Color: blue")
 
-                                    ViewImpl("Row") {
-                                        TextImpl(text: "another modified image")
+                                    ViewTarget("Row") {
+                                        TextTarget(text: "another modified image")
 
-                                        ImageImpl(source: "another-image.png")
+                                        ImageTarget(source: "another-image.png")
                                     }
                                 }
                             }

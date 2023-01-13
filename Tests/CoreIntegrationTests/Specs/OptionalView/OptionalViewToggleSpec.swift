@@ -36,10 +36,10 @@ class OptionalViewToggleSpec: ScarletCoreSpec {
                     Tested(flip: true)
                 }
 
-                then("implementation is created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            TextImpl(text: "Flipped!")
+                then("target is created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            TextTarget(text: "Flipped!")
                         }
                     ))
                 }
@@ -50,9 +50,9 @@ class OptionalViewToggleSpec: ScarletCoreSpec {
                     Tested(flip: false)
                 }
 
-                then("implementation is created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested")
+                then("target is created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested")
                     ))
                 }
             }
@@ -63,9 +63,9 @@ class OptionalViewToggleSpec: ScarletCoreSpec {
                     Tested(flip: false)
                 }
 
-                then("implementation is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested")
+                then("target is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested")
                     ))
                 }
             }
@@ -76,10 +76,10 @@ class OptionalViewToggleSpec: ScarletCoreSpec {
                     Tested(flip: true)
                 }
 
-                then("implementation is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            TextImpl(text: "Flipped!")
+                then("target is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            TextTarget(text: "Flipped!")
                         }
                     ))
                 }

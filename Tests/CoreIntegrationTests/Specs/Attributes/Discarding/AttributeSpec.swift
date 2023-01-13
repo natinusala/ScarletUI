@@ -36,9 +36,9 @@ class AttributeSpec: ScarletCoreSpec {
                 }
 
                 then("the attribute is applied") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Rectangle", id: "some-rectangle").anyChildren()
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Rectangle", id: "some-rectangle").anyChildren()
                         }
                     ))
                 }
@@ -50,15 +50,15 @@ class AttributeSpec: ScarletCoreSpec {
                     Tested(rectangleId: "some-other-rectangle")
                 }
 
-                then("implementation is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Rectangle", id: "some-other-rectangle").anyChildren()
+                then("target is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Rectangle", id: "some-other-rectangle").anyChildren()
                         }
                     ))
                 }
 
-                then("value is set on implementation side") { result in
+                then("value is set on target side") { result in
                     expect(result.testedChildren[0].attributeChanged(\.id)).to(beTrue())
                 }
             }
@@ -69,15 +69,15 @@ class AttributeSpec: ScarletCoreSpec {
                     Tested(rectangleId: "some-rectangle")
                 }
 
-                then("implementation is kept the same") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Rectangle", id: "some-rectangle").anyChildren()
+                then("target is kept the same") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Rectangle", id: "some-rectangle").anyChildren()
                         }
                     ))
                 }
 
-                then("value is not set on implementation side") { result in
+                then("value is not set on target side") { result in
                     expect(result.testedChildren[0].attributeChanged(\.id)).to(beFalse())
                 }
             }

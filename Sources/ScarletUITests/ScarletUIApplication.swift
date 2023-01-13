@@ -21,7 +21,7 @@ import Needler
 import ScarletUI
 import ScarletCore
 
-// TODO: rename Implementation to Target - make TargetContext - make performancemode - make StateObject / EnvironmentObject - test libretro runner
+// TODO: rename Element to Model or Composable ? think about ElementNode - make TargetContext - make performancemode - make StateObject / EnvironmentObject - test libretro runner
 
 /// Default timeout when awaiting for elements and interactions of the app, in seconds.
 public let defaultTimeout = 5
@@ -29,7 +29,7 @@ public let defaultTimeout = 5
 /// A tested ScarletUI application runner. Can be bound to an app, a scene or a view.
 @MainActor
 public class ScarletUIApplication<Tested: Element> where Tested.Node: StatefulElementNode {
-    let app: _AppImplementation
+    let app: _AppTarget
     let root: Tested.Node
 
     /// Creates a new runner for a view.
@@ -48,20 +48,20 @@ public class ScarletUIApplication<Tested: Element> where Tested.Node: StatefulEl
             DefaultPlatformResolver.resetInjection()
         }
 
-        let app = _AppImplementation(displayName: "ScarletUITests")
-        let window = _WindowImplementation(displayName: "ScarletUITests Window")
+        let app = _AppTarget(displayName: "ScarletUITests")
+        let window = _WindowTarget(displayName: "ScarletUITests Window")
         window.title = "ScarletUITests Window"
         window.mode = windowMode
 
-        let root = Tested.makeNode(of: view, in: nil, implementationPosition: 0, using: .root())
+        let root = Tested.makeNode(of: view, in: nil, targetPosition: 0, using: .root())
 
-        guard let implementation = root.implementation as? _ViewImplementation else {
-            fatalError("No implementation found for tested node or got implementation of the wrong type")
+        guard let target = root.target as? _ViewTarget else {
+            fatalError("No target found for tested node or got target of the wrong type")
         }
 
-        implementation.grow = 1.0 // make the view take the whole window
+        target.grow = 1.0 // make the view take the whole window
 
-        window.insertChild(implementation, at: 0)
+        window.insertChild(target, at: 0)
         app.insertChild(window, at: 0)
 
         self.app = app
@@ -72,8 +72,8 @@ public class ScarletUIApplication<Tested: Element> where Tested.Node: StatefulEl
     /// Otherwise raises an assertion error to fail the test.
     /// Timeout is in seconds.
     @MainActor
-    public func view(tagged tag: String, timeout: Int = defaultTimeout) async -> _ViewImplementation? {
-        var view: _ViewImplementation? = nil
+    public func view(tagged tag: String, timeout: Int = defaultTimeout) async -> _ViewTarget? {
+        var view: _ViewTarget? = nil
 
         await self.runUntil(timeout: timeout) {
             if let foundView = findView(tagged: tag, in: self.app) {
@@ -132,7 +132,7 @@ public class ScarletUIApplication<Tested: Element> where Tested.Node: StatefulEl
     /// Updates the tested element with a new version.
     @MainActor
     public func update(with tested: Tested) async {
-        _ = self.root.update(with: tested, implementationPosition: 0, using: root.context)
+        _ = self.root.update(with: tested, targetPosition: 0, using: root.context)
 
         // Run the app for a few frames to update layout
         await self.run(for: 5)

@@ -60,7 +60,7 @@ struct Expectations {
 /// that everything went as expected.
 struct UpdateResult {
     let bodyCalls: [ObjectIdentifier: Int]
-    let implementation: ViewImpl?
+    let target: ViewTarget?
 
     /// Only works after an update (is always empty after a creation).
     func bodyCalled<T>(of: T.Type) -> Bool {
@@ -73,50 +73,50 @@ struct UpdateResult {
     }
 
     /// Children of the `Tested` struct.
-    var testedChildren: [ViewImpl] {
-        guard let implementation else {
-            XCTFail("Expected an implementation with children but got no implementation")
+    var testedChildren: [ViewTarget] {
+        guard let target else {
+            XCTFail("Expected an target with children but got no target")
             return []
         }
 
-        return implementation.children
+        return target.children
     }
 
     /// Traverses the view tree and returns the first view with the given type.
-    func first<NewType: ViewImpl>(_ type: NewType.Type) -> NewType {
-        guard let implementation else {
-            fatalError("Expected an implementation with children but got no implementation")
+    func first<NewType: ViewTarget>(_ type: NewType.Type) -> NewType {
+        guard let target else {
+            fatalError("Expected an target with children but got no target")
         }
 
-        return implementation.findFirst(type)
+        return target.findFirst(type)
     }
 
     /// Traverses the view tree and returns the first view with the given display name.
-    func first(_ displayName: String) -> ViewImpl {
-        guard let implementation else {
-            fatalError("Expected an implementation with children but got no implementation")
+    func first(_ displayName: String) -> ViewTarget {
+        guard let target else {
+            fatalError("Expected an target with children but got no target")
         }
 
-        return implementation.findFirst(displayName)
+        return target.findFirst(displayName)
     }
 
     /// Traverses the view tree recursively and returns all views of the given type.
     /// Will fail the test if it did not find exactly ``expectedCount`` views.
-    func all<NewType: ViewImpl>(_ type: NewType.Type, expectedCount: Int) -> [NewType] {
-        guard let implementation else {
-            fatalError("Expected an implementation with children but got no implementation")
+    func all<NewType: ViewTarget>(_ type: NewType.Type, expectedCount: Int) -> [NewType] {
+        guard let target else {
+            fatalError("Expected an target with children but got no target")
         }
 
-        return implementation.findAll(type, expectedCount: expectedCount)
+        return target.findAll(type, expectedCount: expectedCount)
     }
 
     /// Returns a flat list of all views of the result.
-    func allViews() -> [ViewImpl] {
-        guard let implementation else {
-            fatalError("Expected an implementation but got no implementation")
+    func allViews() -> [ViewTarget] {
+        guard let target else {
+            fatalError("Expected an target but got no target")
         }
 
-        return [implementation] + implementation.allChildren()
+        return [target] + target.allChildren()
     }
 }
 
@@ -148,7 +148,7 @@ extension TestView {
             let (initialView, updates) = initial()
 
             return InitialSteps(
-                initialView: Self.makeNode(of: initialView, in: nil, implementationPosition: 0, using: .root()),
+                initialView: Self.makeNode(of: initialView, in: nil, targetPosition: 0, using: .root()),
                 updateActions: updates
             )
         }
@@ -166,7 +166,7 @@ extension TestView {
         var installed = self
         node.install(element: &installed, using: context)
 
-        _ = node.update(with: installed, implementationPosition: 0, using: context)
+        _ = node.update(with: installed, targetPosition: 0, using: context)
     }
 }
 

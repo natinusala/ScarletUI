@@ -19,9 +19,9 @@ import XCTest
 
 import ScarletUI
 
-func findView(tagged tag: String, in node: _TagImplementationNode) -> _ViewImplementation? {
-    func inner(node: _TagImplementationNode) -> _ViewImplementation? {
-        if let view = node as? _ViewImplementation, view.tag == tag {
+func findView(tagged tag: String, in node: _TagTargetNode) -> _ViewTarget? {
+    func inner(node: _TagTargetNode) -> _ViewTarget? {
+        if let view = node as? _ViewTarget, view.tag == tag {
             return view
         } else {
             for child in node.tagChildren {

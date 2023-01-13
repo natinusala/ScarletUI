@@ -16,7 +16,7 @@
 
 private struct AxisEnvironmentKey: AttributeEnvironmentKey {
     static let defaultValue = Axis.default
-    static let target = \_LayoutImplementationNode.axis
+    static let target = \_LayoutTargetNode.axis
 }
 
 public extension EnvironmentValues {

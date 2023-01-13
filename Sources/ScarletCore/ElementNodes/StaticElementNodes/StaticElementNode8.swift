@@ -38,8 +38,8 @@ public class StaticElementNode8<Value, E0, E1, E2, E3, E4, E5, E6, E7>: ElementN
     typealias Output = StaticMakeOutput8<Value, E0, E1, E2, E3, E4, E5, E6, E7>
 
     public weak var parent: (any ElementNode)?
-    public var implementation: Value.Implementation?
-    public var implementationCount = 0
+    public var target: Value.Target?
+    public var targetCount = 0
     public var attributes = AttributesStash()
 
     var e0: E0.Node?
@@ -51,181 +51,181 @@ public class StaticElementNode8<Value, E0, E1, E2, E3, E4, E5, E6, E7>: ElementN
     var e6: E6.Node?
     var e7: E7.Node?
 
-    init(making element: Value, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) {
+    init(making element: Value, in parent: (any ElementNode)?, targetPosition: Int, using context: Context) {
         self.parent = parent
 
-        // Create the implementation node
-        self.implementation = Value.makeImplementation(of: element)
+        // Create the target node
+        self.target = Value.makeTarget(of: element)
 
         // Start a first update without comparing (since we update the value with itself)
-        let result = self.update(with: element, implementationPosition: implementationPosition, using: context, initial: true)
+        let result = self.update(with: element, targetPosition: targetPosition, using: context, initial: true)
 
-        // Attach the implementation once everything is ready
-        self.insertImplementationInParent(position: result.implementationPosition)
+        // Attach the target once everything is ready
+        self.insertTargetInParent(position: result.targetPosition)
     }
 
-    public func updateEdges(from output: Value.Output?, at implementationPosition: Int, using context: Context) -> UpdateResult {
+    public func updateEdges(from output: Value.Output?, at targetPosition: Int, using context: Context) -> UpdateResult {
         // Create edges if updating for the first time
         // Otherwise update them
 
-        var totalImplementationCount = 0
+        var totalTargetCount = 0
 
         // Edge 0
-        let e0ImplementationPosition = implementationPosition + totalImplementationCount
-        let e0ImplementationCount: Int
+        let e0TargetPosition = targetPosition + totalTargetCount
+        let e0TargetCount: Int
         if let e0 = self.e0 {
-            e0ImplementationCount = e0.compareAndUpdate(
+            e0TargetCount = e0.compareAndUpdate(
                 with: output?.e0,
-                implementationPosition: e0ImplementationPosition,
+                targetPosition: e0TargetPosition,
                 using: context
-            ).implementationCount
+            ).targetCount
         } else if let output {
-            let edge = E0.makeNode(of: output.e0, in: self, implementationPosition: e0ImplementationPosition, using: context)
+            let edge = E0.makeNode(of: output.e0, in: self, targetPosition: e0TargetPosition, using: context)
             self.e0 = edge
-            e0ImplementationCount = edge.implementationCount
+            e0TargetCount = edge.targetCount
         } else {
             nilOutputFatalError(for: E0.self)
         }
-        totalImplementationCount += e0ImplementationCount
+        totalTargetCount += e0TargetCount
 
-        implementationLogger.trace("\(E0.self) returned implementation count \(e0ImplementationCount) - Total: \(totalImplementationCount)")
+        targetLogger.trace("\(E0.self) returned target count \(e0TargetCount) - Total: \(totalTargetCount)")
         // Edge 1
-        let e1ImplementationPosition = implementationPosition + totalImplementationCount
-        let e1ImplementationCount: Int
+        let e1TargetPosition = targetPosition + totalTargetCount
+        let e1TargetCount: Int
         if let e1 = self.e1 {
-            e1ImplementationCount = e1.compareAndUpdate(
+            e1TargetCount = e1.compareAndUpdate(
                 with: output?.e1,
-                implementationPosition: e1ImplementationPosition,
+                targetPosition: e1TargetPosition,
                 using: context
-            ).implementationCount
+            ).targetCount
         } else if let output {
-            let edge = E1.makeNode(of: output.e1, in: self, implementationPosition: e1ImplementationPosition, using: context)
+            let edge = E1.makeNode(of: output.e1, in: self, targetPosition: e1TargetPosition, using: context)
             self.e1 = edge
-            e1ImplementationCount = edge.implementationCount
+            e1TargetCount = edge.targetCount
         } else {
             nilOutputFatalError(for: E1.self)
         }
-        totalImplementationCount += e1ImplementationCount
+        totalTargetCount += e1TargetCount
 
-        implementationLogger.trace("\(E1.self) returned implementation count \(e1ImplementationCount) - Total: \(totalImplementationCount)")
+        targetLogger.trace("\(E1.self) returned target count \(e1TargetCount) - Total: \(totalTargetCount)")
         // Edge 2
-        let e2ImplementationPosition = implementationPosition + totalImplementationCount
-        let e2ImplementationCount: Int
+        let e2TargetPosition = targetPosition + totalTargetCount
+        let e2TargetCount: Int
         if let e2 = self.e2 {
-            e2ImplementationCount = e2.compareAndUpdate(
+            e2TargetCount = e2.compareAndUpdate(
                 with: output?.e2,
-                implementationPosition: e2ImplementationPosition,
+                targetPosition: e2TargetPosition,
                 using: context
-            ).implementationCount
+            ).targetCount
         } else if let output {
-            let edge = E2.makeNode(of: output.e2, in: self, implementationPosition: e2ImplementationPosition, using: context)
+            let edge = E2.makeNode(of: output.e2, in: self, targetPosition: e2TargetPosition, using: context)
             self.e2 = edge
-            e2ImplementationCount = edge.implementationCount
+            e2TargetCount = edge.targetCount
         } else {
             nilOutputFatalError(for: E2.self)
         }
-        totalImplementationCount += e2ImplementationCount
+        totalTargetCount += e2TargetCount
 
-        implementationLogger.trace("\(E2.self) returned implementation count \(e2ImplementationCount) - Total: \(totalImplementationCount)")
+        targetLogger.trace("\(E2.self) returned target count \(e2TargetCount) - Total: \(totalTargetCount)")
         // Edge 3
-        let e3ImplementationPosition = implementationPosition + totalImplementationCount
-        let e3ImplementationCount: Int
+        let e3TargetPosition = targetPosition + totalTargetCount
+        let e3TargetCount: Int
         if let e3 = self.e3 {
-            e3ImplementationCount = e3.compareAndUpdate(
+            e3TargetCount = e3.compareAndUpdate(
                 with: output?.e3,
-                implementationPosition: e3ImplementationPosition,
+                targetPosition: e3TargetPosition,
                 using: context
-            ).implementationCount
+            ).targetCount
         } else if let output {
-            let edge = E3.makeNode(of: output.e3, in: self, implementationPosition: e3ImplementationPosition, using: context)
+            let edge = E3.makeNode(of: output.e3, in: self, targetPosition: e3TargetPosition, using: context)
             self.e3 = edge
-            e3ImplementationCount = edge.implementationCount
+            e3TargetCount = edge.targetCount
         } else {
             nilOutputFatalError(for: E3.self)
         }
-        totalImplementationCount += e3ImplementationCount
+        totalTargetCount += e3TargetCount
 
-        implementationLogger.trace("\(E3.self) returned implementation count \(e3ImplementationCount) - Total: \(totalImplementationCount)")
+        targetLogger.trace("\(E3.self) returned target count \(e3TargetCount) - Total: \(totalTargetCount)")
         // Edge 4
-        let e4ImplementationPosition = implementationPosition + totalImplementationCount
-        let e4ImplementationCount: Int
+        let e4TargetPosition = targetPosition + totalTargetCount
+        let e4TargetCount: Int
         if let e4 = self.e4 {
-            e4ImplementationCount = e4.compareAndUpdate(
+            e4TargetCount = e4.compareAndUpdate(
                 with: output?.e4,
-                implementationPosition: e4ImplementationPosition,
+                targetPosition: e4TargetPosition,
                 using: context
-            ).implementationCount
+            ).targetCount
         } else if let output {
-            let edge = E4.makeNode(of: output.e4, in: self, implementationPosition: e4ImplementationPosition, using: context)
+            let edge = E4.makeNode(of: output.e4, in: self, targetPosition: e4TargetPosition, using: context)
             self.e4 = edge
-            e4ImplementationCount = edge.implementationCount
+            e4TargetCount = edge.targetCount
         } else {
             nilOutputFatalError(for: E4.self)
         }
-        totalImplementationCount += e4ImplementationCount
+        totalTargetCount += e4TargetCount
 
-        implementationLogger.trace("\(E4.self) returned implementation count \(e4ImplementationCount) - Total: \(totalImplementationCount)")
+        targetLogger.trace("\(E4.self) returned target count \(e4TargetCount) - Total: \(totalTargetCount)")
         // Edge 5
-        let e5ImplementationPosition = implementationPosition + totalImplementationCount
-        let e5ImplementationCount: Int
+        let e5TargetPosition = targetPosition + totalTargetCount
+        let e5TargetCount: Int
         if let e5 = self.e5 {
-            e5ImplementationCount = e5.compareAndUpdate(
+            e5TargetCount = e5.compareAndUpdate(
                 with: output?.e5,
-                implementationPosition: e5ImplementationPosition,
+                targetPosition: e5TargetPosition,
                 using: context
-            ).implementationCount
+            ).targetCount
         } else if let output {
-            let edge = E5.makeNode(of: output.e5, in: self, implementationPosition: e5ImplementationPosition, using: context)
+            let edge = E5.makeNode(of: output.e5, in: self, targetPosition: e5TargetPosition, using: context)
             self.e5 = edge
-            e5ImplementationCount = edge.implementationCount
+            e5TargetCount = edge.targetCount
         } else {
             nilOutputFatalError(for: E5.self)
         }
-        totalImplementationCount += e5ImplementationCount
+        totalTargetCount += e5TargetCount
 
-        implementationLogger.trace("\(E5.self) returned implementation count \(e5ImplementationCount) - Total: \(totalImplementationCount)")
+        targetLogger.trace("\(E5.self) returned target count \(e5TargetCount) - Total: \(totalTargetCount)")
         // Edge 6
-        let e6ImplementationPosition = implementationPosition + totalImplementationCount
-        let e6ImplementationCount: Int
+        let e6TargetPosition = targetPosition + totalTargetCount
+        let e6TargetCount: Int
         if let e6 = self.e6 {
-            e6ImplementationCount = e6.compareAndUpdate(
+            e6TargetCount = e6.compareAndUpdate(
                 with: output?.e6,
-                implementationPosition: e6ImplementationPosition,
+                targetPosition: e6TargetPosition,
                 using: context
-            ).implementationCount
+            ).targetCount
         } else if let output {
-            let edge = E6.makeNode(of: output.e6, in: self, implementationPosition: e6ImplementationPosition, using: context)
+            let edge = E6.makeNode(of: output.e6, in: self, targetPosition: e6TargetPosition, using: context)
             self.e6 = edge
-            e6ImplementationCount = edge.implementationCount
+            e6TargetCount = edge.targetCount
         } else {
             nilOutputFatalError(for: E6.self)
         }
-        totalImplementationCount += e6ImplementationCount
+        totalTargetCount += e6TargetCount
 
-        implementationLogger.trace("\(E6.self) returned implementation count \(e6ImplementationCount) - Total: \(totalImplementationCount)")
+        targetLogger.trace("\(E6.self) returned target count \(e6TargetCount) - Total: \(totalTargetCount)")
         // Edge 7
-        let e7ImplementationPosition = implementationPosition + totalImplementationCount
-        let e7ImplementationCount: Int
+        let e7TargetPosition = targetPosition + totalTargetCount
+        let e7TargetCount: Int
         if let e7 = self.e7 {
-            e7ImplementationCount = e7.compareAndUpdate(
+            e7TargetCount = e7.compareAndUpdate(
                 with: output?.e7,
-                implementationPosition: e7ImplementationPosition,
+                targetPosition: e7TargetPosition,
                 using: context
-            ).implementationCount
+            ).targetCount
         } else if let output {
-            let edge = E7.makeNode(of: output.e7, in: self, implementationPosition: e7ImplementationPosition, using: context)
+            let edge = E7.makeNode(of: output.e7, in: self, targetPosition: e7TargetPosition, using: context)
             self.e7 = edge
-            e7ImplementationCount = edge.implementationCount
+            e7TargetCount = edge.targetCount
         } else {
             nilOutputFatalError(for: E7.self)
         }
-        totalImplementationCount += e7ImplementationCount
+        totalTargetCount += e7TargetCount
 
-        implementationLogger.trace("\(E7.self) returned implementation count \(e7ImplementationCount) - Total: \(totalImplementationCount)")
+        targetLogger.trace("\(E7.self) returned target count \(e7TargetCount) - Total: \(totalTargetCount)")
 
         return UpdateResult(
-            implementationPosition: implementationPosition,
-            implementationCount: totalImplementationCount
+            targetPosition: targetPosition,
+            targetCount: totalTargetCount
         )
     }
 

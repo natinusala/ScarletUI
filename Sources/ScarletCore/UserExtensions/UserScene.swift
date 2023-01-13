@@ -18,8 +18,8 @@ import Needler
 
 public extension Scene where Input == UserMakeInput<Self>, Output == UserMakeOutput<Self, Body> {
     /// Default implementation of `makeNode()` for user scenes with a body: make a node with one edge, the body.
-    static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) -> UserElementNode<Self, Body> {
-        return .init(making: element, in: parent, implementationPosition: implementationPosition, using: context)
+    static func makeNode(of element: Self, in parent: (any ElementNode)?, targetPosition: Int, using context: Context) -> UserElementNode<Self, Body> {
+        return .init(making: element, in: parent, targetPosition: targetPosition, using: context)
     }
 
     /// Default implementation of `make()` for user scenes with a body: make the body edge.
@@ -31,8 +31,8 @@ public extension Scene where Input == UserMakeInput<Self>, Output == UserMakeOut
 }
 
 public extension LeafScene where Input == UserMakeInput<Self>, Output == UserMakeOutput<Self, Content> {
-    static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) -> LeafSceneElementNode<Self, Content> {
-        return .init(making: element, in: parent, implementationPosition: implementationPosition, using: context)
+    static func makeNode(of element: Self, in parent: (any ElementNode)?, targetPosition: Int, using context: Context) -> LeafSceneElementNode<Self, Content> {
+        return .init(making: element, in: parent, targetPosition: targetPosition, using: context)
     }
 
     static func make(_ element: Self, input: UserMakeInput<Self>) -> UserMakeOutput<Self, Content> {
@@ -43,8 +43,8 @@ public extension LeafScene where Input == UserMakeInput<Self>, Output == UserMak
 }
 
 public extension StatelessLeafScene where Input == UserMakeInput<Self>, Output == UserMakeOutput<Self, Content> {
-    static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) -> StatelessLeafSceneElementNode<Self, Content> {
-        return .init(making: element, in: parent, implementationPosition: implementationPosition, using: context)
+    static func makeNode(of element: Self, in parent: (any ElementNode)?, targetPosition: Int, using context: Context) -> StatelessLeafSceneElementNode<Self, Content> {
+        return .init(making: element, in: parent, targetPosition: targetPosition, using: context)
     }
 
     static func make(_ element: Self, input: UserMakeInput<Self>) -> UserMakeOutput<Self, Content> {

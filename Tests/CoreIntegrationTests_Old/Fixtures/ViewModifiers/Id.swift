@@ -17,7 +17,7 @@
 import ScarletCore
 
 struct IdModifier: AttributeViewModifier {
-    @Attribute(\ViewImpl.attributes.id)
+    @Attribute(\ViewTarget.attributes.id)
     var id
 
     init(_ id: String?) {

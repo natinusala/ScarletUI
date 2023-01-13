@@ -39,9 +39,9 @@ class AttributesDifferentSpec: ScarletCoreSpec {
                 }
 
                 then("attributes are applied") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Rectangle", id: "some-rectangle", fill: .orange, grow: 0.75).anyChildren()
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Rectangle", id: "some-rectangle", fill: .orange, grow: 0.75).anyChildren()
                         }
                     ))
                 }
@@ -54,14 +54,14 @@ class AttributesDifferentSpec: ScarletCoreSpec {
                 }
 
                 then("attributes are unchanged") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Rectangle", id: "some-rectangle", fill: .orange, grow: 0.75).anyChildren()
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Rectangle", id: "some-rectangle", fill: .orange, grow: 0.75).anyChildren()
                         }
                     ))
                 }
 
-                then("values are not set on the implementation") { result in
+                then("values are not set on the target") { result in
                     expect(result.testedChildren[0].attributeChanged(\.id)).to(beFalse())
                     expect(result.testedChildren[0].attributeChanged(\.fill)).to(beFalse())
                     expect(result.testedChildren[0].attributeChanged(\.grow)).to(beFalse())
@@ -75,14 +75,14 @@ class AttributesDifferentSpec: ScarletCoreSpec {
                 }
 
                 then("attributes are changed") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Rectangle", id: "some-rectangle", fill: .blue, grow: 0.75).anyChildren()
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Rectangle", id: "some-rectangle", fill: .blue, grow: 0.75).anyChildren()
                         }
                     ))
                 }
 
-                then("values are set on the implementation") { result in
+                then("values are set on the target") { result in
                     expect(result.testedChildren[0].attributeChanged(\.id)).to(beFalse())
                     expect(result.testedChildren[0].attributeChanged(\.fill)).to(beTrue())
                     expect(result.testedChildren[0].attributeChanged(\.grow)).to(beFalse())
@@ -96,14 +96,14 @@ class AttributesDifferentSpec: ScarletCoreSpec {
                 }
 
                 then("attributes are changed") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Rectangle", id: "some-rectangle", fill: .orange, grow: 1).anyChildren()
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Rectangle", id: "some-rectangle", fill: .orange, grow: 1).anyChildren()
                         }
                     ))
                 }
 
-                then("values are set on the implementation") { result in
+                then("values are set on the target") { result in
                     expect(result.testedChildren[0].attributeChanged(\.id)).to(beFalse())
                     expect(result.testedChildren[0].attributeChanged(\.fill)).to(beFalse())
                     expect(result.testedChildren[0].attributeChanged(\.grow)).to(beTrue())
@@ -117,14 +117,14 @@ class AttributesDifferentSpec: ScarletCoreSpec {
                 }
 
                 then("attributes are changed") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Rectangle", id: "some-rectangle", fill: .blue, grow: 1).anyChildren()
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Rectangle", id: "some-rectangle", fill: .blue, grow: 1).anyChildren()
                         }
                     ))
                 }
 
-                then("values are set on the implementation") { result in
+                then("values are set on the target") { result in
                     expect(result.testedChildren[0].attributeChanged(\.id)).to(beFalse())
                     expect(result.testedChildren[0].attributeChanged(\.fill)).to(beTrue())
                     expect(result.testedChildren[0].attributeChanged(\.grow)).to(beTrue())

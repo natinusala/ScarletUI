@@ -44,14 +44,14 @@ class ViewModifierBodySpec: ScarletCoreSpec {
                     Tested(text: "some text", color: "orange")
                 }
 
-                then("implementation is created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Row") {
-                                TextImpl(text: "some text")
+                then("target is created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Row") {
+                                TextTarget(text: "some text")
 
-                                ViewImpl("Modified") {
-                                    TextImpl(text: "orange")
+                                ViewTarget("Modified") {
+                                    TextTarget(text: "orange")
                                 }
                             }
                         }
@@ -65,14 +65,14 @@ class ViewModifierBodySpec: ScarletCoreSpec {
                     Tested(text: "some other text", color: "orange")
                 }
 
-                then("implementation is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Row") {
-                                TextImpl(text: "some other text")
+                then("target is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Row") {
+                                TextTarget(text: "some other text")
 
-                                ViewImpl("Modified") {
-                                    TextImpl(text: "orange")
+                                ViewTarget("Modified") {
+                                    TextTarget(text: "orange")
                                 }
                             }
                         }
@@ -98,14 +98,14 @@ class ViewModifierBodySpec: ScarletCoreSpec {
                     Tested(text: "some text", color: "blue")
                 }
 
-                then("implementation is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Row") {
-                                TextImpl(text: "some text")
+                then("target is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Row") {
+                                TextTarget(text: "some text")
 
-                                ViewImpl("Modified") {
-                                    TextImpl(text: "blue")
+                                ViewTarget("Modified") {
+                                    TextTarget(text: "blue")
                                 }
                             }
                         }
@@ -131,14 +131,14 @@ class ViewModifierBodySpec: ScarletCoreSpec {
                     Tested(text: "some other text", color: "blue")
                 }
 
-                then("implementation is unchanged") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Row") {
-                                TextImpl(text: "some other text")
+                then("target is unchanged") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Row") {
+                                TextTarget(text: "some other text")
 
-                                ViewImpl("Modified") {
-                                    TextImpl(text: "blue")
+                                ViewTarget("Modified") {
+                                    TextTarget(text: "blue")
                                 }
                             }
                         }
@@ -164,14 +164,14 @@ class ViewModifierBodySpec: ScarletCoreSpec {
                     Tested(text: "some text", color: "orange")
                 }
 
-                then("implementation is unchanged") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Row") {
-                                TextImpl(text: "some text")
+                then("target is unchanged") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Row") {
+                                TextTarget(text: "some text")
 
-                                ViewImpl("Modified") {
-                                    TextImpl(text: "orange")
+                                ViewTarget("Modified") {
+                                    TextTarget(text: "orange")
                                 }
                             }
                         }

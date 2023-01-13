@@ -14,11 +14,11 @@
    limitations under the License.
 */
 
-/// Implementation node for elements with tags.
-public protocol _TagImplementationNode: ImplementationNode, AnyObject {
+/// Target node for elements with tags.
+public protocol _TagTargetNode: TargetNode, AnyObject {
     /// Tag used to find the node in the tree.
     var tag: String? { get set }
 
-    /// Node children as `_TagImplementationNode`.
-    var tagChildren: [_TagImplementationNode] { get }
+    /// Node children as `_TagTargetNode`.
+    var tagChildren: [_TagTargetNode] { get }
 }

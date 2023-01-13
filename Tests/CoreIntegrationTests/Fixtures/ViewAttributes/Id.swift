@@ -19,7 +19,7 @@ import ScarletCore
 extension View {
     func id(_ id: String?) -> some View {
         return self.attributed(
-            Attribute(\ViewImpl.attributes.id, value: id)
+            Attribute(\ViewTarget.attributes.id, value: id)
         )
     }
 }

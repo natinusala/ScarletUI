@@ -44,10 +44,10 @@ class TopLevelNestedConditionalViewSpecSpec: ScarletCoreSpec {
                     Tested(flip1: false, flip2: true, flip3: false)
                 }
 
-                then("implementation is created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            TextImpl(text: "Disabled")
+                then("target is created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            TextTarget(text: "Disabled")
                         }
                     ))
                 }
@@ -59,10 +59,10 @@ class TopLevelNestedConditionalViewSpecSpec: ScarletCoreSpec {
                     Tested(flip1: false, flip2: false, flip3: false)
                 }
 
-                then("implementation is created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ImageImpl(source: "error-icon")
+                then("target is created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ImageTarget(source: "error-icon")
                         }
                     ))
                 }

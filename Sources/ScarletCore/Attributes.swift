@@ -24,10 +24,10 @@ public extension Optional {
     /// Returns an unset attribute value if the optional is `nil`.
     ///
     /// Useful to have a "nil == unset" semantic on attributes that are
-    /// not optional on the implementation side.
+    /// not optional on the target side.
     ///
     /// An attribute "unset" through this property will not be set on the
-    /// implementation node (the current value will stay). On a proper optional
+    /// target node (the current value will stay). On a proper optional
     /// attribute however, the value would be overwritten to `nil` and this property
     /// wouldn't need to be used.
     var unsetIfNil: AttributeStorage<Wrapped> {
@@ -40,7 +40,7 @@ public extension Optional {
     }
 }
 
-/// Sets an attribute value to any implementation.
+/// Sets an attribute value to any target.
 ///
 /// By default, attributes of an element are collected using runtime metadata on the element itself
 /// to gather all `@Attribute` property wrappers.
@@ -48,42 +48,42 @@ public extension Optional {
 ///
 /// Using a specialized element like `ViewAttribute` without property wrappers allows collecting
 /// attributes in a type-safe and faster way.
-public protocol AttributeSetter<Implementation>: CustomDebugStringConvertible {
-    /// The implementation node type this attribute is bound to.
-    associatedtype Implementation
+public protocol AttributeSetter<Target>: CustomDebugStringConvertible {
+    /// The target node type this attribute is bound to.
+    associatedtype Target
 
     /// Type of the attribute value.
     associatedtype Value
 
     /// The attribute target.
     ///
-    /// Represents the attribute key path on the implementation node side,
+    /// Represents the attribute key path on the target node side,
     /// used to identify an attribute. This is not the same as identifying an attribute
     /// *setter*, which is done with structural identity through the `identifiedBy` parameter.
     ///
     /// The value type is not necessarily ``Value`` as the
-    /// attribute on the implementation side can be wrapped.
+    /// attribute on the target side can be wrapped.
     var target: AttributeTarget { get }
 
-    /// Set the value to the given implementation.
+    /// Set the value to the given target.
     /// The identifier represents the unique element holding the attribute,
     /// using structural identity.
-    func set(on implementation: Implementation, identifiedBy: AnyHashable)
+    func set(on target: Target, identifiedBy: AnyHashable)
 
     /// Adds the attribute to the given stash.
     func add(to stash: inout AttributesStash, source: AnyHashable, key: AttributeTarget)
 }
 
-/// Contains the value to give an attribute of an eventual implementation node.
+/// Contains the value to give an attribute of an eventual target node.
 ///
-/// The key path defines where the value is written to (the target attribute) as well
-/// as the target implementation type.
+/// The key path defines where the value is written to (the target property) as well
+/// as the target "target node" type.
 ///
 /// The value will only be written if it's different than the current value, which makes it
 /// possible to use with `didSet` observers.
 @propertyWrapper
-public struct Attribute<Implementation, Value>: AttributeSetter, IsPodable {
-    public typealias AttributeKeyPath = ReferenceWritableKeyPath<Implementation, Value>
+public struct Attribute<Target, Value>: AttributeSetter, IsPodable {
+    public typealias AttributeKeyPath = ReferenceWritableKeyPath<Target, Value>
 
     public var wrappedValue: Value {
         get {
@@ -102,7 +102,7 @@ public struct Attribute<Implementation, Value>: AttributeSetter, IsPodable {
     /// The attribute value.
     @Podable var actualValue: AttributeStorage<Value> = .unset
 
-    /// The path to the attribute in the implementation class.
+    /// The path to the attribute in the target class.
     let keyPath: AttributeKeyPath
 
     public let target: AttributeTarget
@@ -128,14 +128,14 @@ public struct Attribute<Implementation, Value>: AttributeSetter, IsPodable {
         self.init(keyPath, value: .set(value: value))
     }
 
-    public func set(on implementation: Implementation, identifiedBy: AnyHashable) {
+    public func set(on target: Target, identifiedBy: AnyHashable) {
         // If the attribute is unset, get it over with immediately
         guard case let .set(value) = self.actualValue else {
             return
         }
 
-        if !elementEquals(lhs: implementation[keyPath: self.keyPath], rhs: value) {
-            implementation[keyPath: self.keyPath] = value
+        if !elementEquals(lhs: target[keyPath: self.keyPath], rhs: value) {
+            target[keyPath: self.keyPath] = value
         }
     }
 
@@ -153,7 +153,7 @@ public struct Attribute<Implementation, Value>: AttributeSetter, IsPodable {
     }
 }
 
-/// Used by implementation nodes to store an attribute with multiple values. Used with ``AppendAttribute``.
+/// Used by target nodes to store an attribute with multiple values. Used with ``AppendAttribute``.
 /// Values order is not guaranteed or meaningful since they are stored in a dictionary, keys being the originating attribute setter element nodes.
 /// A convenience `Equatable` conformance is given if `Value` conforms to `Hashable` to efficiently compare the values in an unordered manner.
 public struct AttributeList<Value>: Sequence, CustomStringConvertible, CustomDebugStringConvertible {
@@ -190,18 +190,18 @@ extension AttributeList: Equatable where Value: Equatable, Value: Hashable {
     }
 }
 
-/// Contains the value to append to an attribute of an eventual implementation node.
+/// Contains the value to append to an attribute of an eventual target node.
 ///
 /// Must be used if multiple values are desired for an attribute with ``AttributeList``.
 ///
-/// The key path defines where the value is written to (the target attribute) as well
-/// as the target implementation type.
+/// The key path defines where the value is written to (the target property) as well
+/// as the target "target node" type.
 ///
 /// The value will only be written if it's different than the current value, which makes it
 /// possible to use with `didSet` observers.
 @propertyWrapper
-public struct AppendAttribute<Implementation: ImplementationNode, Value>: AttributeSetter, IsPodable {
-    public typealias AttributeKeyPath = ReferenceWritableKeyPath<Implementation, AttributeList<Value>>
+public struct AppendAttribute<Target: TargetNode, Value>: AttributeSetter, IsPodable {
+    public typealias AttributeKeyPath = ReferenceWritableKeyPath<Target, AttributeList<Value>>
 
     public var wrappedValue: Value {
         get {
@@ -220,7 +220,7 @@ public struct AppendAttribute<Implementation: ImplementationNode, Value>: Attrib
     /// The attribute value.
     @Podable var actualValue: AttributeStorage<Value> = .unset
 
-    /// The path to the attribute in the implementation class.
+    /// The path to the attribute in the target class.
     let keyPath: AttributeKeyPath
 
     public let target: AttributeTarget
@@ -246,27 +246,27 @@ public struct AppendAttribute<Implementation: ImplementationNode, Value>: Attrib
         self.init(keyPath, value: .set(value: value))
     }
 
-    public func set(on implementation: Implementation, identifiedBy key: AnyHashable) {
+    public func set(on target: Target, identifiedBy key: AnyHashable) {
         // If the attribute is unset, get it over with immediately
         // Return `true` to have it removed from the stash
         guard case let .set(value) = self.actualValue else {
             return
         }
 
-        let list = implementation[keyPath: self.keyPath]
+        let list = target[keyPath: self.keyPath]
 
         // If a value exists in the node, compare it before setting
         // Otherwise just set it
         if let existingValue = list.values[key] {
             if !elementEquals(lhs: existingValue, rhs: value) {
-                attributesLogger.trace("Accumulating attribute identified by \(key) on \(implementation.displayName): value is different")
-                implementation[keyPath: self.keyPath].values[key] = value
+                attributesLogger.trace("Accumulating attribute identified by \(key) on \(target.displayName): value is different")
+                target[keyPath: self.keyPath].values[key] = value
             } else {
-                attributesLogger.trace("Skipping accumulating attribute identified by \(key) on \(implementation.displayName): value hasn't changed")
+                attributesLogger.trace("Skipping accumulating attribute identified by \(key) on \(target.displayName): value hasn't changed")
             }
         } else {
-            attributesLogger.trace("Accumulating attribute identified by \(key) on \(implementation.displayName): attribute is set for the first time")
-            implementation[keyPath: self.keyPath].values[key] = value
+            attributesLogger.trace("Accumulating attribute identified by \(key) on \(target.displayName): attribute is set for the first time")
+            target[keyPath: self.keyPath].values[key] = value
         }
     }
 
@@ -286,21 +286,21 @@ public struct AppendAttribute<Implementation: ImplementationNode, Value>: Attrib
 }
 
 extension AttributeSetter {
-    var implementationType: Any.Type {
-        return Implementation.self
+    var targetType: Any.Type {
+        return Target.self
     }
 
-    func anySet(on implementation: Any, identifiedBy id: AnyHashable) {
-        guard let implementation = implementation as? Implementation else {
-            fatalError("Tried to set an attribute on the wrong implementation type: got \(type(of: implementation)), expected \(Implementation.self)")
+    func anySet(on target: Any, identifiedBy id: AnyHashable) {
+        guard let target = target as? Target else {
+            fatalError("Tried to set an attribute on the wrong target type: got \(type(of: target)), expected \(Target.self)")
         }
 
-        self.set(on: implementation, identifiedBy: id)
+        self.set(on: target, identifiedBy: id)
     }
 
-    /// Returns `true` if this attribute can be applied to the given implementation type.
-    func applies(to implementation: any ImplementationNode) -> Bool {
-        if let _ = implementation as? Implementation {
+    /// Returns `true` if this attribute can be applied to the given target type.
+    func applies(to target: any TargetNode) -> Bool {
+        if let _ = target as? Target {
             return true
         }
 
@@ -313,7 +313,7 @@ extension AttributeSetter {
 }
 
 /// Represents the target key path of an attribute inside the
-/// target element implementation class.
+/// target element target class.
 public typealias AttributeTarget = AnyKeyPath
 
 /// Key for one entry of the "accumulating" attributes dictionary.
@@ -387,16 +387,16 @@ public struct AttributesStash {
 }
 
 extension ElementNodeContext {
-    /// Creates a copy of the context popping the attributes corresponding to the given implementation type,
+    /// Creates a copy of the context popping the attributes corresponding to the given target type,
     /// returning them along the context copy.
-    func poppingAttributes<Implementation: ImplementationNode>(
-        for implementation: Implementation?
+    func poppingAttributes<Target: TargetNode>(
+        for target: Target?
     ) -> (attributes: [any AttributeSetter], accumulating: [(AnyHashable, any AttributeSetter)], context: Self) {
-        attributesLogger.trace("Searching for attributes to apply on \(Implementation.self)")
+        attributesLogger.trace("Searching for attributes to apply on \(Target.self)")
 
         // If we request attributes for `Never` just return empty attributes and the untouched context since
-        // we can never have attributes for a `Never` implementation type
-        if Implementation.self == Never.self {
+        // we can never have attributes for a `Never` target type
+        if Target.self == Never.self {
             return (
                 attributes: [],
                 accumulating: [],
@@ -411,23 +411,23 @@ extension ElementNodeContext {
         var remainingAttributes = AttributesStash()
 
         // Attributes
-        for (target, attribute) in self.attributes.attributes {
-            if implementation.map({ attribute.applies(to: $0) }) ?? false {
+        for (attributeTarget, attribute) in self.attributes.attributes {
+            if target.map({ attribute.applies(to: $0) }) ?? false {
                 attributesLogger.trace("Selected attribute for applying")
                 attributes.append(attribute)
             } else {
-                attributesLogger.trace("Selected attribute for the edges (\(attribute.implementationType) isn't applyable on \(Implementation.self))")
-                remainingAttributes.attributes[target] = attribute
+                attributesLogger.trace("Selected attribute for the edges (\(attribute.targetType) isn't applyable on \(Target.self))")
+                remainingAttributes.attributes[attributeTarget] = attribute
             }
         }
 
         // Accumulating attributes
         for (key, attribute) in self.attributes.accumulatingAttributes {
-            if implementation.map({ attribute.applies(to: $0) }) ?? false {
+            if target.map({ attribute.applies(to: $0) }) ?? false {
                 attributesLogger.trace("Selected accumulating attribute for applying")
                 accumulatingAttributes.append((key.source, attribute))
             } else {
-                attributesLogger.trace("Selected accumulating attribute for the edges (\(attribute.implementationType) isn't applyable on \(Implementation.self))")
+                attributesLogger.trace("Selected accumulating attribute for the edges (\(attribute.targetType) isn't applyable on \(Target.self))")
                 remainingAttributes.accumulatingAttributes[key] = attribute
             }
         }

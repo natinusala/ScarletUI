@@ -46,18 +46,18 @@ class OptionalViewContentUpdateSpec: ScarletCoreSpec {
                     Tested(hasImageRow: true, imageUrl: "http://website.com/picture.png")
                 }
 
-                then("implementation is created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Column") {
-                                ViewImpl("Row") {
-                                    ImageImpl(source: "http://website.com/picture.png")
+                then("target is created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Column") {
+                                ViewTarget("Row") {
+                                    ImageTarget(source: "http://website.com/picture.png")
                                 }
 
-                                ViewImpl("Row") {
-                                    TextImpl(text: "Text 1")
-                                    TextImpl(text: "Text 2")
-                                    TextImpl(text: "Text 3")
+                                ViewTarget("Row") {
+                                    TextTarget(text: "Text 1")
+                                    TextTarget(text: "Text 2")
+                                    TextTarget(text: "Text 3")
                                 }
                             }
                         }
@@ -71,18 +71,18 @@ class OptionalViewContentUpdateSpec: ScarletCoreSpec {
                     Tested(hasImageRow: true, imageUrl: "http://website.com/picture2.png")
                 }
 
-                then("implementation is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Column") {
-                                ViewImpl("Row") {
-                                    ImageImpl(source: "http://website.com/picture2.png")
+                then("target is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Column") {
+                                ViewTarget("Row") {
+                                    ImageTarget(source: "http://website.com/picture2.png")
                                 }
 
-                                ViewImpl("Row") {
-                                    TextImpl(text: "Text 1")
-                                    TextImpl(text: "Text 2")
-                                    TextImpl(text: "Text 3")
+                                ViewTarget("Row") {
+                                    TextTarget(text: "Text 1")
+                                    TextTarget(text: "Text 2")
+                                    TextTarget(text: "Text 3")
                                 }
                             }
                         }

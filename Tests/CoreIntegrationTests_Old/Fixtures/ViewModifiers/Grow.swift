@@ -17,7 +17,7 @@
 import ScarletCore
 
 struct GrowModifier: AttributeViewModifier {
-    @Attribute(\ViewImpl.attributes.grow)
+    @Attribute(\ViewTarget.attributes.grow)
     var grow
 
     init(_ grow: Float?) {

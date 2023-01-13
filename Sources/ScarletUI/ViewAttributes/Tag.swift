@@ -19,7 +19,7 @@ public extension View {
     /// Doesn't affect identity.
     func tag(_ tag: String?) -> some View {
         return self.attributed(
-            Attribute(\_TagImplementationNode.tag, value: tag)
+            Attribute(\_TagTargetNode.tag, value: tag)
         )
     }
 }

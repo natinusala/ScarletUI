@@ -50,11 +50,11 @@ class EnvironmentAttributeAlreadySetSpec: ScarletCoreSpec {
                     Tested(overrideColor: false, overriddenColor: .yellow)
                 }
 
-                then("implementation is created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("ColoredContent") {
-                                TextImpl(text: "Content text", textColor: .orange)
+                then("target is created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("ColoredContent") {
+                                TextTarget(text: "Content text", textColor: .orange)
                             }
                         }
                     ))
@@ -67,18 +67,18 @@ class EnvironmentAttributeAlreadySetSpec: ScarletCoreSpec {
                     Tested(overrideColor: false, overriddenColor: .blue)
                 }
 
-                then("implementation is untouched") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("ColoredContent") {
-                                TextImpl(text: "Content text", textColor: .orange)
+                then("target is untouched") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("ColoredContent") {
+                                TextTarget(text: "Content text", textColor: .orange)
                             }
                         }
                     ))
                 }
 
-                then("value is not set on implementation side") { result in
-                    expect(result.first(TextImpl.self).textColorChanged).to(beFalse())
+                then("value is not set on target side") { result in
+                    expect(result.first(TextTarget.self).textColorChanged).to(beFalse())
                 }
             }
 
@@ -87,11 +87,11 @@ class EnvironmentAttributeAlreadySetSpec: ScarletCoreSpec {
                     Tested(overrideColor: true, overriddenColor: .yellow)
                 }
 
-                then("implementation is created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("ColoredContent") {
-                                TextImpl(text: "Content text", textColor: .white)
+                then("target is created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("ColoredContent") {
+                                TextTarget(text: "Content text", textColor: .white)
                             }
                         }
                     ))
@@ -104,18 +104,18 @@ class EnvironmentAttributeAlreadySetSpec: ScarletCoreSpec {
                     Tested(overrideColor: true, overriddenColor: .blue)
                 }
 
-                then("implementation is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("ColoredContent") {
-                                TextImpl(text: "Content text", textColor: .white)
+                then("target is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("ColoredContent") {
+                                TextTarget(text: "Content text", textColor: .white)
                             }
                         }
                     ))
                 }
 
-                then("value is not set on implementation side") { result in
-                    expect(result.first(TextImpl.self).textColorChanged).to(beFalse())
+                then("value is not set on target side") { result in
+                    expect(result.first(TextTarget.self).textColorChanged).to(beFalse())
                 }
             }
 
@@ -125,18 +125,18 @@ class EnvironmentAttributeAlreadySetSpec: ScarletCoreSpec {
                     Tested(overrideColor: true, overriddenColor: .yellow)
                 }
 
-                then("implementation is untouched") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("ColoredContent") {
-                                TextImpl(text: "Content text", textColor: .white)
+                then("target is untouched") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("ColoredContent") {
+                                TextTarget(text: "Content text", textColor: .white)
                             }
                         }
                     ))
                 }
 
-                then("value is not set on implementation side") { result in
-                    expect(result.first(TextImpl.self).textColorChanged).to(beFalse())
+                then("value is not set on target side") { result in
+                    expect(result.first(TextTarget.self).textColorChanged).to(beFalse())
                 }
             }
 
@@ -146,18 +146,18 @@ class EnvironmentAttributeAlreadySetSpec: ScarletCoreSpec {
                     Tested(overrideColor: false, overriddenColor: .blue)
                 }
 
-                then("implementation is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("ColoredContent") {
-                                TextImpl(text: "Content text", textColor: .orange)
+                then("target is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("ColoredContent") {
+                                TextTarget(text: "Content text", textColor: .orange)
                             }
                         }
                     ))
                 }
 
-                then("value is set on implementation side") { result in
-                    expect(result.first(TextImpl.self).textColorChanged).to(beTrue())
+                then("value is set on target side") { result in
+                    expect(result.first(TextTarget.self).textColorChanged).to(beTrue())
                 }
             }
 
@@ -167,18 +167,18 @@ class EnvironmentAttributeAlreadySetSpec: ScarletCoreSpec {
                     Tested(overrideColor: true, overriddenColor: .blue)
                 }
 
-                then("implementation is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("ColoredContent") {
-                                TextImpl(text: "Content text", textColor: .white)
+                then("target is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("ColoredContent") {
+                                TextTarget(text: "Content text", textColor: .white)
                             }
                         }
                     ))
                 }
 
-                then("value is set on implementation side") { result in
-                    expect(result.first(TextImpl.self).textColorChanged).to(beTrue())
+                then("value is set on target side") { result in
+                    expect(result.first(TextTarget.self).textColorChanged).to(beTrue())
                 }
             }
         }

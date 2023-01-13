@@ -19,12 +19,12 @@ import Foundation
 /// A desktop window.
 /// Views are arranged in a column by default.
 public struct Window<Content>: StatelessLeafScene where Content: View {
-    public typealias Implementation = _WindowImplementation
+    public typealias Target = _WindowTarget
 
-    @Attribute(\_WindowImplementation.title)
+    @Attribute(\_WindowTarget.title)
     var title
 
-    @Attribute(\_WindowImplementation.mode)
+    @Attribute(\_WindowTarget.mode)
     var mode
 
     public let content: Content
@@ -41,7 +41,7 @@ public struct Window<Content>: StatelessLeafScene where Content: View {
     }
 }
 
-public class _WindowImplementation: _SceneImplementation {
+public class _WindowTarget: _SceneTarget {
     /// The window title.
     public var title = ""
 

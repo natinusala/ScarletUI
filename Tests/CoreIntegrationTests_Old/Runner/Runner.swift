@@ -62,7 +62,7 @@ class ScarletSpecRunner<Spec: ScarletSpec>: QuickSpec {
         // Make the result object and run the expectations closure
         let result = UpdateResult(
             bodyCalls: self.bodyAccessor.bodyCalls,
-            implementation: self.node.implementation as? ViewImpl
+            target: self.node.target as? ViewTarget
         )
 
         expectation.closure(result)

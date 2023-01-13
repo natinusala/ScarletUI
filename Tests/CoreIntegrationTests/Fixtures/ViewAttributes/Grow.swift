@@ -19,7 +19,7 @@ import ScarletCore
 extension View {
     func grow(_ grow: Float?) -> some View {
         return self.attributed(
-            Attribute(\ViewImpl.attributes.grow, value: grow)
+            Attribute(\ViewTarget.attributes.grow, value: grow)
         )
     }
 }

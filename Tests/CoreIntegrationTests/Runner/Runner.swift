@@ -80,7 +80,7 @@ class ScarletCoreSpecRunner<Spec: ScarletCoreSpec>: QuickSpec {
         // Make the result object and run the expectations closure
         let result = UpdateResult(
             bodyCalls: self.bodyAccessor.bodyCalls,
-            implementation: self.node.implementation as? ViewImpl
+            target: self.node.target as? ViewTarget
         )
 
         expectation.closure(result)
@@ -90,15 +90,15 @@ class ScarletCoreSpecRunner<Spec: ScarletCoreSpec>: QuickSpec {
         // Rebuild the node from scratch to start each test case from a clean state
         self.node = node
 
-        // Reset dependencies and implementation flags - do it after building the node to reset call counts
+        // Reset dependencies and target flags - do it after building the node to reset call counts
         self.bodyAccessor = BodyAccessorMock(wrapping: DefaultBodyAccessor())
         DefaultBodyAccessor.shared = self.bodyAccessor
 
-        guard let implementation = self.node.implementation as? ViewImpl else {
-            fatalError("Cannot reset implementation, got '\(type(of: self.node.implementation))' instead of the expected 'ViewImpl'")
+        guard let target = self.node.target as? ViewTarget else {
+            fatalError("Cannot reset target, got '\(type(of: self.node.target))' instead of the expected 'ViewTarget'")
         }
 
-        implementation.reset()
+        target.reset()
     }
 }
 

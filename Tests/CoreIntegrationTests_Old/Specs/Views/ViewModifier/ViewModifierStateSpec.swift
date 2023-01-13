@@ -33,13 +33,13 @@ class ViewModifierStateSpec: ScarletCoreSpec {
                     Tested()
                 }
 
-                then("implementation is created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Row") {
-                                TextImpl(text: "Count: 0")
+                then("target is created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Row") {
+                                TextTarget(text: "Count: 0")
 
-                                TextImpl(text: "Hello World")
+                                TextTarget(text: "Hello World")
                             }
                         }
                     ))
@@ -53,13 +53,13 @@ class ViewModifierStateSpec: ScarletCoreSpec {
                     signal(Signal.increment)
                 }
 
-                then("implementation is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Row") {
-                                TextImpl(text: "Count: 1")
+                then("target is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Row") {
+                                TextTarget(text: "Count: 1")
 
-                                TextImpl(text: "Hello World")
+                                TextTarget(text: "Hello World")
                             }
                         }
                     ))

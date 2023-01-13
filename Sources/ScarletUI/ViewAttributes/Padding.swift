@@ -18,12 +18,12 @@ public extension View {
     /// Sets the view padding, aka. the space between this view and its children.
     /// Note: percentage always uses parent's width, even for top and bottom edges.
     func padding(_ padding: LayoutValue) -> some View {
-        return self.attributed(Attribute(\_ViewImplementation.padding, value: EdgesLayoutValues(top: padding, right: padding, bottom: padding, left: padding)))
+        return self.attributed(Attribute(\_ViewTarget.padding, value: EdgesLayoutValues(top: padding, right: padding, bottom: padding, left: padding)))
     }
 
     /// Sets the view padding, aka. the space between this view and its children.
     /// Note: percentage always uses parent's width, even for top and bottom edges.
     func padding(top: LayoutValue, right: LayoutValue, bottom: LayoutValue, left: LayoutValue) -> some View {
-        return self.attributed(Attribute(\_ViewImplementation.padding, value: EdgesLayoutValues(top: top, right: right, bottom: bottom, left: left)))
+        return self.attributed(Attribute(\_ViewTarget.padding, value: EdgesLayoutValues(top: top, right: right, bottom: bottom, left: left)))
     }
 }

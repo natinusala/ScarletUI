@@ -25,27 +25,27 @@ public struct ViewModifierContentMakeOutput<Value>: ElementOutput where Value: V
 /// Element node for view modifier content placeholder. Does not perform equality check on itself.
 public class ViewModifierContentElementNode<Value>: ElementNode where Value: View, Value.Input == ViewModifierContentMakeInput<Value>, Value.Output == ViewModifierContentMakeOutput<Value> {
     public weak var parent: (any ElementNode)?
-    public var implementation: Value.Implementation?
-    public var implementationCount = 0
+    public var target: Value.Target?
+    public var targetCount = 0
     public var attributes = AttributesStash()
 
     /// Must be type-erased since the type is dynamic from the context.
     var edge: (any ElementNode)?
 
-    init(making element: Value, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) {
+    init(making element: Value, in parent: (any ElementNode)?, targetPosition: Int, using context: Context) {
         self.parent = parent
 
-        // Create the implementation node
-        self.implementation = Value.makeImplementation(of: element)
+        // Create the target node
+        self.target = Value.makeTarget(of: element)
 
         // Start a first update without comparing (since we update the value with itself)
-        let result = self.update(with: element, implementationPosition: implementationPosition, using: context, initial: true)
+        let result = self.update(with: element, targetPosition: targetPosition, using: context, initial: true)
 
-        // Attach the implementation once everything is ready
-        self.insertImplementationInParent(position: result.implementationPosition)
+        // Attach the target once everything is ready
+        self.insertTargetInParent(position: result.targetPosition)
     }
 
-    public func updateEdges(from output: Value.Output?, at implementationPosition: Int, using context: Context) -> UpdateResult {
+    public func updateEdges(from output: Value.Output?, at targetPosition: Int, using context: Context) -> UpdateResult {
         // Pop the context from the stack and use that to update the edge
         let (vmcContext, context) = context.poppingVmcContext()
 
@@ -54,13 +54,13 @@ public class ViewModifierContentElementNode<Value>: ElementNode where Value: Vie
         }
 
         if let edge = self.edge {
-            return edge.compareAndUpdateAny(with: vmcContext.content, implementationPosition: implementationPosition, using: context)
+            return edge.compareAndUpdateAny(with: vmcContext.content, targetPosition: targetPosition, using: context)
         } else if let content = vmcContext.content {
-            let edge = content.makeAnyNode(in: self, implementationPosition: implementationPosition, using: context)
+            let edge = content.makeAnyNode(in: self, targetPosition: targetPosition, using: context)
             self.edge = edge
             return UpdateResult(
-                implementationPosition: implementationPosition,
-                implementationCount: edge.implementationCount
+                targetPosition: targetPosition,
+                targetCount: edge.targetCount
             )
         } else {
             fatalError("Cannot create type-erased ViewModifierContent edge: content is `nil` inside the context")

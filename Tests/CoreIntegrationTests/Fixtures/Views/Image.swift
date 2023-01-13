@@ -18,11 +18,11 @@ import ScarletCore
 import Foundation
 
 struct Image: StatelessLeafView {
-    @Attribute(\ImageImpl.source)
+    @Attribute(\ImageTarget.source)
     var source
 
     typealias Body = Never
-    typealias Implementation = ImageImpl
+    typealias Target = ImageTarget
 
     init(source: String) {
         self.source = source
@@ -35,7 +35,7 @@ enum Filter {
     case stereoscopic
 }
 
-class ImageImpl: ViewImpl {
+class ImageTarget: ViewTarget {
     var source: String = ""
     var filters = AttributeList<Filter>() {
         didSet {
@@ -64,8 +64,8 @@ class ImageImpl: ViewImpl {
         self.filtersChanged = false
     }
 
-    override open func equals(to other: ViewImpl) -> Bool {
-        guard let other = other as? ImageImpl else { return false }
+    override open func equals(to other: ViewTarget) -> Bool {
+        guard let other = other as? ImageTarget else { return false }
         return self.source == other.source && self.filters == other.filters
     }
 

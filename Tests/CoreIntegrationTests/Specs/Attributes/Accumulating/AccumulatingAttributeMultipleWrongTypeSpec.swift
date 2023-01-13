@@ -19,7 +19,7 @@ import Nimble
 @testable import ScarletCore
 
 class AccumulatingAttributeMultipleWrongTypeSpec: ScarletCoreSpec {
-    static let describing = "a view with multiple accumulating attributes applied of on the wrong implementation type"
+    static let describing = "a view with multiple accumulating attributes applied of on the wrong target type"
 
     struct Avatar: View {
         let user: String
@@ -45,11 +45,11 @@ class AccumulatingAttributeMultipleWrongTypeSpec: ScarletCoreSpec {
                     Tested(filter1: .sepia, filter2: .blackAndWhite)
                 }
 
-                then("implementation is created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Avatar") {
-                                ImageImpl(source: "avatar://me", filters: [.sepia, .blackAndWhite])
+                then("target is created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Avatar") {
+                                ImageTarget(source: "avatar://me", filters: [.sepia, .blackAndWhite])
                             }
                         }
                     ))
@@ -62,18 +62,18 @@ class AccumulatingAttributeMultipleWrongTypeSpec: ScarletCoreSpec {
                     Tested(filter1: .sepia, filter2: .blackAndWhite)
                 }
 
-                then("implementation is untouched") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Avatar") {
-                                ImageImpl(source: "avatar://me", filters: [.sepia, .blackAndWhite])
+                then("target is untouched") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Avatar") {
+                                ImageTarget(source: "avatar://me", filters: [.sepia, .blackAndWhite])
                             }
                         }
                     ))
                 }
 
-                then("the attribute is not set on the implementation side") { result in
-                    expect(result.first(ImageImpl.self).filtersChanged).to(beFalse())
+                then("the attribute is not set on the target side") { result in
+                    expect(result.first(ImageTarget.self).filtersChanged).to(beFalse())
                 }
             }
 
@@ -83,18 +83,18 @@ class AccumulatingAttributeMultipleWrongTypeSpec: ScarletCoreSpec {
                     Tested(filter1: .stereoscopic, filter2: .blackAndWhite)
                 }
 
-                then("implementation is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Avatar") {
-                                ImageImpl(source: "avatar://me", filters: [.stereoscopic, .blackAndWhite])
+                then("target is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Avatar") {
+                                ImageTarget(source: "avatar://me", filters: [.stereoscopic, .blackAndWhite])
                             }
                         }
                     ))
                 }
 
-                then("the attribute is set on the implementation side") { result in
-                    expect(result.first(ImageImpl.self).filtersChanged).to(beTrue())
+                then("the attribute is set on the target side") { result in
+                    expect(result.first(ImageTarget.self).filtersChanged).to(beTrue())
                 }
             }
 
@@ -104,18 +104,18 @@ class AccumulatingAttributeMultipleWrongTypeSpec: ScarletCoreSpec {
                     Tested(filter1: .sepia, filter2: .stereoscopic)
                 }
 
-                then("implementation is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Avatar") {
-                                ImageImpl(source: "avatar://me", filters: [.sepia, .stereoscopic])
+                then("target is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Avatar") {
+                                ImageTarget(source: "avatar://me", filters: [.sepia, .stereoscopic])
                             }
                         }
                     ))
                 }
 
-                then("the attribute is set on the implementation side") { result in
-                    expect(result.first(ImageImpl.self).filtersChanged).to(beTrue())
+                then("the attribute is set on the target side") { result in
+                    expect(result.first(ImageTarget.self).filtersChanged).to(beTrue())
                 }
             }
 
@@ -125,18 +125,18 @@ class AccumulatingAttributeMultipleWrongTypeSpec: ScarletCoreSpec {
                     Tested(filter1: .blackAndWhite, filter2: .sepia)
                 }
 
-                then("implementation is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Avatar") {
-                                ImageImpl(source: "avatar://me", filters: [.blackAndWhite, .sepia])
+                then("target is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Avatar") {
+                                ImageTarget(source: "avatar://me", filters: [.blackAndWhite, .sepia])
                             }
                         }
                     ))
                 }
 
-                then("the attribute is set on the implementation side") { result in
-                    expect(result.first(ImageImpl.self).filtersChanged).to(beTrue())
+                then("the attribute is set on the target side") { result in
+                    expect(result.first(ImageTarget.self).filtersChanged).to(beTrue())
                 }
             }
 
@@ -146,18 +146,18 @@ class AccumulatingAttributeMultipleWrongTypeSpec: ScarletCoreSpec {
                     Tested(filter1: .stereoscopic, filter2: .sepia)
                 }
 
-                then("implementation is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Avatar") {
-                                ImageImpl(source: "avatar://me", filters: [.stereoscopic, .sepia])
+                then("target is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Avatar") {
+                                ImageTarget(source: "avatar://me", filters: [.stereoscopic, .sepia])
                             }
                         }
                     ))
                 }
 
-                then("the attribute is set on the implementation side") { result in
-                    expect(result.first(ImageImpl.self).filtersChanged).to(beTrue())
+                then("the attribute is set on the target side") { result in
+                    expect(result.first(ImageTarget.self).filtersChanged).to(beTrue())
                 }
             }
         }

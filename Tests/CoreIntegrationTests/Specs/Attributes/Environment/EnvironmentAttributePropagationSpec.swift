@@ -79,31 +79,31 @@ class EnvironmentAttributePropagationSpec: ScarletCoreSpec {
                     Tested(textColor: .orange, grow: 1.0)
                 }
 
-                then("the implementation tree is created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("MainContent", grow: 1.0) {
-                                ViewImpl("Column") {
-                                    ViewImpl("Header") {
-                                        ViewImpl("Row") {
-                                            TextImpl(text: "Main Title", textColor: .orange)
+                then("the target tree is created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("MainContent", grow: 1.0) {
+                                ViewTarget("Column") {
+                                    ViewTarget("Header") {
+                                        ViewTarget("Row") {
+                                            TextTarget(text: "Main Title", textColor: .orange)
 
-                                            ViewImpl("Divider").anyChildren()
+                                            ViewTarget("Divider").anyChildren()
 
-                                            ViewImpl("UserInfo") {
-                                                TextImpl(text: "Logged in as: John Scarlet", textColor: .orange)
-                                                TextImpl(text: "Logout", textColor: .orange)
+                                            ViewTarget("UserInfo") {
+                                                TextTarget(text: "Logged in as: John Scarlet", textColor: .orange)
+                                                TextTarget(text: "Logout", textColor: .orange)
                                             }
                                         }
                                     }
 
-                                    ViewImpl("Content") {
-                                        TextImpl(text: "Loading content...", textColor: .orange)
+                                    ViewTarget("Content") {
+                                        TextTarget(text: "Loading content...", textColor: .orange)
                                     }
 
-                                    ViewImpl("Footer") {
-                                        ImageImpl(source: "controller-icon")
-                                        TextImpl(text: "P1", textColor: .orange)
+                                    ViewTarget("Footer") {
+                                        ImageTarget(source: "controller-icon")
+                                        TextTarget(text: "P1", textColor: .orange)
                                     }
                                 }
                             }
@@ -118,31 +118,31 @@ class EnvironmentAttributePropagationSpec: ScarletCoreSpec {
                     Tested(textColor: .orange, grow: 1.0)
                 }
 
-                then("the implementation tree is untouched") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("MainContent", grow: 1.0) {
-                                ViewImpl("Column") {
-                                    ViewImpl("Header") {
-                                        ViewImpl("Row") {
-                                            TextImpl(text: "Main Title", textColor: .orange)
+                then("the target tree is untouched") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("MainContent", grow: 1.0) {
+                                ViewTarget("Column") {
+                                    ViewTarget("Header") {
+                                        ViewTarget("Row") {
+                                            TextTarget(text: "Main Title", textColor: .orange)
 
-                                            ViewImpl("Divider").anyChildren()
+                                            ViewTarget("Divider").anyChildren()
 
-                                            ViewImpl("UserInfo") {
-                                                TextImpl(text: "Logged in as: John Scarlet", textColor: .orange)
-                                                TextImpl(text: "Logout", textColor: .orange)
+                                            ViewTarget("UserInfo") {
+                                                TextTarget(text: "Logged in as: John Scarlet", textColor: .orange)
+                                                TextTarget(text: "Logout", textColor: .orange)
                                             }
                                         }
                                     }
 
-                                    ViewImpl("Content") {
-                                        TextImpl(text: "Loading content...", textColor: .orange)
+                                    ViewTarget("Content") {
+                                        TextTarget(text: "Loading content...", textColor: .orange)
                                     }
 
-                                    ViewImpl("Footer") {
-                                        ImageImpl(source: "controller-icon")
-                                        TextImpl(text: "P1", textColor: .orange)
+                                    ViewTarget("Footer") {
+                                        ImageTarget(source: "controller-icon")
+                                        TextTarget(text: "P1", textColor: .orange)
                                     }
                                 }
                             }
@@ -150,8 +150,8 @@ class EnvironmentAttributePropagationSpec: ScarletCoreSpec {
                     ))
                 }
 
-                then("attributes are not updated on the implementation side") { result in
-                    expect(result.all(TextImpl.self, expectedCount: 5)).to(allPass {
+                then("attributes are not updated on the target side") { result in
+                    expect(result.all(TextTarget.self, expectedCount: 5)).to(allPass {
                         $0.textColorChanged == false
                     })
 
@@ -167,31 +167,31 @@ class EnvironmentAttributePropagationSpec: ScarletCoreSpec {
                     Tested(textColor: .orange, grow: 0.5)
                 }
 
-                then("the implementation tree is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("MainContent", grow: 0.5) {
-                                ViewImpl("Column") {
-                                    ViewImpl("Header") {
-                                        ViewImpl("Row") {
-                                            TextImpl(text: "Main Title", textColor: .orange)
+                then("the target tree is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("MainContent", grow: 0.5) {
+                                ViewTarget("Column") {
+                                    ViewTarget("Header") {
+                                        ViewTarget("Row") {
+                                            TextTarget(text: "Main Title", textColor: .orange)
 
-                                            ViewImpl("Divider").anyChildren()
+                                            ViewTarget("Divider").anyChildren()
 
-                                            ViewImpl("UserInfo") {
-                                                TextImpl(text: "Logged in as: John Scarlet", textColor: .orange)
-                                                TextImpl(text: "Logout", textColor: .orange)
+                                            ViewTarget("UserInfo") {
+                                                TextTarget(text: "Logged in as: John Scarlet", textColor: .orange)
+                                                TextTarget(text: "Logout", textColor: .orange)
                                             }
                                         }
                                     }
 
-                                    ViewImpl("Content") {
-                                        TextImpl(text: "Loading content...", textColor: .orange)
+                                    ViewTarget("Content") {
+                                        TextTarget(text: "Loading content...", textColor: .orange)
                                     }
 
-                                    ViewImpl("Footer") {
-                                        ImageImpl(source: "controller-icon")
-                                        TextImpl(text: "P1", textColor: .orange)
+                                    ViewTarget("Footer") {
+                                        ImageTarget(source: "controller-icon")
+                                        TextTarget(text: "P1", textColor: .orange)
                                     }
                                 }
                             }
@@ -199,7 +199,7 @@ class EnvironmentAttributePropagationSpec: ScarletCoreSpec {
                     ))
                 }
 
-                then("changed attribute is updated on the implementation side") { result in
+                then("changed attribute is updated on the target side") { result in
                     expect(result.testedChildren[0].attributeChanged(\.grow)).to(beTrue())
                 }
 
@@ -209,8 +209,8 @@ class EnvironmentAttributePropagationSpec: ScarletCoreSpec {
                     })
                 }
 
-                then("unchanged attribute is not updated on the implementation side") { result in
-                    expect(result.all(TextImpl.self, expectedCount: 5)).to(allPass {
+                then("unchanged attribute is not updated on the target side") { result in
+                    expect(result.all(TextTarget.self, expectedCount: 5)).to(allPass {
                         $0.textColorChanged == false
                     })
                 }
@@ -222,31 +222,31 @@ class EnvironmentAttributePropagationSpec: ScarletCoreSpec {
                     Tested(textColor: .yellow, grow: 1.0)
                 }
 
-                then("the implementation tree is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("MainContent", grow: 1.0) {
-                                ViewImpl("Column") {
-                                    ViewImpl("Header") {
-                                        ViewImpl("Row") {
-                                            TextImpl(text: "Main Title", textColor: .yellow)
+                then("the target tree is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("MainContent", grow: 1.0) {
+                                ViewTarget("Column") {
+                                    ViewTarget("Header") {
+                                        ViewTarget("Row") {
+                                            TextTarget(text: "Main Title", textColor: .yellow)
 
-                                            ViewImpl("Divider").anyChildren()
+                                            ViewTarget("Divider").anyChildren()
 
-                                            ViewImpl("UserInfo") {
-                                                TextImpl(text: "Logged in as: John Scarlet", textColor: .yellow)
-                                                TextImpl(text: "Logout", textColor: .yellow)
+                                            ViewTarget("UserInfo") {
+                                                TextTarget(text: "Logged in as: John Scarlet", textColor: .yellow)
+                                                TextTarget(text: "Logout", textColor: .yellow)
                                             }
                                         }
                                     }
 
-                                    ViewImpl("Content") {
-                                        TextImpl(text: "Loading content...", textColor: .yellow)
+                                    ViewTarget("Content") {
+                                        TextTarget(text: "Loading content...", textColor: .yellow)
                                     }
 
-                                    ViewImpl("Footer") {
-                                        ImageImpl(source: "controller-icon")
-                                        TextImpl(text: "P1", textColor: .yellow)
+                                    ViewTarget("Footer") {
+                                        ImageTarget(source: "controller-icon")
+                                        TextTarget(text: "P1", textColor: .yellow)
                                     }
                                 }
                             }
@@ -254,13 +254,13 @@ class EnvironmentAttributePropagationSpec: ScarletCoreSpec {
                     ))
                 }
 
-                then("changed attribute is updated on the implementation side") { result in
-                    expect(result.all(TextImpl.self, expectedCount: 5)).to(allPass {
+                then("changed attribute is updated on the target side") { result in
+                    expect(result.all(TextTarget.self, expectedCount: 5)).to(allPass {
                         $0.textColorChanged == true
                     })
                 }
 
-                then("unchanged attributes are not updated on the implementation side") { result in
+                then("unchanged attributes are not updated on the target side") { result in
                     expect(result.allViews).to(allPass {
                         $0.anyAttributeChanged == false
                     })
@@ -273,31 +273,31 @@ class EnvironmentAttributePropagationSpec: ScarletCoreSpec {
                     Tested(textColor: .yellow, grow: 0.5)
                 }
 
-                then("the implementation tree is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("MainContent", grow: 0.5) {
-                                ViewImpl("Column") {
-                                    ViewImpl("Header") {
-                                        ViewImpl("Row") {
-                                            TextImpl(text: "Main Title", textColor: .yellow)
+                then("the target tree is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("MainContent", grow: 0.5) {
+                                ViewTarget("Column") {
+                                    ViewTarget("Header") {
+                                        ViewTarget("Row") {
+                                            TextTarget(text: "Main Title", textColor: .yellow)
 
-                                            ViewImpl("Divider").anyChildren()
+                                            ViewTarget("Divider").anyChildren()
 
-                                            ViewImpl("UserInfo") {
-                                                TextImpl(text: "Logged in as: John Scarlet", textColor: .yellow)
-                                                TextImpl(text: "Logout", textColor: .yellow)
+                                            ViewTarget("UserInfo") {
+                                                TextTarget(text: "Logged in as: John Scarlet", textColor: .yellow)
+                                                TextTarget(text: "Logout", textColor: .yellow)
                                             }
                                         }
                                     }
 
-                                    ViewImpl("Content") {
-                                        TextImpl(text: "Loading content...", textColor: .yellow)
+                                    ViewTarget("Content") {
+                                        TextTarget(text: "Loading content...", textColor: .yellow)
                                     }
 
-                                    ViewImpl("Footer") {
-                                        ImageImpl(source: "controller-icon")
-                                        TextImpl(text: "P1", textColor: .yellow)
+                                    ViewTarget("Footer") {
+                                        ImageTarget(source: "controller-icon")
+                                        TextTarget(text: "P1", textColor: .yellow)
                                     }
                                 }
                             }
@@ -305,8 +305,8 @@ class EnvironmentAttributePropagationSpec: ScarletCoreSpec {
                     ))
                 }
 
-                then("changed attributes are updated on the implementation side") { result in
-                    expect(result.all(TextImpl.self, expectedCount: 5)).to(allPass {
+                then("changed attributes are updated on the target side") { result in
+                    expect(result.all(TextTarget.self, expectedCount: 5)).to(allPass {
                         $0.textColorChanged == true
                     })
 

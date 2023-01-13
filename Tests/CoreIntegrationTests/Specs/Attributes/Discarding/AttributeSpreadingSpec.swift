@@ -42,12 +42,12 @@ class AttributeSpreadingSpec: ScarletCoreSpec {
                     Tested(textColor: .yellow)
                 }
 
-                then("implementation is created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Texts") {
-                                TextImpl(text: "First text", textColor: .yellow)
-                                TextImpl(text: "Second text", textColor: .yellow)
+                then("target is created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Texts") {
+                                TextTarget(text: "First text", textColor: .yellow)
+                                TextTarget(text: "Second text", textColor: .yellow)
                             }
                         }
                     ))
@@ -60,19 +60,19 @@ class AttributeSpreadingSpec: ScarletCoreSpec {
                     Tested(textColor: .yellow)
                 }
 
-                then("implementation is untouched") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Texts") {
-                                TextImpl(text: "First text", textColor: .yellow)
-                                TextImpl(text: "Second text", textColor: .yellow)
+                then("target is untouched") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Texts") {
+                                TextTarget(text: "First text", textColor: .yellow)
+                                TextTarget(text: "Second text", textColor: .yellow)
                             }
                         }
                     ))
                 }
 
-                then("attributes are not set on the implementation side") { result in
-                    let views = result.all(TextImpl.self, expectedCount: 2)
+                then("attributes are not set on the target side") { result in
+                    let views = result.all(TextTarget.self, expectedCount: 2)
                     expect(views).to(allPass {
                         $0.textColorChanged == false
                     })
@@ -85,19 +85,19 @@ class AttributeSpreadingSpec: ScarletCoreSpec {
                     Tested(textColor: .blue)
                 }
 
-                then("implementation is untouched") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Texts") {
-                                TextImpl(text: "First text", textColor: .blue)
-                                TextImpl(text: "Second text", textColor: .blue)
+                then("target is untouched") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Texts") {
+                                TextTarget(text: "First text", textColor: .blue)
+                                TextTarget(text: "Second text", textColor: .blue)
                             }
                         }
                     ))
                 }
 
-                then("attributes are not set on the implementation side") { result in
-                    let views = result.all(TextImpl.self, expectedCount: 2)
+                then("attributes are not set on the target side") { result in
+                    let views = result.all(TextTarget.self, expectedCount: 2)
                     expect(views).to(allPass {
                         $0.textColorChanged == true
                     })

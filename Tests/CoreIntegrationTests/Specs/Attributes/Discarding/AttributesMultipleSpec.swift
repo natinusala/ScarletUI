@@ -40,9 +40,9 @@ class AttributesMultipleSpec: ScarletCoreSpec, Skipped {
                 }
 
                 then("the first attribute is applied over the second") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Rectangle", id: "first").anyChildren()
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Rectangle", id: "first").anyChildren()
                         }
                     ))
                 }
@@ -55,14 +55,14 @@ class AttributesMultipleSpec: ScarletCoreSpec, Skipped {
                 }
 
                 then("the applied value doesn't change") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Rectangle", id: "first").anyChildren()
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Rectangle", id: "first").anyChildren()
                         }
                     ))
                 }
 
-                then("value is not set on implementation side") { result in
+                then("value is not set on target side") { result in
                     expect(result.testedChildren[0].attributeChanged(\.id)).to(beFalse())
                 }
             }
@@ -74,14 +74,14 @@ class AttributesMultipleSpec: ScarletCoreSpec, Skipped {
                 }
 
                 then("the applied value changes") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Rectangle", id: "another-first").anyChildren()
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Rectangle", id: "another-first").anyChildren()
                         }
                     ))
                 }
 
-                then("value is set on implementation side") { result in
+                then("value is set on target side") { result in
                     expect(result.testedChildren[0].attributeChanged(\.id)).to(beTrue())
                 }
             }

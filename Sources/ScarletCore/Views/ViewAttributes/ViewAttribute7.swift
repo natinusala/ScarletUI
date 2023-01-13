@@ -22,7 +22,7 @@
 public struct ViewAttribute7<Content: View, A0: AttributeSetter, A1: AttributeSetter, A2: AttributeSetter, A3: AttributeSetter, A4: AttributeSetter, A5: AttributeSetter, A6: AttributeSetter>: View {
     public typealias Input = StaticMakeInput1<Self>
     public typealias Output = StaticMakeOutput1<Self, Content>
-    public typealias Implementation = Never
+    public typealias Target = Never
 
     let content: Content
 
@@ -56,10 +56,10 @@ public struct ViewAttribute7<Content: View, A0: AttributeSetter, A1: AttributeSe
     public static func makeNode(
         of element: Self,
         in parent: (any ElementNode)?,
-        implementationPosition: Int,
+        targetPosition: Int,
         using context: Context
     ) -> StaticElementNode1<Self, Content> where Input == StaticMakeInput1<Self> {
-        return .init(making: element, in: parent, implementationPosition: implementationPosition, using: context)
+        return .init(making: element, in: parent, targetPosition: targetPosition, using: context)
     }
 
     public static func make(

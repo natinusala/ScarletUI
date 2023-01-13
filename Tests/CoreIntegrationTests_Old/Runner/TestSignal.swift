@@ -21,7 +21,7 @@ protocol TestSignal {
 }
 
 struct TestSignalModifier: AttributeViewModifier {
-    @AppendAttribute(\ViewImpl.signalHandlers)
+    @AppendAttribute(\ViewTarget.signalHandlers)
     var signal
 
     init(signal: any TestSignal, closure: @escaping () -> ()) {
@@ -39,11 +39,11 @@ struct SignalUpdateAction: UpdateAction {
     let signal: any TestSignal
 
     func run(on node: ElementNode) {
-        guard let implementation = node.implementation as? ViewImpl else {
-            fatalError("Cannot signal an implementation node of type \(type(of: node.implementation))")
+        guard let target = node.target as? ViewTarget else {
+            fatalError("Cannot signal an target node of type \(type(of: node.target))")
         }
 
-        implementation.signal(signal)
+        target.signal(signal)
     }
 }
 

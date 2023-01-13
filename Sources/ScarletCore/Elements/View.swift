@@ -42,5 +42,5 @@ public typealias ViewBuilder = ElementBuilder
 
 /// A view that only contains other views. Does not perform equality check on itself
 /// since it would be redundant with checking its content view.
-/// Set ``Implementation`` to `Never` if you don't need an implementation node.
+/// Set ``Target`` to `Never` if you don't need an target node.
 public protocol ContainerView: View {}

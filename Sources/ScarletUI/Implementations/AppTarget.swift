@@ -18,12 +18,12 @@ import Backtrace
 import Foundation
 import Needler
 
-/// Implementation for all apps.
-open class _AppImplementation: ImplementationNode, _TagImplementationNode {
+/// Target for all apps.
+open class _AppTarget: TargetNode, _TagTargetNode {
     public let displayName: String
 
     /// Children of this app.
-    var children: [_SceneImplementation] = []
+    var children: [_SceneTarget] = []
 
     /// Run loop responsible for consuming and/or draining events.
     let runLoop = RunLoop.main
@@ -62,9 +62,9 @@ open class _AppImplementation: ImplementationNode, _TagImplementationNode {
 
     }
 
-    public func insertChild(_ child: ImplementationNode, at position: Int) {
-        guard let child = child as? _SceneImplementation else {
-            fatalError("Cannot add \(type(of: child)) as child of '_AppImplementation'")
+    public func insertChild(_ child: TargetNode, at position: Int) {
+        guard let child = child as? _SceneTarget else {
+            fatalError("Cannot add \(type(of: child)) as child of '_AppTarget'")
         }
 
         self.children.insert(child, at: position)
@@ -146,14 +146,14 @@ open class _AppImplementation: ImplementationNode, _TagImplementationNode {
         return (begin, begin.distance(to: Date()), result)
     }
 
-    public var tagChildren: [any _TagImplementationNode] {
-        return self.children.map { $0 as any _TagImplementationNode }
+    public var tagChildren: [any _TagTargetNode] {
+        return self.children.map { $0 as any _TagTargetNode }
     }
 }
 
 public extension App {
-    /// Default implementation type for scenes.
-    typealias Implementation = _AppImplementation
+    /// Default target type for scenes.
+    typealias Target = _AppTarget
 }
 
 public extension App {
@@ -173,12 +173,12 @@ public extension App {
 #endif
 
         // Run the app normally by making the app node at top level
-        let root = Self.makeNode(of: app, in: nil, implementationPosition: 0, using: .root())
+        let root = Self.makeNode(of: app, in: nil, targetPosition: 0, using: .root())
 
-        guard let implementation = root.implementation as? _AppImplementation else {
-            fatalError("No implementation found for app node or got implementation of the wrong type")
+        guard let target = root.target as? _AppTarget else {
+            fatalError("No target found for app node or got target of the wrong type")
         }
 
-        implementation.run()
+        target.run()
     }
 }

@@ -15,7 +15,7 @@
 */
 
 /// Represents the location of a variable that can be read or write.
-/// Used as state properties storage, bindings and values coming from the implementation
+/// Used as state properties storage, bindings and values coming from the target
 /// to the elements.
 protocol Location<Value>: AnyObject {
     associatedtype Value

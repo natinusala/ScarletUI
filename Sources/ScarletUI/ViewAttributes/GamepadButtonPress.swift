@@ -20,7 +20,7 @@ public extension View {
     /// Note: the action will be performed even if the view is out of sight.
     func onGamepadButtonPress(perform action: @escaping _GamepadButtonPressCallback) -> some View {
         return self.attributed(
-            AppendAttribute(\_ViewImplementation.gamepadButtonPressAction, value: action)
+            AppendAttribute(\_ViewTarget.gamepadButtonPressAction, value: action)
         )
     }
 
@@ -33,7 +33,7 @@ public extension View {
         }
 
         return self.attributed(
-            AppendAttribute(\_ViewImplementation.gamepadButtonPressAction, value: callback)
+            AppendAttribute(\_ViewTarget.gamepadButtonPressAction, value: callback)
         )
     }
 
@@ -50,7 +50,7 @@ public extension View {
         }
 
         return self.attributed(
-            AppendAttribute(\_ViewImplementation.gamepadButtonPressAction, value: callback)
+            AppendAttribute(\_ViewTarget.gamepadButtonPressAction, value: callback)
         )
     }
 }

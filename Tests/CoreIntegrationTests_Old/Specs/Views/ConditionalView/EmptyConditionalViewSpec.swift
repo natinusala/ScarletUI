@@ -47,10 +47,10 @@ class EmptyConditionalViewSpecSpec: ScarletCoreSpec {
                     Tested(first: true, toggle: true)
                 }
 
-                then("implementations are created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .blue, grow: 1.0) }
+                then("targets are created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Rectangle") { ViewTarget("EmptyView", fill: .blue, grow: 1.0) }
                         }
                     ))
 
@@ -62,13 +62,13 @@ class EmptyConditionalViewSpecSpec: ScarletCoreSpec {
                     Tested(first: true, toggle: false)
                 }
 
-                then("implementations are created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .blue, grow: 1.0) }
+                then("targets are created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Rectangle") { ViewTarget("EmptyView", fill: .blue, grow: 1.0) }
 
-                            ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .white, grow: 1.0) }
-                            ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .yellow, grow: 1.0) }
+                            ViewTarget("Rectangle") { ViewTarget("EmptyView", fill: .white, grow: 1.0) }
+                            ViewTarget("Rectangle") { ViewTarget("EmptyView", fill: .yellow, grow: 1.0) }
                         }
                     ))
 
@@ -80,10 +80,10 @@ class EmptyConditionalViewSpecSpec: ScarletCoreSpec {
                     Tested(first: false, toggle: false)
                 }
 
-                then("implementations are created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .blue, grow: 1.0) }
+                then("targets are created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Rectangle") { ViewTarget("EmptyView", fill: .blue, grow: 1.0) }
                         }
                     ))
 
@@ -95,13 +95,13 @@ class EmptyConditionalViewSpecSpec: ScarletCoreSpec {
                     Tested(first: false, toggle: true)
                 }
 
-                then("implementations are created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .blue, grow: 1.0) }
+                then("targets are created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Rectangle") { ViewTarget("EmptyView", fill: .blue, grow: 1.0) }
 
-                            ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .orange, grow: 1.0) }
-                            ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .yellow, grow: 1.0) }
+                            ViewTarget("Rectangle") { ViewTarget("EmptyView", fill: .orange, grow: 1.0) }
+                            ViewTarget("Rectangle") { ViewTarget("EmptyView", fill: .yellow, grow: 1.0) }
                         }
                     ))
 
@@ -114,10 +114,10 @@ class EmptyConditionalViewSpecSpec: ScarletCoreSpec {
                     Tested(first: true, toggle: true)
                 }
 
-                then("implementations are updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .blue, grow: 1.0) }
+                then("targets are updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Rectangle") { ViewTarget("EmptyView", fill: .blue, grow: 1.0) }
                         }
                     ))
                 }
@@ -129,13 +129,13 @@ class EmptyConditionalViewSpecSpec: ScarletCoreSpec {
                     Tested(first: true, toggle: false)
                 }
 
-                then("implementations are updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .blue, grow: 1.0) }
+                then("targets are updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Rectangle") { ViewTarget("EmptyView", fill: .blue, grow: 1.0) }
 
-                            ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .white, grow: 1.0) }
-                            ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .yellow, grow: 1.0) }
+                            ViewTarget("Rectangle") { ViewTarget("EmptyView", fill: .white, grow: 1.0) }
+                            ViewTarget("Rectangle") { ViewTarget("EmptyView", fill: .yellow, grow: 1.0) }
                         }
                     ))
                 }
@@ -147,10 +147,10 @@ class EmptyConditionalViewSpecSpec: ScarletCoreSpec {
                     Tested(first: false, toggle: false)
                 }
 
-                then("implementations are updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .blue, grow: 1.0) }
+                then("targets are updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Rectangle") { ViewTarget("EmptyView", fill: .blue, grow: 1.0) }
                         }
                     ))
                 }
@@ -162,13 +162,13 @@ class EmptyConditionalViewSpecSpec: ScarletCoreSpec {
                     Tested(first: false, toggle: true)
                 }
 
-                then("implementations are updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .blue, grow: 1.0) }
+                then("targets are updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Rectangle") { ViewTarget("EmptyView", fill: .blue, grow: 1.0) }
 
-                            ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .orange, grow: 1.0) }
-                            ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .yellow, grow: 1.0) }
+                            ViewTarget("Rectangle") { ViewTarget("EmptyView", fill: .orange, grow: 1.0) }
+                            ViewTarget("Rectangle") { ViewTarget("EmptyView", fill: .yellow, grow: 1.0) }
                         }
                     ))
                 }

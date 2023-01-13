@@ -30,10 +30,10 @@ class EmptyViewSpecSpec: ScarletCoreSpec {
             when("the view is created") {
                 given { Tested() }
 
-                then("implementation is created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("EmptyView")
+                then("target is created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("EmptyView")
                         }
                     ))
                 }
@@ -49,10 +49,10 @@ class EmptyViewSpecSpec: ScarletCoreSpec {
                     expect(result.bodyCalled(of: Tested.self)).to(beFalse())
                 }
 
-                then("implementation is untouched") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("EmptyView")
+                then("target is untouched") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("EmptyView")
                         }
                     ))
                 }

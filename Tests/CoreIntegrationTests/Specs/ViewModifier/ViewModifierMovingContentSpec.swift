@@ -45,10 +45,10 @@ class ViewModifierTogglingContentSpec: ScarletCoreSpec {
                     Tested()
                 }
 
-                then("implementation is created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Row")
+                then("target is created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Row")
                         }
                     ))
                 }
@@ -69,14 +69,14 @@ class ViewModifierTogglingContentSpec: ScarletCoreSpec {
                     expect(result.bodyCalled(of: Modified.self)).to(beTrue())
                 }
 
-                then("implementation is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Row") {
-                                TextImpl(text: "Toggle: true")
+                then("target is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Row") {
+                                TextTarget(text: "Toggle: true")
 
-                                ViewImpl("Modified") {
-                                    TextImpl(text: "Count: 0")
+                                ViewTarget("Modified") {
+                                    TextTarget(text: "Count: 0")
                                 }
                             }
                         }
@@ -100,10 +100,10 @@ class ViewModifierTogglingContentSpec: ScarletCoreSpec {
                     expect(result.bodyCalled(of: Modified.self)).to(beTrue())
                 }
 
-                then("implementation is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Row")
+                then("target is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Row")
                         }
                     ))
                 }
@@ -125,14 +125,14 @@ class ViewModifierTogglingContentSpec: ScarletCoreSpec {
                     expect(result.bodyCalled(of: Modified.self)).to(beTrue())
                 }
 
-                then("implementation is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Row") {
-                                TextImpl(text: "Toggle: true")
+                then("target is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Row") {
+                                TextTarget(text: "Toggle: true")
 
-                                ViewImpl("Modified") {
-                                    TextImpl(text: "Count: 1")
+                                ViewTarget("Modified") {
+                                    TextTarget(text: "Count: 1")
                                 }
                             }
                         }
@@ -158,10 +158,10 @@ class ViewModifierTogglingContentSpec: ScarletCoreSpec {
                     expect(result.bodyCalled(of: Modified.self)).to(beTrue())
                 }
 
-                then("implementation is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Row")
+                then("target is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Row")
                         }
                     ))
                 }

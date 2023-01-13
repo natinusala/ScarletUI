@@ -14,28 +14,29 @@
    limitations under the License.
 */
 
-/// An element that has an associated implementation.
-public protocol Implementable {
-    /// The type of this view's implementation.
+/// An element that has an associated target.
+public protocol Targetable {
+    /// The type of this view's target.
     /// Set to `Never` if there is none.
-    associatedtype Implementation: ImplementationNode
+    associatedtype Target: TargetNode
 
-    /// Updates an implementation node with the given view.
-    static func updateImplementation(_ implementation: Implementation, with view: Self)
+    /// Updates a target node with the given view.
+    static func updateTarget(_ target: Target, with view: Self)
 }
 
-public extension Implementable {
+public extension Targetable {
     static var substantial: Bool {
-        return Self.Implementation.self != Never.self
+        return Self.Target.self != Never.self
     }
 }
 
-/// The implementation holds the element layout (size, position), attributes as well as all the
-/// necessary functions to draw it onscreen.
+/// The target is the direct output of ScarletCore. Running the core on an element
+/// creates a target node and binds it to the element. The target node is persisted for the entire
+/// lifetime of the element, and is removed when the element is also removed from its own tree.
 ///
-/// All different implementations of an app make a tree.
+/// All target nodes of an app make a tree (the "target tree"), that resides next to the "elements" tree.
 ///
-/// The lifecycle of an implementation node is as follows:
+/// The lifecycle of a target node is as follows:
 ///     - the node is created
 ///         - `init`
 ///         - all attributes are set one by one
@@ -45,25 +46,25 @@ public extension Implementable {
 ///     - the app runs and eventually the node gets removed
 ///         - the node is removed from its parent node
 ///         - `deinit`
-public protocol ImplementationNode: CustomStringConvertible {
+public protocol TargetNode: CustomStringConvertible {
     /// Display name for debugging purposes.
     /// Contains the name of the underlying element struct.
     var displayName: String { get }
 
-    /// Creates a new implementation node.
+    /// Creates a new target node.
     init(displayName: String)
 
     /// Called right after node creation when all attributes have been set.
     func attributesDidSet()
 
-    /// Inserts the given element into this implementation node.
-    func insertChild(_ child: ImplementationNode, at position: Int)
+    /// Inserts the given element into this target node.
+    func insertChild(_ child: TargetNode, at position: Int)
 
-    /// Removes the given element from this implementation node.
+    /// Removes the given element from this target node.
     func removeChild(at position: Int)
 }
 
-public extension ImplementationNode {
+public extension TargetNode {
     var description: String {
         return self.displayName
     }

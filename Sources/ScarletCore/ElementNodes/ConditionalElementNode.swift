@@ -27,38 +27,38 @@ public enum ConditionalMakeOutput<Value, First, Second>: ElementOutput where Val
 /// Does not perform equality check on itself.
 public class ConditionalElementNode<Value, First, Second>: ElementNode where Value: Element, First: Element, Second: Element, Value.Input == ConditionalMakeInput<Value>, Value.Output == ConditionalMakeOutput<Value, First, Second> {
     public weak var parent: (any ElementNode)?
-    public var implementation: Value.Implementation?
-    public var implementationCount = 0
+    public var target: Value.Target?
+    public var targetCount = 0
     public var attributes = AttributesStash()
 
     enum Edge {
         case first(First.Node)
         case second(Second.Node)
 
-        func updateWithNil(implementationPosition: Int, using context: Context) -> UpdateResult {
+        func updateWithNil(targetPosition: Int, using context: Context) -> UpdateResult {
             switch self {
                 case .first(let node):
-                    return node.update(with: nil, implementationPosition: implementationPosition, using: context)
+                    return node.update(with: nil, targetPosition: targetPosition, using: context)
                 case .second(let node):
-                    return node.update(with: nil, implementationPosition: implementationPosition, using: context)
+                    return node.update(with: nil, targetPosition: targetPosition, using: context)
             }
         }
 
-        func removeImplementationFromParent(implementationPosition: Int?) {
+        func removeTargetFromParent(targetPosition: Int?) {
             switch self {
                 case .first(let node):
-                    node.removeImplementationFromParent(implementationPosition: implementationPosition)
+                    node.removeTargetFromParent(targetPosition: targetPosition)
                 case .second(let node):
-                    node.removeImplementationFromParent(implementationPosition: implementationPosition)
+                    node.removeTargetFromParent(targetPosition: targetPosition)
             }
         }
 
-        var implementationCount: Int {
+        var targetCount: Int {
             switch self {
                 case .first(let node):
-                    return node.implementationCount
+                    return node.targetCount
                 case .second(let node):
-                    return node.implementationCount
+                    return node.targetCount
             }
         }
 
@@ -74,29 +74,29 @@ public class ConditionalElementNode<Value, First, Second>: ElementNode where Val
 
     var edge: Edge?
 
-    init(making element: Value, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) {
+    init(making element: Value, in parent: (any ElementNode)?, targetPosition: Int, using context: Context) {
         self.parent = parent
 
-        // Create the implementation node
-        self.implementation = Value.makeImplementation(of: element)
+        // Create the target node
+        self.target = Value.makeTarget(of: element)
 
         // Start a first update without comparing (since we update the value with itself)
-        let result = self.update(with: element, implementationPosition: implementationPosition, using: context, initial: true)
+        let result = self.update(with: element, targetPosition: targetPosition, using: context, initial: true)
 
-        // Attach the implementation once everything is ready
-        self.insertImplementationInParent(position: result.implementationPosition)
+        // Attach the target once everything is ready
+        self.insertTargetInParent(position: result.targetPosition)
     }
 
-    public func updateEdges(from output: Value.Output?, at implementationPosition: Int, using context: Context) -> UpdateResult {
+    public func updateEdges(from output: Value.Output?, at targetPosition: Int, using context: Context) -> UpdateResult {
         // If no output is given assume the view is unchanged
         // and update the edges if any
         guard let output else {
             return self.edge?.updateWithNil(
-                implementationPosition: implementationPosition,
+                targetPosition: targetPosition,
                 using: context
             ) ?? UpdateResult(
-                implementationPosition: implementationPosition,
-                implementationCount: self.implementationCount
+                targetPosition: targetPosition,
+                targetCount: self.targetCount
             )
         }
 
@@ -104,20 +104,20 @@ public class ConditionalElementNode<Value, First, Second>: ElementNode where Val
         guard let edge else {
             switch output {
                 case .first(let first):
-                    let node = First.makeNode(of: first, in: self, implementationPosition: implementationPosition, using: context)
+                    let node = First.makeNode(of: first, in: self, targetPosition: targetPosition, using: context)
                     let edge = Edge.first(node)
                     self.edge = edge
                     return UpdateResult(
-                    implementationPosition: implementationPosition,
-                    implementationCount: edge.implementationCount
+                    targetPosition: targetPosition,
+                    targetCount: edge.targetCount
                 )
                 case .second(let second):
-                    let node = Second.makeNode(of: second, in: self, implementationPosition: implementationPosition, using: context)
+                    let node = Second.makeNode(of: second, in: self, targetPosition: targetPosition, using: context)
                     let edge = Edge.second(node)
                     self.edge = edge
                     return UpdateResult(
-                    implementationPosition: implementationPosition,
-                    implementationCount: edge.implementationCount
+                    targetPosition: targetPosition,
+                    targetCount: edge.targetCount
                 )
             }
         }
@@ -126,31 +126,31 @@ public class ConditionalElementNode<Value, First, Second>: ElementNode where Val
         switch (edge, output) {
             case (.first(let node), .first(let element)):
                 // First -> First: update
-                return node.update(with: element, implementationPosition: implementationPosition, using: context)
+                return node.update(with: element, targetPosition: targetPosition, using: context)
             case (.second(let node), .second(let element)):
                 // Second -> Second: update
-                return node.update(with: element, implementationPosition: implementationPosition, using: context)
+                return node.update(with: element, targetPosition: targetPosition, using: context)
             case (.first(let node), .second(let element)):
                 // First -> Second: switch up
-                node.removeImplementationFromParent(implementationPosition: implementationPosition)
+                node.removeTargetFromParent(targetPosition: targetPosition)
 
-                let node = Second.makeNode(of: element, in: self, implementationPosition: implementationPosition, using: context)
+                let node = Second.makeNode(of: element, in: self, targetPosition: targetPosition, using: context)
                 let edge = Edge.second(node)
                 self.edge = edge
                 return UpdateResult(
-                implementationPosition: implementationPosition,
-                implementationCount: edge.implementationCount
+                targetPosition: targetPosition,
+                targetCount: edge.targetCount
             )
             case (.second(let node), .first(let element)):
                 // Second -> First: switch up
-                node.removeImplementationFromParent(implementationPosition: implementationPosition)
+                node.removeTargetFromParent(targetPosition: targetPosition)
 
-                let node = First.makeNode(of: element, in: self, implementationPosition: implementationPosition, using: context)
+                let node = First.makeNode(of: element, in: self, targetPosition: targetPosition, using: context)
                 let edge = Edge.first(node)
                 self.edge = edge
                 return UpdateResult(
-                implementationPosition: implementationPosition,
-                implementationCount: edge.implementationCount
+                targetPosition: targetPosition,
+                targetCount: edge.targetCount
             )
         }
     }

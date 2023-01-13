@@ -35,14 +35,14 @@ public extension View {
     /// Sets the view fill, aka. the color or gradient of the view's background, to any fill variant.
     func fill(_ fill: Fill) -> some View {
         return self.attributed(
-            Attribute(\_ViewImplementation.fill, value: fill)
+            Attribute(\_ViewTarget.fill, value: fill)
         )
     }
 
     /// Sets the view fill to the given color.
     func fill(color: Color) -> some View {
         return self.attributed(
-            Attribute(\_ViewImplementation.fill, value: .color(color))
+            Attribute(\_ViewTarget.fill, value: .color(color))
         )
     }
 }

@@ -94,57 +94,57 @@ class ComplexViewSpec: ScarletCoreSpec {
                     Tested(detailed: true)
                 }
 
-                then("implementation is created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Column") {
+                then("target is created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Column") {
                                 // Header
-                                ViewImpl("Row") {
-                                    ImageImpl(source: "mainLogo.png")
-                                    TextImpl(text: "App Title (debug)")
+                                ViewTarget("Row") {
+                                    ImageTarget(source: "mainLogo.png")
+                                    TextTarget(text: "App Title (debug)")
 
-                                    ViewImpl("Divider")
+                                    ViewTarget("Divider")
 
-                                    TextImpl(text: "Logged in as: FooBarBaz")
+                                    TextTarget(text: "Logged in as: FooBarBaz")
 
-                                    ViewImpl("Divider")
+                                    ViewTarget("Divider")
 
-                                    TextImpl(text: "Unread messages: 7")
-                                    TextImpl(text: "Update available!")
+                                    TextTarget(text: "Unread messages: 7")
+                                    TextTarget(text: "Update available!")
 
-                                    ViewImpl("Divider")
+                                    ViewTarget("Divider")
 
-                                    TextImpl(text: "X: Close")
+                                    TextTarget(text: "X: Close")
                                 }
 
-                                ViewImpl("Divider")
+                                ViewTarget("Divider")
 
                                 // Body
-                                ViewImpl("Row") {
-                                    ViewImpl("Column") {
-                                        TextImpl(text: "Unread (7)")
-                                        TextImpl(text: "Sent")
+                                ViewTarget("Row") {
+                                    ViewTarget("Column") {
+                                        TextTarget(text: "Unread (7)")
+                                        TextTarget(text: "Sent")
 
-                                        ViewImpl("Divider")
+                                        ViewTarget("Divider")
 
-                                        TextImpl(text: "Settings")
+                                        TextTarget(text: "Settings")
                                     }
                                 }
 
-                                ViewImpl("Divider")
+                                ViewTarget("Divider")
 
                                 // Footer
-                                ViewImpl("Row") {
-                                    TextImpl(text: "Controller 1: Keyboard / Mouse")
-                                    TextImpl(text: "P1 A: OK")
-                                    TextImpl(text: "P1 B: Back")
+                                ViewTarget("Row") {
+                                    TextTarget(text: "Controller 1: Keyboard / Mouse")
+                                    TextTarget(text: "P1 A: OK")
+                                    TextTarget(text: "P1 B: Back")
                                 }
 
-                                ViewImpl("Row") {
-                                    TextImpl(text: "Debug bar")
-                                    TextImpl(text: "Memory: 74mB")
-                                    TextImpl(text: "CPU Usage: 2%")
-                                    TextImpl(text: "GPU Usage: 1%")
+                                ViewTarget("Row") {
+                                    TextTarget(text: "Debug bar")
+                                    TextTarget(text: "Memory: 74mB")
+                                    TextTarget(text: "CPU Usage: 2%")
+                                    TextTarget(text: "GPU Usage: 1%")
                                 }
                             }
                         }
@@ -157,49 +157,49 @@ class ComplexViewSpec: ScarletCoreSpec {
                     Tested(detailed: false)
                 }
 
-                then("implementation is created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Column") {
+                then("target is created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Column") {
                                 // Header
-                                ViewImpl("Row") {
-                                    ImageImpl(source: "mainLogo.png")
-                                    TextImpl(text: "App Title")
+                                ViewTarget("Row") {
+                                    ImageTarget(source: "mainLogo.png")
+                                    TextTarget(text: "App Title")
 
-                                    ViewImpl("Divider")
+                                    ViewTarget("Divider")
 
-                                    TextImpl(text: "Logged in as: FooBarBaz")
+                                    TextTarget(text: "Logged in as: FooBarBaz")
 
-                                    ViewImpl("Divider")
+                                    ViewTarget("Divider")
 
-                                    TextImpl(text: "X: Close")
+                                    TextTarget(text: "X: Close")
                                 }
 
-                                ViewImpl("Divider")
+                                ViewTarget("Divider")
 
                                 // Body
-                                ViewImpl("Row") {
-                                    ViewImpl("Column") {
-                                        TextImpl(text: "Unread (7)")
-                                        TextImpl(text: "Sent")
+                                ViewTarget("Row") {
+                                    ViewTarget("Column") {
+                                        TextTarget(text: "Unread (7)")
+                                        TextTarget(text: "Sent")
 
-                                        ViewImpl("Divider")
+                                        ViewTarget("Divider")
 
-                                        TextImpl(text: "Enable detailed mode to see spam")
+                                        TextTarget(text: "Enable detailed mode to see spam")
 
-                                        ViewImpl("Divider")
+                                        ViewTarget("Divider")
 
-                                        TextImpl(text: "Settings")
+                                        TextTarget(text: "Settings")
                                     }
                                 }
 
-                                ViewImpl("Divider")
+                                ViewTarget("Divider")
 
                                 // Footer
-                                ViewImpl("Row") {
-                                    TextImpl(text: "Keyboard / Mouse")
-                                    TextImpl(text: "A: OK")
-                                    TextImpl(text: "B: Back")
+                                ViewTarget("Row") {
+                                    TextTarget(text: "Keyboard / Mouse")
+                                    TextTarget(text: "A: OK")
+                                    TextTarget(text: "B: Back")
                                 }
                             }
                         }
@@ -213,49 +213,49 @@ class ComplexViewSpec: ScarletCoreSpec {
                     Tested(detailed: false)
                 }
 
-                then("implementation is created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Column") {
+                then("target is created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Column") {
                                 // Header
-                                ViewImpl("Row") {
-                                    ImageImpl(source: "mainLogo.png")
-                                    TextImpl(text: "App Title")
+                                ViewTarget("Row") {
+                                    ImageTarget(source: "mainLogo.png")
+                                    TextTarget(text: "App Title")
 
-                                    ViewImpl("Divider")
+                                    ViewTarget("Divider")
 
-                                    TextImpl(text: "Logged in as: FooBarBaz")
+                                    TextTarget(text: "Logged in as: FooBarBaz")
 
-                                    ViewImpl("Divider")
+                                    ViewTarget("Divider")
 
-                                    TextImpl(text: "X: Close")
+                                    TextTarget(text: "X: Close")
                                 }
 
-                                ViewImpl("Divider")
+                                ViewTarget("Divider")
 
                                 // Body
-                                ViewImpl("Row") {
-                                    ViewImpl("Column") {
-                                        TextImpl(text: "Unread (7)")
-                                        TextImpl(text: "Sent")
+                                ViewTarget("Row") {
+                                    ViewTarget("Column") {
+                                        TextTarget(text: "Unread (7)")
+                                        TextTarget(text: "Sent")
 
-                                        ViewImpl("Divider")
+                                        ViewTarget("Divider")
 
-                                        TextImpl(text: "Enable detailed mode to see spam")
+                                        TextTarget(text: "Enable detailed mode to see spam")
 
-                                        ViewImpl("Divider")
+                                        ViewTarget("Divider")
 
-                                        TextImpl(text: "Settings")
+                                        TextTarget(text: "Settings")
                                     }
                                 }
 
-                                ViewImpl("Divider")
+                                ViewTarget("Divider")
 
                                 // Footer
-                                ViewImpl("Row") {
-                                    TextImpl(text: "Keyboard / Mouse")
-                                    TextImpl(text: "A: OK")
-                                    TextImpl(text: "B: Back")
+                                ViewTarget("Row") {
+                                    TextTarget(text: "Keyboard / Mouse")
+                                    TextTarget(text: "A: OK")
+                                    TextTarget(text: "B: Back")
                                 }
                             }
                         }
@@ -269,57 +269,57 @@ class ComplexViewSpec: ScarletCoreSpec {
                     Tested(detailed: true)
                 }
 
-                then("implementation is created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Column") {
+                then("target is created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Column") {
                                 // Header
-                                ViewImpl("Row") {
-                                    ImageImpl(source: "mainLogo.png")
-                                    TextImpl(text: "App Title (debug)")
+                                ViewTarget("Row") {
+                                    ImageTarget(source: "mainLogo.png")
+                                    TextTarget(text: "App Title (debug)")
 
-                                    ViewImpl("Divider")
+                                    ViewTarget("Divider")
 
-                                    TextImpl(text: "Logged in as: FooBarBaz")
+                                    TextTarget(text: "Logged in as: FooBarBaz")
 
-                                    ViewImpl("Divider")
+                                    ViewTarget("Divider")
 
-                                    TextImpl(text: "Unread messages: 7")
-                                    TextImpl(text: "Update available!")
+                                    TextTarget(text: "Unread messages: 7")
+                                    TextTarget(text: "Update available!")
 
-                                    ViewImpl("Divider")
+                                    ViewTarget("Divider")
 
-                                    TextImpl(text: "X: Close")
+                                    TextTarget(text: "X: Close")
                                 }
 
-                                ViewImpl("Divider")
+                                ViewTarget("Divider")
 
                                 // Body
-                                ViewImpl("Row") {
-                                    ViewImpl("Column") {
-                                        TextImpl(text: "Unread (7)")
-                                        TextImpl(text: "Sent")
+                                ViewTarget("Row") {
+                                    ViewTarget("Column") {
+                                        TextTarget(text: "Unread (7)")
+                                        TextTarget(text: "Sent")
 
-                                        ViewImpl("Divider")
+                                        ViewTarget("Divider")
 
-                                        TextImpl(text: "Settings")
+                                        TextTarget(text: "Settings")
                                     }
                                 }
 
-                                ViewImpl("Divider")
+                                ViewTarget("Divider")
 
                                 // Footer
-                                ViewImpl("Row") {
-                                    TextImpl(text: "Controller 1: Keyboard / Mouse")
-                                    TextImpl(text: "P1 A: OK")
-                                    TextImpl(text: "P1 B: Back")
+                                ViewTarget("Row") {
+                                    TextTarget(text: "Controller 1: Keyboard / Mouse")
+                                    TextTarget(text: "P1 A: OK")
+                                    TextTarget(text: "P1 B: Back")
                                 }
 
-                                ViewImpl("Row") {
-                                    TextImpl(text: "Debug bar")
-                                    TextImpl(text: "Memory: 74mB")
-                                    TextImpl(text: "CPU Usage: 2%")
-                                    TextImpl(text: "GPU Usage: 1%")
+                                ViewTarget("Row") {
+                                    TextTarget(text: "Debug bar")
+                                    TextTarget(text: "Memory: 74mB")
+                                    TextTarget(text: "CPU Usage: 2%")
+                                    TextTarget(text: "GPU Usage: 1%")
                                 }
                             }
                         }

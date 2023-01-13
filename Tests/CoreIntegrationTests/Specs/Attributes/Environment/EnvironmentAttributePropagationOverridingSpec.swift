@@ -49,14 +49,14 @@ class EnvironmentAttributePropagationOverridingSpec: ScarletCoreSpec {
                     Tested(overriddenColor: .yellow, defaultColor: .blue)
                 }
 
-                then("the implementation tree is created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            TextImpl(text: "More text", textColor: .black)
+                then("the target tree is created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            TextTarget(text: "More text", textColor: .black)
 
-                            ViewImpl("Overridden") {
-                                TextImpl(text: "Some text", textColor: .yellow)
-                                TextImpl(text: "Some other text", textColor: .blue)
+                            ViewTarget("Overridden") {
+                                TextTarget(text: "Some text", textColor: .yellow)
+                                TextTarget(text: "Some other text", textColor: .blue)
                             }
                         }
                     ))
@@ -69,14 +69,14 @@ class EnvironmentAttributePropagationOverridingSpec: ScarletCoreSpec {
                     Tested(overriddenColor: .yellow, defaultColor: .red)
                 }
 
-                then("the implementation is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            TextImpl(text: "More text", textColor: .black)
+                then("the target is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            TextTarget(text: "More text", textColor: .black)
 
-                            ViewImpl("Overridden") {
-                                TextImpl(text: "Some text", textColor: .yellow)
-                                TextImpl(text: "Some other text", textColor: .red)
+                            ViewTarget("Overridden") {
+                                TextTarget(text: "Some text", textColor: .yellow)
+                                TextTarget(text: "Some other text", textColor: .red)
                             }
                         }
                     ))
@@ -89,14 +89,14 @@ class EnvironmentAttributePropagationOverridingSpec: ScarletCoreSpec {
                     Tested(overriddenColor: .red, defaultColor: .blue)
                 }
 
-                then("the implementation is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            TextImpl(text: "More text", textColor: .black)
+                then("the target is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            TextTarget(text: "More text", textColor: .black)
 
-                            ViewImpl("Overridden") {
-                                TextImpl(text: "Some text", textColor: .red)
-                                TextImpl(text: "Some other text", textColor: .blue)
+                            ViewTarget("Overridden") {
+                                TextTarget(text: "Some text", textColor: .red)
+                                TextTarget(text: "Some other text", textColor: .blue)
                             }
                         }
                     ))
@@ -109,21 +109,21 @@ class EnvironmentAttributePropagationOverridingSpec: ScarletCoreSpec {
                     Tested(overriddenColor: .yellow, defaultColor: .blue)
                 }
 
-                then("the implementation is untouched") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            TextImpl(text: "More text", textColor: .black)
+                then("the target is untouched") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            TextTarget(text: "More text", textColor: .black)
 
-                            ViewImpl("Overridden") {
-                                TextImpl(text: "Some text", textColor: .yellow)
-                                TextImpl(text: "Some other text", textColor: .blue)
+                            ViewTarget("Overridden") {
+                                TextTarget(text: "Some text", textColor: .yellow)
+                                TextTarget(text: "Some other text", textColor: .blue)
                             }
                         }
                     ))
                 }
 
-                then("attributes are not set on the implementation side") { result in
-                    expect(result.all(TextImpl.self, expectedCount: 3)).to(allPass {
+                then("attributes are not set on the target side") { result in
+                    expect(result.all(TextTarget.self, expectedCount: 3)).to(allPass {
                         $0.textColorChanged == false
                     })
                 }

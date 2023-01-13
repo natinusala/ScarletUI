@@ -42,16 +42,16 @@ class OptionalViewToggleMultipleSpec: ScarletCoreSpec {
                     Tested(flip: true)
                 }
 
-                then("implementation is created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            TextImpl(text: "Beginning")
+                then("target is created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            TextTarget(text: "Beginning")
 
-                            TextImpl(text: "Flipped 1")
-                            TextImpl(text: "Flipped 2")
-                            TextImpl(text: "Flipped 3")
+                            TextTarget(text: "Flipped 1")
+                            TextTarget(text: "Flipped 2")
+                            TextTarget(text: "Flipped 3")
 
-                            TextImpl(text: "Ending")
+                            TextTarget(text: "Ending")
                         }
                     ))
                 }
@@ -62,11 +62,11 @@ class OptionalViewToggleMultipleSpec: ScarletCoreSpec {
                     Tested(flip: false)
                 }
 
-                then("implementation is created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            TextImpl(text: "Beginning")
-                            TextImpl(text: "Ending")
+                then("target is created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            TextTarget(text: "Beginning")
+                            TextTarget(text: "Ending")
                         }
                     ))
                 }
@@ -78,11 +78,11 @@ class OptionalViewToggleMultipleSpec: ScarletCoreSpec {
                     Tested(flip: false)
                 }
 
-                then("implementation is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            TextImpl(text: "Beginning")
-                            TextImpl(text: "Ending")
+                then("target is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            TextTarget(text: "Beginning")
+                            TextTarget(text: "Ending")
                         }
                     ))
                 }
@@ -94,16 +94,16 @@ class OptionalViewToggleMultipleSpec: ScarletCoreSpec {
                     Tested(flip: true)
                 }
 
-                then("implementation is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            TextImpl(text: "Beginning")
+                then("target is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            TextTarget(text: "Beginning")
 
-                            TextImpl(text: "Flipped 1")
-                            TextImpl(text: "Flipped 2")
-                            TextImpl(text: "Flipped 3")
+                            TextTarget(text: "Flipped 1")
+                            TextTarget(text: "Flipped 2")
+                            TextTarget(text: "Flipped 3")
 
-                            TextImpl(text: "Ending")
+                            TextTarget(text: "Ending")
                         }
                     ))
                 }

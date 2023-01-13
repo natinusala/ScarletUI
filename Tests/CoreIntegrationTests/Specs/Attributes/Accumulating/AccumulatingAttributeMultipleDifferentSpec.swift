@@ -37,10 +37,10 @@ class AccumulatingAttributeMultipleDifferentSpec: ScarletCoreSpec {
                     Tested(tag: "some-tag", flag: .accessible)
                 }
 
-                then("implementation is created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Rectangle", tags: ["some-tag"], flags: [.accessible]).anyChildren()
+                then("target is created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Rectangle", tags: ["some-tag"], flags: [.accessible]).anyChildren()
                         }
                     ))
                 }
@@ -52,10 +52,10 @@ class AccumulatingAttributeMultipleDifferentSpec: ScarletCoreSpec {
                     Tested(tag: "another-tag", flag: .accessible)
                 }
 
-                then("implementation is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Rectangle", tags: ["another-tag"], flags: [.accessible]).anyChildren()
+                then("target is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Rectangle", tags: ["another-tag"], flags: [.accessible]).anyChildren()
                         }
                     ))
                 }
@@ -75,10 +75,10 @@ class AccumulatingAttributeMultipleDifferentSpec: ScarletCoreSpec {
                     Tested(tag: "some-tag", flag: .clickable)
                 }
 
-                then("implementation is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Rectangle", tags: ["some-tag"], flags: [.clickable]).anyChildren()
+                then("target is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Rectangle", tags: ["some-tag"], flags: [.clickable]).anyChildren()
                         }
                     ))
                 }
@@ -98,10 +98,10 @@ class AccumulatingAttributeMultipleDifferentSpec: ScarletCoreSpec {
                     Tested(tag: "another-tag", flag: .clickable)
                 }
 
-                then("implementation is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Rectangle", tags: ["another-tag"], flags: [.clickable]).anyChildren()
+                then("target is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Rectangle", tags: ["another-tag"], flags: [.clickable]).anyChildren()
                         }
                     ))
                 }
@@ -118,10 +118,10 @@ class AccumulatingAttributeMultipleDifferentSpec: ScarletCoreSpec {
                     Tested(tag: "some-tag", flag: .accessible)
                 }
 
-                then("implementation is untouched") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Rectangle", tags: ["some-tag"], flags: [.accessible]).anyChildren()
+                then("target is untouched") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Rectangle", tags: ["some-tag"], flags: [.accessible]).anyChildren()
                         }
                     ))
                 }

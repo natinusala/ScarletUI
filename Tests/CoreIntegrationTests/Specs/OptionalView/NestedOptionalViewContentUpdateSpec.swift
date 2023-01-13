@@ -45,17 +45,17 @@ class NestedOptionalViewContentUpdateSpec: ScarletCoreSpec {
                     Tested(full: true)
                 }
 
-                then("implementation is created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Column") {
-                                TextImpl(text: "Text 1")
-                                TextImpl(text: "Text 2")
+                then("target is created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Column") {
+                                TextTarget(text: "Text 1")
+                                TextTarget(text: "Text 2")
 
-                                TextImpl(text: "Full Text 3")
-                                TextImpl(text: "Full Text 4")
+                                TextTarget(text: "Full Text 3")
+                                TextTarget(text: "Full Text 4")
 
-                                TextImpl(text: "Last text")
+                                TextTarget(text: "Last text")
                             }
                         }
                     ))
@@ -67,17 +67,17 @@ class NestedOptionalViewContentUpdateSpec: ScarletCoreSpec {
                     Tested(full: false)
                 }
 
-                then("implementation is created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Column") {
-                                TextImpl(text: "Text 1")
-                                TextImpl(text: "Text 2")
+                then("target is created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Column") {
+                                TextTarget(text: "Text 1")
+                                TextTarget(text: "Text 2")
 
-                                TextImpl(text: "Text 3")
-                                TextImpl(text: "Text 4")
+                                TextTarget(text: "Text 3")
+                                TextTarget(text: "Text 4")
 
-                                TextImpl(text: "Last text")
+                                TextTarget(text: "Last text")
                             }
                         }
                     ))
@@ -90,17 +90,17 @@ class NestedOptionalViewContentUpdateSpec: ScarletCoreSpec {
                     Tested(full: true)
                 }
 
-                then("implementation is created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Column") {
-                                TextImpl(text: "Text 1")
-                                TextImpl(text: "Text 2")
+                then("target is created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Column") {
+                                TextTarget(text: "Text 1")
+                                TextTarget(text: "Text 2")
 
-                                TextImpl(text: "Full Text 3")
-                                TextImpl(text: "Full Text 4")
+                                TextTarget(text: "Full Text 3")
+                                TextTarget(text: "Full Text 4")
 
-                                TextImpl(text: "Last text")
+                                TextTarget(text: "Last text")
                             }
                         }
                     ))
@@ -113,17 +113,17 @@ class NestedOptionalViewContentUpdateSpec: ScarletCoreSpec {
                     Tested(full: false)
                 }
 
-                then("implementation is created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Column") {
-                                TextImpl(text: "Text 1")
-                                TextImpl(text: "Text 2")
+                then("target is created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Column") {
+                                TextTarget(text: "Text 1")
+                                TextTarget(text: "Text 2")
 
-                                TextImpl(text: "Text 3")
-                                TextImpl(text: "Text 4")
+                                TextTarget(text: "Text 3")
+                                TextTarget(text: "Text 4")
 
-                                TextImpl(text: "Last text")
+                                TextTarget(text: "Last text")
                             }
                         }
                     ))

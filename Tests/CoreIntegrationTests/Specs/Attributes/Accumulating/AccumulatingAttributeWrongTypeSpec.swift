@@ -19,7 +19,7 @@ import Nimble
 @testable import ScarletCore
 
 class AccumulatingAttributeWrongTypeSpec: ScarletCoreSpec {
-    static let describing = "a view with an accumulating attribute applied of on the wrong implementation type"
+    static let describing = "a view with an accumulating attribute applied of on the wrong target type"
 
     struct Avatar: View {
         let user: String
@@ -43,11 +43,11 @@ class AccumulatingAttributeWrongTypeSpec: ScarletCoreSpec {
                     Tested(filter: .sepia)
                 }
 
-                then("implementation is created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Avatar") {
-                                ImageImpl(source: "avatar://me", filters: [.sepia])
+                then("target is created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Avatar") {
+                                ImageTarget(source: "avatar://me", filters: [.sepia])
                             }
                         }
                     ))
@@ -60,18 +60,18 @@ class AccumulatingAttributeWrongTypeSpec: ScarletCoreSpec {
                     Tested(filter: .sepia)
                 }
 
-                then("implementation is untouched") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Avatar") {
-                                ImageImpl(source: "avatar://me", filters: [.sepia])
+                then("target is untouched") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Avatar") {
+                                ImageTarget(source: "avatar://me", filters: [.sepia])
                             }
                         }
                     ))
                 }
 
-                then("the attribute is not set on the implementation side") { result in
-                    expect(result.first(ImageImpl.self).filtersChanged).to(beFalse())
+                then("the attribute is not set on the target side") { result in
+                    expect(result.first(ImageTarget.self).filtersChanged).to(beFalse())
                 }
             }
 
@@ -81,18 +81,18 @@ class AccumulatingAttributeWrongTypeSpec: ScarletCoreSpec {
                     Tested(filter: .blackAndWhite)
                 }
 
-                then("implementation is untouched") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Avatar") {
-                                ImageImpl(source: "avatar://me", filters: [.blackAndWhite])
+                then("target is untouched") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Avatar") {
+                                ImageTarget(source: "avatar://me", filters: [.blackAndWhite])
                             }
                         }
                     ))
                 }
 
-                then("the attribute is not set on the implementation side") { result in
-                    expect(result.first(ImageImpl.self).filtersChanged).to(beTrue())
+                then("the attribute is not set on the target side") { result in
+                    expect(result.first(ImageTarget.self).filtersChanged).to(beTrue())
                 }
             }
         }

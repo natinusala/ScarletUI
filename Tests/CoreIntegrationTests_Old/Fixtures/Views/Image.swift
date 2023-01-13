@@ -17,22 +17,22 @@
 import ScarletCore
 
 struct Image: View {
-    @Attribute(\ImageImpl.source)
+    @Attribute(\ImageTarget.source)
     var source
 
     typealias Body = Never
-    typealias Implementation = ImageImpl
+    typealias Target = ImageTarget
 
     init(source: String) {
         self.source = source
     }
 }
 
-class ImageImpl: ViewImpl {
+class ImageTarget: ViewTarget {
     var source: String = ""
 
     /// Initializer used by ScarletCore.
-    public required init(kind: ImplementationKind, displayName: String) {
+    public required init(kind: TargetKind, displayName: String) {
         super.init(kind: kind, displayName: displayName)
     }
 
@@ -42,8 +42,8 @@ class ImageImpl: ViewImpl {
         super.init(kind: .view, displayName: "Image")
     }
 
-    override open func equals(to other: ViewImpl) -> Bool {
-        guard let other = other as? ImageImpl else { return false }
+    override open func equals(to other: ViewTarget) -> Bool {
+        guard let other = other as? ImageTarget else { return false }
         return self.source == other.source
     }
 
@@ -59,7 +59,7 @@ class ImageImpl: ViewImpl {
             """
         }
         return """
-        ImageImpl(source: "\(self.source)", \(self.attributes)) \(children)
+        ImageTarget(source: "\(self.source)", \(self.attributes)) \(children)
         """
     }
 }

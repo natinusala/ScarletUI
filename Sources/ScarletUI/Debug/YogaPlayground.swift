@@ -99,7 +99,7 @@ extension LayoutValue: Encodable {
     }
 }
 
-extension _WindowImplementation: PlaygroundNodeConvertible {
+extension _WindowTarget: PlaygroundNodeConvertible {
     var padding: EdgesLayoutValues {
         return .undefined()
     }
@@ -135,14 +135,14 @@ extension _WindowImplementation: PlaygroundNodeConvertible {
     }
 }
 
-extension _ViewImplementation: PlaygroundNodeConvertible {
+extension _ViewTarget: PlaygroundNodeConvertible {
     var playgroundNodeConvertibleChildren: [PlaygroundNodeConvertible] {
         return self.children
     }
 }
 
 /// Opens the Yoga Playground web page with the given node as root.
-func openYogaPlayground(for node: ImplementationNode, platform: any _Platform) {
+func openYogaPlayground(for node: TargetNode, platform: any _Platform) {
     guard let convertible = node as? PlaygroundNodeConvertible else {
         appLogger.error("'\(type(of: node))' cannot be serialized for Yoga Playground as it doesn't conform to 'PlaygroundNodeConvertible'")
         return

@@ -46,22 +46,22 @@ class MultipleViewModifierSpec: ScarletCoreSpec {
                     Tested(modifiedColor: "yellow", someModifierText: "some modifier", anotherModifierIcon: "info")
                 }
 
-                then("implementation is created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            TextImpl(text: "Wrapping starts")
+                then("target is created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            TextTarget(text: "Wrapping starts")
 
-                            ViewImpl("Row") {
-                                TextImpl(text: "some modifier")
+                            ViewTarget("Row") {
+                                TextTarget(text: "some modifier")
 
-                                ViewImpl("Modified") {
-                                    TextImpl(text: "yellow")
+                                ViewTarget("Modified") {
+                                    TextTarget(text: "yellow")
                                 }
                             }
 
-                            ImageImpl(source: "icon-info.png")
+                            ImageTarget(source: "icon-info.png")
 
-                            TextImpl(text: "Wrapping ends")
+                            TextTarget(text: "Wrapping ends")
                         }
                     ))
                 }
@@ -73,22 +73,22 @@ class MultipleViewModifierSpec: ScarletCoreSpec {
                     Tested(modifiedColor: "yellow", someModifierText: "some modifier", anotherModifierIcon: "info")
                 }
 
-                then("implementation is untouched") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            TextImpl(text: "Wrapping starts")
+                then("target is untouched") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            TextTarget(text: "Wrapping starts")
 
-                            ViewImpl("Row") {
-                                TextImpl(text: "some modifier")
+                            ViewTarget("Row") {
+                                TextTarget(text: "some modifier")
 
-                                ViewImpl("Modified") {
-                                    TextImpl(text: "yellow")
+                                ViewTarget("Modified") {
+                                    TextTarget(text: "yellow")
                                 }
                             }
 
-                            ImageImpl(source: "icon-info.png")
+                            ImageTarget(source: "icon-info.png")
 
-                            TextImpl(text: "Wrapping ends")
+                            TextTarget(text: "Wrapping ends")
                         }
                     ))
                 }
@@ -116,22 +116,22 @@ class MultipleViewModifierSpec: ScarletCoreSpec {
                     Tested(modifiedColor: "orange", someModifierText: "some modifier", anotherModifierIcon: "info")
                 }
 
-                then("implementation is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            TextImpl(text: "Wrapping starts")
+                then("target is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            TextTarget(text: "Wrapping starts")
 
-                            ViewImpl("Row") {
-                                TextImpl(text: "some modifier")
+                            ViewTarget("Row") {
+                                TextTarget(text: "some modifier")
 
-                                ViewImpl("Modified") {
-                                    TextImpl(text: "orange")
+                                ViewTarget("Modified") {
+                                    TextTarget(text: "orange")
                                 }
                             }
 
-                            ImageImpl(source: "icon-info.png")
+                            ImageTarget(source: "icon-info.png")
 
-                            TextImpl(text: "Wrapping ends")
+                            TextTarget(text: "Wrapping ends")
                         }
                     ))
                 }
@@ -159,22 +159,22 @@ class MultipleViewModifierSpec: ScarletCoreSpec {
                     Tested(modifiedColor: "yellow", someModifierText: "some changed modifier", anotherModifierIcon: "info")
                 }
 
-                then("implementation is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            TextImpl(text: "Wrapping starts")
+                then("target is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            TextTarget(text: "Wrapping starts")
 
-                            ViewImpl("Row") {
-                                TextImpl(text: "some changed modifier")
+                            ViewTarget("Row") {
+                                TextTarget(text: "some changed modifier")
 
-                                ViewImpl("Modified") {
-                                    TextImpl(text: "yellow")
+                                ViewTarget("Modified") {
+                                    TextTarget(text: "yellow")
                                 }
                             }
 
-                            ImageImpl(source: "icon-info.png")
+                            ImageTarget(source: "icon-info.png")
 
-                            TextImpl(text: "Wrapping ends")
+                            TextTarget(text: "Wrapping ends")
                         }
                     ))
                 }
@@ -202,22 +202,22 @@ class MultipleViewModifierSpec: ScarletCoreSpec {
                     Tested(modifiedColor: "yellow", someModifierText: "some changed modifier", anotherModifierIcon: "info")
                 }
 
-                then("implementation is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            TextImpl(text: "Wrapping starts")
+                then("target is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            TextTarget(text: "Wrapping starts")
 
-                            ViewImpl("Row") {
-                                TextImpl(text: "some changed modifier")
+                            ViewTarget("Row") {
+                                TextTarget(text: "some changed modifier")
 
-                                ViewImpl("Modified") {
-                                    TextImpl(text: "yellow")
+                                ViewTarget("Modified") {
+                                    TextTarget(text: "yellow")
                                 }
                             }
 
-                            ImageImpl(source: "icon-info.png")
+                            ImageTarget(source: "icon-info.png")
 
-                            TextImpl(text: "Wrapping ends")
+                            TextTarget(text: "Wrapping ends")
                         }
                     ))
                 }

@@ -19,7 +19,7 @@ import ScarletCore
 extension View {
     func fill(color: Color?) -> some View {
         return self.attributed(
-            Attribute(\ViewImpl.attributes.fill, value: color)
+            Attribute(\ViewTarget.attributes.fill, value: color)
         )
     }
 }

@@ -95,30 +95,30 @@ class EnvironmentUpdatesSpec: ScarletCoreSpec {
                     Tested(first: 10, second: "world")
                 }
 
-                then("implementation is created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Row") {
-                                ViewImpl("UsesNone") {
-                                    TextImpl(text: "Uses no changed environment values, never updated")
+                then("target is created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Row") {
+                                ViewTarget("UsesNone") {
+                                    TextTarget(text: "Uses no changed environment values, never updated")
                                 }
 
-                                ViewImpl("Uses1") {
-                                    TextImpl(text: "First: 10")
+                                ViewTarget("Uses1") {
+                                    TextTarget(text: "First: 10")
                                 }
 
-                                ViewImpl("Uses2") {
-                                    TextImpl(text: "Second: world")
+                                ViewTarget("Uses2") {
+                                    TextTarget(text: "Second: world")
                                 }
 
-                                ViewImpl("UsesAll") {
-                                    TextImpl(text: "Should be skipped since it never changes")
+                                ViewTarget("UsesAll") {
+                                    TextTarget(text: "Should be skipped since it never changes")
 
-                                    ViewImpl("UsesAllFirst") {
-                                        TextImpl(text: "First: 10")
+                                    ViewTarget("UsesAllFirst") {
+                                        TextTarget(text: "First: 10")
 
-                                        ViewImpl("UsesAllSecond") {
-                                            TextImpl(text: "Second: world")
+                                        ViewTarget("UsesAllSecond") {
+                                            TextTarget(text: "Second: world")
                                         }
                                     }
                                 }
@@ -147,30 +147,30 @@ class EnvironmentUpdatesSpec: ScarletCoreSpec {
                     expect(result.bodyCalled(of: Uses2.self)).to(beFalse())
                 }
 
-                then("implementation is untouched") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Row") {
-                                ViewImpl("UsesNone") {
-                                    TextImpl(text: "Uses no changed environment values, never updated")
+                then("target is untouched") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Row") {
+                                ViewTarget("UsesNone") {
+                                    TextTarget(text: "Uses no changed environment values, never updated")
                                 }
 
-                                ViewImpl("Uses1") {
-                                    TextImpl(text: "First: 10")
+                                ViewTarget("Uses1") {
+                                    TextTarget(text: "First: 10")
                                 }
 
-                                ViewImpl("Uses2") {
-                                    TextImpl(text: "Second: world")
+                                ViewTarget("Uses2") {
+                                    TextTarget(text: "Second: world")
                                 }
 
-                                ViewImpl("UsesAll") {
-                                    TextImpl(text: "Should be skipped since it never changes")
+                                ViewTarget("UsesAll") {
+                                    TextTarget(text: "Should be skipped since it never changes")
 
-                                    ViewImpl("UsesAllFirst") {
-                                        TextImpl(text: "First: 10")
+                                    ViewTarget("UsesAllFirst") {
+                                        TextTarget(text: "First: 10")
 
-                                        ViewImpl("UsesAllSecond") {
-                                            TextImpl(text: "Second: world")
+                                        ViewTarget("UsesAllSecond") {
+                                            TextTarget(text: "Second: world")
                                         }
                                     }
                                 }
@@ -199,30 +199,30 @@ class EnvironmentUpdatesSpec: ScarletCoreSpec {
                     expect(result.bodyCalled(of: Uses2.self)).to(beFalse())
                 }
 
-                then("implementation is untouched") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Row") {
-                                ViewImpl("UsesNone") {
-                                    TextImpl(text: "Uses no changed environment values, never updated")
+                then("target is untouched") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Row") {
+                                ViewTarget("UsesNone") {
+                                    TextTarget(text: "Uses no changed environment values, never updated")
                                 }
 
-                                ViewImpl("Uses1") {
-                                    TextImpl(text: "First: 20")
+                                ViewTarget("Uses1") {
+                                    TextTarget(text: "First: 20")
                                 }
 
-                                ViewImpl("Uses2") {
-                                    TextImpl(text: "Second: world")
+                                ViewTarget("Uses2") {
+                                    TextTarget(text: "Second: world")
                                 }
 
-                                ViewImpl("UsesAll") {
-                                    TextImpl(text: "Should be skipped since it never changes")
+                                ViewTarget("UsesAll") {
+                                    TextTarget(text: "Should be skipped since it never changes")
 
-                                    ViewImpl("UsesAllFirst") {
-                                        TextImpl(text: "First: 20")
+                                    ViewTarget("UsesAllFirst") {
+                                        TextTarget(text: "First: 20")
 
-                                        ViewImpl("UsesAllSecond") {
-                                            TextImpl(text: "Second: world")
+                                        ViewTarget("UsesAllSecond") {
+                                            TextTarget(text: "Second: world")
                                         }
                                     }
                                 }
@@ -251,30 +251,30 @@ class EnvironmentUpdatesSpec: ScarletCoreSpec {
                     expect(result.bodyCalled(of: Uses2.self)).to(beTrue())
                 }
 
-                then("implementation is untouched") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Row") {
-                                ViewImpl("UsesNone") {
-                                    TextImpl(text: "Uses no changed environment values, never updated")
+                then("target is untouched") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Row") {
+                                ViewTarget("UsesNone") {
+                                    TextTarget(text: "Uses no changed environment values, never updated")
                                 }
 
-                                ViewImpl("Uses1") {
-                                    TextImpl(text: "First: 10")
+                                ViewTarget("Uses1") {
+                                    TextTarget(text: "First: 10")
                                 }
 
-                                ViewImpl("Uses2") {
-                                    TextImpl(text: "Second: foobarbaz")
+                                ViewTarget("Uses2") {
+                                    TextTarget(text: "Second: foobarbaz")
                                 }
 
-                                ViewImpl("UsesAll") {
-                                    TextImpl(text: "Should be skipped since it never changes")
+                                ViewTarget("UsesAll") {
+                                    TextTarget(text: "Should be skipped since it never changes")
 
-                                    ViewImpl("UsesAllFirst") {
-                                        TextImpl(text: "First: 10")
+                                    ViewTarget("UsesAllFirst") {
+                                        TextTarget(text: "First: 10")
 
-                                        ViewImpl("UsesAllSecond") {
-                                            TextImpl(text: "Second: foobarbaz")
+                                        ViewTarget("UsesAllSecond") {
+                                            TextTarget(text: "Second: foobarbaz")
                                         }
                                     }
                                 }
@@ -303,30 +303,30 @@ class EnvironmentUpdatesSpec: ScarletCoreSpec {
                     expect(result.bodyCalled(of: Uses2.self)).to(beTrue())
                 }
 
-                then("implementation is untouched") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Row") {
-                                ViewImpl("UsesNone") {
-                                    TextImpl(text: "Uses no changed environment values, never updated")
+                then("target is untouched") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Row") {
+                                ViewTarget("UsesNone") {
+                                    TextTarget(text: "Uses no changed environment values, never updated")
                                 }
 
-                                ViewImpl("Uses1") {
-                                    TextImpl(text: "First: 20")
+                                ViewTarget("Uses1") {
+                                    TextTarget(text: "First: 20")
                                 }
 
-                                ViewImpl("Uses2") {
-                                    TextImpl(text: "Second: foobarbaz")
+                                ViewTarget("Uses2") {
+                                    TextTarget(text: "Second: foobarbaz")
                                 }
 
-                                ViewImpl("UsesAll") {
-                                    TextImpl(text: "Should be skipped since it never changes")
+                                ViewTarget("UsesAll") {
+                                    TextTarget(text: "Should be skipped since it never changes")
 
-                                    ViewImpl("UsesAllFirst") {
-                                        TextImpl(text: "First: 20")
+                                    ViewTarget("UsesAllFirst") {
+                                        TextTarget(text: "First: 20")
 
-                                        ViewImpl("UsesAllSecond") {
-                                            TextImpl(text: "Second: foobarbaz")
+                                        ViewTarget("UsesAllSecond") {
+                                            TextTarget(text: "Second: foobarbaz")
                                         }
                                     }
                                 }

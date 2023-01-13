@@ -16,7 +16,7 @@
 
 /// A view that arranges its children in a column.
 public struct Column<Content>: ContainerView where Content: View {
-    public typealias Implementation = Never
+    public typealias Target = Never
 
     let content: Content
 

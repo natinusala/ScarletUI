@@ -79,31 +79,31 @@ class AccumulatingAttributeMultiplePropagationSpec: ScarletCoreSpec {
                     Tested(firstDecoration: .bold, secondDecoration: .strikethrough)
                 }
 
-                then("the implementation tree is created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("MainContent") {
-                                ViewImpl("Column") {
-                                    ViewImpl("Header") {
-                                        ViewImpl("Row") {
-                                            TextImpl(text: "Main Title", decorations: [.bold, .strikethrough])
+                then("the target tree is created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("MainContent") {
+                                ViewTarget("Column") {
+                                    ViewTarget("Header") {
+                                        ViewTarget("Row") {
+                                            TextTarget(text: "Main Title", decorations: [.bold, .strikethrough])
 
-                                            ViewImpl("Divider").anyChildren()
+                                            ViewTarget("Divider").anyChildren()
 
-                                            ViewImpl("UserInfo") {
-                                                TextImpl(text: "Logged in as: John Scarlet", decorations: [.bold, .strikethrough])
-                                                TextImpl(text: "Logout", decorations: [.bold, .strikethrough])
+                                            ViewTarget("UserInfo") {
+                                                TextTarget(text: "Logged in as: John Scarlet", decorations: [.bold, .strikethrough])
+                                                TextTarget(text: "Logout", decorations: [.bold, .strikethrough])
                                             }
                                         }
                                     }
 
-                                    ViewImpl("Content") {
-                                        TextImpl(text: "Loading content...", decorations: [.bold, .strikethrough])
+                                    ViewTarget("Content") {
+                                        TextTarget(text: "Loading content...", decorations: [.bold, .strikethrough])
                                     }
 
-                                    ViewImpl("Footer") {
-                                        ImageImpl(source: "controller-icon")
-                                        TextImpl(text: "P1", decorations: [.bold, .strikethrough])
+                                    ViewTarget("Footer") {
+                                        ImageTarget(source: "controller-icon")
+                                        TextTarget(text: "P1", decorations: [.bold, .strikethrough])
                                     }
                                 }
                             }
@@ -118,31 +118,31 @@ class AccumulatingAttributeMultiplePropagationSpec: ScarletCoreSpec {
                     Tested(firstDecoration: .bold, secondDecoration: .strikethrough)
                 }
 
-                then("the implementation tree is untouched") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("MainContent") {
-                                ViewImpl("Column") {
-                                    ViewImpl("Header") {
-                                        ViewImpl("Row") {
-                                            TextImpl(text: "Main Title", decorations: [.bold, .strikethrough])
+                then("the target tree is untouched") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("MainContent") {
+                                ViewTarget("Column") {
+                                    ViewTarget("Header") {
+                                        ViewTarget("Row") {
+                                            TextTarget(text: "Main Title", decorations: [.bold, .strikethrough])
 
-                                            ViewImpl("Divider").anyChildren()
+                                            ViewTarget("Divider").anyChildren()
 
-                                            ViewImpl("UserInfo") {
-                                                TextImpl(text: "Logged in as: John Scarlet", decorations: [.bold, .strikethrough])
-                                                TextImpl(text: "Logout", decorations: [.bold, .strikethrough])
+                                            ViewTarget("UserInfo") {
+                                                TextTarget(text: "Logged in as: John Scarlet", decorations: [.bold, .strikethrough])
+                                                TextTarget(text: "Logout", decorations: [.bold, .strikethrough])
                                             }
                                         }
                                     }
 
-                                    ViewImpl("Content") {
-                                        TextImpl(text: "Loading content...", decorations: [.bold, .strikethrough])
+                                    ViewTarget("Content") {
+                                        TextTarget(text: "Loading content...", decorations: [.bold, .strikethrough])
                                     }
 
-                                    ViewImpl("Footer") {
-                                        ImageImpl(source: "controller-icon")
-                                        TextImpl(text: "P1", decorations: [.bold, .strikethrough])
+                                    ViewTarget("Footer") {
+                                        ImageTarget(source: "controller-icon")
+                                        TextTarget(text: "P1", decorations: [.bold, .strikethrough])
                                     }
                                 }
                             }
@@ -150,8 +150,8 @@ class AccumulatingAttributeMultiplePropagationSpec: ScarletCoreSpec {
                     ))
                 }
 
-                then("attributes are not updated on the implementation side") { result in
-                    expect(result.all(TextImpl.self, expectedCount: 5)).to(allPass {
+                then("attributes are not updated on the target side") { result in
+                    expect(result.all(TextTarget.self, expectedCount: 5)).to(allPass {
                         $0.decorationsChanged == false
                     })
                 }
@@ -163,31 +163,31 @@ class AccumulatingAttributeMultiplePropagationSpec: ScarletCoreSpec {
                     Tested(firstDecoration: .underlined, secondDecoration: .strikethrough)
                 }
 
-                then("the implementation tree is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("MainContent") {
-                                ViewImpl("Column") {
-                                    ViewImpl("Header") {
-                                        ViewImpl("Row") {
-                                            TextImpl(text: "Main Title", decorations: [.underlined, .strikethrough])
+                then("the target tree is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("MainContent") {
+                                ViewTarget("Column") {
+                                    ViewTarget("Header") {
+                                        ViewTarget("Row") {
+                                            TextTarget(text: "Main Title", decorations: [.underlined, .strikethrough])
 
-                                            ViewImpl("Divider").anyChildren()
+                                            ViewTarget("Divider").anyChildren()
 
-                                            ViewImpl("UserInfo") {
-                                                TextImpl(text: "Logged in as: John Scarlet", decorations: [.underlined, .strikethrough])
-                                                TextImpl(text: "Logout", decorations: [.underlined, .strikethrough])
+                                            ViewTarget("UserInfo") {
+                                                TextTarget(text: "Logged in as: John Scarlet", decorations: [.underlined, .strikethrough])
+                                                TextTarget(text: "Logout", decorations: [.underlined, .strikethrough])
                                             }
                                         }
                                     }
 
-                                    ViewImpl("Content") {
-                                        TextImpl(text: "Loading content...", decorations: [.underlined, .strikethrough])
+                                    ViewTarget("Content") {
+                                        TextTarget(text: "Loading content...", decorations: [.underlined, .strikethrough])
                                     }
 
-                                    ViewImpl("Footer") {
-                                        ImageImpl(source: "controller-icon")
-                                        TextImpl(text: "P1", decorations: [.underlined, .strikethrough])
+                                    ViewTarget("Footer") {
+                                        ImageTarget(source: "controller-icon")
+                                        TextTarget(text: "P1", decorations: [.underlined, .strikethrough])
                                     }
                                 }
                             }
@@ -195,8 +195,8 @@ class AccumulatingAttributeMultiplePropagationSpec: ScarletCoreSpec {
                     ))
                 }
 
-                then("attribute is updated on the implementation side") { result in
-                    expect(result.all(TextImpl.self, expectedCount: 5)).to(allPass {
+                then("attribute is updated on the target side") { result in
+                    expect(result.all(TextTarget.self, expectedCount: 5)).to(allPass {
                         $0.decorationsChanged == true
                     })
                 }
@@ -208,31 +208,31 @@ class AccumulatingAttributeMultiplePropagationSpec: ScarletCoreSpec {
                     Tested(firstDecoration: .bold, secondDecoration: .underlined)
                 }
 
-                then("the implementation tree is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("MainContent") {
-                                ViewImpl("Column") {
-                                    ViewImpl("Header") {
-                                        ViewImpl("Row") {
-                                            TextImpl(text: "Main Title", decorations: [.bold, .underlined])
+                then("the target tree is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("MainContent") {
+                                ViewTarget("Column") {
+                                    ViewTarget("Header") {
+                                        ViewTarget("Row") {
+                                            TextTarget(text: "Main Title", decorations: [.bold, .underlined])
 
-                                            ViewImpl("Divider").anyChildren()
+                                            ViewTarget("Divider").anyChildren()
 
-                                            ViewImpl("UserInfo") {
-                                                TextImpl(text: "Logged in as: John Scarlet", decorations: [.bold, .underlined])
-                                                TextImpl(text: "Logout", decorations: [.bold, .underlined])
+                                            ViewTarget("UserInfo") {
+                                                TextTarget(text: "Logged in as: John Scarlet", decorations: [.bold, .underlined])
+                                                TextTarget(text: "Logout", decorations: [.bold, .underlined])
                                             }
                                         }
                                     }
 
-                                    ViewImpl("Content") {
-                                        TextImpl(text: "Loading content...", decorations: [.bold, .underlined])
+                                    ViewTarget("Content") {
+                                        TextTarget(text: "Loading content...", decorations: [.bold, .underlined])
                                     }
 
-                                    ViewImpl("Footer") {
-                                        ImageImpl(source: "controller-icon")
-                                        TextImpl(text: "P1", decorations: [.bold, .underlined])
+                                    ViewTarget("Footer") {
+                                        ImageTarget(source: "controller-icon")
+                                        TextTarget(text: "P1", decorations: [.bold, .underlined])
                                     }
                                 }
                             }
@@ -240,8 +240,8 @@ class AccumulatingAttributeMultiplePropagationSpec: ScarletCoreSpec {
                     ))
                 }
 
-                then("attribute is updated on the implementation side") { result in
-                    expect(result.all(TextImpl.self, expectedCount: 5)).to(allPass {
+                then("attribute is updated on the target side") { result in
+                    expect(result.all(TextTarget.self, expectedCount: 5)).to(allPass {
                         $0.decorationsChanged == true
                     })
                 }
@@ -253,31 +253,31 @@ class AccumulatingAttributeMultiplePropagationSpec: ScarletCoreSpec {
                     Tested(firstDecoration: .strikethrough, secondDecoration: .underlined)
                 }
 
-                then("the implementation tree is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("MainContent") {
-                                ViewImpl("Column") {
-                                    ViewImpl("Header") {
-                                        ViewImpl("Row") {
-                                            TextImpl(text: "Main Title", decorations: [.strikethrough, .underlined])
+                then("the target tree is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("MainContent") {
+                                ViewTarget("Column") {
+                                    ViewTarget("Header") {
+                                        ViewTarget("Row") {
+                                            TextTarget(text: "Main Title", decorations: [.strikethrough, .underlined])
 
-                                            ViewImpl("Divider").anyChildren()
+                                            ViewTarget("Divider").anyChildren()
 
-                                            ViewImpl("UserInfo") {
-                                                TextImpl(text: "Logged in as: John Scarlet", decorations: [.strikethrough, .underlined])
-                                                TextImpl(text: "Logout", decorations: [.strikethrough, .underlined])
+                                            ViewTarget("UserInfo") {
+                                                TextTarget(text: "Logged in as: John Scarlet", decorations: [.strikethrough, .underlined])
+                                                TextTarget(text: "Logout", decorations: [.strikethrough, .underlined])
                                             }
                                         }
                                     }
 
-                                    ViewImpl("Content") {
-                                        TextImpl(text: "Loading content...", decorations: [.strikethrough, .underlined])
+                                    ViewTarget("Content") {
+                                        TextTarget(text: "Loading content...", decorations: [.strikethrough, .underlined])
                                     }
 
-                                    ViewImpl("Footer") {
-                                        ImageImpl(source: "controller-icon")
-                                        TextImpl(text: "P1", decorations: [.strikethrough, .underlined])
+                                    ViewTarget("Footer") {
+                                        ImageTarget(source: "controller-icon")
+                                        TextTarget(text: "P1", decorations: [.strikethrough, .underlined])
                                     }
                                 }
                             }
@@ -285,8 +285,8 @@ class AccumulatingAttributeMultiplePropagationSpec: ScarletCoreSpec {
                     ))
                 }
 
-                then("attribute is updated on the implementation side") { result in
-                    expect(result.all(TextImpl.self, expectedCount: 5)).to(allPass {
+                then("attribute is updated on the target side") { result in
+                    expect(result.all(TextTarget.self, expectedCount: 5)).to(allPass {
                         $0.decorationsChanged == true
                     })
                 }

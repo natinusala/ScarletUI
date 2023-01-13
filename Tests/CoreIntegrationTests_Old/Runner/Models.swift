@@ -58,7 +58,7 @@ struct Expectations {
 /// that everything went as expected.
 struct UpdateResult {
     let bodyCalls: [ObjectIdentifier: Int]
-    let implementation: ViewImpl?
+    let target: ViewTarget?
 
     /// Only works after an update (is always empty after a creation).
     func bodyCalled<T>(of: T.Type) -> Bool {

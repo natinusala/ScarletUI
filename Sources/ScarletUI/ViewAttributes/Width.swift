@@ -18,7 +18,7 @@ public extension View {
     /// Sets the view desired width.
     func width(_ width: LayoutValue) -> some View {
         return self.attributed(
-            Attribute(\_ViewImplementation.desiredWidth, value: width)
+            Attribute(\_ViewTarget.desiredWidth, value: width)
         )
     }
 }

@@ -32,13 +32,13 @@ public protocol StatefulElementNode: ElementNode {
     /// Used to update it again if a dynamic property changes.
     var context: Context { get set }
 
-    /// Last implementation position used to update the element.
+    /// Last target position used to update the element.
     /// Used to update it again if a dynamic property changes.
-    var implementationPosition: Int { get set }
+    var targetPosition: Int { get set }
 }
 
 public extension StatefulElementNode {
-    /// Default implementation for stored element nodes: compare the stored value
+    /// Default target for stored element nodes: compare the stored value
     /// with the new one.
     func shouldUpdate(with element: Value, using context: ElementNodeContext) -> Bool {
         // If the view is a container, don't check it since it's redundant
@@ -58,15 +58,15 @@ public extension StatefulElementNode {
         self.context = context
     }
 
-    func storeImplementationPosition(_ position: Int) {
-        self.implementationPosition = position
+    func storeTargetPosition(_ position: Int) {
+        self.targetPosition = position
     }
 
     var valueDebugDescription: String {
         return self.value.debugDescription
     }
 
-    func compareAndUpdate(with element: Value?, implementationPosition: Int, using context: Context) -> UpdateResult {
+    func compareAndUpdate(with element: Value?, targetPosition: Int, using context: Context) -> UpdateResult {
         // If no value is given, assume its direct input didn't change
         guard let element else {
             // If any element variable changed, take our own stored view, install it with the new environment values
@@ -75,11 +75,11 @@ public extension StatefulElementNode {
                 var installed = self.value
                 self.install(element: &installed, using: context)
 
-                return self.update(with: installed, implementationPosition: implementationPosition, using: context)
+                return self.update(with: installed, targetPosition: targetPosition, using: context)
             }
 
             // Otherwise assume the view is unchanged so perform an update giving `nil` as element
-            return self.update(with: nil, implementationPosition: implementationPosition, using: context)
+            return self.update(with: nil, targetPosition: targetPosition, using: context)
         }
 
         // If any state variable changed, always install and update the view since
@@ -88,7 +88,7 @@ public extension StatefulElementNode {
             var installed = element
             self.install(element: &installed, using: context)
 
-            return self.update(with: installed, implementationPosition: implementationPosition, using: context)
+            return self.update(with: installed, targetPosition: targetPosition, using: context)
         }
 
         // If an environment variable that we use changed, also update the view
@@ -96,7 +96,7 @@ public extension StatefulElementNode {
             var installed = element
             self.install(element: &installed, using: context)
 
-            return self.update(with: installed, implementationPosition: implementationPosition, using: context)
+            return self.update(with: installed, targetPosition: targetPosition, using: context)
         }
 
         // Then compare fields ignoring dynamic variables
@@ -104,7 +104,7 @@ public extension StatefulElementNode {
             var installed = element
             self.install(element: &installed, using: context)
 
-            return self.update(with: installed, implementationPosition: implementationPosition, using: context)
+            return self.update(with: installed, targetPosition: targetPosition, using: context)
         }
 
         // TODO: check if we are inside a ViewModifier - if not, there is no point to continue here.
@@ -113,7 +113,7 @@ public extension StatefulElementNode {
 
         // Otherwise give `nil` if the element is equal to the previous one
         // since some distant edges may change depending on context
-        return self.update(with: nil, implementationPosition: implementationPosition, using: context)
+        return self.update(with: nil, targetPosition: targetPosition, using: context)
     }
 
     func install(element: inout Value, using context: ElementNodeContext) {
@@ -130,7 +130,7 @@ public extension StatefulElementNode {
         // Set context state change
         benchmark("'\(Value.self)' state update") {
             let context = self.context.settingStateChange()
-            _ = self.update(with: self.value, implementationPosition: self.implementationPosition, using: context)
+            _ = self.update(with: self.value, targetPosition: self.targetPosition, using: context)
         }
     }
 }

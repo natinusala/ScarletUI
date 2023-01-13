@@ -18,7 +18,7 @@ extension Never: ElementInput, ElementOutput {
     public typealias Value = Never
 }
 
-extension Never: ImplementationNode {
+extension Never: TargetNode {
     public var displayName: String {
         fatalError()
     }
@@ -31,7 +31,7 @@ extension Never: ImplementationNode {
         fatalError()
     }
 
-    public func insertChild(_ child: ImplementationNode, at position: Int) {
+    public func insertChild(_ child: TargetNode, at position: Int) {
         fatalError()
     }
 
@@ -41,13 +41,13 @@ extension Never: ImplementationNode {
 }
 
 extension Never: Element {
-    public typealias Implementation = Never
+    public typealias Target = Never
 
-    public static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) -> NeverElementNode {}
+    public static func makeNode(of element: Self, in parent: (any ElementNode)?, targetPosition: Int, using context: Context) -> NeverElementNode {}
 
     public static func make(_ element: Self, input: Never) -> Never {}
 
-    public static func makeImplementation(of element: Self) -> (any ImplementationNode)? {}
+    public static func makeTarget(of element: Self) -> (any TargetNode)? {}
 }
 
 extension Never: View, Scene, App {
@@ -68,15 +68,15 @@ public class NeverElementNode: ElementNode {
         set {}
     }
     public weak var parent: (any ElementNode)?
-    public var implementation: Value.Implementation?
-    public var implementationCount = 0
+    public var target: Value.Target?
+    public var targetCount = 0
     public var attributes = AttributesStash()
 
     init() {
         fatalError()
     }
 
-    public func updateEdges(from output: Never?, at implementationPosition: Int, using context: Context) -> UpdateResult {
+    public func updateEdges(from output: Never?, at targetPosition: Int, using context: Context) -> UpdateResult {
         fatalError()
     }
 

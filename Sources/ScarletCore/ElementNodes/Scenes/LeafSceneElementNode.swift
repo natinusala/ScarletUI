@@ -25,34 +25,34 @@ public struct LeafSceneMakeOutput<Value, Edge>: ElementOutput where Value: Eleme
 /// Element nodes for scenes that have a view as content. Does not perform equality check.
 public class LeafSceneElementNode<Value, Edge>: ElementNode where Value: Element, Value.Input == UserMakeInput<Value>, Value.Output == UserMakeOutput<Value, Edge>, Edge: Element {
     public weak var parent: (any ElementNode)?
-    public var implementation: Value.Implementation?
-    public var implementationCount = 0
+    public var target: Value.Target?
+    public var targetCount = 0
     public var attributes = AttributesStash()
 
     var edge: Edge.Node?
 
-    init(making element: Value, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) {
+    init(making element: Value, in parent: (any ElementNode)?, targetPosition: Int, using context: Context) {
         self.parent = parent
 
-        // Create the implementation node
-        self.implementation = Value.makeImplementation(of: element)
+        // Create the target node
+        self.target = Value.makeTarget(of: element)
 
         // Start a first update without comparing (since we update the value with itself)
-        let result = self.update(with: element, implementationPosition: implementationPosition, using: context, initial: true)
+        let result = self.update(with: element, targetPosition: targetPosition, using: context, initial: true)
 
-        // Attach the implementation once everything is ready
-        self.insertImplementationInParent(position: result.implementationPosition)
+        // Attach the target once everything is ready
+        self.insertTargetInParent(position: result.targetPosition)
     }
 
-    public func updateEdges(from output: Value.Output?, at implementationPosition: Int, using context: Context) -> UpdateResult {
+    public func updateEdges(from output: Value.Output?, at targetPosition: Int, using context: Context) -> UpdateResult {
         if let edge = self.edge {
-            return edge.compareAndUpdate(with: output?.edge, implementationPosition: implementationPosition, using: context)
+            return edge.compareAndUpdate(with: output?.edge, targetPosition: targetPosition, using: context)
         } else if let output {
-            let edge = Edge.makeNode(of: output.edge, in: self, implementationPosition: implementationPosition, using: context)
+            let edge = Edge.makeNode(of: output.edge, in: self, targetPosition: targetPosition, using: context)
             self.edge = edge
             return UpdateResult(
-                implementationPosition: implementationPosition,
-                implementationCount: edge.implementationCount
+                targetPosition: targetPosition,
+                targetCount: edge.targetCount
             )
         } else {
             nilOutputFatalError(for: Edge.self)

@@ -17,7 +17,7 @@
 import ScarletCore
 
 struct FillModifier: AttributeViewModifier {
-    @Attribute(\ViewImpl.attributes.fill)
+    @Attribute(\ViewTarget.attributes.fill)
     var fill
 
     init(_ fill: Color?) {

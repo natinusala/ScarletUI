@@ -17,22 +17,22 @@
 import ScarletCore
 
 struct Text: View {
-    @Attribute(\TextImpl.text)
+    @Attribute(\TextTarget.text)
     var text
 
     typealias Body = Never
-    typealias Implementation = TextImpl
+    typealias Target = TextTarget
 
     init(_ text: String) {
         self.text = text
     }
 }
 
-class TextImpl: ViewImpl {
+class TextTarget: ViewTarget {
     var text: String = ""
 
     /// Initializer used by ScarletCore.
-    public required init(kind: ImplementationKind, displayName: String) {
+    public required init(kind: TargetKind, displayName: String) {
         super.init(kind: kind, displayName: displayName)
     }
 
@@ -42,8 +42,8 @@ class TextImpl: ViewImpl {
         super.init(kind: .view, displayName: "Text")
     }
 
-    override open func equals(to other: ViewImpl) -> Bool {
-        guard let other = other as? TextImpl else { return false }
+    override open func equals(to other: ViewTarget) -> Bool {
+        guard let other = other as? TextTarget else { return false }
         return self.text == other.text
     }
 
@@ -59,7 +59,7 @@ class TextImpl: ViewImpl {
             """
         }
         return """
-        TextImpl(text: "\(self.text)", \(self.attributes)) \(children)
+        TextTarget(text: "\(self.text)", \(self.attributes)) \(children)
         """
     }
 }

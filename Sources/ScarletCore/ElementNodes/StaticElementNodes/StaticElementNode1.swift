@@ -31,54 +31,54 @@ public class StaticElementNode1<Value, E0>: ElementNode where Value: Element, E0
     typealias Output = StaticMakeOutput1<Value, E0>
 
     public weak var parent: (any ElementNode)?
-    public var implementation: Value.Implementation?
-    public var implementationCount = 0
+    public var target: Value.Target?
+    public var targetCount = 0
     public var attributes = AttributesStash()
 
     var e0: E0.Node?
 
-    init(making element: Value, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) {
+    init(making element: Value, in parent: (any ElementNode)?, targetPosition: Int, using context: Context) {
         self.parent = parent
 
-        // Create the implementation node
-        self.implementation = Value.makeImplementation(of: element)
+        // Create the target node
+        self.target = Value.makeTarget(of: element)
 
         // Start a first update without comparing (since we update the value with itself)
-        let result = self.update(with: element, implementationPosition: implementationPosition, using: context, initial: true)
+        let result = self.update(with: element, targetPosition: targetPosition, using: context, initial: true)
 
-        // Attach the implementation once everything is ready
-        self.insertImplementationInParent(position: result.implementationPosition)
+        // Attach the target once everything is ready
+        self.insertTargetInParent(position: result.targetPosition)
     }
 
-    public func updateEdges(from output: Value.Output?, at implementationPosition: Int, using context: Context) -> UpdateResult {
+    public func updateEdges(from output: Value.Output?, at targetPosition: Int, using context: Context) -> UpdateResult {
         // Create edges if updating for the first time
         // Otherwise update them
 
-        var totalImplementationCount = 0
+        var totalTargetCount = 0
 
         // Edge 0
-        let e0ImplementationPosition = implementationPosition + totalImplementationCount
-        let e0ImplementationCount: Int
+        let e0TargetPosition = targetPosition + totalTargetCount
+        let e0TargetCount: Int
         if let e0 = self.e0 {
-            e0ImplementationCount = e0.compareAndUpdate(
+            e0TargetCount = e0.compareAndUpdate(
                 with: output?.e0,
-                implementationPosition: e0ImplementationPosition,
+                targetPosition: e0TargetPosition,
                 using: context
-            ).implementationCount
+            ).targetCount
         } else if let output {
-            let edge = E0.makeNode(of: output.e0, in: self, implementationPosition: e0ImplementationPosition, using: context)
+            let edge = E0.makeNode(of: output.e0, in: self, targetPosition: e0TargetPosition, using: context)
             self.e0 = edge
-            e0ImplementationCount = edge.implementationCount
+            e0TargetCount = edge.targetCount
         } else {
             nilOutputFatalError(for: E0.self)
         }
-        totalImplementationCount += e0ImplementationCount
+        totalTargetCount += e0TargetCount
 
-        implementationLogger.trace("\(E0.self) returned implementation count \(e0ImplementationCount) - Total: \(totalImplementationCount)")
+        targetLogger.trace("\(E0.self) returned target count \(e0TargetCount) - Total: \(totalTargetCount)")
 
         return UpdateResult(
-            implementationPosition: implementationPosition,
-            implementationCount: totalImplementationCount
+            targetPosition: targetPosition,
+            targetCount: totalTargetCount
         )
     }
 

@@ -54,15 +54,15 @@ class AttributeNonPropagationSpec: ScarletCoreSpec {
                     Tested(user: "Kirby", headerId: "main-content-header")
                 }
 
-                then("the implementation tree is created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Header", id: "main-content-header") {
-                                ViewImpl("Avatar") {
-                                    ImageImpl(source: "avatar://Kirby", id: "avatar-Kirby")
+                then("the target tree is created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Header", id: "main-content-header") {
+                                ViewTarget("Avatar") {
+                                    ImageTarget(source: "avatar://Kirby", id: "avatar-Kirby")
                                 }
 
-                                TextImpl(text: "Kirby")
+                                TextTarget(text: "Kirby")
                             }
                         }
                     ))
@@ -75,21 +75,21 @@ class AttributeNonPropagationSpec: ScarletCoreSpec {
                     Tested(user: "Kirby", headerId: "main-content-header")
                 }
 
-                then("the implementation tree is untouched") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Header", id: "main-content-header") {
-                                ViewImpl("Avatar") {
-                                    ImageImpl(source: "avatar://Kirby", id: "avatar-Kirby")
+                then("the target tree is untouched") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Header", id: "main-content-header") {
+                                ViewTarget("Avatar") {
+                                    ImageTarget(source: "avatar://Kirby", id: "avatar-Kirby")
                                 }
 
-                                TextImpl(text: "Kirby")
+                                TextTarget(text: "Kirby")
                             }
                         }
                     ))
                 }
 
-                then("attributes are not set on the implementation side") { result in
+                then("attributes are not set on the target side") { result in
                     expect(result.allViews).to(allPass { view in
                         view.anyAttributeChanged == false
                     })
@@ -102,21 +102,21 @@ class AttributeNonPropagationSpec: ScarletCoreSpec {
                     Tested(user: "Kirby", headerId: "main-content-header-invalidated")
                 }
 
-                then("the implementation tree is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Header", id: "main-content-header-invalidated") {
-                                ViewImpl("Avatar") {
-                                    ImageImpl(source: "avatar://Kirby", id: "avatar-Kirby")
+                then("the target tree is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Header", id: "main-content-header-invalidated") {
+                                ViewTarget("Avatar") {
+                                    ImageTarget(source: "avatar://Kirby", id: "avatar-Kirby")
                                 }
 
-                                TextImpl(text: "Kirby")
+                                TextTarget(text: "Kirby")
                             }
                         }
                     ))
                 }
 
-                then("attribute is set on the implementation side") { result in
+                then("attribute is set on the target side") { result in
                     expect(result.first("Header").attributeChanged(\.id)).to(beTrue())
                 }
             }

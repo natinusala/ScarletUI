@@ -43,11 +43,11 @@ class UserViewSpec: ScarletCoreSpec {
                     Tested(variable: true, anotherVariable: false)
                 }
 
-                then("implementation is created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("NestedView") {
-                                ViewImpl("EmptyView")
+                then("target is created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("NestedView") {
+                                ViewTarget("EmptyView")
                             }
                         }
                     ))
@@ -64,11 +64,11 @@ class UserViewSpec: ScarletCoreSpec {
                     expect(result.bodyCalled(of: NestedView.self)).to(beFalse())
                 }
 
-                then("implementation is untouched") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("NestedView") {
-                                ViewImpl("EmptyView")
+                then("target is untouched") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("NestedView") {
+                                ViewTarget("EmptyView")
                             }
                         }
                     ))
@@ -85,11 +85,11 @@ class UserViewSpec: ScarletCoreSpec {
                     expect(result.bodyCalled(of: NestedView.self)).to(beTrue())
                 }
 
-                then("implementation is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("NestedView") {
-                                ViewImpl("EmptyView")
+                then("target is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("NestedView") {
+                                ViewTarget("EmptyView")
                             }
                         }
                     ))

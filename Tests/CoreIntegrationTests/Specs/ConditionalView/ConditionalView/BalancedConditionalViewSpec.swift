@@ -40,11 +40,11 @@ class BalancedConditionalViewSpec: ScarletCoreSpec {
                     Tested(first: true)
                 }
 
-                then("implementation is created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .white, grow: 1.0) }
-                            ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .black, grow: 1.0) }
+                then("target is created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Rectangle") { ViewTarget("EmptyView", fill: .white, grow: 1.0) }
+                            ViewTarget("Rectangle") { ViewTarget("EmptyView", fill: .black, grow: 1.0) }
                         }
                     ))
                 }
@@ -56,11 +56,11 @@ class BalancedConditionalViewSpec: ScarletCoreSpec {
                     Tested(first: false)
                 }
 
-                then("implementation is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .yellow, grow: 1.0) }
-                            ViewImpl("Rectangle") { ViewImpl("EmptyView", fill: .blue, grow: 1.0) }
+                then("target is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Rectangle") { ViewTarget("EmptyView", fill: .yellow, grow: 1.0) }
+                            ViewTarget("Rectangle") { ViewTarget("EmptyView", fill: .blue, grow: 1.0) }
                         }
                     ))
                 }

@@ -19,7 +19,7 @@ import ScarletCore
 extension View {
     func decorate(_ decoration: TextDecoration) -> some View {
         return self.attributed(
-            AppendAttribute(\TextImpl.decorations, value: decoration)
+            AppendAttribute(\TextTarget.decorations, value: decoration)
         )
     }
 }

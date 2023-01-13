@@ -28,15 +28,15 @@ struct Column<Content>: View where Content: View {
 
     static func make(view: Self?, input: MakeInput) -> MakeOutput {
         let contentStorage = input.storage?.edges.staticAt(0, for: Content.self)
-        let contentInput = MakeInput(storage: contentStorage, implementationPosition: Self.substantial ? 0 : input.implementationPosition, context: input.context)
+        let contentInput = MakeInput(storage: contentStorage, targetPosition: Self.substantial ? 0 : input.targetPosition, context: input.context)
         let contentOutput = Content.make(view: view?.content, input: contentInput)
 
         return Self.output(
             from: input,
             node: ElementOutput(storage: nil, attributes: view?.collectAttributes() ?? [:]),
             staticEdges: [.some(contentOutput)],
-            implementationPosition: input.implementationPosition,
-            implementationCount: Self.substantial ? 1 : contentOutput.implementationCount,
+            targetPosition: input.targetPosition,
+            targetCount: Self.substantial ? 1 : contentOutput.targetCount,
             accessor: view?.accessor
         )
     }

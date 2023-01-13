@@ -18,7 +18,7 @@ import ScarletCore
 
 private struct TextColorEnvironmentKey: AttributeEnvironmentKey {
     static let defaultValue = Color.black
-    static let target = \TextImpl.textColor
+    static let target = \TextTarget.textColor
 }
 
 extension EnvironmentValues {

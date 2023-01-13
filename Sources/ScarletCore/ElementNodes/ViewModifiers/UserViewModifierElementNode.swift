@@ -28,19 +28,19 @@ public struct UserViewModifierMakeOutput<Value, Edge>: ElementOutput where Value
 public class UserViewModifierElementNode<Value, Edge>: StatefulElementNode where Value: ViewModifier, Value.Input == UserViewModifierMakeInput<Value>, Value.Output == UserViewModifierMakeOutput<Value, Edge>, Edge: Element, Value.Body == Edge {
     public var value: Value
     public weak var parent: (any ElementNode)?
-    public var implementation: Value.Implementation?
-    public var implementationCount = 0
+    public var target: Value.Target?
+    public var targetCount = 0
     public var attributes = AttributesStash()
     public var context: Context
-    public var implementationPosition: Int
+    public var targetPosition: Int
 
     var edge: Edge.Node?
 
-    init(making element: Value, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) {
+    init(making element: Value, in parent: (any ElementNode)?, targetPosition: Int, using context: Context) {
         self.value = element
         self.parent = parent
         self.context = context
-        self.implementationPosition = implementationPosition
+        self.targetPosition = targetPosition
 
         // Set environment metadata for the type
         EnvironmentMetadataCache.shared.setCache(for: element)
@@ -49,25 +49,25 @@ public class UserViewModifierElementNode<Value, Edge>: StatefulElementNode where
         var element = element
         self.install(element: &element, using: context)
 
-        // Create the implementation node
-        self.implementation = Value.makeImplementation(of: element)
+        // Create the target node
+        self.target = Value.makeTarget(of: element)
 
         // Start a first update without comparing (since we update the value with itself)
-        let result = self.update(with: element, implementationPosition: implementationPosition, using: context, initial: true)
+        let result = self.update(with: element, targetPosition: targetPosition, using: context, initial: true)
 
-        // Attach the implementation once everything is ready
-        self.insertImplementationInParent(position: result.implementationPosition)
+        // Attach the target once everything is ready
+        self.insertTargetInParent(position: result.targetPosition)
     }
 
-    public func updateEdges(from output: Value.Output?, at implementationPosition: Int, using context: Context) -> UpdateResult {
+    public func updateEdges(from output: Value.Output?, at targetPosition: Int, using context: Context) -> UpdateResult {
         if let edge = self.edge {
-            return edge.compareAndUpdate(with: output?.edge, implementationPosition: implementationPosition, using: context)
+            return edge.compareAndUpdate(with: output?.edge, targetPosition: targetPosition, using: context)
         } else if let output {
-            let edge = Edge.makeNode(of: output.edge, in: self, implementationPosition: implementationPosition, using: context)
+            let edge = Edge.makeNode(of: output.edge, in: self, targetPosition: targetPosition, using: context)
             self.edge = edge
             return UpdateResult(
-                implementationPosition: implementationPosition,
-                implementationCount: edge.implementationCount
+                targetPosition: targetPosition,
+                targetCount: edge.targetCount
             )
         } else {
             nilOutputFatalError(for: Edge.self)

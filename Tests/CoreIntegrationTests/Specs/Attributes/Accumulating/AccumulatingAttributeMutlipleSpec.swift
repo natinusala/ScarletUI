@@ -38,9 +38,9 @@ class AccumulatingAttributeMutlipleSpec: ScarletCoreSpec {
                 }
 
                 then("all attributes are applied") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            TextImpl(text: "Some text", tags: ["first", "second"])
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            TextTarget(text: "Some text", tags: ["first", "second"])
                         }
                     ))
                 }
@@ -52,16 +52,16 @@ class AccumulatingAttributeMutlipleSpec: ScarletCoreSpec {
                     Tested(firstTag: "another-first", secondTag: "second")
                 }
 
-                then("the attribute is updated on the implementation side") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            TextImpl(text: "Some text", tags: ["another-first", "second"])
+                then("the attribute is updated on the target side") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            TextTarget(text: "Some text", tags: ["another-first", "second"])
                         }
                     ))
                 }
 
                 then("only the changed attribute is changed") { result in
-                    expect(result.first(TextImpl.self).attributesUpdatesCount).to(equal(1))
+                    expect(result.first(TextTarget.self).attributesUpdatesCount).to(equal(1))
                 }
             }
 
@@ -71,16 +71,16 @@ class AccumulatingAttributeMutlipleSpec: ScarletCoreSpec {
                     Tested(firstTag: "first", secondTag: "another-second")
                 }
 
-                then("the attribute is updated on the implementation side") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            TextImpl(text: "Some text", tags: ["first", "another-second"])
+                then("the attribute is updated on the target side") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            TextTarget(text: "Some text", tags: ["first", "another-second"])
                         }
                     ))
                 }
 
                 then("only the changed attribute is changed") { result in
-                    expect(result.first(TextImpl.self).attributesUpdatesCount).to(equal(1))
+                    expect(result.first(TextTarget.self).attributesUpdatesCount).to(equal(1))
                 }
             }
 
@@ -90,16 +90,16 @@ class AccumulatingAttributeMutlipleSpec: ScarletCoreSpec {
                     Tested(firstTag: "another-first", secondTag: "another-second")
                 }
 
-                then("the attribute is updated on the implementation side") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            TextImpl(text: "Some text", tags: ["another-first", "another-second"])
+                then("the attribute is updated on the target side") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            TextTarget(text: "Some text", tags: ["another-first", "another-second"])
                         }
                     ))
                 }
 
                 then("both attributes are changed") { result in
-                    expect(result.first(TextImpl.self).attributesUpdatesCount).to(equal(2))
+                    expect(result.first(TextTarget.self).attributesUpdatesCount).to(equal(2))
                 }
             }
 
@@ -109,16 +109,16 @@ class AccumulatingAttributeMutlipleSpec: ScarletCoreSpec {
                     Tested(firstTag: "second", secondTag: "first")
                 }
 
-                then("the attribute is updated on the implementation side") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            TextImpl(text: "Some text", tags: ["first", "second"])
+                then("the attribute is updated on the target side") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            TextTarget(text: "Some text", tags: ["first", "second"])
                         }
                     ))
                 }
 
                 then("both attributes are changed") { result in
-                    expect(result.first(TextImpl.self).attributesUpdatesCount).to(equal(2))
+                    expect(result.first(TextTarget.self).attributesUpdatesCount).to(equal(2))
                 }
             }
 
@@ -128,16 +128,16 @@ class AccumulatingAttributeMutlipleSpec: ScarletCoreSpec {
                     Tested(firstTag: "first", secondTag: "second")
                 }
 
-                then("the attribute is updated on the implementation side") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            TextImpl(text: "Some text", tags: ["first", "second"])
+                then("the attribute is updated on the target side") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            TextTarget(text: "Some text", tags: ["first", "second"])
                         }
                     ))
                 }
 
                 then("no attributes are changed") { result in
-                    expect(result.first(TextImpl.self).anyAttributeChanged).to(beFalse())
+                    expect(result.first(TextTarget.self).anyAttributeChanged).to(beFalse())
                 }
             }
         }

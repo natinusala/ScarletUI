@@ -35,10 +35,10 @@ class AccumulatingAttributeSpec: ScarletCoreSpec {
                     Tested(tag: "some-tag")
                 }
 
-                then("the implementation is created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Rectangle", tags: ["some-tag"]).anyChildren()
+                then("the target is created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Rectangle", tags: ["some-tag"]).anyChildren()
                         }
                     ))
                 }
@@ -50,15 +50,15 @@ class AccumulatingAttributeSpec: ScarletCoreSpec {
                     Tested(tag: "some-tag")
                 }
 
-                then("the implementation is untouched") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Rectangle", tags: ["some-tag"]).anyChildren()
+                then("the target is untouched") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Rectangle", tags: ["some-tag"]).anyChildren()
                         }
                     ))
                 }
 
-                then("attribute is not applied on the implementation side") { result in
+                then("attribute is not applied on the target side") { result in
                     expect(result.testedChildren[0].anyAttributeChanged).to(beFalse())
                 }
             }
@@ -69,15 +69,15 @@ class AccumulatingAttributeSpec: ScarletCoreSpec {
                     Tested(tag: "another-tag")
                 }
 
-                then("the implementation is untouched") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Rectangle", tags: ["another-tag"]).anyChildren()
+                then("the target is untouched") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Rectangle", tags: ["another-tag"]).anyChildren()
                         }
                     ))
                 }
 
-                then("attribute is not applied on the implementation side") { result in
+                then("attribute is not applied on the target side") { result in
                     expect(result.testedChildren[0].attributeChanged(\.tags)).to(beTrue())
                 }
             }

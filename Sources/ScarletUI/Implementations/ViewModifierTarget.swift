@@ -15,6 +15,6 @@
 */
 
 public extension ViewModifier {
-    /// Default implementation for user view modifiers.
-    typealias Implementation = Never
+    /// Default target for user view modifiers.
+    typealias Target = Never
 }

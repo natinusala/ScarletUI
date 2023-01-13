@@ -45,11 +45,11 @@ class AccumulatingAttributeAccumulationSpec: ScarletCoreSpec {
                     Tested(topFilter: .blackAndWhite, bottomFilter: .sepia)
                 }
 
-                then("implementation is created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("FilteredImage") {
-                                ImageImpl(source: "avatar", filters: [.sepia, .blackAndWhite])
+                then("target is created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("FilteredImage") {
+                                ImageTarget(source: "avatar", filters: [.sepia, .blackAndWhite])
                             }
                         }
                     ))
@@ -62,18 +62,18 @@ class AccumulatingAttributeAccumulationSpec: ScarletCoreSpec {
                     Tested(topFilter: .blackAndWhite, bottomFilter: .sepia)
                 }
 
-                then("implementation is untouched") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("FilteredImage") {
-                                ImageImpl(source: "avatar", filters: [.sepia, .blackAndWhite])
+                then("target is untouched") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("FilteredImage") {
+                                ImageTarget(source: "avatar", filters: [.sepia, .blackAndWhite])
                             }
                         }
                     ))
                 }
 
-                then("attributes are not set on the implementation") { result in
-                    expect(result.first(ImageImpl.self).filtersChanged).to(beFalse())
+                then("attributes are not set on the target") { result in
+                    expect(result.first(ImageTarget.self).filtersChanged).to(beFalse())
                 }
             }
 
@@ -83,18 +83,18 @@ class AccumulatingAttributeAccumulationSpec: ScarletCoreSpec {
                     Tested(topFilter: .stereoscopic, bottomFilter: .sepia)
                 }
 
-                then("implementation is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("FilteredImage") {
-                                ImageImpl(source: "avatar", filters: [.stereoscopic, .sepia])
+                then("target is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("FilteredImage") {
+                                ImageTarget(source: "avatar", filters: [.stereoscopic, .sepia])
                             }
                         }
                     ))
                 }
 
-                then("attribute is set on the implementation") { result in
-                    expect(result.first(ImageImpl.self).filtersChanged).to(beTrue())
+                then("attribute is set on the target") { result in
+                    expect(result.first(ImageTarget.self).filtersChanged).to(beTrue())
                 }
             }
 
@@ -104,18 +104,18 @@ class AccumulatingAttributeAccumulationSpec: ScarletCoreSpec {
                     Tested(topFilter: .blackAndWhite, bottomFilter: .stereoscopic)
                 }
 
-                then("implementation is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("FilteredImage") {
-                                ImageImpl(source: "avatar", filters: [.blackAndWhite, .stereoscopic])
+                then("target is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("FilteredImage") {
+                                ImageTarget(source: "avatar", filters: [.blackAndWhite, .stereoscopic])
                             }
                         }
                     ))
                 }
 
-                then("attribute is set on the implementation") { result in
-                    expect(result.first(ImageImpl.self).filtersChanged).to(beTrue())
+                then("attribute is set on the target") { result in
+                    expect(result.first(ImageTarget.self).filtersChanged).to(beTrue())
                 }
             }
         }

@@ -52,12 +52,12 @@ class NestedConditionalViewSpec: ScarletCoreSpec {
                     Tested(value: 16)
                 }
 
-                then("implementation is created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Row") {
-                                TextImpl(text: "Value is > 10")
-                                TextImpl(text: "Value is > 15")
+                then("target is created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Row") {
+                                TextTarget(text: "Value is > 10")
+                                TextTarget(text: "Value is > 15")
                             }
                         }
                     ))
@@ -70,12 +70,12 @@ class NestedConditionalViewSpec: ScarletCoreSpec {
                     Tested(value: 35)
                 }
 
-                then("implementation is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Row") {
-                                TextImpl(text: "Value is > 20")
-                                TextImpl(text: "Value is > 30")
+                then("target is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Row") {
+                                TextTarget(text: "Value is > 20")
+                                TextTarget(text: "Value is > 30")
                             }
                         }
                     ))

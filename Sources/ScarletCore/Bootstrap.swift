@@ -18,7 +18,7 @@ import Logging
 import ConsoleKit
 
 /// Bootstraps ScarletCore and all of its systems.
-/// Must be called by the implementation library on `main`, before creating the app.
+/// Must be called by the target library on `main`, before creating the app.
 /// If running from a test environment, specify `testing` to disable arguments parsing (that would clash with XCTest's own arguments).
 @discardableResult
 public func bootstrap(testing: Bool = false) -> Arguments {

@@ -18,7 +18,7 @@ public extension View {
     /// Sets the view desired height.
     func height(_ height: LayoutValue) -> some View {
         return self.attributed(
-            Attribute(\_ViewImplementation.desiredHeight, value: height)
+            Attribute(\_ViewTarget.desiredHeight, value: height)
         )
     }
 }

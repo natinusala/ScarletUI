@@ -21,7 +21,7 @@ import XCTest
 
 @testable import ScarletCore
 
-private let logger = Logger(label: "ScarletCoreIntegrationTests.ViewImpl")
+private let logger = Logger(label: "ScarletCoreIntegrationTests.ViewTarget")
 
 private func log(_ message: @autoclosure () -> Logger.Message) {
     let loggingEnv = "SCARLET_TESTS_LOG"
@@ -47,7 +47,7 @@ private func removeOptional(_ string: String) -> String {
     return String(match.1)
 }
 
-public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
+public class ViewTarget: TargetNode, Equatable, CustomStringConvertible {
     struct Attributes: Equatable, CustomStringConvertible {
         var id: String? {
             willSet {
@@ -150,11 +150,11 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
         }
     }
 
-    var children: [ViewImpl] = []
+    var children: [ViewTarget] = []
 
     private var ignoreChildren = false
 
-    public static func == (lhs: ViewImpl, rhs: ViewImpl) -> Bool {
+    public static func == (lhs: ViewTarget, rhs: ViewTarget) -> Bool {
         let childrenEqual = lhs.ignoreChildren || rhs.ignoreChildren || lhs.children == rhs.children
 
         return type(of: lhs) == type(of: rhs)
@@ -179,12 +179,12 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
         }
     }
 
-    /// Used by custom implementations to compare their custom attributes.
-    open func equals(to other: ViewImpl) -> Bool {
+    /// Used by custom targets to compare their custom attributes.
+    open func equals(to other: ViewTarget) -> Bool {
         return true
     }
 
-    /// Initializer used to create the expected implementation tree.
+    /// Initializer used to create the expected target tree.
     convenience init(
         _ displayName: String,
         id: String? = nil,
@@ -192,7 +192,7 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
         grow: Float? = nil,
         tags: [String] = [],
         flags: [Flag] = [],
-        @ViewImplChildrenBuilder children: () -> [ViewImpl] = { [] }
+        @ViewTargetChildrenBuilder children: () -> [ViewTarget] = { [] }
     ) {
         self.init(displayName: displayName)
 
@@ -210,15 +210,15 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
         self.displayName = displayName
     }
 
-    public func anyChildren() -> ViewImpl {
+    public func anyChildren() -> ViewTarget {
         self.ignoreChildren = true
         return self
     }
 
     public func attributesDidSet() {}
 
-    public func insertChild(_ child: ScarletCore.ImplementationNode, at position: Int) {
-        self.children.insert(child as! ViewImpl, at: position)
+    public func insertChild(_ child: ScarletCore.TargetNode, at position: Int) {
+        self.children.insert(child as! ViewTarget, at: position)
     }
 
     public func removeChild(at position: Int) {
@@ -229,12 +229,12 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
         return ""
     }
 
-    func `as`<NewType: ViewImpl>(_ type: NewType.Type) -> NewType {
+    func `as`<NewType: ViewTarget>(_ type: NewType.Type) -> NewType {
         return self as! NewType
     }
 
-    func findFirst<NewType: ViewImpl>(_ type: NewType.Type) -> NewType {
-        func inner(_ impl: ViewImpl) -> NewType? {
+    func findFirst<NewType: ViewTarget>(_ type: NewType.Type) -> NewType {
+        func inner(_ impl: ViewTarget) -> NewType? {
             if let instance = impl as? NewType {
                 return instance
             }
@@ -255,8 +255,8 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
         return found
     }
 
-    func findFirst(_ displayName: String) -> ViewImpl {
-        func inner(_ impl: ViewImpl) -> ViewImpl? {
+    func findFirst(_ displayName: String) -> ViewTarget {
+        func inner(_ impl: ViewTarget) -> ViewTarget? {
             if impl.displayName == displayName {
                 return impl
             }
@@ -277,8 +277,8 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
         return found
     }
 
-    func findAll<NewType: ViewImpl>(_ type: NewType.Type, expectedCount: Int) -> [NewType] {
-        func inner(_ impl: ViewImpl) -> [NewType] {
+    func findAll<NewType: ViewTarget>(_ type: NewType.Type, expectedCount: Int) -> [NewType] {
+        func inner(_ impl: ViewTarget) -> [NewType] {
             if let instance = impl as? NewType {
                 return [instance]
             }
@@ -298,7 +298,7 @@ public class ViewImpl: ImplementationNode, Equatable, CustomStringConvertible {
         return found
     }
 
-    func allChildren() -> [ViewImpl] {
+    func allChildren() -> [ViewTarget] {
         return self.children + self.children.map { $0.allChildren() }.chained()
     }
 
@@ -322,20 +322,20 @@ enum Flag {
 }
 
 extension View {
-    public typealias Implementation = ViewImpl
+    public typealias Target = ViewTarget
 }
 
 extension ViewModifier {
-    public typealias Implementation = Never
+    public typealias Target = Never
 }
 
 @resultBuilder
-struct ViewImplChildrenBuilder {
-    static func buildBlock(_ children: ViewImpl...) -> [ViewImpl] {
+struct ViewTargetChildrenBuilder {
+    static func buildBlock(_ children: ViewTarget...) -> [ViewTarget] {
         return children
     }
 
-    static func buildBlock() -> [ViewImpl] {
+    static func buildBlock() -> [ViewTarget] {
         return []
     }
 }

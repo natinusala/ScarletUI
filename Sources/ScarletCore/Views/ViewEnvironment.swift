@@ -18,7 +18,7 @@
 public struct ViewEnvironment<Content: View, Value>: View, EnvironmentCollectable {
     public typealias Input = EnvironmentMakeInput<Self>
     public typealias Output = EnvironmentMakeOutput<Self, Content>
-    public typealias Implementation = Never
+    public typealias Target = Never
 
     let keyPath: WritableKeyPath<EnvironmentValues, Value>
     let value: Value
@@ -28,10 +28,10 @@ public struct ViewEnvironment<Content: View, Value>: View, EnvironmentCollectabl
     public static func makeNode(
         of element: Self,
         in parent: (any ElementNode)?,
-        implementationPosition: Int,
+        targetPosition: Int,
         using context: Context
     ) -> EnvironmentElementNode<Self, Content> where Input == EnvironmentMakeInput<Self> {
-        return .init(making: element, in: parent, implementationPosition: implementationPosition, using: context)
+        return .init(making: element, in: parent, targetPosition: targetPosition, using: context)
     }
 
     public static func make(

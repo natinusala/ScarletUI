@@ -55,12 +55,12 @@ class EnvironmentStateSpec: ScarletCoreSpec {
                     Tested(test: "Test")
                 }
 
-                then("implementation is created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("EnvironmentAndState") {
-                                TextImpl(text: "Test: Test")
-                                TextImpl(text: "Counter: 0")
+                then("target is created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("EnvironmentAndState") {
+                                TextTarget(text: "Test: Test")
+                                TextTarget(text: "Counter: 0")
                             }
                         }
                     ))
@@ -73,12 +73,12 @@ class EnvironmentStateSpec: ScarletCoreSpec {
                     Tested(test: "TestAgain")
                 }
 
-                then("implementation is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("EnvironmentAndState") {
-                                TextImpl(text: "Test: TestAgain")
-                                TextImpl(text: "Counter: 0")
+                then("target is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("EnvironmentAndState") {
+                                TextTarget(text: "Test: TestAgain")
+                                TextTarget(text: "Counter: 0")
                             }
                         }
                     ))
@@ -95,11 +95,11 @@ class EnvironmentStateSpec: ScarletCoreSpec {
                 }
 
                 then("state value and environment are preserved") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("EnvironmentAndState") {
-                                TextImpl(text: "Test: TestAgain")
-                                TextImpl(text: "Counter: 1")
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("EnvironmentAndState") {
+                                TextTarget(text: "Test: TestAgain")
+                                TextTarget(text: "Counter: 1")
                             }
                         }
                     ))
@@ -116,11 +116,11 @@ class EnvironmentStateSpec: ScarletCoreSpec {
                 }
 
                 then("state value and environment are preserved") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("EnvironmentAndState") {
-                                TextImpl(text: "Test: TestAgain")
-                                TextImpl(text: "Counter: 1")
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("EnvironmentAndState") {
+                                TextTarget(text: "Test: TestAgain")
+                                TextTarget(text: "Counter: 1")
                             }
                         }
                     ))

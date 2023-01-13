@@ -19,13 +19,13 @@
 public enum ConditionalView<First, Second>: View where First: View, Second: View {
     public typealias Input = ConditionalMakeInput<Self>
     public typealias Output = ConditionalMakeOutput<Self, First, Second>
-    public typealias Implementation = Never
+    public typealias Target = Never
 
     case first(First)
     case second(Second)
 
-    public static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) -> ConditionalElementNode<Self, First, Second> {
-        return ConditionalElementNode<Self, First, Second>(making: element, in: parent, implementationPosition: implementationPosition, using: context)
+    public static func makeNode(of element: Self, in parent: (any ElementNode)?, targetPosition: Int, using context: Context) -> ConditionalElementNode<Self, First, Second> {
+        return ConditionalElementNode<Self, First, Second>(making: element, in: parent, targetPosition: targetPosition, using: context)
     }
 
     public static func make(_ element: Self, input: Input) -> Output {

@@ -23,7 +23,7 @@ protocol TestSignal {
 extension View {
     func onTestSignal(_ signal: any TestSignal, closure: @escaping () -> ()) -> some View {
         return self.attributed(
-            AppendAttribute(\ViewImpl.signalHandlers, value: (signal, closure))
+            AppendAttribute(\ViewTarget.signalHandlers, value: (signal, closure))
         )
     }
 }
@@ -32,11 +32,11 @@ struct SignalUpdateAction: UpdateAction {
     let signal: any TestSignal
 
     func run(on node: any ElementNode) {
-        guard let implementation = node.implementation as? ViewImpl else {
-            fatalError("Cannot signal an implementation node of type \(type(of: node.implementation))")
+        guard let target = node.target as? ViewTarget else {
+            fatalError("Cannot signal an target node of type \(type(of: node.target))")
         }
 
-        implementation.signal(signal)
+        target.signal(signal)
     }
 }
 

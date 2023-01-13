@@ -19,7 +19,7 @@ import ScarletCore
 extension View {
     func filter(_ filter: Filter) -> some View {
         return self.attributed(
-            AppendAttribute(\ImageImpl.filters, value: filter)
+            AppendAttribute(\ImageTarget.filters, value: filter)
         )
     }
 }

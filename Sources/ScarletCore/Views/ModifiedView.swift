@@ -15,13 +15,13 @@
 */
 
 extension ModifiedContent: Element, View, CustomDebugStringConvertible, IsPodable where Content: View, Modifier: ViewModifier {
-    public typealias Implementation = Never
+    public typealias Target = Never
 
     public typealias Input = ModifiedViewMakeInput<Content, Modifier>
     public typealias Output = ModifiedViewMakeOutput<Content, Modifier>
 
-    public static func makeNode(of element: Self, in parent: (any ElementNode)?, implementationPosition: Int, using context: Context) -> ModifiedViewElementNode<Content, Modifier> {
-        return ModifiedViewElementNode(making: element, in: parent, implementationPosition: implementationPosition, using: context)
+    public static func makeNode(of element: Self, in parent: (any ElementNode)?, targetPosition: Int, using context: Context) -> ModifiedViewElementNode<Content, Modifier> {
+        return ModifiedViewElementNode(making: element, in: parent, targetPosition: targetPosition, using: context)
     }
 
     /// Makes the element, usually to get its edges.

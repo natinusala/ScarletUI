@@ -48,14 +48,14 @@ class ForEachSpecSpec: ScarletCoreSpec {
                     Tested(views: [0, 1, 2, 3, 4])
                 }
 
-                then("implementation is created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("NestedView", id: "0").anyChildren()
-                            ViewImpl("NestedView", id: "1").anyChildren()
-                            ViewImpl("NestedView", id: "2").anyChildren()
-                            ViewImpl("NestedView", id: "3").anyChildren()
-                            ViewImpl("NestedView", id: "4").anyChildren()
+                then("target is created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("NestedView", id: "0").anyChildren()
+                            ViewTarget("NestedView", id: "1").anyChildren()
+                            ViewTarget("NestedView", id: "2").anyChildren()
+                            ViewTarget("NestedView", id: "3").anyChildren()
+                            ViewTarget("NestedView", id: "4").anyChildren()
                         }
                     ))
                 }
@@ -71,14 +71,14 @@ class ForEachSpecSpec: ScarletCoreSpec {
                     expect(result.bodyCalls(of: NestedView.self)).to(equal(0))
                 }
 
-                then("implementation is untouched") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("NestedView", id: "0").anyChildren()
-                            ViewImpl("NestedView", id: "1").anyChildren()
-                            ViewImpl("NestedView", id: "2").anyChildren()
-                            ViewImpl("NestedView", id: "3").anyChildren()
-                            ViewImpl("NestedView", id: "4").anyChildren()
+                then("target is untouched") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("NestedView", id: "0").anyChildren()
+                            ViewTarget("NestedView", id: "1").anyChildren()
+                            ViewTarget("NestedView", id: "2").anyChildren()
+                            ViewTarget("NestedView", id: "3").anyChildren()
+                            ViewTarget("NestedView", id: "4").anyChildren()
                         }
                     ))
                 }
@@ -94,19 +94,19 @@ class ForEachSpecSpec: ScarletCoreSpec {
                     expect(result.bodyCalls(of: NestedView.self)).to(equal(5))
                 }
 
-                then("implementations are inserted") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("NestedView", id: "0").anyChildren()
-                            ViewImpl("NestedView", id: "1").anyChildren()
-                            ViewImpl("NestedView", id: "2").anyChildren()
-                            ViewImpl("NestedView", id: "3").anyChildren()
-                            ViewImpl("NestedView", id: "4").anyChildren()
-                            ViewImpl("NestedView", id: "5").anyChildren()
-                            ViewImpl("NestedView", id: "6").anyChildren()
-                            ViewImpl("NestedView", id: "7").anyChildren()
-                            ViewImpl("NestedView", id: "8").anyChildren()
-                            ViewImpl("NestedView", id: "9").anyChildren()
+                then("targets are inserted") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("NestedView", id: "0").anyChildren()
+                            ViewTarget("NestedView", id: "1").anyChildren()
+                            ViewTarget("NestedView", id: "2").anyChildren()
+                            ViewTarget("NestedView", id: "3").anyChildren()
+                            ViewTarget("NestedView", id: "4").anyChildren()
+                            ViewTarget("NestedView", id: "5").anyChildren()
+                            ViewTarget("NestedView", id: "6").anyChildren()
+                            ViewTarget("NestedView", id: "7").anyChildren()
+                            ViewTarget("NestedView", id: "8").anyChildren()
+                            ViewTarget("NestedView", id: "9").anyChildren()
                         }
                     ))
                 }
@@ -122,9 +122,9 @@ class ForEachSpecSpec: ScarletCoreSpec {
                     expect(result.bodyCalls(of: NestedView.self)).to(equal(0))
                 }
 
-                then("implementations are removed") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested")
+                then("targets are removed") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested")
                     ))
                 }
             }
@@ -139,14 +139,14 @@ class ForEachSpecSpec: ScarletCoreSpec {
                 //     expect(result.bodyCalls(of: NestedView.self)).to(equal(0))
                 // }
 
-                then("implementations are reordered") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("NestedView", id: "0").anyChildren()
-                            ViewImpl("NestedView", id: "3").anyChildren()
-                            ViewImpl("NestedView", id: "2").anyChildren()
-                            ViewImpl("NestedView", id: "4").anyChildren()
-                            ViewImpl("NestedView", id: "1").anyChildren()
+                then("targets are reordered") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("NestedView", id: "0").anyChildren()
+                            ViewTarget("NestedView", id: "3").anyChildren()
+                            ViewTarget("NestedView", id: "2").anyChildren()
+                            ViewTarget("NestedView", id: "4").anyChildren()
+                            ViewTarget("NestedView", id: "1").anyChildren()
                         }
                     ))
                 }
@@ -162,14 +162,14 @@ class ForEachSpecSpec: ScarletCoreSpec {
                     expect(result.bodyCalls(of: NestedView.self)).to(equal(5))
                 }
 
-                then("implementations are updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("NestedView", id: "somePrefix0").anyChildren()
-                            ViewImpl("NestedView", id: "somePrefix1").anyChildren()
-                            ViewImpl("NestedView", id: "somePrefix2").anyChildren()
-                            ViewImpl("NestedView", id: "somePrefix3").anyChildren()
-                            ViewImpl("NestedView", id: "somePrefix4").anyChildren()
+                then("targets are updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("NestedView", id: "somePrefix0").anyChildren()
+                            ViewTarget("NestedView", id: "somePrefix1").anyChildren()
+                            ViewTarget("NestedView", id: "somePrefix2").anyChildren()
+                            ViewTarget("NestedView", id: "somePrefix3").anyChildren()
+                            ViewTarget("NestedView", id: "somePrefix4").anyChildren()
                         }
                     ))
                 }
@@ -185,14 +185,14 @@ class ForEachSpecSpec: ScarletCoreSpec {
                     expect(result.bodyCalls(of: NestedView.self)).to(equal(5))
                 }
 
-                then("implementations are updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("NestedView", id: "somePrefix0").anyChildren()
-                            ViewImpl("NestedView", id: "somePrefix4").anyChildren()
-                            ViewImpl("NestedView", id: "somePrefix3").anyChildren()
-                            ViewImpl("NestedView", id: "somePrefix2").anyChildren()
-                            ViewImpl("NestedView", id: "somePrefix1").anyChildren()
+                then("targets are updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("NestedView", id: "somePrefix0").anyChildren()
+                            ViewTarget("NestedView", id: "somePrefix4").anyChildren()
+                            ViewTarget("NestedView", id: "somePrefix3").anyChildren()
+                            ViewTarget("NestedView", id: "somePrefix2").anyChildren()
+                            ViewTarget("NestedView", id: "somePrefix1").anyChildren()
                         }
                     ))
                 }

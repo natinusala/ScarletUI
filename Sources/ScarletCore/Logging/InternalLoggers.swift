@@ -17,7 +17,7 @@
 import Logging
 
 let attributesLogger = Logger(label: "ScarletCore.Attributes")
-let implementationLogger = Logger(label: "ScarletCore.Implementation")
+let targetLogger = Logger(label: "ScarletCore.Target")
 let stateLogger = Logger(label: "ScarletCore.State")
 let metadataLogger = Logger(label: "ScarletCore.Metadata")
 let benchmarkLogger = Logger(label: "ScarletCore.Benchmark")

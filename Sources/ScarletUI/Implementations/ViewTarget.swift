@@ -16,13 +16,13 @@
 
 import Yoga
 
-/// Implementation for all views.
-open class _ViewImplementation: _LayoutImplementationNode, _GamepadButtonEventImplementationNode, _TagImplementationNode {
+/// Target for all views.
+open class _ViewTarget: _LayoutTargetNode, _GamepadButtonEventTargetNode, _TagTargetNode {
     /// View display name for debugging purposes.
     public let displayName: String
 
     /// Children of this view.
-    var children: [_ViewImplementation] = []
+    var children: [_ViewTarget] = []
 
     /// The view Yoga node.
     public let ygNode: YGNodeRef
@@ -34,8 +34,8 @@ open class _ViewImplementation: _LayoutImplementationNode, _GamepadButtonEventIm
         }
     }
 
-    /// The parent scene or view implementation.
-    weak var parent: _LayoutImplementationNode?
+    /// The parent scene or view target.
+    weak var parent: _LayoutTargetNode?
 
     /// The view fill, aka. its background color or gradient.
     var fill: Fill = .none {
@@ -233,9 +233,9 @@ open class _ViewImplementation: _LayoutImplementationNode, _GamepadButtonEventIm
         YGNodeFree(self.ygNode)
     }
 
-    public func insertChild(_ child: ImplementationNode, at position: Int) {
-        guard let child = child as? _ViewImplementation else {
-            fatalError("Cannot add \(type(of: child)) as child of `_ViewImplementation`")
+    public func insertChild(_ child: TargetNode, at position: Int) {
+        guard let child = child as? _ViewTarget else {
+            fatalError("Cannot add \(type(of: child)) as child of `_ViewTarget`")
         }
 
         YGNodeInsertChild(self.ygNode, child.ygNode, UInt32(position))
@@ -311,20 +311,20 @@ open class _ViewImplementation: _LayoutImplementationNode, _GamepadButtonEventIm
         }
     }
 
-    public var layoutParent: _LayoutImplementationNode? {
+    public var layoutParent: _LayoutTargetNode? {
         return self.parent
     }
 
-    public var layoutChildren: [_LayoutImplementationNode] {
-        return self.children.map { $0 as _LayoutImplementationNode }
+    public var layoutChildren: [_LayoutTargetNode] {
+        return self.children.map { $0 as _LayoutTargetNode }
     }
 
-    public var tagChildren: [any _TagImplementationNode] {
-        return self.children.map { $0 as any _TagImplementationNode }
+    public var tagChildren: [any _TagTargetNode] {
+        return self.children.map { $0 as any _TagTargetNode }
     }
 }
 
 public extension View {
-    /// Default implementation for user views.
-    typealias Implementation = _ViewImplementation
+    /// Default target for user views.
+    typealias Target = _ViewTarget
 }

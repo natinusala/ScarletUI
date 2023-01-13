@@ -15,8 +15,8 @@
 */
 
 public struct UpdateResult {
-    let implementationPosition: Int
-    let implementationCount: Int
+    let targetPosition: Int
+    let targetCount: Int
 }
 
 /// Keeps track of a "mounted" element and its state.
@@ -31,11 +31,11 @@ public protocol ElementNode<Value>: AnyObject {
     /// Parent of this node.
     var parent: (any ElementNode)? { get }
 
-    /// Implementation node of this element.
-    var implementation: Value.Implementation? { get }
+    /// Target node of this element.
+    var target: Value.Target? { get }
 
-    /// Implementation count.
-    var implementationCount: Int { get set }
+    /// Target count.
+    var targetCount: Int { get set }
 
     /// Last known values for attributes.
     /// Stored to keep a coherent context for edges when updating with no given element.
@@ -45,7 +45,7 @@ public protocol ElementNode<Value>: AnyObject {
     ///
     /// If the output is `nil` it means the element was unchanged. Still, its edges may have changed (depending on context)
     /// so the function should still forward the update call to its edges, giving `nil` as an element.
-    func updateEdges(from output: Value.Output?, at implementationPosition: Int, using context: Context) -> UpdateResult
+    func updateEdges(from output: Value.Output?, at targetPosition: Int, using context: Context) -> UpdateResult
 
     /// Returns `true` if the node should be updated with the given new element
     /// (typically if it changed).
@@ -59,7 +59,7 @@ public protocol ElementNode<Value>: AnyObject {
     var allEdges: [(any ElementNode)?] { get }
 
     /// Installs the view then updates it if necessary.
-    func compareAndUpdate(with element: Value?, implementationPosition: Int, using context: Context) -> UpdateResult
+    func compareAndUpdate(with element: Value?, targetPosition: Int, using context: Context) -> UpdateResult
 
     /// Installs the given element with the proper state and environment.
     func install(element: inout Value, using context: ElementNodeContext)
@@ -73,7 +73,7 @@ public protocol ElementNode<Value>: AnyObject {
 
     func storeValue(_ value: Value)
     func storeContext(_ context: Context)
-    func storeImplementationPosition(_ position: Int)
+    func storeTargetPosition(_ position: Int)
     var valueDebugDescription: String { get }
 }
 
@@ -84,8 +84,8 @@ public extension ElementNode {
     }
 
     /// Default implementation: no comparison, no installation, just update the node.
-    func compareAndUpdate(with element: Value?, implementationPosition: Int, using context: Context) -> UpdateResult {
-        return self.update(with: element, implementationPosition: implementationPosition, using: context)
+    func compareAndUpdate(with element: Value?, targetPosition: Int, using context: Context) -> UpdateResult {
+        return self.update(with: element, targetPosition: targetPosition, using: context)
     }
 
     /// Default implementation: this is not an environment node, don't reset anything.
@@ -95,7 +95,7 @@ public extension ElementNode {
 
     func storeValue(_ value: Value) {}
     func storeContext(_ context: Context) {}
-    func storeImplementationPosition(_ position: Int) {}
+    func storeTargetPosition(_ position: Int) {}
 
     /// Default implementation: do nothing.
     func install(element: inout Value, using context: ElementNodeContext) {}
@@ -116,9 +116,9 @@ extension ElementNode {
     /// If the given element is `nil` it means it's unchanged. ``updateEdges(from:at:using:)`` is still called
     /// since the edges may have changed depending on context.
     ///
-    /// Returns the node implementation count.
-    public func update(with element: Value?, implementationPosition: Int, using context: Context, initial: Bool = false) -> UpdateResult {
-        implementationLogger.trace("Updating \(Value.self) with implementation position \(implementationPosition)")
+    /// Returns the node target count.
+    public func update(with element: Value?, targetPosition: Int, using context: Context, initial: Bool = false) -> UpdateResult {
+        targetLogger.trace("Updating \(Value.self) with target position \(targetPosition)")
 
         let attributes: AttributesStash
         let environment: EnvironmentValues
@@ -157,12 +157,12 @@ extension ElementNode {
             .clearingStateChange()
 
         // Take the context from the parent, add our attributes
-        // Then split it by implementation type to only get those we need to apply here
+        // Then split it by target type to only get those we need to apply here
         // The rest will stay in the context struct given to our edges
         let (singleAttributes, accumulatingAttributes, edgesContext) = context
             .completingAttributes(from: attributes)
             .withEnvironment(environment, changed: changedEnvironment)
-            .poppingAttributes(for: self.implementation)
+            .poppingAttributes(for: self.target)
 
         if !singleAttributes.isEmpty {
             let attributesToApply = singleAttributes + accumulatingAttributes.map { $0.1 }
@@ -176,18 +176,18 @@ extension ElementNode {
 
         // Apply attributes
         if !singleAttributes.isEmpty || !accumulatingAttributes.isEmpty {
-            guard let implementation = self.implementation else {
-                fatalError("Invalid 'ElementNode' state: expected an implementation node of type \(Value.Implementation.self) to be set to apply attributes on")
+            guard let target = self.target else {
+                fatalError("Invalid 'ElementNode' state: expected a target node of type \(Value.Target.self) to be set to apply attributes on")
             }
 
             for attribute in singleAttributes {
                 attributesLogger.trace("Applying attribute \(attribute) on \(Value.displayName)")
-                attribute.anySet(on: implementation, identifiedBy: ObjectIdentifier(self))
+                attribute.anySet(on: target, identifiedBy: ObjectIdentifier(self))
             }
 
             for (key, attribute) in accumulatingAttributes {
                 attributesLogger.trace("Applying attribute \(attribute) on \(Value.displayName)")
-                attribute.anySet(on: implementation, identifiedBy: key)
+                attribute.anySet(on: target, identifiedBy: key)
             }
         }
 
@@ -199,44 +199,44 @@ extension ElementNode {
         // Make the element and make edges
         let output = element.map { self.make(element: $0) }
 
-        // Override implementation position if the element is substantial since our edges
+        // Override target position if the element is substantial since our edges
         // must start at 0 (the parent being ourself)
 
         // Update edges
         let edgesResult = self.updateEdges(
             from: output,
-            at: (self.substantial ? 0 : implementationPosition),
+            at: (self.substantial ? 0 : targetPosition),
             using: edgesContext
         )
 
         // Update state
-        implementationLogger.trace("Edges result of \(Value.self): \(edgesResult)")
-        self.implementationCount = edgesResult.implementationCount
+        targetLogger.trace("Edges result of \(Value.self): \(edgesResult)")
+        self.targetCount = edgesResult.targetCount
         self.attributes = attributes
         self.storeContext(context.clearingEnvironment())
-        self.storeImplementationPosition(implementationPosition)
+        self.storeTargetPosition(targetPosition)
 
-        // Override implementation count if the element is substantial since it has one implementation: itself
+        // Override target count if the element is substantial since it has one target: itself
         if self.substantial {
-            self.implementationCount = 1
+            self.targetCount = 1
         }
 
         // Make result
         let result = UpdateResult(
-            implementationPosition: implementationPosition,
-            implementationCount: self.implementationCount
+            targetPosition: targetPosition,
+            targetCount: self.targetCount
         )
-        implementationLogger.trace("Update result of \(Value.self): \(result)")
+        targetLogger.trace("Update result of \(Value.self): \(result)")
 
         // Handle initial update
         if initial {
-            self.implementation?.attributesDidSet()
+            self.target?.attributesDidSet()
         }
 
         return result
     }
 
-    func compareAndUpdateAny(with element: (any Element)?, implementationPosition: Int, using context: Context) -> UpdateResult {
+    func compareAndUpdateAny(with element: (any Element)?, targetPosition: Int, using context: Context) -> UpdateResult {
         let typedElement: Value?
         if let element {
             guard let element = element as? Value else {
@@ -248,7 +248,7 @@ extension ElementNode {
             typedElement = nil
         }
 
-        return self.compareAndUpdate(with: typedElement, implementationPosition: implementationPosition, using: context)
+        return self.compareAndUpdate(with: typedElement, targetPosition: targetPosition, using: context)
     }
 
     /// Sets environment attributes on the element node.
@@ -257,11 +257,11 @@ extension ElementNode {
             return
         }
 
-        guard let implementation = self.implementation else {
-            fatalError("Invalid 'ElementNode' state: expected an implementation node of type \(Value.Implementation.self) to be set to apply environment on")
+        guard let target = self.target else {
+            fatalError("Invalid 'ElementNode' state: expected a target node of type \(Value.Target.self) to be set to apply environment on")
         }
 
-        environmentLogger.trace("Setting environment attributes on \(Value.Implementation.self) (\(implementation)), initial: \(initial)")
+        environmentLogger.trace("Setting environment attributes on \(Value.Target.self) (\(target)), initial: \(initial)")
 
         for changedEnvironment in context.changedEnvironment where changedEnvironment.value || initial {
             let value = context.environment[keyPath: changedEnvironment.key]
@@ -275,63 +275,63 @@ extension ElementNode {
                 return
             }
 
-            environmentLogger.trace("Setting environment attribute \(key) on \(Value.Implementation.self) to \(value)")
-            key.set(value, on: implementation)
+            environmentLogger.trace("Setting environment attribute \(key) on \(Value.Target.self) to \(value)")
+            key.set(value, on: target)
         }
     }
 }
 
 extension ElementNode {
-    /// Is this node substantial, aka. does it have an implementation node?
+    /// Is this node substantial, aka. does it have a target node?
     var substantial: Bool {
-        return Value.Implementation.self != Never.self
+        return Value.Target.self != Never.self
     }
 
-    /// Attaches the implementation of this node to its parent implementation node. The implementation parent
+    /// Attaches the target of this node to its parent target node. The target parent
     /// is not always the element parent (it can skip elements).
-    func insertImplementationInParent(position: Int) {
-        func inner(attaching implementation: ImplementationNode, at position: Int, to parentNode: any ElementNode) {
-            if let parentImplementation = parentNode.implementation {
-                parentImplementation.insertChild(implementation, at: position)
-                implementationLogger.trace("Attaching \(Value.self) to parent \(parentImplementation.displayName) at position \(position)")
+    func insertTargetInParent(position: Int) {
+        func inner(attaching target: TargetNode, at position: Int, to parentNode: any ElementNode) {
+            if let parentTarget = parentNode.target {
+                parentTarget.insertChild(target, at: position)
+                targetLogger.trace("Attaching \(Value.self) to parent \(parentTarget.displayName) at position \(position)")
             } else if let parent = parentNode.parent {
-                inner(attaching: implementation, at: position, to: parent)
+                inner(attaching: target, at: position, to: parent)
             } else {
-                implementationLogger.trace("Did not find parent to attach \(Value.self) at position \(position)")
+                targetLogger.trace("Did not find parent to attach \(Value.self) at position \(position)")
             }
         }
 
-        guard let implementation = self.implementation else { return }
+        guard let target = self.target else { return }
         guard let parent = self.parent else { return }
 
-        inner(attaching: implementation, at: position, to: parent)
+        inner(attaching: target, at: position, to: parent)
     }
 
-    var parentImplementation: ImplementationNode? {
+    var parentTarget: TargetNode? {
         if let parent = self.parent {
-            if let implementation = parent.implementation {
-                return implementation
+            if let target = parent.target {
+                return target
             } else {
-                return parent.parentImplementation
+                return parent.parentTarget
             }
         }
 
         return nil
     }
 
-    func removeImplementationFromParent(implementationPosition: Int?) {
-        // Step 1: find the parent implementation node by traversing upwards
-        guard let parentImplementation = self.parentImplementation else { return }
-        let implementationPosition = implementationPosition ?? 0
+    func removeTargetFromParent(targetPosition: Int?) {
+        // Step 1: find the parent target node by traversing upwards
+        guard let parentTarget = self.parentTarget else { return }
+        let targetPosition = targetPosition ?? 0
 
-        // Step 2: traverse the tree downwards and remove every found implementation node
+        // Step 2: traverse the tree downwards and remove every found target node
         // as every deletion offsets the position of the next node by 1, we can remove all nodes
         // in the same position as the one we're removing
         func inner(node: any ElementNode) {
-            if node.implementation != nil {
-                let position = implementationPosition
-                implementationLogger.trace("Removing node at position \(position) from \(parentImplementation.displayName)")
-                parentImplementation.removeChild(at: position)
+            if node.target != nil {
+                let position = targetPosition
+                targetLogger.trace("Removing node at position \(position) from \(parentTarget.displayName)")
+                parentTarget.removeChild(at: position)
             } else {
                 // TODO: if this is inefficient, find a way to detach all edges with direct calls
                 for edge in node.allEdges {

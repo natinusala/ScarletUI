@@ -23,20 +23,20 @@ public protocol EnvironmentKey {
     static var defaultValue: Value { get }
 }
 
-/// An environment value that can be set as an attribute to an implementation node.
+/// An environment value that can be set as an attribute to a target node.
 public protocol AttributeEnvironmentKey: EnvironmentKey {
-    associatedtype Implementation
+    associatedtype Target
 
     /// The target key path to write the value to.
     ///
     /// Swift infers class writable key paths to `ReferenceWritableKeyPath` so we need to use that type
     /// here or it will break protocol conformance.
-    static var target: ReferenceWritableKeyPath<Implementation, Value> { get }
+    static var target: ReferenceWritableKeyPath<Target, Value> { get }
 }
 
 extension AttributeEnvironmentKey {
-    static func set(_ value: Any, on implementation: ImplementationNode) {
-        guard let implementation = implementation as? Implementation else {
+    static func set(_ value: Any, on target: TargetNode) {
+        guard let target = target as? Target else {
             return
         }
 
@@ -44,7 +44,7 @@ extension AttributeEnvironmentKey {
             fatalError("Cannot set environment attribute: got value of wrong type")
         }
 
-        implementation[keyPath: Self.target] = value
+        target[keyPath: Self.target] = value
     }
 }
 

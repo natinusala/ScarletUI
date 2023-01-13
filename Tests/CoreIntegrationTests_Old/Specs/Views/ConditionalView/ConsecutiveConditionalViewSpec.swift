@@ -100,51 +100,51 @@ class ConsecutiveConditionalViewSpecSpec: ScarletCoreSpec {
                     Tested(flip0: false, flip1: false, variable0: 42, variable1: 227, variable2: 28, variable3: 165, variable4: 97)
                 }
 
-                then("implementation is created") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Row") {
-                                ViewImpl("Row") {
+                then("target is created") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Row") {
+                                ViewTarget("Row") {
                                     // 0
-                                    TextImpl(text: "Doug")
+                                    TextTarget(text: "Doug")
 
                                     // 1 is removed
 
                                     // 2
-                                    ViewImpl("Column") {
-                                        ViewImpl("Picture") {
-                                            ImageImpl(source: "https://pictures.com/picture227.jpg")
+                                    ViewTarget("Column") {
+                                        ViewTarget("Picture") {
+                                            ImageTarget(source: "https://pictures.com/picture227.jpg")
                                         }
 
-                                        TextImpl(text: "variable1=227")
+                                        TextTarget(text: "variable1=227")
                                     }
 
                                     // 3
-                                    ViewImpl("Picture") {
-                                        ImageImpl(source: "https://pictures.com/picture91.jpg")
+                                    ViewTarget("Picture") {
+                                        ImageTarget(source: "https://pictures.com/picture91.jpg")
                                     }
 
                                     // 4
-                                    TextImpl(text: "variable0=42")
+                                    TextTarget(text: "variable0=42")
 
                                     // 5 is removed
 
                                     // 6
-                                    ViewImpl("Row") {
-                                        TextImpl(text: "Pear")
-                                        TextImpl(text: "variable2=28")
+                                    ViewTarget("Row") {
+                                        TextTarget(text: "Pear")
+                                        TextTarget(text: "variable2=28")
 
-                                        ViewImpl("Picture") {
-                                            ImageImpl(source: "https://pictures.com/picture165.jpg")
+                                        ViewTarget("Picture") {
+                                            ImageTarget(source: "https://pictures.com/picture165.jpg")
                                         }
 
-                                        ViewImpl("Picture") {
-                                            ImageImpl(source: "https://pictures.com/picture227.jpg")
+                                        ViewTarget("Picture") {
+                                            ImageTarget(source: "https://pictures.com/picture227.jpg")
                                         }
                                     }
 
                                     // 7
-                                    ImageImpl(source: "https://pictures.com/picture97.jpg")
+                                    ImageTarget(source: "https://pictures.com/picture97.jpg")
                                 }
                             }
                         }
@@ -158,53 +158,53 @@ class ConsecutiveConditionalViewSpecSpec: ScarletCoreSpec {
                     Tested(flip0: true, flip1: true, variable0: 149, variable1: 195, variable2: 59, variable3: 101, variable4: 3)
                 }
 
-                then("implementation is updated") { result in
-                    expect(result.implementation).to(equal(
-                        ViewImpl("Tested") {
-                            ViewImpl("Row") {
-                                ViewImpl("Row") {
+                then("target is updated") { result in
+                    expect(result.target).to(equal(
+                        ViewTarget("Tested") {
+                            ViewTarget("Row") {
+                                ViewTarget("Row") {
                                     // 0
-                                    TextImpl(text: "Mouse")
+                                    TextTarget(text: "Mouse")
 
                                     // 1
-                                    TextImpl(text: "Cat")
+                                    TextTarget(text: "Cat")
 
                                     // 2
-                                    ViewImpl("Column") {
-                                        ViewImpl("Picture") {
-                                            ImageImpl(source: "https://pictures.com/picture195.jpg")
+                                    ViewTarget("Column") {
+                                        ViewTarget("Picture") {
+                                            ImageTarget(source: "https://pictures.com/picture195.jpg")
                                         }
 
-                                        TextImpl(text: "variable1=195")
+                                        TextTarget(text: "variable1=195")
                                     }
 
                                     // 3
-                                    ViewImpl("Picture") {
-                                        ImageImpl(source: "https://pictures.com/picture91.jpg")
+                                    ViewTarget("Picture") {
+                                        ImageTarget(source: "https://pictures.com/picture91.jpg")
                                     }
 
                                     // 4
-                                    TextImpl(text: "variable0=149")
+                                    TextTarget(text: "variable0=149")
 
                                     // 5
-                                    TextImpl(text: "Chocolate")
+                                    TextTarget(text: "Chocolate")
 
                                     // 6
-                                    ViewImpl("Row") {
-                                        TextImpl(text: "Pear")
-                                        TextImpl(text: "variable2=59")
+                                    ViewTarget("Row") {
+                                        TextTarget(text: "Pear")
+                                        TextTarget(text: "variable2=59")
 
-                                        ViewImpl("Picture") {
-                                            ImageImpl(source: "https://pictures.com/picture101.jpg")
+                                        ViewTarget("Picture") {
+                                            ImageTarget(source: "https://pictures.com/picture101.jpg")
                                         }
 
-                                        ViewImpl("Picture") {
-                                            ImageImpl(source: "https://pictures.com/picture195.jpg")
+                                        ViewTarget("Picture") {
+                                            ImageTarget(source: "https://pictures.com/picture195.jpg")
                                         }
                                     }
 
                                     // 7
-                                    ImageImpl(source: "https://pictures.com/picture3.jpg")
+                                    ImageTarget(source: "https://pictures.com/picture3.jpg")
                                 }
                             }
                         }
