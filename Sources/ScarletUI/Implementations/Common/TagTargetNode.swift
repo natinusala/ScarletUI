@@ -14,7 +14,7 @@
    limitations under the License.
 */
 
-/// Target node for elements with tags.
+/// Target node for components with tags.
 public protocol _TagTargetNode: TargetNode, AnyObject {
     /// Tag used to find the node in the tree.
     var tag: String? { get set }

@@ -14,7 +14,7 @@
    limitations under the License.
 */
 
-public protocol Scene: Element {
+public protocol Scene: ComponentModel {
     associatedtype Body: Scene
 
     var body: Body { get }

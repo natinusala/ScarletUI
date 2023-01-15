@@ -20,8 +20,8 @@
 /// Behaves similarly to a view modifier by wrapping its content.
 /// Use with ``View/attributed(_:)`` like you would use ``View/modified(by:)`` for view modifiers.
 public struct ViewAttribute4<Content: View, A0: AttributeSetter, A1: AttributeSetter, A2: AttributeSetter, A3: AttributeSetter>: View {
-    public typealias Input = StaticMakeInput1<Self>
-    public typealias Output = StaticMakeOutput1<Self, Content>
+    public typealias Input = StaticComponentInput1<Self>
+    public typealias Output = StaticComponentOutput1<Self, Content>
     public typealias Target = Never
 
     let content: Content
@@ -35,33 +35,33 @@ public struct ViewAttribute4<Content: View, A0: AttributeSetter, A1: AttributeSe
         fatalError()
     }
 
-    public static func collectAttributes(of element: Self, source: AnyHashable) -> AttributesStash {
+    public static func collectAttributes(of component: Self, source: AnyHashable) -> AttributesStash {
         return AttributesStash(
             from: [
-                element.a0.target: element.a0,
-                element.a1.target: element.a1,
-                element.a2.target: element.a2,
-                element.a3.target: element.a3,
+                component.a0.target: component.a0,
+                component.a1.target: component.a1,
+                component.a2.target: component.a2,
+                component.a3.target: component.a3,
             ],
             source: source
         )
     }
 
     public static func makeNode(
-        of element: Self,
-        in parent: (any ElementNode)?,
+        of component: Self,
+        in parent: (any ComponentNode)?,
         targetPosition: Int,
         using context: Context
-    ) -> StaticElementNode1<Self, Content> where Input == StaticMakeInput1<Self> {
-        return .init(making: element, in: parent, targetPosition: targetPosition, using: context)
+    ) -> StaticComponentNode1<Self, Content> where Input == StaticComponentInput1<Self> {
+        return .init(making: component, in: parent, targetPosition: targetPosition, using: context)
     }
 
     public static func make(
-        _ element: Self,
-        input: StaticMakeInput1<Self>
-    ) -> StaticMakeOutput1<Self, Content> {
+        _ component: Self,
+        input: StaticComponentInput1<Self>
+    ) -> StaticComponentOutput1<Self, Content> {
         return .init(
-            e0: element.content
+            e0: component.content
         )
     }
 }

@@ -21,14 +21,14 @@ import Needler
 import ScarletUI
 import ScarletCore
 
-// TODO: rename Element to Model or Composable ? think about ElementNode - make TargetContext - make performancemode - make StateObject / EnvironmentObject - test libretro runner
+// TODO: make TargetContext - make performancemode - make StateObject / EnvironmentObject - test libretro runner
 
-/// Default timeout when awaiting for elements and interactions of the app, in seconds.
+/// Default timeout when awaiting for components and interactions of the app, in seconds.
 public let defaultTimeout = 5
 
 /// A tested ScarletUI application runner. Can be bound to an app, a scene or a view.
 @MainActor
-public class ScarletUIApplication<Tested: Element> where Tested.Node: StatefulElementNode {
+public class ScarletUIApplication<Tested: ComponentModel> where Tested.Node: StatefulComponentNode {
     let app: _AppTarget
     let root: Tested.Node
 
@@ -91,7 +91,7 @@ public class ScarletUIApplication<Tested: Element> where Tested.Node: StatefulEl
         return view
     }
 
-    /// Finds a state property in the tested element and sets it to the given value.
+    /// Finds a state property in the tested component and sets it to the given value.
     @MainActor
     public func setState<Value>(_ name: String, to value: Value) async {
         do {
@@ -129,7 +129,7 @@ public class ScarletUIApplication<Tested: Element> where Tested.Node: StatefulEl
         }
     }
 
-    /// Updates the tested element with a new version.
+    /// Updates the tested component with a new version.
     @MainActor
     public func update(with tested: Tested) async {
         _ = self.root.update(with: tested, targetPosition: 0, using: root.context)

@@ -18,22 +18,22 @@
 public struct ViewModifierContent<Modifier>: View where Modifier: ViewModifier {
     public typealias Target = Never
 
-    public typealias Input = ViewModifierContentMakeInput<Self>
-    public typealias Output = ViewModifierContentMakeOutput<Self>
+    public typealias Input = ViewModifierContentComponentInput<Self>
+    public typealias Output = ViewModifierContentComponentOutput<Self>
 
-    public static func makeNode(of element: Self, in parent: (any ElementNode)?, targetPosition: Int, using context: Context) -> ViewModifierContentElementNode<Self> {
-        return ViewModifierContentElementNode<Self>(making: element, in: parent, targetPosition: targetPosition, using: context)
+    public static func makeNode(of component: Self, in parent: (any ComponentNode)?, targetPosition: Int, using context: Context) -> ViewModifierContentComponentNode<Self> {
+        return ViewModifierContentComponentNode<Self>(making: component, in: parent, targetPosition: targetPosition, using: context)
     }
 
-    public static func make(_ element: Self, input: Input) -> Output {
+    public static func make(_ component: Self, input: Input) -> Output {
         return Output()
     }
 }
 
 /// Context given to a ``ViewModifierContent`` by its parent ``ModifiedContent``. Contains
-/// the type-erased content element to check and update.
+/// the type-erased content component to check and update.
 /// If the content is `nil` it means it didn't change, however it's still updated in
 /// case its edges are different (depending on context).
 struct ViewModifierContentContext {
-    let content: (any Element)?
+    let content: (any ComponentModel)?
 }

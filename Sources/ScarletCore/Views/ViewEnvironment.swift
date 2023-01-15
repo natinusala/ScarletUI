@@ -16,8 +16,8 @@
 
 /// Setter for environment values on views.
 public struct ViewEnvironment<Content: View, Value>: View, EnvironmentCollectable {
-    public typealias Input = EnvironmentMakeInput<Self>
-    public typealias Output = EnvironmentMakeOutput<Self, Content>
+    public typealias Input = EnvironmentComponentInput<Self>
+    public typealias Output = EnvironmentComponentOutput<Self, Content>
     public typealias Target = Never
 
     let keyPath: WritableKeyPath<EnvironmentValues, Value>
@@ -26,26 +26,26 @@ public struct ViewEnvironment<Content: View, Value>: View, EnvironmentCollectabl
     let content: Content
 
     public static func makeNode(
-        of element: Self,
-        in parent: (any ElementNode)?,
+        of component: Self,
+        in parent: (any ComponentNode)?,
         targetPosition: Int,
         using context: Context
-    ) -> EnvironmentElementNode<Self, Content> where Input == EnvironmentMakeInput<Self> {
-        return .init(making: element, in: parent, targetPosition: targetPosition, using: context)
+    ) -> EnvironmentComponentNode<Self, Content> where Input == EnvironmentComponentInput<Self> {
+        return .init(making: component, in: parent, targetPosition: targetPosition, using: context)
     }
 
     public static func make(
-        _ element: Self,
-        input: EnvironmentMakeInput<Self>
-    ) -> EnvironmentMakeOutput<Self, Content> {
+        _ component: Self,
+        input: EnvironmentComponentInput<Self>
+    ) -> EnvironmentComponentOutput<Self, Content> {
         return .init(
-            e0: element.content
+            e0: component.content
         )
     }
 
-    public static func collectEnvironment(of element: Self) -> (keyPath: WritableKeyPath<EnvironmentValues, Value>, value: Value) {
+    public static func collectEnvironment(of component: Self) -> (keyPath: WritableKeyPath<EnvironmentValues, Value>, value: Value) {
         environmentLogger.trace("Collecting environment of \(Self.self)")
-        return (keyPath: element.keyPath, value: element.value)
+        return (keyPath: component.keyPath, value: component.value)
     }
 
     public var partialKeyPath: PartialKeyPath<EnvironmentValues> {

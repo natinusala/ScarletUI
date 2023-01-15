@@ -29,7 +29,7 @@ protocol ScarletSpec {
 
 class ScarletSpecRunner<Spec: ScarletSpec>: QuickSpec {
     var view: Spec.Tested!
-    var node: ElementNode!
+    var node: ComponentNode!
 
     var bodyAccessor: BodyAccessorMock!
 
@@ -68,7 +68,7 @@ class ScarletSpecRunner<Spec: ScarletSpec>: QuickSpec {
         expectation.closure(result)
     }
 
-    private func setupCase(with node: ElementNode) {
+    private func setupCase(with node: ComponentNode) {
         // Rebuild the node from scratch to start each test case from a clean state
         self.node = node
 

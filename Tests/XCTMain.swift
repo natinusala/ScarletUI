@@ -29,7 +29,7 @@ let specs: [QuickSpec.Type] = [
     // MARK: CoreUnitTests
 
     TryEquatableSpec.self,
-    ElementEqualsSpec.self,
+    AnyEqualsSpec.self,
 
     // MARK: CoreIntegrationTests
 

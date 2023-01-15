@@ -18,8 +18,8 @@ import Runtime
 
 /// A property which storage is managed by ScarletUI.
 ///
-/// The table below describes how different elements behave depending on if they are stateless or stateful and if they are a POD or not.
-/// "Stateful" here designate any element with a dynamic property.
+/// The table below describes how different components behave depending on if they are stateless or stateful and if they are a POD or not.
+/// "Stateful" here designate any component with a dynamic property.
 ///
 ///|                       | **Comparison**                                                       | **Dynamic properties installation**                                             | **Value storage**                                                               | **State storage**                                                     |
 ///|-----------------------|----------------------------------------------------------------------|---------------------------------------------------------------------------------|---------------------------------------------------------------------------------|-----------------------------------------------------------------------|
@@ -34,14 +34,14 @@ public protocol _DynamicProperty {
         visitor: Visitor,
         in property: PropertyInfo,
         target: inout Visitor.Visited,
-        using context: ElementNodeContext
+        using context: ComponentContext
     ) throws
 }
 
-/// Visits various dynamic properties of a given element.
+/// Visits various dynamic properties of a given component.
 /// Used by calling ``DynamicProperty/accept()`` on the visited property.
 public protocol _DynamicPropertiesVisitor<Visited>: AnyObject {
-    associatedtype Visited
+    associatedtype Visited: ComponentModel
 
     /// Visit a state property.
     func visitStateProperty<Value>(
@@ -63,12 +63,12 @@ public protocol _DynamicPropertiesVisitor<Visited>: AnyObject {
 }
 
 public extension _DynamicPropertiesVisitor {
-    /// Uses runtime metadata to visit all dynamic properties of the given element.
-    func walk(_ element: Visited, target: inout Visited, using context: ElementNodeContext) throws {
+    /// Uses runtime metadata to visit all dynamic properties of the given component.
+    func walk(_ component: Visited, target: inout Visited, using context: ComponentContext) throws {
         let info = try cachedTypeInfo(of: Visited.self)
 
         for property in info.properties {
-            let current = try property.get(from: element)
+            let current = try property.get(from: component)
 
             switch current {
                 case let current as _DynamicProperty:

@@ -14,8 +14,8 @@
    limitations under the License.
 */
 
-extension Never: ElementInput, ElementOutput {
-    public typealias Value = Never
+extension Never: ComponentInput, ComponentOutput {
+    public typealias Model = Never
 }
 
 extension Never: TargetNode {
@@ -40,14 +40,14 @@ extension Never: TargetNode {
     }
 }
 
-extension Never: Element {
+extension Never: ComponentModel {
     public typealias Target = Never
 
-    public static func makeNode(of element: Self, in parent: (any ElementNode)?, targetPosition: Int, using context: Context) -> NeverElementNode {}
+    public static func makeNode(of component: Self, in parent: (any ComponentNode)?, targetPosition: Int, using context: Context) -> NeverComponentNode {}
 
-    public static func make(_ element: Self, input: Never) -> Never {}
+    public static func make(_ component: Self, input: Never) -> Never {}
 
-    public static func makeTarget(of element: Self) -> (any TargetNode)? {}
+    public static func makeTarget(of component: Self) -> (any TargetNode)? {}
 }
 
 extension Never: View, Scene, App {
@@ -60,15 +60,15 @@ extension Never: View, Scene, App {
     }
 }
 
-public class NeverElementNode: ElementNode {
-    public var value: Never {
+public class NeverComponentNode: ComponentNode {
+    public var model: Never {
         get {
             fatalError()
         }
         set {}
     }
-    public weak var parent: (any ElementNode)?
-    public var target: Value.Target?
+    public weak var parent: (any ComponentNode)?
+    public var target: Model.Target?
     public var targetCount = 0
     public var attributes = AttributesStash()
 
@@ -80,11 +80,11 @@ public class NeverElementNode: ElementNode {
         fatalError()
     }
 
-    public func make(element: Never) -> Never {}
+    public func make(component: Never) -> Never {}
 
-    public func shouldUpdate(with element: Never, using context: ElementNodeContext) -> Bool {}
+    public func shouldUpdate(with component: Never, using context: ComponentContext) -> Bool {}
 
-    public var allEdges: [(any ElementNode)?] {
+    public var allEdges: [(any ComponentNode)?] {
         fatalError()
     }
 }

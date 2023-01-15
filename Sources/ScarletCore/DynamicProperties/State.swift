@@ -20,9 +20,9 @@ import Runtime
 class StateLocation<Value>: Location {
     @Podable var value: Value
 
-    weak var node: (any StatefulElementNode)?
+    weak var node: (any StatefulComponentNode)?
 
-    init(value: Value, node: any StatefulElementNode) {
+    init(value: Value, node: any StatefulComponentNode) {
         self.value = value
         self.node = node
 
@@ -39,11 +39,11 @@ class StateLocation<Value>: Location {
 
     func set(_ value: Value) {
         guard let node else {
-            fatalError("Trying to update a state value on a deinited element node")
+            fatalError("Trying to update a state value on a deinited component node")
         }
 
         // If the new value is the same as the current one, don't do anything
-        if elementEquals(lhs: self.value, rhs: value) {
+        if anyEquals(lhs: self.value, rhs: value) {
             return
         }
 
@@ -89,7 +89,7 @@ public struct State<Value>: _DynamicProperty {
         visitor: Visitor,
         in property: PropertyInfo,
         target: inout Visitor.Visited,
-        using context: ElementNodeContext
+        using context: ComponentContext
     ) throws {
         try visitor.visitStateProperty(property, current: self, target: &target, type: Value.self)
     }

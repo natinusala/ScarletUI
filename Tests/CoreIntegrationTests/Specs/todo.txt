@@ -15,7 +15,7 @@ impl:
     dans le contexte on stocke les valeurs avec un flag qui dit si ça a changé
     lors de l'installation on n'installe que celles qui ont changé
     les valeurs sont discard dans le context à la sauvegarde
-    à l'intérieur de EnvironmentElementNode on stocke la dernière valeur, on fait la comparaison là (dans la collecte)
+    à l'intérieur de EnvironmentComponentNode on stocke la dernière valeur, on fait la comparaison là (dans la collecte)
 
 -------------------------------------------------
 
@@ -46,7 +46,7 @@ tests sur les attributs:
     vérifier la priorité des attributs (appliquer le même attribut N+2 sur la vue N et N+1 (doit se propager et prendre la bonne valeur))
     tester les append: avoir plusieurs onTestSignal mais sur des signaux différents
 
-tests sur le retain des elementnode et implementationnode
+tests sur le retain des ComponentNode et implementationnode
     vérifier que la copie de state met bien à jour le retain count sur la location
     vérifier que retirer un noeud deinit bien le node + l'implementation (stateful et stateless)
     vérifier que le weak sur statelocation fonctionne

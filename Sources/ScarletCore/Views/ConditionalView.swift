@@ -17,19 +17,19 @@
 /// A view with an edge that can be one type or the other, depending on the path the
 /// condition takes ("first" or "second").
 public enum ConditionalView<First, Second>: View where First: View, Second: View {
-    public typealias Input = ConditionalMakeInput<Self>
-    public typealias Output = ConditionalMakeOutput<Self, First, Second>
+    public typealias Input = ConditionalComponentInput<Self>
+    public typealias Output = ConditionalComponentOutput<Self, First, Second>
     public typealias Target = Never
 
     case first(First)
     case second(Second)
 
-    public static func makeNode(of element: Self, in parent: (any ElementNode)?, targetPosition: Int, using context: Context) -> ConditionalElementNode<Self, First, Second> {
-        return ConditionalElementNode<Self, First, Second>(making: element, in: parent, targetPosition: targetPosition, using: context)
+    public static func makeNode(of component: Self, in parent: (any ComponentNode)?, targetPosition: Int, using context: Context) -> ConditionalComponentNode<Self, First, Second> {
+        return ConditionalComponentNode<Self, First, Second>(making: component, in: parent, targetPosition: targetPosition, using: context)
     }
 
-    public static func make(_ element: Self, input: Input) -> Output {
-        switch element {
+    public static func make(_ component: Self, input: Input) -> Output {
+        switch component {
             case .first(let first):
                 return .first(first)
             case .second(let second):
@@ -38,7 +38,7 @@ public enum ConditionalView<First, Second>: View where First: View, Second: View
     }
 }
 
-public extension ElementBuilder {
+public extension ComponentBuilder {
     static func buildEither<First: View, Second: View>(first: First) -> ConditionalView<First, Second> {
         return .first(first)
     }

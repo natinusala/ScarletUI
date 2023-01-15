@@ -22,7 +22,7 @@ struct Column<Content>: View where Content: View {
 
     var content: Content
 
-    init(@ElementBuilder content: () -> Content) {
+    init(@ComponentBuilder content: () -> Content) {
         self.content = content()
     }
 

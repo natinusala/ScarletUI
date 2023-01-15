@@ -26,7 +26,7 @@ struct DiscoveredPreview: Hashable {
     let name: String
     let windowMode: WindowMode?
     let axis: Axis
-    let makeNode: () -> any ElementNode
+    let makeNode: () -> any ComponentNode
 
     init<Previewed: Preview>(from preview: Previewed.Type) {
         self.type = ObjectIdentifier(Previewed.self)

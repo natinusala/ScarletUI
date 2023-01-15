@@ -87,7 +87,7 @@ let package = Package(
                 .product(name: "Builders", package: "swift-builders"),
             ],
             exclude: [
-                "ElementNodes/StaticElementNode.gyb",
+                "ComponentNodes/StaticComponentNode.gyb",
                 "Views/TupleView.gyb",
                 "Views/ViewAttribute.gyb",
             ]

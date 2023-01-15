@@ -14,10 +14,10 @@
    limitations under the License.
 */
 
-public protocol View: Element {
+public protocol View: ComponentModel {
     associatedtype Body: View
 
-    @ElementBuilder var body: Body { get }
+    @ComponentBuilder var body: Body { get }
 }
 
 /// Extension for internal views that have no body but
@@ -28,7 +28,7 @@ public extension View where Body == Never {
     }
 }
 
-extension ElementBuilder {
+extension ComponentBuilder {
     public static func buildBlock() -> OptionalView<Never> {
         return .none
     }
@@ -38,7 +38,7 @@ extension ElementBuilder {
     }
 }
 
-public typealias ViewBuilder = ElementBuilder
+public typealias ViewBuilder = ComponentBuilder
 
 /// A view that only contains other views. Does not perform equality check on itself
 /// since it would be redundant with checking its content view.

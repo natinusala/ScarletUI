@@ -14,7 +14,7 @@
    limitations under the License.
 */
 
-/// An element that has an associated target.
+/// A component that has an associated target.
 public protocol Targetable {
     /// The type of this view's target.
     /// Set to `Never` if there is none.
@@ -30,11 +30,11 @@ public extension Targetable {
     }
 }
 
-/// The target is the direct output of ScarletCore. Running the core on an element
-/// creates a target node and binds it to the element. The target node is persisted for the entire
-/// lifetime of the element, and is removed when the element is also removed from its own tree.
+/// The target is the direct output of ScarletCore. Running the core on a component
+/// creates a target node and binds it to the component. The target node is persisted for the entire
+/// lifetime of the component, and is removed when the component is also removed from its own tree.
 ///
-/// All target nodes of an app make a tree (the "target tree"), that resides next to the "elements" tree.
+/// All target nodes of an app make a tree (the "target tree"), that resides next to the "components" tree (model + component node).
 ///
 /// The lifecycle of a target node is as follows:
 ///     - the node is created
@@ -48,7 +48,7 @@ public extension Targetable {
 ///         - `deinit`
 public protocol TargetNode: CustomStringConvertible {
     /// Display name for debugging purposes.
-    /// Contains the name of the underlying element struct.
+    /// Contains the name of the underlying component struct.
     var displayName: String { get }
 
     /// Creates a new target node.
@@ -57,10 +57,10 @@ public protocol TargetNode: CustomStringConvertible {
     /// Called right after node creation when all attributes have been set.
     func attributesDidSet()
 
-    /// Inserts the given element into this target node.
+    /// Inserts the given component into this target node.
     func insertChild(_ child: TargetNode, at position: Int)
 
-    /// Removes the given element from this target node.
+    /// Removes the given component from this target node.
     func removeChild(at position: Int)
 }
 

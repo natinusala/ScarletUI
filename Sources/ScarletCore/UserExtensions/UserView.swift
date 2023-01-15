@@ -16,40 +16,40 @@
 
 import Needler
 
-public extension View where Input == UserMakeInput<Self>, Output == UserMakeOutput<Self, Body> {
+public extension View where Input == UserComponentInput<Self>, Output == UserComponentOutput<Self, Body> {
     /// Default implementation of `makeNode()` for user views with a body: make a node with one edge, the body.
-    static func makeNode(of element: Self, in parent: (any ElementNode)?, targetPosition: Int, using context: Context) -> UserElementNode<Self, Body> {
-        return .init(making: element, in: parent, targetPosition: targetPosition, using: context)
+    static func makeNode(of component: Self, in parent: (any ComponentNode)?, targetPosition: Int, using context: Context) -> UserComponentNode<Self, Body> {
+        return .init(making: component, in: parent, targetPosition: targetPosition, using: context)
     }
 
     /// Default implementation of `make()` for user views with a body: make the body edge.
-    static func make(_ element: Self, input: UserMakeInput<Self>) -> UserMakeOutput<Self, Body> {
+    static func make(_ component: Self, input: UserComponentInput<Self>) -> UserComponentOutput<Self, Body> {
         return .init(
-            edge: DefaultBodyAccessor.shared.makeBody(of: element)
+            edge: DefaultBodyAccessor.shared.makeBody(of: component)
         )
     }
 }
 
-public extension LeafView where Input == LeafViewMakeInput<Self>, Output == LeafViewMakeOutput<Self> {
+public extension LeafView where Input == LeafViewComponentInput<Self>, Output == LeafViewComponentOutput<Self> {
     /// Default implementation of `makeNode()` for leaves: make a leaf node.
-    static func makeNode(of element: Self, in parent: (any ElementNode)?, targetPosition: Int, using context: Context) -> LeafViewElementNode<Self> {
-        return .init(making: element, in: parent, targetPosition: targetPosition, using: context)
+    static func makeNode(of component: Self, in parent: (any ComponentNode)?, targetPosition: Int, using context: Context) -> LeafViewComponentNode<Self> {
+        return .init(making: component, in: parent, targetPosition: targetPosition, using: context)
     }
 
     /// Default implementation of `make()` for leaves: make an empty edge.
-    static func make(_ element: Self, input: LeafViewMakeInput<Self>) -> LeafViewMakeOutput<Self> {
+    static func make(_ component: Self, input: LeafViewComponentInput<Self>) -> LeafViewComponentOutput<Self> {
         return .init()
     }
 }
 
-public extension StatelessLeafView where Input == StatelessLeafViewMakeInput<Self>, Output == StatelessLeafViewMakeOutput<Self> {
+public extension StatelessLeafView where Input == StatelessLeafViewComponentInput<Self>, Output == StatelessLeafViewComponentOutput<Self> {
     /// Default implementation of `makeNode()` for leaves: make a leaf node.
-    static func makeNode(of element: Self, in parent: (any ElementNode)?, targetPosition: Int, using context: Context) -> StatelessLeafViewElementNode<Self> {
-        return .init(making: element, in: parent, targetPosition: targetPosition, using: context)
+    static func makeNode(of component: Self, in parent: (any ComponentNode)?, targetPosition: Int, using context: Context) -> StatelessLeafViewComponentNode<Self> {
+        return .init(making: component, in: parent, targetPosition: targetPosition, using: context)
     }
 
     /// Default implementation of `make()` for leaves: make an empty edge.
-    static func make(_ element: Self, input: StatelessLeafViewMakeInput<Self>) -> StatelessLeafViewMakeOutput<Self> {
+    static func make(_ component: Self, input: StatelessLeafViewComponentInput<Self>) -> StatelessLeafViewComponentOutput<Self> {
         return .init()
     }
 }

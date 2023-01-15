@@ -42,11 +42,11 @@ public extension Optional {
 
 /// Sets an attribute value to any target.
 ///
-/// By default, attributes of an element are collected using runtime metadata on the element itself
+/// By default, attributes of a component are collected using runtime metadata on the model itself
 /// to gather all `@Attribute` property wrappers.
 /// However this is quite slow due to runtime metadata lookup.
 ///
-/// Using a specialized element like `ViewAttribute` without property wrappers allows collecting
+/// Using a specialized component like ``ViewAttribute`` without property wrappers allows collecting
 /// attributes in a type-safe and faster way.
 public protocol AttributeSetter<Target>: CustomDebugStringConvertible {
     /// The target node type this attribute is bound to.
@@ -66,7 +66,7 @@ public protocol AttributeSetter<Target>: CustomDebugStringConvertible {
     var target: AttributeTarget { get }
 
     /// Set the value to the given target.
-    /// The identifier represents the unique element holding the attribute,
+    /// The identifier represents the unique component holding the attribute,
     /// using structural identity.
     func set(on target: Target, identifiedBy: AnyHashable)
 
@@ -134,12 +134,12 @@ public struct Attribute<Target, Value>: AttributeSetter, IsPodable {
             return
         }
 
-        if !elementEquals(lhs: target[keyPath: self.keyPath], rhs: value) {
+        if !anyEquals(lhs: target[keyPath: self.keyPath], rhs: value) {
             target[keyPath: self.keyPath] = value
         }
     }
 
-    /// If the element parameter is an optional value and `nil` means "attribute unset",
+    /// If the component parameter is an optional value and `nil` means "attribute unset",
     /// use this convenience method to set the attribute value in one line instead of
     /// manually unwrapping the optional.
     public mutating func setFromOptional(_ value: Value?) {
@@ -154,7 +154,7 @@ public struct Attribute<Target, Value>: AttributeSetter, IsPodable {
 }
 
 /// Used by target nodes to store an attribute with multiple values. Used with ``AppendAttribute``.
-/// Values order is not guaranteed or meaningful since they are stored in a dictionary, keys being the originating attribute setter element nodes.
+/// Values order is not guaranteed or meaningful since they are stored in a dictionary, keys being the originating attribute setter component nodes.
 /// A convenience `Equatable` conformance is given if `Value` conforms to `Hashable` to efficiently compare the values in an unordered manner.
 public struct AttributeList<Value>: Sequence, CustomStringConvertible, CustomDebugStringConvertible {
     public typealias Values = [AnyHashable: Value]
@@ -258,7 +258,7 @@ public struct AppendAttribute<Target: TargetNode, Value>: AttributeSetter, IsPod
         // If a value exists in the node, compare it before setting
         // Otherwise just set it
         if let existingValue = list.values[key] {
-            if !elementEquals(lhs: existingValue, rhs: value) {
+            if !anyEquals(lhs: existingValue, rhs: value) {
                 attributesLogger.trace("Accumulating attribute identified by \(key) on \(target.displayName): value is different")
                 target[keyPath: self.keyPath].values[key] = value
             } else {
@@ -270,7 +270,7 @@ public struct AppendAttribute<Target: TargetNode, Value>: AttributeSetter, IsPod
         }
     }
 
-    /// If the element parameter is an optional value and `nil` means "attribute unset",
+    /// If the component parameter is an optional value and `nil` means "attribute unset",
     /// use this convenience method to set the attribute value in one line instead of
     /// manually unwrapping the optional.
     public mutating func setFromOptional(_ value: Value?) {
@@ -313,12 +313,12 @@ extension AttributeSetter {
 }
 
 /// Represents the target key path of an attribute inside the
-/// target element target class.
+/// target component target class.
 public typealias AttributeTarget = AnyKeyPath
 
 /// Key for one entry of the "accumulating" attributes dictionary.
 struct AccumulatingAttributeKey: Hashable {
-    /// Source element applying the attribute (element node object identifier hash).
+    /// Source component applying the attribute (component node object identifier hash).
     let source: AnyHashable
 
     /// Attribute target.
@@ -327,14 +327,14 @@ struct AccumulatingAttributeKey: Hashable {
 
 /// An attributes "stash" holds attributes while the graph is traversed.
 public struct AttributesStash {
-    /// Regular attributes are attribute with one and only one value per element.
+    /// Regular attributes are attribute with one and only one value per component.
     /// Once the value is set anywhere in the tree, it will never be overridden by children
-    /// elements, making the top-most value the applied one (parent takes precedence).
+    /// components, making the top-most value the applied one (parent takes precedence).
     /// TODO: should we reverse this as this is inconsistent with environment values?
     var attributes: [AttributeTarget: any AttributeSetter]
 
     /// "Accumulating" attributes are applied to a list of values on the target (``AttributeList``).
-    /// Each append attribute value is bound to the source element node (usually the ``ViewAttribute`` setter)
+    /// Each append attribute value is bound to the source component node (usually the ``ViewAttribute`` setter)
     /// to be able to replace the correct value in the target list when it changes.
     var accumulatingAttributes: [AccumulatingAttributeKey: any AttributeSetter]
 
@@ -386,7 +386,7 @@ public struct AttributesStash {
     }
 }
 
-extension ElementNodeContext {
+extension ComponentContext {
     /// Creates a copy of the context popping the attributes corresponding to the given target type,
     /// returning them along the context copy.
     func poppingAttributes<Target: TargetNode>(

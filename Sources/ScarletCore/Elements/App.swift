@@ -14,7 +14,7 @@
    limitations under the License.
 */
 
-public protocol App: Element {
+public protocol App: ComponentModel {
     associatedtype Body: Scene
 
     init()

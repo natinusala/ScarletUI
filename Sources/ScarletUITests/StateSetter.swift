@@ -22,13 +22,13 @@ import Runtime
 import ScarletUI
 import ScarletCore
 
-func setState<Node: StatefulElementNode, Value>(named name: String, to value: Value, on node: Node) throws -> Bool {
-    let visitor = StateSetterVisitor<Node.Value>(name: name, value: value)
-    try visitor.walk(node.value, target: &node.value, using: node.context)
+func setState<Node: StatefulComponentNode, Value>(named name: String, to value: Value, on node: Node) throws -> Bool {
+    let visitor = StateSetterVisitor<Node.Model>(name: name, value: value)
+    try visitor.walk(node.model, target: &node.model, using: node.context)
     return visitor.success
 }
 
-private class StateSetterVisitor<Visited>: _DynamicPropertiesVisitor {
+private class StateSetterVisitor<Visited: ComponentModel>: _DynamicPropertiesVisitor {
     let name: String
     let value: Any
 

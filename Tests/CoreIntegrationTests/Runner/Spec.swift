@@ -18,20 +18,20 @@ import XCTest
 
 @testable import ScarletCore
 
-struct Specs<Value: Element> {
+struct Specs<Value: ComponentModel> {
     let cases: [Case<Value>]
 }
 
 protocol UpdateAction {
-    func run(on node: any ElementNode)
+    func run(on node: any ComponentNode)
 }
 
-struct InitialSteps<Value: Element> {
+struct InitialSteps<Value: ComponentModel> {
     let initialView: Value.Node
     let updateActions: [any UpdateAction]
 }
 
-struct Case<Value: Element> {
+struct Case<Value: ComponentModel> {
     let initialSteps: () -> InitialSteps<Value>
     let description: String
     let expectations: [Expectations]
@@ -129,7 +129,7 @@ extension TestView {
 
 @resultBuilder
 struct SpecsBuilder {
-    static func buildBlock<Value: Element>(_ cases: Case<Value>...) -> Specs<Value> {
+    static func buildBlock<Value: ComponentModel>(_ cases: Case<Value>...) -> Specs<Value> {
         return Specs(cases: cases)
     }
 }
@@ -137,7 +137,7 @@ struct SpecsBuilder {
 @resultBuilder
 struct ExpectationsBuilder {
     /// Build a block with a starting view, an action then a list of expectations.
-    static func buildBlock<Value: Element>(_ initial: @escaping (() -> InitialSteps<Value>), _ expectations: Expectations...) -> ((() -> InitialSteps<Value>), [Expectations]) {
+    static func buildBlock<Value: ComponentModel>(_ initial: @escaping (() -> InitialSteps<Value>), _ expectations: Expectations...) -> ((() -> InitialSteps<Value>), [Expectations]) {
         return (initial, expectations)
     }
 }
@@ -156,15 +156,15 @@ extension TestView {
 }
 
 extension TestView {
-    func run(on node: any ElementNode) {
+    func run(on node: any ComponentNode) {
         guard let node = node as? Self.Node else {
-            fatalError("Tried to update \(Self.self) with node type \(type(of: node))")
+            fatalError("Tried to update '\(Self.self)' with node type '\(type(of: node))'")
         }
 
-        let context = ElementNodeContext.root()
+        let context = ComponentContext.root()
 
         var installed = self
-        node.install(element: &installed, using: context)
+        node.install(component: &installed, using: context)
 
         _ = node.update(with: installed, targetPosition: 0, using: context)
     }

@@ -8,16 +8,16 @@ def run(*cmd):
 
 max = 10
 
-# StaticElementNode
+# StaticComponentNode
 for i in range(1, max):
     run(
         "gyb",
         f"-DIDX={i}",
         "-o",
-        f"Sources/ScarletCore/ElementNodes/StaticElementNodes/StaticElementNode{i}.swift",
+        f"Sources/ScarletCore/ComponentNodes/StaticComponentNodes/StaticComponentNode{i}.swift",
         "--line-directive",
         "",
-        "Sources/ScarletCore/ElementNodes/StaticElementNode.gyb",
+        "Sources/ScarletCore/ComponentNodes/StaticComponentNode.gyb",
     )
 
 # TupleView

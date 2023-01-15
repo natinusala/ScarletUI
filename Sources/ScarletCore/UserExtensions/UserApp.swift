@@ -16,16 +16,16 @@
 
 import Needler
 
-public extension App where Input == UserMakeInput<Self>, Output == UserMakeOutput<Self, Body> {
+public extension App where Input == UserComponentInput<Self>, Output == UserComponentOutput<Self, Body> {
     /// Default implementation of `makeNode()` for user apps with a body: make a node with one edge, the body.
-    static func makeNode(of element: Self, in parent: (any ElementNode)?, targetPosition: Int, using context: Context) -> UserElementNode<Self, Body> {
-        return .init(making: element, in: parent, targetPosition: targetPosition, using: context)
+    static func makeNode(of component: Self, in parent: (any ComponentNode)?, targetPosition: Int, using context: Context) -> UserComponentNode<Self, Body> {
+        return .init(making: component, in: parent, targetPosition: targetPosition, using: context)
     }
 
     /// Default implementation of `make()` for user apps with a body: make the body edge.
-    static func make(_ element: Self, input: UserMakeInput<Self>) -> UserMakeOutput<Self, Body> {
+    static func make(_ component: Self, input: UserComponentInput<Self>) -> UserComponentOutput<Self, Body> {
         return .init(
-            edge: DefaultBodyAccessor.shared.makeBody(of: element)
+            edge: DefaultBodyAccessor.shared.makeBody(of: component)
         )
     }
 }

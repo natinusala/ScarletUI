@@ -21,11 +21,11 @@ struct Specs {
 }
 
 protocol UpdateAction {
-    func run(on node: ElementNode)
+    func run(on node: ComponentNode)
 }
 
 struct InitialSteps {
-    let initialView: ElementNode
+    let initialView: ComponentNode
     let updateActions: [UpdateAction]
 }
 
@@ -99,7 +99,7 @@ extension TestView {
             let (initialView, updates) = initial()
 
             return InitialSteps(
-                initialView: ElementNode(parent: nil, making: initialView, context: .root()),
+                initialView: ComponentNode(parent: nil, making: initialView, context: .root()),
                 updateActions: updates
             )
         }
@@ -107,7 +107,7 @@ extension TestView {
 }
 
 extension TestView {
-    func run(on node: ElementNode) {
+    func run(on node: ComponentNode) {
         node.update(making: self, attributes: [:])
     }
 }

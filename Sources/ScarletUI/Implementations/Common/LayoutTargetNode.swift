@@ -43,8 +43,8 @@ public extension _LayoutTargetNode {
         }
     }
 
-    /// Calculates layout of this element, either by calculating layout of its parent
-    /// or calculating its layout directly if the element doesn't have a parent.
+    /// Calculates layout of this node, either by calculating layout of its parent
+    /// or calculating its layout directly if the node doesn't have a parent.
     private func calculateLayout() {
         if let parent = self.layoutParent {
             parent.calculateLayout()

@@ -162,7 +162,7 @@ public struct Environment<Value>: EnvironmentProperty {
         visitor: Visitor,
         in property: PropertyInfo,
         target: inout Visitor.Visited,
-        using context: ElementNodeContext
+        using context: ComponentContext
     ) throws {
         try visitor.visitEnvironmentProperty(
             property,
@@ -180,12 +180,12 @@ public protocol EnvironmentCollectable {
 
     var partialKeyPath: PartialKeyPath<EnvironmentValues> { get }
 
-    static func collectEnvironment(of element: Self) -> (keyPath: WritableKeyPath<EnvironmentValues, Value>, value: Value)
+    static func collectEnvironment(of component: Self) -> (keyPath: WritableKeyPath<EnvironmentValues, Value>, value: Value)
 }
 
 /// Serves as cache for environment metadata.
-/// Contains the list of all environment properties for all element types in the
-/// app, to know if the element needs to be updated when an environment value changes.
+/// Contains the list of all environment properties for all components types in the
+/// app, to know if the component needs to be updated when an environment value changes.
 class EnvironmentMetadataCache {
     static let shared = EnvironmentMetadataCache()
 
@@ -193,50 +193,50 @@ class EnvironmentMetadataCache {
 
     private init() {}
 
-    /// Returns `true` if the given element needs to be updated.
-    func shouldUpdate<E: Element>(element: E.Type, using diff: EnvironmentDiff) -> Bool {
+    /// Returns `true` if the given component needs to be updated.
+    func shouldUpdate<Model: ComponentModel>(component: Model.Type, using diff: EnvironmentDiff) -> Bool {
         let modifiedValues: [PartialKeyPath<EnvironmentValues>] = Array(diff.filter { $1 }.keys)
 
         let diffSet: Set<PartialKeyPath<EnvironmentValues>> = Set(modifiedValues)
-        let cacheValue = self.environmentProperties(of: element)
+        let cacheValue = self.environmentProperties(of: component)
 
-        // Update if the intersection of "changed environment" and "environment properties for this element"
+        // Update if the intersection of "changed environment" and "environment properties for this component"
         // is not empty -> at least one environment property needs to be updated
         return !diffSet.intersection(cacheValue).isEmpty
     }
 
-    /// Looks up environment properties for given element in cache.
+    /// Looks up environment properties for given component in cache.
     /// If missing, throws a fatal error.
-    private func environmentProperties<E: Element>(of element: E.Type) -> Set<PartialKeyPath<EnvironmentValues>> {
-        let key = ObjectIdentifier(E.self)
+    private func environmentProperties<Model: ComponentModel>(of component: Model.Type) -> Set<PartialKeyPath<EnvironmentValues>> {
+        let key = ObjectIdentifier(Model.self)
 
         guard let cacheValue = self.cache[key] else {
-            fatalError("Environment metadata cache not found for \(E.self) - was 'setCache(for:)' properly called?")
+            fatalError("Environment metadata cache not found for \(Model.self) - was 'setCache(for:)' properly called?")
         }
 
         return cacheValue
     }
 
-    /// Triggers a discovery on the given element and updates the cache.
+    /// Triggers a discovery on the given component and updates the cache.
     /// Doesn't do anything if a value was already present for the key.
-    func setCache<E: Element>(for element: E) {
-        let key = ObjectIdentifier(E.self)
+    func setCache<Model: ComponentModel>(for component: Model) {
+        let key = ObjectIdentifier(Model.self)
 
         guard self.cache[key] == nil else {
             return
         }
 
-        let value = self.discoverEnvironmentProperties(of: element)
+        let value = self.discoverEnvironmentProperties(of: component)
         self.cache[key] = value
     }
 
-    /// Discovers all environment properties of an element type using runtime metadata.
-    private func discoverEnvironmentProperties<E: Element>(of element: E) -> Set<PartialKeyPath<EnvironmentValues>> {
-        return fatalAttempt(to: "discover environment properties on \(E.self)") {
-            let typeInfo = try cachedTypeInfo(of: E.self)
+    /// Discovers all environment properties of a component type using runtime metadata.
+    private func discoverEnvironmentProperties<Model: ComponentModel>(of component: Model) -> Set<PartialKeyPath<EnvironmentValues>> {
+        return fatalAttempt(to: "discover environment properties on \(Model.self)") {
+            let typeInfo = try cachedTypeInfo(of: Model.self)
 
             let keyPaths = try typeInfo.properties.compactMap { property -> PartialKeyPath<EnvironmentValues>? in
-                let value = try property.get(from: element)
+                let value = try property.get(from: component)
                 guard let value = value as? EnvironmentProperty else {
                     return nil
                 }

@@ -14,12 +14,12 @@
    limitations under the License.
 */
 
-public protocol ViewModifier: Element {
+public protocol ViewModifier: ComponentModel {
     associatedtype Body: View
 
     typealias Content = ViewModifierContent<Self>
 
-    @ElementBuilder func body(content: Content) -> Body
+    @ComponentBuilder func body(content: Content) -> Body
 }
 
 public struct ModifiedContent<Content, Modifier> {
