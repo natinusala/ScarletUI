@@ -61,6 +61,10 @@ class AttributeSpec: ScarletCoreSpec {
                 then("value is set on target side") { result in
                     expect(result.testedChildren[0].attributeChanged(\.id)).to(beTrue())
                 }
+
+                then("view body is not called") { result in
+                    expect(result.bodyCalled(of: Rectangle.self)).to(beFalse())
+                }
             }
 
             when("the attribute value doesn't change") {
@@ -79,6 +83,10 @@ class AttributeSpec: ScarletCoreSpec {
 
                 then("value is not set on target side") { result in
                     expect(result.testedChildren[0].attributeChanged(\.id)).to(beFalse())
+                }
+
+                then("view body is not called") { result in
+                    expect(result.bodyCalled(of: Rectangle.self)).to(beFalse())
                 }
             }
         }

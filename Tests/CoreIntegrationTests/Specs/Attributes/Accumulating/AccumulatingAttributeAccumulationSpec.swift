@@ -75,6 +75,10 @@ class AccumulatingAttributeAccumulationSpec: ScarletCoreSpec {
                 then("attributes are not set on the target") { result in
                     expect(result.first(ImageTarget.self).filtersChanged).to(beFalse())
                 }
+
+                then("view body is not called") { result in
+                    expect(result.bodyCalled(of: FilteredImage.self)).to(beFalse())
+                }
             }
 
             when("the top-level attribute changes") {
@@ -96,6 +100,10 @@ class AccumulatingAttributeAccumulationSpec: ScarletCoreSpec {
                 then("attribute is set on the target") { result in
                     expect(result.first(ImageTarget.self).filtersChanged).to(beTrue())
                 }
+
+                then("view body is not called") { result in
+                    expect(result.bodyCalled(of: FilteredImage.self)).to(beFalse())
+                }
             }
 
             when("the bottom-level attribute changes") {
@@ -116,6 +124,11 @@ class AccumulatingAttributeAccumulationSpec: ScarletCoreSpec {
 
                 then("attribute is set on the target") { result in
                     expect(result.first(ImageTarget.self).filtersChanged).to(beTrue())
+                }
+
+                then("view body is called") { result in
+                    // Because `bottomFilter` changed
+                    expect(result.bodyCalled(of: FilteredImage.self)).to(beTrue())
                 }
             }
         }

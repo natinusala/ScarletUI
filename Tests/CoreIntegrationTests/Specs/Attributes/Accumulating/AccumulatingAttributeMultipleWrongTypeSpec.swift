@@ -75,6 +75,10 @@ class AccumulatingAttributeMultipleWrongTypeSpec: ScarletCoreSpec {
                 then("the attribute is not set on the target side") { result in
                     expect(result.first(ImageTarget.self).filtersChanged).to(beFalse())
                 }
+
+                then("view body is not called") { result in
+                    expect(result.bodyCalled(of: Avatar.self)).to(beFalse())
+                }
             }
 
             when("the first attribute change") {
@@ -95,6 +99,10 @@ class AccumulatingAttributeMultipleWrongTypeSpec: ScarletCoreSpec {
 
                 then("the attribute is set on the target side") { result in
                     expect(result.first(ImageTarget.self).filtersChanged).to(beTrue())
+                }
+
+                then("view body is not called") { result in
+                    expect(result.bodyCalled(of: Avatar.self)).to(beFalse())
                 }
             }
 
@@ -117,6 +125,10 @@ class AccumulatingAttributeMultipleWrongTypeSpec: ScarletCoreSpec {
                 then("the attribute is set on the target side") { result in
                     expect(result.first(ImageTarget.self).filtersChanged).to(beTrue())
                 }
+
+                then("view body is not called") { result in
+                    expect(result.bodyCalled(of: Avatar.self)).to(beFalse())
+                }
             }
 
             when("the attributes are swapped") {
@@ -138,6 +150,10 @@ class AccumulatingAttributeMultipleWrongTypeSpec: ScarletCoreSpec {
                 then("the attribute is set on the target side") { result in
                     expect(result.first(ImageTarget.self).filtersChanged).to(beTrue())
                 }
+
+                then("view body is not called") { result in
+                    expect(result.bodyCalled(of: Avatar.self)).to(beFalse())
+                }
             }
 
             when("both attributes change") {
@@ -158,6 +174,10 @@ class AccumulatingAttributeMultipleWrongTypeSpec: ScarletCoreSpec {
 
                 then("the attribute is set on the target side") { result in
                     expect(result.first(ImageTarget.self).filtersChanged).to(beTrue())
+                }
+
+                then("view body is not called") { result in
+                    expect(result.bodyCalled(of: Avatar.self)).to(beFalse())
                 }
             }
         }

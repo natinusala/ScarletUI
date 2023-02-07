@@ -66,6 +66,10 @@ class AttributesDifferentSpec: ScarletCoreSpec {
                     expect(result.testedChildren[0].attributeChanged(\.fill)).to(beFalse())
                     expect(result.testedChildren[0].attributeChanged(\.grow)).to(beFalse())
                 }
+
+                then("view body is not called") { result in
+                    expect(result.bodyCalled(of: Rectangle.self)).to(beFalse())
+                }
             }
 
             when("first attribute value changes") {
@@ -86,6 +90,10 @@ class AttributesDifferentSpec: ScarletCoreSpec {
                     expect(result.testedChildren[0].attributeChanged(\.id)).to(beFalse())
                     expect(result.testedChildren[0].attributeChanged(\.fill)).to(beTrue())
                     expect(result.testedChildren[0].attributeChanged(\.grow)).to(beFalse())
+                }
+
+                then("view body is not called") { result in
+                    expect(result.bodyCalled(of: Rectangle.self)).to(beFalse())
                 }
             }
 
@@ -108,6 +116,10 @@ class AttributesDifferentSpec: ScarletCoreSpec {
                     expect(result.testedChildren[0].attributeChanged(\.fill)).to(beFalse())
                     expect(result.testedChildren[0].attributeChanged(\.grow)).to(beTrue())
                 }
+
+                then("view body is not called") { result in
+                    expect(result.bodyCalled(of: Rectangle.self)).to(beFalse())
+                }
             }
 
             when("both attributes values change") {
@@ -128,6 +140,10 @@ class AttributesDifferentSpec: ScarletCoreSpec {
                     expect(result.testedChildren[0].attributeChanged(\.id)).to(beFalse())
                     expect(result.testedChildren[0].attributeChanged(\.fill)).to(beTrue())
                     expect(result.testedChildren[0].attributeChanged(\.grow)).to(beTrue())
+                }
+
+                then("view body is not called") { result in
+                    expect(result.bodyCalled(of: Rectangle.self)).to(beFalse())
                 }
             }
         }

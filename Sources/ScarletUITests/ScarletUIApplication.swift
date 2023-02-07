@@ -21,7 +21,12 @@ import Needler
 import ScarletUI
 import ScarletCore
 
-// TODO: rename shouldUpdate to hasChanged, make shouldUpdateFromContext, have shouldUpdate call hasChanged and shouldUpdateFromContext - make a "shouldContinue" method to tell if the recursive model tree parsing should be continued - add body calls assertions to all attribute tests - make TargetContext - make performancemode - make StateObject / EnvironmentObject - test libretro runner
+// TODO: add body calls assertions to all attribute tests
+// TODO: Rename ViewTargets and co. to ViewRenderNode, AppRenderNode, LayoutRenderNode etc
+// TODO: try removing implementation node from user views
+// TODO: rename shouldUpdate to hasChanged, make shouldUpdateFromContext, have shouldUpdate call hasChanged and shouldUpdateFromContext, clarify hasStateChanged in context too
+// TODO: make a "shouldContinue" method to tell if the recursive model tree parsing should be continued
+// TODO: make TargetContext - make performancemode - make StateObject / EnvironmentObject - test libretro runner
 
 /// Default timeout when awaiting for components and interactions of the app, in seconds.
 public let defaultTimeout = 5

@@ -81,6 +81,11 @@ class EnvironmentAttributePropagationOverridingSpec: ScarletCoreSpec {
                         }
                     ))
                 }
+
+                then("view body is called") { result in
+                    // Because `defaultColor` changed
+                    expect(result.bodyCalled(of: Overridden.self)).to(beTrue())
+                }
             }
 
             when("the overridden color changes") {
@@ -100,6 +105,10 @@ class EnvironmentAttributePropagationOverridingSpec: ScarletCoreSpec {
                             }
                         }
                     ))
+                }
+
+                then("view body is not called") { result in
+                    expect(result.bodyCalled(of: Overridden.self)).to(beFalse())
                 }
             }
 
@@ -126,6 +135,10 @@ class EnvironmentAttributePropagationOverridingSpec: ScarletCoreSpec {
                     expect(result.all(TextTarget.self, expectedCount: 3)).to(allPass {
                         $0.textColorChanged == false
                     })
+                }
+
+                then("view body is not called") { result in
+                    expect(result.bodyCalled(of: Overridden.self)).to(beFalse())
                 }
             }
         }

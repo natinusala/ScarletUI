@@ -77,6 +77,10 @@ class AttributeSpreadingSpec: ScarletCoreSpec {
                         $0.textColorChanged == false
                     })
                 }
+
+                then("view body is not called") { result in
+                    expect(result.bodyCalled(of: Texts.self)).to(beFalse())
+                }
             }
 
             when("the attribute value changes") {
@@ -101,6 +105,10 @@ class AttributeSpreadingSpec: ScarletCoreSpec {
                     expect(views).to(allPass {
                         $0.textColorChanged == true
                     })
+                }
+
+                then("view body is not called") { result in
+                    expect(result.bodyCalled(of: Texts.self)).to(beFalse())
                 }
             }
         }

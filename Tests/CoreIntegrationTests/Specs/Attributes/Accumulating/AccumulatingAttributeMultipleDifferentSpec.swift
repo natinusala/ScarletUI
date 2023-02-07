@@ -67,6 +67,10 @@ class AccumulatingAttributeMultipleDifferentSpec: ScarletCoreSpec {
                 then("the unchanged attribute is untouched") { result in
                     expect(result.testedChildren[0].attributeChanged(\.flags)).to(beFalse())
                 }
+
+                then("view body is not called") { result in
+                    expect(result.bodyCalled(of: Rectangle.self)).to(beFalse())
+                }
             }
 
             when("the second attribute changes") {
@@ -90,6 +94,10 @@ class AccumulatingAttributeMultipleDifferentSpec: ScarletCoreSpec {
                 then("the unchanged attribute is untouched") { result in
                     expect(result.testedChildren[0].attributeChanged(\.tags)).to(beFalse())
                 }
+
+                then("view body is not called") { result in
+                    expect(result.bodyCalled(of: Rectangle.self)).to(beFalse())
+                }
             }
 
             when("both attributes change") {
@@ -110,6 +118,10 @@ class AccumulatingAttributeMultipleDifferentSpec: ScarletCoreSpec {
                     expect(result.testedChildren[0].attributeChanged(\.flags)).to(beTrue())
                     expect(result.testedChildren[0].attributeChanged(\.tags)).to(beTrue())
                 }
+
+                then("view body is not called") { result in
+                    expect(result.bodyCalled(of: Rectangle.self)).to(beFalse())
+                }
             }
 
             when("no attribute change") {
@@ -128,6 +140,10 @@ class AccumulatingAttributeMultipleDifferentSpec: ScarletCoreSpec {
 
                 then("no attributes are changed") { result in
                     expect(result.testedChildren[0].anyAttributeChanged).to(beFalse())
+                }
+
+                then("view body is not called") { result in
+                    expect(result.bodyCalled(of: Rectangle.self)).to(beFalse())
                 }
             }
         }

@@ -159,6 +159,14 @@ class EnvironmentAttributePropagationSpec: ScarletCoreSpec {
                         $0.anyAttributeChanged == false
                     })
                 }
+
+                then("views bodies are not called") { result in
+                    expect(result.bodyCalled(of: UserInfo.self)).to(beFalse())
+                    expect(result.bodyCalled(of: Header.self)).to(beFalse())
+                    expect(result.bodyCalled(of: Footer.self)).to(beFalse())
+                    expect(result.bodyCalled(of: Content.self)).to(beFalse())
+                    expect(result.bodyCalled(of: MainContent.self)).to(beFalse())
+                }
             }
 
             when("the nonpropagating attribute changes") {
@@ -214,6 +222,14 @@ class EnvironmentAttributePropagationSpec: ScarletCoreSpec {
                         $0.textColorChanged == false
                     })
                 }
+
+                then("views bodies are not called") { result in
+                    expect(result.bodyCalled(of: UserInfo.self)).to(beFalse())
+                    expect(result.bodyCalled(of: Header.self)).to(beFalse())
+                    expect(result.bodyCalled(of: Footer.self)).to(beFalse())
+                    expect(result.bodyCalled(of: Content.self)).to(beFalse())
+                    expect(result.bodyCalled(of: MainContent.self)).to(beFalse())
+                }
             }
 
             when("the propagating attribute changes") {
@@ -264,6 +280,14 @@ class EnvironmentAttributePropagationSpec: ScarletCoreSpec {
                     expect(result.allViews).to(allPass {
                         $0.anyAttributeChanged == false
                     })
+                }
+
+                then("views bodies are not called") { result in
+                    expect(result.bodyCalled(of: UserInfo.self)).to(beFalse())
+                    expect(result.bodyCalled(of: Header.self)).to(beFalse())
+                    expect(result.bodyCalled(of: Footer.self)).to(beFalse())
+                    expect(result.bodyCalled(of: Content.self)).to(beFalse())
+                    expect(result.bodyCalled(of: MainContent.self)).to(beFalse())
                 }
             }
 
@@ -317,6 +341,14 @@ class EnvironmentAttributePropagationSpec: ScarletCoreSpec {
                     expect(result.testedChildren[0].allChildren).to(allPass {
                         $0.attributeChanged(\.grow) == false
                     })
+                }
+
+                then("views bodies are not called") { result in
+                    expect(result.bodyCalled(of: UserInfo.self)).to(beFalse())
+                    expect(result.bodyCalled(of: Header.self)).to(beFalse())
+                    expect(result.bodyCalled(of: Footer.self)).to(beFalse())
+                    expect(result.bodyCalled(of: Content.self)).to(beFalse())
+                    expect(result.bodyCalled(of: MainContent.self)).to(beFalse())
                 }
             }
         }

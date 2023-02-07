@@ -61,6 +61,10 @@ class AccumulatingAttributeSpec: ScarletCoreSpec {
                 then("attribute is not applied on the target side") { result in
                     expect(result.testedChildren[0].anyAttributeChanged).to(beFalse())
                 }
+
+                then("view body is not called") { result in
+                    expect(result.bodyCalled(of: Rectangle.self)).to(beFalse())
+                }
             }
 
             when("the value changes") {
@@ -79,6 +83,10 @@ class AccumulatingAttributeSpec: ScarletCoreSpec {
 
                 then("attribute is not applied on the target side") { result in
                     expect(result.testedChildren[0].attributeChanged(\.tags)).to(beTrue())
+                }
+
+                then("view body is not called") { result in
+                    expect(result.bodyCalled(of: Rectangle.self)).to(beFalse())
                 }
             }
         }

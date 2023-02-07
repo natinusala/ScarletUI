@@ -108,6 +108,10 @@ class AccumulatingAttributeSpreadingSpec: ScarletCoreSpec {
                         }
                     ))
                 }
+
+                then("view body is not called") { result in
+                    expect(result.bodyCalled(of: MainContent.self)).to(beFalse())
+                }
             }
 
             when("no attribute change") {
@@ -153,6 +157,10 @@ class AccumulatingAttributeSpreadingSpec: ScarletCoreSpec {
                         $0.decorationsChanged == false
                     })
                 }
+
+                then("view body is not called") { result in
+                    expect(result.bodyCalled(of: MainContent.self)).to(beFalse())
+                }
             }
 
             when("the attribute changes") {
@@ -197,6 +205,10 @@ class AccumulatingAttributeSpreadingSpec: ScarletCoreSpec {
                     expect(result.all(TextTarget.self, expectedCount: 5)).to(allPass {
                         $0.decorationsChanged == true
                     })
+                }
+
+                then("view body is not called") { result in
+                    expect(result.bodyCalled(of: MainContent.self)).to(beFalse())
                 }
             }
         }

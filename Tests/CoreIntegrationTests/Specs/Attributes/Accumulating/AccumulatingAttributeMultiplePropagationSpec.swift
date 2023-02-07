@@ -155,6 +155,10 @@ class AccumulatingAttributeMultiplePropagationSpec: ScarletCoreSpec {
                         $0.decorationsChanged == false
                     })
                 }
+
+                then("view body is not called") { result in
+                    expect(result.bodyCalled(of: MainContent.self)).to(beFalse())
+                }
             }
 
             when("the first attribute changes") {
@@ -199,6 +203,10 @@ class AccumulatingAttributeMultiplePropagationSpec: ScarletCoreSpec {
                     expect(result.all(TextTarget.self, expectedCount: 5)).to(allPass {
                         $0.decorationsChanged == true
                     })
+                }
+
+                then("view body is not called") { result in
+                    expect(result.bodyCalled(of: MainContent.self)).to(beFalse())
                 }
             }
 
@@ -245,6 +253,10 @@ class AccumulatingAttributeMultiplePropagationSpec: ScarletCoreSpec {
                         $0.decorationsChanged == true
                     })
                 }
+
+                then("view body is not called") { result in
+                    expect(result.bodyCalled(of: MainContent.self)).to(beFalse())
+                }
             }
 
             when("both attributes change") {
@@ -289,6 +301,10 @@ class AccumulatingAttributeMultiplePropagationSpec: ScarletCoreSpec {
                     expect(result.all(TextTarget.self, expectedCount: 5)).to(allPass {
                         $0.decorationsChanged == true
                     })
+                }
+
+                then("view body is not called") { result in
+                    expect(result.bodyCalled(of: MainContent.self)).to(beFalse())
                 }
             }
         }

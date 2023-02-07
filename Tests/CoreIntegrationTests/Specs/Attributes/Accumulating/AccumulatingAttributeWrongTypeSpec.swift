@@ -73,6 +73,10 @@ class AccumulatingAttributeWrongTypeSpec: ScarletCoreSpec {
                 then("the attribute is not set on the target side") { result in
                     expect(result.first(ImageTarget.self).filtersChanged).to(beFalse())
                 }
+
+                then("view body is not called") { result in
+                    expect(result.bodyCalled(of: Avatar.self)).to(beFalse())
+                }
             }
 
             when("the attribute changes") {
@@ -93,6 +97,10 @@ class AccumulatingAttributeWrongTypeSpec: ScarletCoreSpec {
 
                 then("the attribute is not set on the target side") { result in
                     expect(result.first(ImageTarget.self).filtersChanged).to(beTrue())
+                }
+
+                then("view body is not called") { result in
+                    expect(result.bodyCalled(of: Avatar.self)).to(beFalse())
                 }
             }
         }

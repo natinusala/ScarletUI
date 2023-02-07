@@ -94,6 +94,11 @@ class AttributeNonPropagationSpec: ScarletCoreSpec {
                         view.anyAttributeChanged == false
                     })
                 }
+
+                then("views bodies are not called") { result in
+                    expect(result.bodyCalled(of: Header.self)).to(beFalse())
+                    expect(result.bodyCalled(of: Avatar.self)).to(beFalse())
+                }
             }
 
             when("the attribute changes") {
@@ -118,6 +123,11 @@ class AttributeNonPropagationSpec: ScarletCoreSpec {
 
                 then("attribute is set on the target side") { result in
                     expect(result.first("Header").attributeChanged(\.id)).to(beTrue())
+                }
+
+                then("views bodies are not called") { result in
+                    expect(result.bodyCalled(of: Header.self)).to(beFalse())
+                    expect(result.bodyCalled(of: Avatar.self)).to(beFalse())
                 }
             }
         }

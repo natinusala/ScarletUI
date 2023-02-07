@@ -80,6 +80,10 @@ class EnvironmentAttributeAlreadySetSpec: ScarletCoreSpec {
                 then("value is not set on target side") { result in
                     expect(result.first(TextTarget.self).textColorChanged).to(beFalse())
                 }
+
+                then("view body is not called") { result in
+                    expect(result.bodyCalled(of: ColoredContent.self)).to(beFalse())
+                }
             }
 
             when("the view is created with an override") {
@@ -117,6 +121,10 @@ class EnvironmentAttributeAlreadySetSpec: ScarletCoreSpec {
                 then("value is not set on target side") { result in
                     expect(result.first(TextTarget.self).textColorChanged).to(beFalse())
                 }
+
+                then("view body is not called") { result in
+                    expect(result.bodyCalled(of: ColoredContent.self)).to(beFalse())
+                }
             }
 
             when("the overridden color does not change") {
@@ -137,6 +145,10 @@ class EnvironmentAttributeAlreadySetSpec: ScarletCoreSpec {
 
                 then("value is not set on target side") { result in
                     expect(result.first(TextTarget.self).textColorChanged).to(beFalse())
+                }
+
+                then("view body is not called") { result in
+                    expect(result.bodyCalled(of: ColoredContent.self)).to(beFalse())
                 }
             }
 
@@ -159,6 +171,11 @@ class EnvironmentAttributeAlreadySetSpec: ScarletCoreSpec {
                 then("value is set on target side") { result in
                     expect(result.first(TextTarget.self).textColorChanged).to(beTrue())
                 }
+
+                then("view body is called") { result in
+                    // Because a new view is created
+                    expect(result.bodyCalled(of: ColoredContent.self)).to(beTrue())
+                }
             }
 
             when("the overridden color is enabled") {
@@ -179,6 +196,11 @@ class EnvironmentAttributeAlreadySetSpec: ScarletCoreSpec {
 
                 then("value is set on target side") { result in
                     expect(result.first(TextTarget.self).textColorChanged).to(beTrue())
+                }
+
+                then("view body is called") { result in
+                    // Because a new view is created
+                    expect(result.bodyCalled(of: ColoredContent.self)).to(beTrue())
                 }
             }
         }
