@@ -1,0 +1,10 @@
+prefix=/usr/local
+exec_prefix=${prefix}
+includedir=/usr/local/include/libflutter_engine
+libdir=/usr/local/lib
+
+Name: libflutter_engine
+Description: Flutter Engine embedder target
+URL: https://github.com/flutter/engine
+Libs: -L${libdir} -lflutter_engine
+Cflags: -I${includedir}

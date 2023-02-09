@@ -1,0 +1,22 @@
+{
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug RendererDemo",
+            "program": "${workspaceFolder:ScarletUI}/.build/debug/RendererDemo",
+            "args": [],
+            "cwd": "${workspaceFolder:ScarletUI}",
+            "preLaunchTask": "swift: Build Debug RendererDemo"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Release RendererDemo",
+            "program": "${workspaceFolder:ScarletUI}/.build/release/RendererDemo",
+            "args": [],
+            "cwd": "${workspaceFolder:ScarletUI}",
+            "preLaunchTask": "swift: Build Release RendererDemo"
+        }
+    ]
+}
