@@ -26,10 +26,9 @@ import CRenderer
 // TODO: reinstate Logger and remove fatalErrors / prints / use exceptions if possible
 // TODO: damage region and the other "expect reduced performance warning" - inspire from both embedded glfw_drm and the "regular" npn-embedded GLFW
 
-/// A renderer instance backed by a GLFW window.
-class GLFWWindow: Window {
-    let delegate: WindowDelegate
-
+/// GLFW state shared between the window and event loop.
+/// Retained and given as Flutter Engine userdata during initialization.
+private class GLFWState {
     /// The GLFW window displayed to the user.
     let window: OpaquePointer
 
@@ -39,7 +38,45 @@ class GLFWWindow: Window {
     /// The currently running Flutter Engine.
     var engine: FlutterEngine?
 
+    init(window: OpaquePointer, resourceWindow: OpaquePointer) {
+        self.window = window
+        self.resourceWindow = resourceWindow
+    }
+
+    func makeContextCurrent() {
+        glfwMakeContextCurrent(self.window)
+    }
+
+    func clearContext() {
+        glfwMakeContextCurrent(nil)
+    }
+
+    func makeResourcesContextCurrent() {
+        glfwMakeContextCurrent(self.resourceWindow)
+    }
+
+    func swapBuffers() {
+        glfwSwapBuffers(self.window)
+    }
+
+    func onPlatformMessage(_ message: FlutterPlatformMessage) {
+        guard let engine else { return }
+
+        let channel = String(cString: message.channel)
+        print("Received platform message '\(String(cString: message.message, length: message.message_size))' on channel '\(channel)'")
+
+        // TODO: implement calls instead of reporting failure every time
+        FlutterEngineSendPlatformMessageResponse(engine, message.response_handle, nil, 0)
+    }
+}
+
+/// A renderer instance backed by a GLFW window.
+class GLFWWindow: Window {
     var size: WindowSize
+
+    private let state: GLFWState
+    private let eventLoop = GLFWEventLoop()
+    private let delegate: WindowDelegate
 
     required init(title: String, mode: WindowMode, delegate: WindowDelegate) throws {
         self.delegate = delegate
@@ -132,8 +169,6 @@ class GLFWWindow: Window {
             throw GLFWError.cannotCreateWindow
         }
 
-        self.window = window
-
         // Create the resources window
         glfwWindowHint(GLFW_DECORATED, GLFW_FALSE)
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE)
@@ -142,8 +177,6 @@ class GLFWWindow: Window {
         guard let resourcesWindow else {
             throw GLFWError.cannotCreateWindow
         }
-
-        self.resourceWindow = resourcesWindow
 
         // Initialize graphics API
         glfwMakeContextCurrent(window)
@@ -171,32 +204,8 @@ class GLFWWindow: Window {
         // Finalize init
         // Flutter Engine will make the context current again on its own UI thread
         glfwMakeContextCurrent(nil)
-    }
 
-    func makeContextCurrent() {
-        glfwMakeContextCurrent(self.window)
-    }
-
-    func clearContext() {
-        glfwMakeContextCurrent(nil)
-    }
-
-    func makeResourcesContextCurrent() {
-        glfwMakeContextCurrent(self.resourceWindow)
-    }
-
-    func swapBuffers() {
-        glfwSwapBuffers(self.window)
-    }
-
-    func onPlatformMessage(_ message: FlutterPlatformMessage) {
-        guard let engine else { return }
-
-        let channel = String(cString: message.channel)
-        print("Received platform message '\(String(cString: message.message, length: message.message_size))' on channel '\(channel)'")
-
-        // TODO: implement calls instead of reporting failure every time
-        FlutterEngineSendPlatformMessageResponse(engine, message.response_handle, nil, 0)
+        self.state = GLFWState(window: window, resourceWindow: resourcesWindow)
     }
 
     func start() throws -> Never {
@@ -211,28 +220,28 @@ class GLFWWindow: Window {
 
         config.open_gl.make_current = { userdata in
             guard let userdata else { fatalError("'make_current' called with no userdata") }
-            let window = Unmanaged<GLFWWindow>.fromOpaque(userdata).takeUnretainedValue()
+            let window = Unmanaged<GLFWState>.fromOpaque(userdata).takeUnretainedValue()
             window.makeContextCurrent()
             return true
         }
 
         config.open_gl.clear_current = { userdata in
             guard let userdata else { fatalError("'clear_current' called with no userdata") }
-            let window = Unmanaged<GLFWWindow>.fromOpaque(userdata).takeUnretainedValue()
+            let window = Unmanaged<GLFWState>.fromOpaque(userdata).takeUnretainedValue()
             window.clearContext()
             return true
         }
 
         config.open_gl.present = { userdata in
             guard let userdata else { fatalError("'present' called with no userdata") }
-            let window = Unmanaged<GLFWWindow>.fromOpaque(userdata).takeUnretainedValue()
+            let window = Unmanaged<GLFWState>.fromOpaque(userdata).takeUnretainedValue()
             window.swapBuffers()
             return true
         }
 
         config.open_gl.make_resource_current = { userdata in
             guard let userdata else { fatalError("'make_resource_current' called with no userdata") }
-            let window = Unmanaged<GLFWWindow>.fromOpaque(userdata).takeUnretainedValue()
+            let window = Unmanaged<GLFWState>.fromOpaque(userdata).takeUnretainedValue()
             window.makeResourcesContextCurrent()
             return true
         }
@@ -272,13 +281,18 @@ class GLFWWindow: Window {
         args.platform_message_callback = { message, userdata in
             guard let userdata else { fatalError("'platform_message_callback' called with no userdata") }
             guard let message else { return }
-            let window = Unmanaged<GLFWWindow>.fromOpaque(userdata).takeUnretainedValue()
+            let window = Unmanaged<GLFWState>.fromOpaque(userdata).takeUnretainedValue()
             window.onPlatformMessage(message.pointee)
         }
 
+        // Task runners
+        var taskRunners = FlutterCustomTaskRunners()
+        taskRunners.struct_size = MemoryLayout.size(ofValue: taskRunners)
+        // taskRunners.platform_task_runner = self.eventLoop.
+
         // Init and run the engine
-        // The Swift window is retained by the engine
-        let userdata = Unmanaged.passRetained(self)
+        // State is retained by the engine
+        let userdata = Unmanaged.passRetained(self.state)
 
         guard FLUTTER_ENGINE_VERSION == flutterEmbedderVersion else {
             fatalError("Wrong Flutter Engine version - ScarletUI renderer needs Embedder API \(flutterEmbedderVersion) but has been compiled with version \(FLUTTER_ENGINE_VERSION) (defined in 'flutter_embedder.h')")
@@ -289,12 +303,12 @@ class GLFWWindow: Window {
             &config,
             &args,
             userdata.toOpaque(),
-            &self.engine
+            &self.state.engine
         ) == kSuccess else {
             throw FlutterEngineError.initFailed
         }
 
-        guard FlutterEngineRunInitialized(self.engine) == kSuccess else {
+        guard FlutterEngineRunInitialized(self.state.engine) == kSuccess else {
             throw FlutterEngineError.initFailed
         }
 
@@ -316,22 +330,26 @@ class GLFWWindow: Window {
         event.width = self.size.width
         event.height = self.size.height
         event.pixel_ratio = 1
-        FlutterEngineSendWindowMetricsEvent(engine, &event)
+        FlutterEngineSendWindowMetricsEvent(self.state.engine, &event)
 
         // Run
-        while glfwWindowShouldClose(self.window) == 0 {}
+        while glfwWindowShouldClose(self.state.window) == 0 {}
 
         // Shutdown
-        FlutterEngineShutdown(engine)
+        FlutterEngineShutdown(self.state.engine)
 
         userdata.release()
 
-        glfwDestroyWindow(self.window);
-        glfwDestroyWindow(self.resourceWindow);
+        glfwDestroyWindow(self.state.window);
+        glfwDestroyWindow(self.state.resourceWindow);
         glfwTerminate();
 
         exit(0)
     }
+}
+
+private class GLFWEventLoop {
+
 }
 
 /// GLFW errors.
