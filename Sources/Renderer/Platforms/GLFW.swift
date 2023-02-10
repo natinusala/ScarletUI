@@ -276,7 +276,7 @@ class GLFWWindow: Window {
             window.onPlatformMessage(message.pointee)
         }
 
-        // Run the engine
+        // Init and run the engine
         // The Swift window is retained by the engine
         let userdata = Unmanaged.passRetained(self)
 
@@ -284,20 +284,30 @@ class GLFWWindow: Window {
             fatalError("Wrong Flutter Engine version - ScarletUI renderer needs Embedder API \(flutterEmbedderVersion) but has been compiled with version \(FLUTTER_ENGINE_VERSION) (defined in 'flutter_embedder.h')")
         }
 
-        let result = FlutterEngineRun(
+        guard FlutterEngineInitialize(
             flutterEmbedderVersion,
             &config,
             &args,
             userdata.toOpaque(),
             &self.engine
-        )
+        ) == kSuccess else {
+            throw FlutterEngineError.initFailed
+        }
+
+        guard FlutterEngineRunInitialized(self.engine) == kSuccess else {
+            throw FlutterEngineError.initFailed
+        }
+
+        // let result = FlutterEngineRun(
+        //     flutterEmbedderVersion,
+        //     &config,
+        //     &args,
+        //     userdata.toOpaque(),
+        //     &self.engine
+        // )
 
         free(assetsPath)
         free(icudtlPath)
-
-        guard result == kSuccess, engine != nil else {
-            throw FlutterEngineError.engineRunFailed
-        }
 
         // Give Flutter the initial window size
         // TODO: Setup GLFW callback and call that instead of putting the code here
@@ -333,5 +343,6 @@ enum GLFWError: Error {
 }
 
 enum FlutterEngineError: Error {
-    case engineRunFailed
+    case initFailed
+    case runFailed
 }
