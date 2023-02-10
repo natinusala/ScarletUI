@@ -36,6 +36,9 @@ class GLFWWindow: Window {
     /// The invisible GLFW window, shared with the first one, used to upload resources in the background.
     let resourceWindow: OpaquePointer
 
+    /// The currently running Flutter Engine.
+    var engine: FlutterEngine?
+
     var size: WindowSize
 
     required init(title: String, mode: WindowMode, delegate: WindowDelegate) throws {
@@ -186,6 +189,16 @@ class GLFWWindow: Window {
         glfwSwapBuffers(self.window)
     }
 
+    func onPlatformMessage(_ message: FlutterPlatformMessage) {
+        guard let engine else { return }
+
+        let channel = String(cString: message.channel)
+        print("Received platform message '\(String(cString: message.message, length: message.message_size))' on channel '\(channel)'")
+
+        // TODO: implement calls instead of reporting failure every time
+        FlutterEngineSendPlatformMessageResponse(engine, message.response_handle, nil, 0)
+    }
+
     func start() throws -> Never {
         guard FlutterEngineRunsAOTCompiledDartCode() else {
             fatalError("Flutter Engine was compiled without AOT support, cannot continue")
@@ -255,6 +268,14 @@ class GLFWWindow: Window {
             }
         }
 
+        // Callbacks
+        args.platform_message_callback = { message, userdata in
+            guard let userdata else { fatalError("'platform_message_callback' called with no userdata") }
+            guard let message else { return }
+            let window = Unmanaged<GLFWWindow>.fromOpaque(userdata).takeUnretainedValue()
+            window.onPlatformMessage(message.pointee)
+        }
+
         // Run the engine
         // The Swift window is retained by the engine
         let userdata = Unmanaged.passRetained(self)
@@ -263,13 +284,12 @@ class GLFWWindow: Window {
             fatalError("Wrong Flutter Engine version - ScarletUI renderer needs Embedder API \(flutterEmbedderVersion) but has been compiled with version \(FLUTTER_ENGINE_VERSION) (defined in 'flutter_embedder.h')")
         }
 
-        var engine: FlutterEngine?
         let result = FlutterEngineRun(
             flutterEmbedderVersion,
             &config,
             &args,
             userdata.toOpaque(),
-            &engine
+            &self.engine
         )
 
         free(assetsPath)
@@ -288,10 +308,8 @@ class GLFWWindow: Window {
         event.pixel_ratio = 1
         FlutterEngineSendWindowMetricsEvent(engine, &event)
 
-        // Pump GLFW events
-        while glfwWindowShouldClose(self.window) == 0 {
-            glfwPollEvents()
-        }
+        // Run
+        while glfwWindowShouldClose(self.window) == 0 {}
 
         // Shutdown
         FlutterEngineShutdown(engine)
