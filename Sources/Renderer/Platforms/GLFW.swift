@@ -1,5 +1,6 @@
 /*
    Copyright 2023 natinusala
+   Copyright 2013 The Flutter Authors
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -14,10 +15,6 @@
    limitations under the License.
 */
 
-// Copyright 2013 The Flutter Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 import Foundation
 
 import FlutterEngine
@@ -26,13 +23,18 @@ import GLFW
 
 import CRenderer
 
-// TODO: reinstate Logger and remove fatalErrors / use exceptions if possible
-// TODO: yeet HostAppLib
+// TODO: reinstate Logger and remove fatalErrors / prints / use exceptions if possible
+// TODO: damage region and the other "expect reduced performance warning" - inspire from both embedded glfw_drm and the "regular" npn-embedded GLFW
 
 /// A renderer instance backed by a GLFW window.
 class GLFWWindow: Window {
     let delegate: WindowDelegate
-    let windowHandle: OpaquePointer
+
+    /// The GLFW window displayed to the user.
+    let window: OpaquePointer
+
+    /// The invisible GLFW window, shared with the first one, used to upload resources in the background.
+    let resourceWindow: OpaquePointer
 
     var size: WindowSize
 
@@ -86,12 +88,12 @@ class GLFWWindow: Window {
             throw GLFWError.noVideoMode
         }
 
-        // Create the new window
-        let handle: OpaquePointer?
+        // Create the window
+        let window: OpaquePointer?
         switch mode {
             // Windowed mode
             case let .windowed(width, height):
-                handle = glfwCreateWindow(
+                window = glfwCreateWindow(
                     Int32(width),
                     Int32(height),
                     title,
@@ -105,7 +107,7 @@ class GLFWWindow: Window {
                 glfwWindowHint(GLFW_BLUE_BITS, videoMode.pointee.blueBits)
                 glfwWindowHint(GLFW_REFRESH_RATE, videoMode.pointee.refreshRate)
 
-                handle = glfwCreateWindow(
+                window = glfwCreateWindow(
                     videoMode.pointee.width,
                     videoMode.pointee.height,
                     title,
@@ -114,7 +116,7 @@ class GLFWWindow: Window {
                 )
             // Fullscreen mode
             case .fullscreen:
-                handle = glfwCreateWindow(
+                window = glfwCreateWindow(
                     videoMode.pointee.width,
                     videoMode.pointee.height,
                     title,
@@ -123,16 +125,28 @@ class GLFWWindow: Window {
                 )
         }
 
-        guard let handle else {
+        guard let window else {
             throw GLFWError.cannotCreateWindow
         }
 
-        self.windowHandle = handle
+        self.window = window
+
+        // Create the resources window
+        glfwWindowHint(GLFW_DECORATED, GLFW_FALSE)
+        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE)
+        let resourcesWindow = glfwCreateWindow(1, 1, "", nil, window)
+
+        guard let resourcesWindow else {
+            throw GLFWError.cannotCreateWindow
+        }
+
+        self.resourceWindow = resourcesWindow
 
         // Initialize graphics API
-        glfwMakeContextCurrent(handle)
+        glfwMakeContextCurrent(window)
         gladLoadGLLoaderFromGLFW()
 
+        // GL Debug
         glEnable(GLenum(GL_DEBUG_OUTPUT))
         glDebugMessageCallback({ source, type, id, severity, length, message, userParam in
             if let message {
@@ -147,26 +161,29 @@ class GLFWWindow: Window {
         // Set state
         var actualWindowWidth: Int32 = 0
         var actualWindowHeight: Int32 = 0
-        glfwGetWindowSize(handle, &actualWindowWidth, &actualWindowHeight)
+        glfwGetWindowSize(window, &actualWindowWidth, &actualWindowHeight)
 
         self.size = WindowSize(width: Int(actualWindowWidth), height: Int(actualWindowHeight))
 
         // Finalize init
         // Flutter Engine will make the context current again on its own UI thread
-        glfwSwapInterval(1)
         glfwMakeContextCurrent(nil)
     }
 
     func makeContextCurrent() {
-        glfwMakeContextCurrent(self.windowHandle)
+        glfwMakeContextCurrent(self.window)
     }
 
     func clearContext() {
         glfwMakeContextCurrent(nil)
     }
 
+    func makeResourcesContextCurrent() {
+        glfwMakeContextCurrent(self.resourceWindow)
+    }
+
     func swapBuffers() {
-        glfwSwapBuffers(self.windowHandle)
+        glfwSwapBuffers(self.window)
     }
 
     func start() throws -> Never {
@@ -200,6 +217,13 @@ class GLFWWindow: Window {
             return true
         }
 
+        config.open_gl.make_resource_current = { userdata in
+            guard let userdata else { fatalError("'make_resource_current' called with no userdata") }
+            let window = Unmanaged<GLFWWindow>.fromOpaque(userdata).takeUnretainedValue()
+            window.makeResourcesContextCurrent()
+            return true
+        }
+
         config.open_gl.fbo_callback = { _ in
             return 0 // FBO0
         }
@@ -211,8 +235,8 @@ class GLFWWindow: Window {
         // Create args
         // Don't forget to free all strings after `FlutterEngineRun`
         // TODO: put everything in a bundle, including libapp.so
-        let assetsPath = strdup("/home/natinusala/ScarletUI/Sources/Renderer/Host/build/linux/x64/profile/bundle/data/flutter_assets")
-        let icudtlPath = strdup("/home/natinusala/ScarletUI/Sources/Renderer/Host/build/linux/x64/profile/bundle/data/icudtl.dat")
+        let assetsPath = strdup("/home/natinusala/ScarletUI/Sources/Renderer/Host/build/linux/x64/release/bundle/data/flutter_assets")
+        let icudtlPath = strdup("/home/natinusala/ScarletUI/Sources/Renderer/Host/build/linux/x64/release/bundle/data/icudtl.dat")
 
         var args = FlutterProjectArgs()
         args.struct_size = MemoryLayout.size(ofValue: args)
@@ -222,7 +246,7 @@ class GLFWWindow: Window {
         args.icu_data_path = UnsafePointer(icudtlPath)
 
         // AOT data from libapp.so ELF
-        "/home/natinusala/ScarletUI/Sources/Renderer/Host/build/linux/x64/profile/bundle/lib/libapp.so".withCString { elfPath in
+        "/home/natinusala/ScarletUI/Sources/Renderer/Host/build/linux/x64/release/bundle/lib/libapp.so".withCString { elfPath in
             var aotDataSource = FlutterEngineAOTDataSource()
             aotDataSource.type = kFlutterEngineAOTDataSourceTypeElfPath
             aotDataSource.elf_path = elfPath
@@ -232,16 +256,19 @@ class GLFWWindow: Window {
         }
 
         // Run the engine
-        // The Swift window is indefinitely retained by the engine
-        let userdata = Unmanaged.passRetained(self).toOpaque()
+        // The Swift window is retained by the engine
+        let userdata = Unmanaged.passRetained(self)
 
-        var engine: FlutterEngine? = nil
-        assert(FLUTTER_ENGINE_VERSION == flutterEmbedderVersion)
+        guard FLUTTER_ENGINE_VERSION == flutterEmbedderVersion else {
+            fatalError("Wrong Flutter Engine version - ScarletUI renderer needs Embedder API \(flutterEmbedderVersion) but has been compiled with version \(FLUTTER_ENGINE_VERSION) (defined in 'flutter_embedder.h')")
+        }
+
+        var engine: FlutterEngine?
         let result = FlutterEngineRun(
             flutterEmbedderVersion,
             &config,
             &args,
-            userdata,
+            userdata.toOpaque(),
             &engine
         )
 
@@ -262,13 +289,17 @@ class GLFWWindow: Window {
         FlutterEngineSendWindowMetricsEvent(engine, &event)
 
         // Pump GLFW events
-        while glfwWindowShouldClose(self.windowHandle) == 0 {
-            glfwWaitEvents()
+        while glfwWindowShouldClose(self.window) == 0 {
+            glfwPollEvents()
         }
 
+        // Shutdown
         FlutterEngineShutdown(engine)
 
-        glfwDestroyWindow(self.windowHandle);
+        userdata.release()
+
+        glfwDestroyWindow(self.window);
+        glfwDestroyWindow(self.resourceWindow);
         glfwTerminate();
 
         exit(0)
